@@ -6,6 +6,7 @@
 <title>Espritum — Coach Sensei</title>
 <link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --red: #c82828;
@@ -19,548 +20,126 @@
     --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
     --sidebar: 240px;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; overflow: hidden; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: #fff; font-family: var(--font-body); display: flex; }
 
-  body {
-    background: var(--bg);
-    color: #fff;
-    font-family: var(--font-body);
-    display: flex;
-  }
-
-  /* ── SIDEBAR ── */
-  .sidebar {
-    width: var(--sidebar);
-    min-height: 100vh;
-    background: var(--bg2);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 0; left: 0;
-    z-index: 50;
-  }
-
-  .sidebar-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 24px 20px;
-    border-bottom: 1px solid var(--border);
-    text-decoration: none;
-  }
-
+  /* SIDEBAR */
+  .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 50; }
+  .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 24px 20px; border-bottom: 1px solid var(--border); text-decoration: none; }
   .sidebar-logo { width: 34px; height: 34px; object-fit: contain; border-radius: 6px; }
-
-  .sidebar-name {
-    font-family: var(--font-display);
-    font-size: 18px;
-    letter-spacing: 5px;
-    color: #fff;
-    text-transform: uppercase;
-  }
-
-  .sidebar-nav {
-    flex: 1;
-    padding: 20px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .nav-section-label {
-    font-size: 9px;
-    letter-spacing: 3px;
-    color: var(--muted2);
-    text-transform: uppercase;
-    font-weight: 700;
-    padding: 14px 10px 6px;
-  }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 11px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background 0.2s, color 0.2s;
-    color: var(--muted);
-    font-size: 14px;
-    font-weight: 500;
-  }
-
+  .sidebar-name { font-family: var(--font-display); font-size: 18px; letter-spacing: 5px; color: #fff; text-transform: uppercase; }
+  .sidebar-nav { flex: 1; padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .nav-section-label { font-size: 9px; letter-spacing: 3px; color: var(--muted2); text-transform: uppercase; font-weight: 700; padding: 14px 10px 6px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 6px; text-decoration: none; transition: background 0.2s, color 0.2s; color: var(--muted); font-size: 14px; font-weight: 500; }
   .nav-item:hover { background: var(--bg3); color: #ccc; }
   .nav-item.active { background: rgba(200,40,40,0.1); color: #fff; border-left: 2px solid var(--red); }
-  .nav-item.active .nav-icon { color: var(--red); }
   .nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
-
-  .sidebar-bottom {
-    padding: 16px 12px;
-    border-top: 1px solid var(--border);
-  }
-
-  .user-card {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    border-radius: 6px;
-  }
-
-  .user-avatar {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: rgba(200,40,40,0.15);
-    border: 1px solid rgba(200,40,40,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-display);
-    font-size: 16px;
-    color: var(--red);
-    flex-shrink: 0;
-  }
-
+  .sidebar-bottom { padding: 16px 12px; border-top: 1px solid var(--border); }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 6px; }
+  .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(200,40,40,0.15); border: 1px solid rgba(200,40,40,0.3); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; color: var(--red); flex-shrink: 0; }
   .user-name { font-size: 13px; font-weight: 600; color: #ddd; }
   .user-plan { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
 
-  /* ── MAIN ── */
-  .main {
-    margin-left: var(--sidebar);
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
-  }
+  /* MAIN */
+  .main { margin-left: var(--sidebar); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+  .topbar { padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg); }
+  .topbar-left { display: flex; flex-direction: column; gap: 2px; }
+  .topbar-tag { font-size: 10px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; font-weight: 600; }
+  .topbar-title { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; }
+  .sensei-status { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #4caf50; font-weight: 500; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4caf50; animation: pulse-dot 2s infinite; }
+  @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
 
-  /* ── TOPBAR ── */
-  .topbar {
-    padding: 18px 28px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-    background: var(--bg);
-  }
+  /* CHAT */
+  .chat-layout { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 81px); }
 
-  .sensei-identity {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
+  /* Sidebar suggestions */
+  .chat-sidebar { width: 240px; background: var(--bg2); border-right: 1px solid var(--border); padding: 20px 14px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; flex-shrink: 0; }
 
-  .sensei-avatar {
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    background: rgba(200,40,40,0.12);
-    border: 2px solid rgba(200,40,40,0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    position: relative;
-  }
+  .suggestions-title { font-size: 10px; letter-spacing: 3px; color: var(--muted2); text-transform: uppercase; font-weight: 700; }
 
-  .online-dot {
-    position: absolute;
-    bottom: 1px; right: 1px;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: #4caf50;
-    border: 2px solid var(--bg);
-  }
+  .suggestion-btn { padding: 10px 12px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; color: #888; font-family: var(--font-body); font-size: 12px; text-align: left; cursor: pointer; transition: all 0.2s; line-height: 1.4; }
+  .suggestion-btn:hover { border-color: rgba(200,40,40,0.3); color: #ccc; background: rgba(200,40,40,0.04); }
 
-  .sensei-name {
-    font-family: var(--font-display);
-    font-size: 22px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--red);
-  }
+  .context-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 12px; }
+  .context-title { font-size: 10px; letter-spacing: 2px; color: var(--muted2); text-transform: uppercase; font-weight: 600; margin-bottom: 10px; }
+  .context-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .context-label { font-size: 12px; color: var(--muted); }
+  .context-val { font-family: var(--font-display); font-size: 16px; color: #fff; }
 
-  .sensei-status { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  /* Zone de chat */
+  .chat-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
-  .topbar-actions { display: flex; gap: 10px; }
-
-  .action-btn {
-    padding: 8px 18px;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--muted);
-    font-family: var(--font-body);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .action-btn:hover { border-color: #333; color: #aaa; }
-
-  /* ── LAYOUT CHAT ── */
-  .chat-layout {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 280px;
-    overflow: hidden;
-  }
-
-  /* ── ZONE CHAT ── */
-  .chat-zone {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border-right: 1px solid var(--border);
-  }
-
-  .messages-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    scroll-behavior: smooth;
-  }
-
-  .messages-list::-webkit-scrollbar { width: 4px; }
-  .messages-list::-webkit-scrollbar-track { background: transparent; }
-  .messages-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  /* Date séparateur */
-  .date-sep {
-    text-align: center;
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: var(--muted2);
-    text-transform: uppercase;
-    position: relative;
-  }
-
-  .date-sep::before, .date-sep::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: calc(50% - 60px);
-    height: 1px;
-    background: var(--border);
-  }
-
-  .date-sep::before { left: 0; }
-  .date-sep::after { right: 0; }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-track { background: transparent; }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
   /* Messages */
-  .msg { display: flex; gap: 12px; max-width: 80%; }
-  .msg.user { flex-direction: row-reverse; align-self: flex-end; }
-  .msg.sensei { align-self: flex-start; }
+  .msg-wrap { display: flex; gap: 12px; max-width: 76%; }
+  .msg-wrap.user { align-self: flex-end; flex-direction: row-reverse; }
+  .msg-wrap.bot { align-self: flex-start; }
 
-  .msg-avatar {
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    margin-top: 2px;
-  }
+  .msg-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .msg-avatar.bot { background: rgba(200,40,40,0.12); border: 1px solid rgba(200,40,40,0.3); }
+  .msg-avatar.user { background: rgba(255,255,255,0.05); border: 1px solid var(--border); font-family: var(--font-display); font-size: 15px; color: #888; }
 
-  .msg.sensei .msg-avatar {
-    background: rgba(200,40,40,0.1);
-    border: 1px solid rgba(200,40,40,0.3);
-  }
+  .msg-bubble { padding: 13px 16px; border-radius: 10px; font-size: 14px; line-height: 1.65; font-weight: 300; }
+  .msg-bubble.bot { background: var(--bg2); border: 1px solid var(--border); color: #ccc; border-bottom-left-radius: 3px; }
+  .msg-bubble.user { background: var(--red); color: #fff; border-bottom-right-radius: 3px; }
 
-  .msg.user .msg-avatar {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--border);
-    font-family: var(--font-display);
-    font-size: 14px;
-    color: #888;
-  }
+  .msg-time { font-size: 10px; color: var(--muted2); margin-top: 5px; letter-spacing: 0.5px; }
+  .msg-wrap.user .msg-time { text-align: right; }
 
-  .msg-content { display: flex; flex-direction: column; gap: 4px; }
-  .msg.user .msg-content { align-items: flex-end; }
+  /* Typing indicator */
+  .typing-wrap { display: none; align-self: flex-start; gap: 12px; }
+  .typing-wrap.visible { display: flex; }
+  .typing-bubble { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; border-bottom-left-radius: 3px; padding: 14px 18px; display: flex; gap: 5px; align-items: center; }
+  .typing-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: typing 1.2s infinite; }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typing { 0%,80%,100%{opacity:0.2;transform:scale(1);} 40%{opacity:1;transform:scale(1.2);} }
 
-  .msg-bubble {
-    padding: 12px 16px;
-    border-radius: 12px;
-    font-size: 14px;
-    line-height: 1.65;
-    font-weight: 400;
-  }
+  /* Zone de saisie */
+  .chat-input-zone { padding: 16px 24px; border-top: 1px solid var(--border); background: var(--bg); }
+  .chat-input-wrap { display: flex; gap: 10px; align-items: flex-end; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; transition: border-color 0.2s; }
+  .chat-input-wrap:focus-within { border-color: rgba(200,40,40,0.3); }
 
-  .msg.sensei .msg-bubble {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    color: #ccc;
-    border-bottom-left-radius: 4px;
-  }
+  #chat-input { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-family: var(--font-body); font-size: 14px; font-weight: 300; resize: none; max-height: 120px; line-height: 1.5; }
+  #chat-input::placeholder { color: var(--muted2); }
 
-  .msg.user .msg-bubble {
-    background: rgba(200,40,40,0.12);
-    border: 1px solid rgba(200,40,40,0.2);
-    color: #ddd;
-    border-bottom-right-radius: 4px;
-  }
-
-  .msg-bubble strong { color: #fff; font-weight: 600; }
-  .msg-bubble em { color: var(--red); font-style: normal; }
-
-  .msg-time {
-    font-size: 10px;
-    color: var(--muted2);
-    letter-spacing: 1px;
-    padding: 0 4px;
-  }
-
-  /* Suggestions rapides */
-  .quick-suggestions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    padding: 0 28px 16px;
-    flex-shrink: 0;
-  }
-
-  .suggestion {
-    padding: 7px 14px;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    color: var(--muted);
-    font-family: var(--font-body);
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-
-  .suggestion:hover { border-color: var(--red); color: var(--red); }
-
-  /* Input */
-  .chat-input-bar {
-    padding: 16px 28px 20px;
-    border-top: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-
-  .input-wrapper {
-    display: flex;
-    align-items: flex-end;
-    gap: 12px;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 16px;
-    transition: border-color 0.2s;
-  }
-
-  .input-wrapper:focus-within { border-color: rgba(200,40,40,0.4); }
-
-  .chat-textarea {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: #fff;
-    font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: 400;
-    resize: none;
-    outline: none;
-    max-height: 120px;
-    line-height: 1.5;
-  }
-
-  .chat-textarea::placeholder { color: var(--muted2); }
-
-  .send-btn {
-    width: 36px; height: 36px;
-    border-radius: 6px;
-    background: var(--red);
-    border: none;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: background 0.2s;
-  }
-
+  .send-btn { width: 38px; height: 38px; background: var(--red); border: none; border-radius: 8px; color: #fff; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; flex-shrink: 0; }
   .send-btn:hover { background: #d93030; }
   .send-btn:disabled { background: var(--muted2); cursor: not-allowed; }
 
-  /* Typing indicator */
-  .typing-indicator {
-    display: none;
-    align-items: center;
-    gap: 12px;
-    padding: 0 28px;
-  }
+  .input-hint { font-size: 11px; color: var(--muted2); text-align: center; margin-top: 8px; letter-spacing: 0.5px; }
 
-  .typing-indicator.visible { display: flex; }
+  /* Welcome message */
+  .welcome-msg { background: linear-gradient(135deg, #0f0404, var(--bg2)); border: 1px solid rgba(200,40,40,0.15); border-radius: 10px; padding: 24px; margin-bottom: 8px; }
+  .welcome-title { font-family: var(--font-display); font-size: 24px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); margin-bottom: 8px; }
+  .welcome-text { font-size: 14px; color: #888; line-height: 1.65; font-weight: 300; }
 
-  .typing-avatar {
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    background: rgba(200,40,40,0.1);
-    border: 1px solid rgba(200,40,40,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    flex-shrink: 0;
-  }
+  /* Loading */
+  .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
+  .loading-logo { font-family: var(--font-display); font-size: 48px; letter-spacing: 8px; color: var(--red); text-transform: uppercase; }
+  .loading-dots { display: flex; gap: 6px; }
+  .loading-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: blink 1.2s infinite; }
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100%{opacity:0.2;} 40%{opacity:1;} }
 
-  .typing-dots {
-    display: flex;
-    gap: 4px;
-    padding: 12px 16px;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    border-bottom-left-radius: 4px;
-  }
-
-  .dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--muted);
-    animation: bounce 1.2s infinite;
-  }
-
-  .dot:nth-child(2) { animation-delay: 0.2s; }
-  .dot:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes bounce {
-    0%, 60%, 100% { transform: translateY(0); }
-    30% { transform: translateY(-6px); }
-  }
-
-  /* ── PANNEAU DROIT ── */
-  .right-panel {
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    background: var(--bg2);
-  }
-
-  .right-panel::-webkit-scrollbar { width: 4px; }
-  .right-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  .panel-section {
-    padding: 20px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .panel-title {
-    font-family: var(--font-display);
-    font-size: 14px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 14px;
-  }
-
-  /* Contexte utilisateur */
-  .context-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
-  }
-
-  .context-item:last-child { border-bottom: none; }
-  .context-label { color: var(--muted); }
-  .context-val { color: #ccc; font-weight: 500; }
-  .context-val.red { color: var(--red); }
-
-  /* Sujets rapides */
-  .topic-grid { display: flex; flex-direction: column; gap: 8px; }
-
-  .topic-btn {
-    padding: 10px 14px;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: #888;
-    font-family: var(--font-body);
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .topic-btn:hover { border-color: rgba(200,40,40,0.3); color: #ccc; }
-  .topic-icon { font-size: 16px; }
-
-  /* Historique */
-  .history-list { display: flex; flex-direction: column; gap: 6px; }
-
-  .history-item {
-    padding: 10px 12px;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: border-color 0.2s;
-  }
-
-  .history-item:hover { border-color: #2a2a2a; }
-  .history-date { font-size: 10px; color: var(--muted2); letter-spacing: 1px; margin-bottom: 4px; }
-  .history-preview { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-  /* Verset panel */
-  .verse-panel {
-    background: rgba(200,40,40,0.05);
-    border: 1px solid rgba(200,40,40,0.15);
-    border-radius: 6px;
-    padding: 14px;
-  }
-
-  .verse-panel-text { font-size: 13px; color: #999; font-style: italic; line-height: 1.6; font-weight: 300; margin-bottom: 8px; }
-  .verse-panel-ref { font-size: 10px; color: var(--red); letter-spacing: 2px; text-transform: uppercase; }
-
-  @media (max-width: 1100px) {
-    .chat-layout { grid-template-columns: 1fr; }
-    .right-panel { display: none; }
-  }
-
-  @media (max-width: 768px) {
-    .sidebar { display: none; }
-    .main { margin-left: 0; }
-  }
-  /* ── MOBILE NAV BAR ── */
-  .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,10,0.97); border-top: 1px solid #1e1e1e; backdrop-filter: blur(16px); z-index: 200; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); }
-  .mobile-nav-items { display: flex; justify-content: space-around; align-items: center; }
-  .mobile-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; text-decoration: none; padding: 4px 12px; border-radius: 8px; transition: all 0.2s; -webkit-tap-highlight-color: transparent; }
-  .mobile-nav-item.active .mobile-nav-icon { color: #c82828; }
-  .mobile-nav-item.active .mobile-nav-label { color: #c82828; }
-  .mobile-nav-icon { font-size: 22px; color: #555; transition: color 0.2s; }
-  .mobile-nav-label { font-size: 9px; letter-spacing: 1px; color: #444; text-transform: uppercase; font-weight: 600; }
-  .mobile-nav-dot { width: 4px; height: 4px; border-radius: 50%; background: #c82828; display: none; margin-top: -2px; }
-  .mobile-nav-item.active .mobile-nav-dot { display: block; }
-  @media (max-width: 768px) { .mobile-nav { display: block; } .sidebar { display: none !important; } .main { margin-left: 0 !important; padding-bottom: 80px; } }
+  @media (max-width: 1100px) { .chat-sidebar { display: none; } }
+  @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } }
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
+<div class="loading-overlay" id="loading">
+  <div class="loading-logo">Espritum</div>
+  <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+</div>
+
 <aside class="sidebar">
   <a class="sidebar-brand" href="dashboard.html">
     <img class="sidebar-logo" src="data:image/jpeg;base64,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" alt="Espritum">
@@ -574,7 +153,7 @@
     <a class="nav-item" href="progression.html"><span class="nav-icon">📊</span> Progression</a>
     <div class="nav-section-label">IA & Motivation</div>
     <a class="nav-item" href="bodyfat.html"><span class="nav-icon">📸</span> Estimation corporelle</a>
-    <a class="nav-item active" href="coach.html"><span class="nav-icon">🤖</span> Coach Sensei</a>
+    <a class="nav-item active" href="#"><span class="nav-icon">🤖</span> Coach Sensei</a>
     <a class="nav-item" href="classement.html"><span class="nav-icon">🏆</span> Classement</a>
     <div class="nav-section-label">Compte</div>
     <a class="nav-item" href="profil.html"><span class="nav-icon">👤</span> Profil</a>
@@ -582,232 +161,97 @@
   </nav>
   <div class="sidebar-bottom">
     <div class="user-card">
-      <div class="user-avatar">K</div>
+      <div class="user-avatar" id="sidebar-avatar">?</div>
       <div>
-        <div class="user-name">Kaito Yamada</div>
-        <div class="user-plan">🛡️ Champion</div>
+        <div class="user-name" id="sidebar-name">—</div>
+        <div class="user-plan" id="sidebar-plan">—</div>
       </div>
     </div>
   </div>
 </aside>
 
-<!-- MAIN -->
 <main class="main">
-
-  <!-- TOPBAR -->
   <div class="topbar">
-    <div class="sensei-identity">
-      <div class="sensei-avatar">
-        🤖
-        <div class="online-dot"></div>
-      </div>
-      <div>
-        <div class="sensei-name">Sensei</div>
-        <div class="sensei-status">Coach IA • Alimenté par Claude • En ligne</div>
-      </div>
+    <div class="topbar-left">
+      <div class="topbar-tag">— Intelligence Artificielle</div>
+      <div class="topbar-title">Coach Sensei</div>
     </div>
-    <div class="topbar-actions">
-      <button class="action-btn" onclick="clearChat()">Nouvelle conversation</button>
+    <div class="sensei-status">
+      <div class="status-dot"></div>
+      En ligne · Prêt à t'aider
     </div>
   </div>
 
-  <!-- CHAT LAYOUT -->
   <div class="chat-layout">
 
-    <!-- ZONE CHAT -->
-    <div class="chat-zone">
+    <!-- Sidebar suggestions -->
+    <div class="chat-sidebar">
 
-      <!-- Messages -->
-      <div class="messages-list" id="messages">
-
-        <div class="date-sep">Aujourd'hui</div>
-
-        <!-- Message Sensei intro -->
-        <div class="msg sensei">
-          <div class="msg-avatar">🤖</div>
-          <div class="msg-content">
-            <div class="msg-bubble">
-              Salut Guerrier <strong>Kaito</strong>. Je suis <em>Sensei</em>, ton coach IA personnel.<br><br>
-              J'ai analysé tes données d'aujourd'hui — tu as consommé <strong>1 840 kcal</strong> sur ton objectif de 2 400. Il te reste <strong>560 kcal</strong> à consommer ce soir.<br><br>
-              Comme l'écrit Paul dans Philippiens 4:13 : <em>"Je puis tout par celui qui me fortifie."</em> Qu'est-ce que je peux faire pour toi aujourd'hui ?
-            </div>
-            <div class="msg-time">09:14</div>
-          </div>
-        </div>
-
-        <!-- Message user -->
-        <div class="msg user">
-          <div class="msg-avatar">K</div>
-          <div class="msg-content">
-            <div class="msg-bubble">Qu'est-ce que je devrais manger ce soir pour atteindre mes macros ?</div>
-            <div class="msg-time">09:16</div>
-          </div>
-        </div>
-
-        <!-- Réponse Sensei -->
-        <div class="msg sensei">
-          <div class="msg-avatar">🤖</div>
-          <div class="msg-content">
-            <div class="msg-bubble">
-              Voici ce que je te recommande pour ce soir, Guerrier :<br><br>
-              <strong>🥗 Option 1 — Rapide (20 min)</strong><br>
-              • 200g de saumon au four<br>
-              • 150g de riz complet<br>
-              • Brocolis vapeur + huile d'olive<br>
-              → <em>~520 kcal | 42g protéines | 45g glucides</em><br><br>
-              <strong>🍗 Option 2 — Léger</strong><br>
-              • 180g de blanc de poulet grillé<br>
-              • Salade verte, avocat, tomates<br>
-              • 2 tranches de pain complet<br>
-              → <em>~480 kcal | 38g protéines | 32g glucides</em><br><br>
-              Les deux t'amènent dans ta fenêtre calorique. Le saumon est préférable pour tes Oméga-3 si tu t'es entraîné aujourd'hui.
-            </div>
-            <div class="msg-time">09:16</div>
-          </div>
-        </div>
-
-        <!-- Message user 2 -->
-        <div class="msg user">
-          <div class="msg-avatar">K</div>
-          <div class="msg-content">
-            <div class="msg-bubble">Super ! Et pour mon entraînement, j'ai du mal avec les dips. Des conseils ?</div>
-            <div class="msg-time">09:18</div>
-          </div>
-        </div>
-
-        <!-- Réponse Sensei 2 -->
-        <div class="msg sensei">
-          <div class="msg-avatar">🤖</div>
-          <div class="msg-content">
-            <div class="msg-bubble">
-              Les dips sont exigeants — c'est signe que tu travailles dans ta zone de progression 💪<br><br>
-              <strong>3 causes fréquentes des difficultés aux dips :</strong><br><br>
-              <strong>1. Épaules qui remontent</strong> → Contracte les trapèzes vers le bas avant de descendre. Pense à "épaules loin des oreilles".<br><br>
-              <strong>2. Descente trop rapide</strong> → Prends 3 secondes pour descendre (excentrique lent). C'est là que le muscle se construit.<br><br>
-              <strong>3. Manque de stabilisation</strong> → Serre le core et les fessiers pendant tout le mouvement.<br><br>
-              Si tu fais encore moins de 8 reps propres, commence par les <em>dips assistés à la machine</em> pendant 3-4 semaines. Comme David face à Goliath — tu prépares ton arme avant le combat.
-            </div>
-            <div class="msg-time">09:19</div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Typing indicator -->
-      <div class="typing-indicator" id="typing">
-        <div class="typing-avatar">🤖</div>
-        <div class="typing-dots">
-          <div class="dot"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
+      <div>
+        <div class="suggestions-title" style="margin-bottom:10px;">Suggestions</div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <button class="suggestion-btn" onclick="sendSuggestion(this.textContent)">Comment perdre de la graisse rapidement ?</button>
+          <button class="suggestion-btn" onclick="sendSuggestion(this.textContent)">Donne-moi un plan nutrition pour prendre de la masse</button>
+          <button class="suggestion-btn" onclick="sendSuggestion(this.textContent)">Quels exercices pour les pecs débutant ?</button>
+          <button class="suggestion-btn" onclick="sendSuggestion(this.textContent)">Comment améliorer ma récupération musculaire ?</button>
+          <button class="suggestion-btn" onclick="sendSuggestion(this.textContent)">Donne-moi un verset biblique motivant</button>
+          <button class="suggestion-btn" onclick="sendSuggestion(this.textContent)">Combien de protéines je dois manger par jour ?</button>
+          <button class="suggestion-btn" onclick="sendSuggestion(this.textContent)">Programme cardio pour brûler des graisses</button>
         </div>
       </div>
 
-      <!-- Suggestions -->
-      <div class="quick-suggestions" id="suggestions">
-        <button class="suggestion" onclick="sendSuggestion(this)">💪 Plan d'entraînement cette semaine</button>
-        <button class="suggestion" onclick="sendSuggestion(this)">🍎 Analyser mes macros</button>
-        <button class="suggestion" onclick="sendSuggestion(this)">📖 Verset de motivation</button>
-        <button class="suggestion" onclick="sendSuggestion(this)">⚖️ Conseils perte de masse grasse</button>
-      </div>
-
-      <!-- Input -->
-      <div class="chat-input-bar">
-        <div class="input-wrapper">
-          <textarea
-            class="chat-textarea"
-            id="chat-input"
-            placeholder="Pose ta question à Sensei..."
-            rows="1"
-            onkeydown="handleKey(event)"
-            oninput="autoResize(this)"
-          ></textarea>
-          <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+      <div>
+        <div class="suggestions-title" style="margin-bottom:10px;">Mon profil</div>
+        <div class="context-card">
+          <div class="context-row"><span class="context-label">Poids</span><span class="context-val" id="ctx-poids">—</span></div>
+          <div class="context-row"><span class="context-label">Objectif</span><span class="context-val" id="ctx-obj">—</span></div>
+          <div class="context-row"><span class="context-label">Calories/j</span><span class="context-val" id="ctx-cal">—</span></div>
+          <div class="context-row"><span class="context-label">Plan</span><span class="context-val" id="ctx-plan">—</span></div>
         </div>
       </div>
 
     </div>
 
-    <!-- PANNEAU DROIT -->
-    <div class="right-panel">
+    <!-- Zone de chat principale -->
+    <div class="chat-main">
 
-      <!-- Contexte utilisateur -->
-      <div class="panel-section">
-        <div class="panel-title">Ton profil aujourd'hui</div>
-        <div class="context-item">
-          <span class="context-label">Calories</span>
-          <span class="context-val red">1 840 / 2 400</span>
-        </div>
-        <div class="context-item">
-          <span class="context-label">Protéines</span>
-          <span class="context-val">142g / 200g</span>
-        </div>
-        <div class="context-item">
-          <span class="context-label">Poids</span>
-          <span class="context-val">78.4 kg</span>
-        </div>
-        <div class="context-item">
-          <span class="context-label">Masse grasse</span>
-          <span class="context-val">18.2%</span>
-        </div>
-        <div class="context-item">
-          <span class="context-label">Séances semaine</span>
-          <span class="context-val">4 / 5</span>
-        </div>
-        <div class="context-item">
-          <span class="context-label">Streak</span>
-          <span class="context-val red">🔥 7 jours</span>
-        </div>
-      </div>
+      <div class="chat-messages" id="chat-messages">
 
-      <!-- Sujets rapides -->
-      <div class="panel-section">
-        <div class="panel-title">Sujets fréquents</div>
-        <div class="topic-grid">
-          <button class="topic-btn" onclick="askTopic('Donne-moi un plan nutrition pour demain basé sur mon objectif de perte de masse grasse')">
-            <span class="topic-icon">🍽️</span> Plan nutrition demain
-          </button>
-          <button class="topic-btn" onclick="askTopic('Analyse ma progression de cette semaine et dis-moi ce que je dois améliorer')">
-            <span class="topic-icon">📊</span> Analyse ma semaine
-          </button>
-          <button class="topic-btn" onclick="askTopic('Propose-moi un programme d\'entraînement pour la semaine prochaine adapté à mon niveau')">
-            <span class="topic-icon">💪</span> Programme semaine prochaine
-          </button>
-          <button class="topic-btn" onclick="askTopic('Donne-moi un verset biblique inspirant pour ma séance d\'aujourd\'hui')">
-            <span class="topic-icon">✝️</span> Verset pour ma séance
-          </button>
-          <button class="topic-btn" onclick="askTopic('Comment améliorer ma récupération musculaire après l\'entraînement ?')">
-            <span class="topic-icon">😴</span> Conseils récupération
-          </button>
+        <!-- Message de bienvenue -->
+        <div class="welcome-msg">
+          <div class="welcome-title">🤖 Sensei — Coach IA</div>
+          <div class="welcome-text">Je suis ton coach personnel propulsé par l'intelligence artificielle. Pose-moi n'importe quelle question sur la nutrition, l'entraînement, la récupération ou la spiritualité. Je connais ton profil et je suis là pour t'aider à atteindre tes objectifs.</div>
         </div>
-      </div>
 
-      <!-- Historique -->
-      <div class="panel-section">
-        <div class="panel-title">Conversations récentes</div>
-        <div class="history-list">
-          <div class="history-item">
-            <div class="history-date">Hier — 18:32</div>
-            <div class="history-preview">Comment optimiser mes protéines post-training ?</div>
-          </div>
-          <div class="history-item">
-            <div class="history-date">12 avr. — 07:15</div>
-            <div class="history-preview">Plan entraînement semaine : dos et biceps</div>
-          </div>
-          <div class="history-item">
-            <div class="history-date">11 avr. — 20:45</div>
-            <div class="history-preview">Je me sens démotivé, besoin d'un verset...</div>
+        <!-- Premier message du bot -->
+        <div class="msg-wrap bot" id="welcome-bot-msg">
+          <div class="msg-avatar bot">🤖</div>
+          <div>
+            <div class="msg-bubble bot" id="welcome-bubble">Chargement...</div>
+            <div class="msg-time" id="welcome-time">—</div>
           </div>
         </div>
+
+        <!-- Typing indicator -->
+        <div class="typing-wrap" id="typing">
+          <div class="msg-avatar bot">🤖</div>
+          <div class="typing-bubble">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Verset du jour -->
-      <div class="panel-section">
-        <div class="panel-title">Verset du jour</div>
-        <div class="verse-panel">
-          <div class="verse-panel-text">"Je puis tout par celui qui me fortifie."</div>
-          <div class="verse-panel-ref">Philippiens 4:13</div>
+      <div class="chat-input-zone">
+        <div class="chat-input-wrap">
+          <textarea id="chat-input" placeholder="Pose ta question à Sensei..." rows="1"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"
+            oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+          <button class="send-btn" id="send-btn" onclick="sendMessage()">↑</button>
         </div>
+        <div class="input-hint">Entrée pour envoyer · Shift+Entrée pour aller à la ligne</div>
       </div>
 
     </div>
@@ -815,14 +259,66 @@
 </main>
 
 <script>
-  const SYSTEM_PROMPT = `Tu es Sensei, le coach IA personnel de l'application Espritum. 
-Tu parles français. Tu es direct, profond, motivant — inspiré de l'univers anime et de la philosophie chrétienne.
-Tu as accès aux données de l'utilisateur : 1840 kcal consommées sur 2400, 142g protéines, poids 78.4kg, masse grasse 18.2%, objectif perte de masse grasse, plan Champion.
-Tu intègres naturellement des références bibliques pertinentes dans tes réponses, sans être trop formel.
-Tes réponses sont précises, pratiques et personnalisées. Tu tutoies l'utilisateur.`;
+  const { createClient } = supabase;
+  const sb = createClient(
+    'https://lbxlvrtujzwlcnloheyh.supabase.co',
+    'sb_publishable_40dpIdYthKMZkJImacoKoQ_ftEeaPeg'
+  );
 
+  const PLAN_LABEL = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
+  const OBJ_LABEL = { perte_gras: 'Perte de gras', prise_masse: 'Prise de masse', endurance: 'Endurance', reequilibrage: 'Rééquilibrage' };
+
+  let userProfile = null;
+  let userInitiale = '?';
   let conversationHistory = [];
 
+  // ── INIT ──
+  async function init() {
+    const safetyTimeout = setTimeout(() => {
+      document.getElementById('loading').style.display = 'none';
+    }, 5000);
+
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { window.location.href = 'inscription.html'; return; }
+
+      const { data: profile } = await sb.from('users').select('*').eq('id', session.user.id).single();
+      userProfile = profile;
+
+      const prenom = profile?.prenom || 'Guerrier';
+      userInitiale = prenom[0]?.toUpperCase() || '?';
+
+      document.getElementById('sidebar-avatar').textContent = userInitiale;
+      document.getElementById('sidebar-name').textContent = prenom;
+      document.getElementById('sidebar-plan').textContent = PLAN_LABEL[profile?.plan || 'gratuit'];
+
+      // Contexte sidebar
+      document.getElementById('ctx-poids').textContent = profile?.poids ? profile.poids + ' kg' : '—';
+      document.getElementById('ctx-obj').textContent = OBJ_LABEL[profile?.objectif] || '—';
+      document.getElementById('ctx-cal').textContent = profile?.calories_objectif ? profile.calories_objectif + ' kcal' : '—';
+      document.getElementById('ctx-plan').textContent = PLAN_LABEL[profile?.plan || 'gratuit'];
+
+      // Message de bienvenue personnalisé
+      const welcomeMsg = `Salut ${prenom} ! 💪 Je suis Sensei, ton coach IA personnel. ${
+        profile?.objectif === 'perte_gras' ? `Je vois que ton objectif est la perte de gras — je suis là pour t'y aider.` :
+        profile?.objectif === 'prise_masse' ? `Je vois que tu veux prendre de la masse — je suis là pour t'y aider.` :
+        `Je suis là pour t'accompagner dans ta transformation physique et spirituelle.`
+      } Pose-moi n'importe quelle question — nutrition, entraînement, motivation, ou même un verset biblique pour te booster ! 🙏`;
+
+      document.getElementById('welcome-bubble').textContent = welcomeMsg;
+      document.getElementById('welcome-time').textContent = getTime();
+
+    } catch (err) {
+      console.error(err);
+      document.getElementById('welcome-bubble').textContent = "Bonjour Guerrier ! Je suis Sensei, ton coach IA. Comment puis-je t'aider aujourd'hui ?";
+      document.getElementById('welcome-time').textContent = getTime();
+    } finally {
+      clearTimeout(safetyTimeout);
+      document.getElementById('loading').style.display = 'none';
+    }
+  }
+
+  // ── ENVOI MESSAGE ──
   async function sendMessage() {
     const input = document.getElementById('chat-input');
     const text = input.value.trim();
@@ -831,154 +327,165 @@ Tes réponses sont précises, pratiques et personnalisées. Tu tutoies l'utilisa
     input.value = '';
     input.style.height = 'auto';
     document.getElementById('send-btn').disabled = true;
-    document.getElementById('suggestions').style.display = 'none';
 
-    // Ajouter message user
-    appendMessage('user', text, getCurrentTime());
+    // Ajouter le message utilisateur
+    addMessage('user', text);
     conversationHistory.push({ role: 'user', content: text });
 
     // Afficher typing
-    const typing = document.getElementById('typing');
-    typing.classList.add('visible');
-    scrollToBottom();
+    showTyping(true);
 
     try {
+      // Construire le contexte utilisateur
+      const ctx = userProfile ? `
+Profil de l'utilisateur :
+- Prénom : ${userProfile.prenom || 'Guerrier'}
+- Poids : ${userProfile.poids || 'non renseigné'} kg
+- Taille : ${userProfile.taille || 'non renseignée'} cm
+- Objectif : ${OBJ_LABEL[userProfile.objectif] || 'non défini'}
+- Calories/jour : ${userProfile.calories_objectif || 2400} kcal
+- Protéines/jour : ${userProfile.proteines_objectif || 200}g
+- Niveau activité : ${userProfile.niveau_activite || 'modéré'}
+- Plan : ${PLAN_LABEL[userProfile.plan || 'gratuit']}
+` : '';
+
+      const systemPrompt = `Tu es Sensei, le coach IA de l'application Espritum — une app fitness avec une dimension chrétienne et un univers anime.
+
+${ctx}
+
+Ton rôle :
+- Coach fitness expert : nutrition, musculation, cardio, récupération
+- Bienveillant, motivant, direct et précis
+- Tu intègres parfois des références bibliques courtes et encourageantes (naturellement, pas systématiquement)
+- Tu connais le profil de l'utilisateur et tu personnalises tes réponses
+- Tes réponses sont concises et actionnables (max 3-4 paragraphes)
+- Tu parles en français, avec un ton chaleureux mais coach
+- Tu es un guerrier de Dieu qui aide les autres à forger leur temple
+
+Réponds directement à la question posée.`;
+
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-haiku-4-5-20251001',
           max_tokens: 1000,
-          system: SYSTEM_PROMPT,
+          system: systemPrompt,
           messages: conversationHistory
         })
       });
 
       const data = await response.json();
-      const reply = data.content?.[0]?.text || "Je n'ai pas pu répondre. Réessaie.";
 
-      typing.classList.remove('visible');
-      conversationHistory.push({ role: 'assistant', content: reply });
-      appendMessage('sensei', reply, getCurrentTime());
+      if (data.error) {
+        throw new Error(data.error.message);
+      }
+
+      const botReply = data.content?.[0]?.text || "Je n'ai pas pu générer une réponse. Réessaie.";
+      conversationHistory.push({ role: 'assistant', content: botReply });
+
+      showTyping(false);
+      addMessage('bot', botReply);
 
     } catch (err) {
-      typing.classList.remove('visible');
-      appendMessage('sensei', "Connexion au serveur impossible pour l'instant. Réessaie dans un moment, Guerrier.", getCurrentTime());
+      console.error('Coach error:', err);
+      showTyping(false);
+
+      // Réponses de fallback intelligentes selon le message
+      const fallbackReply = getFallbackReply(text);
+      conversationHistory.push({ role: 'assistant', content: fallbackReply });
+      addMessage('bot', fallbackReply);
     }
 
     document.getElementById('send-btn').disabled = false;
-    scrollToBottom();
+    document.getElementById('chat-input').focus();
   }
 
-  function appendMessage(role, text, time) {
-    const list = document.getElementById('messages');
-    const isUser = role === 'user';
+  // Réponses de fallback selon le contexte
+  function getFallbackReply(question) {
+    const q = question.toLowerCase();
+    const prenom = userProfile?.prenom || 'Guerrier';
 
-    // Convertir les retours à la ligne en HTML
-    const formattedText = text
+    if (q.includes('prot') || q.includes('macros')) {
+      return `${prenom}, pour les protéines la règle d'or c'est **1.8 à 2.2g par kg de poids corporel**. Si tu pèses ${userProfile?.poids || 75}kg, vise entre ${Math.round((userProfile?.poids||75)*1.8)}g et ${Math.round((userProfile?.poids||75)*2.2)}g par jour. Répartis ça sur 4-5 repas pour optimiser la synthèse musculaire. 💪\n\nSources : poulet, œufs, poisson, fromage blanc, whey.`;
+    }
+    if (q.includes('pecs') || q.includes('poitrine') || q.includes('chest')) {
+      return `Pour les pecs, ${prenom}, voici les essentiels :\n\n**1. Développé couché** — 4×8-10 reps (roi des exercices pecs)\n**2. Développé incliné** — 3×10-12 (poitrine haute)\n**3. Écarté haltères** — 3×12 (isolation, finition)\n**4. Dips lestés** — 3×10 (force et masse)\n\nRepose 90s entre les séries. Philippiens 4:13 : "Je puis tout par celui qui me fortifie."`;
+    }
+    if (q.includes('gras') || q.includes('perte') || q.includes('maigrir')) {
+      return `Pour perdre du gras efficacement, ${prenom} :\n\n**Nutrition** : Déficit de 300-500 kcal/jour (${Math.round((userProfile?.calories_objectif||2400)*0.85)} kcal pour toi). Protéines hautes pour préserver le muscle.\n\n**Entraînement** : Mix musculation + cardio HIIT. 3-4 séances/semaine.\n\n**Réaliste** : 0.5-1kg par semaine, c'est l'objectif sain. Pas de crash diet !\n\nJosué 1:9 : "Sois fort et courageux, l'Éternel est avec toi." 🙏`;
+    }
+    if (q.includes('masse') || q.includes('muscl') || q.includes('grossir')) {
+      return `Pour prendre de la masse, ${prenom}, il faut :\n\n**Surplus calorique** : +300-400 kcal au-dessus de ta maintenance (soit ~${(userProfile?.calories_objectif||2400)+350} kcal/jour).\n\n**Protéines** : 2g/kg minimum, soit ${Math.round((userProfile?.poids||75)*2)}g/jour.\n\n**Entraînement** : Musculation lourde 4x/semaine, focus compound (squat, deadlift, développé).\n\n**Patience** : 1-2kg de muscle par mois c'est excellent ! 💪`;
+    }
+    if (q.includes('verset') || q.includes('bible') || q.includes('dieu') || q.includes('prière')) {
+      const versets = [
+        '"Je puis tout par celui qui me fortifie." — Philippiens 4:13',
+        '"Sois fort et courageux ! Ne te décourage pas, car l\'Éternel est avec toi." — Josué 1:9',
+        '"Il donne de la force à celui qui est fatigué." — Ésaïe 40:29',
+        '"L\'Éternel est ma force et mon bouclier." — Psaumes 28:7',
+        '"Recommande tes œuvres à l\'Éternel et tes projets réussiront." — Proverbes 16:3'
+      ];
+      const v = versets[Math.floor(Math.random() * versets.length)];
+      return `Voici un verset pour toi, ${prenom} 🙏\n\n**${v}**\n\nGarde cette parole dans ton cœur lors de tes séances. La discipline spirituelle et physique vont de pair — forger ton corps c'est aussi honorer le créateur de ce corps.`;
+    }
+    if (q.includes('cardio') || q.includes('course') || q.includes('endurance')) {
+      return `Pour le cardio, ${prenom} :\n\n**Zone 2** (60-70% FCmax) : 30-45min, 3x/semaine — idéal pour brûler les graisses et préserver le muscle.\n\n**HIIT** : 20min, 2x/semaine — 30s sprint / 90s marche. Très efficace.\n\n**Conseil** : Fais le cardio après la muscu, pas avant. Tu préserveras ta force pour les poids. 💪`;
+    }
+
+    // Réponse générique si aucun mot clé
+    return `${prenom}, c'est une excellente question ! En tant que coach fitness chrétien, je te dirais que la clé c'est la constance avant tout. Que ce soit pour la nutrition, l'entraînement ou la récupération, c'est la régularité sur le long terme qui fait la différence.\n\nPeut-tu reformuler ta question ? Ou utilise les suggestions à gauche pour que je te réponde de manière plus précise. 💪`;
+  }
+
+  // ── UI HELPERS ──
+  function addMessage(role, text) {
+    const container = document.getElementById('chat-messages');
+    const typing = document.getElementById('typing');
+
+    const wrap = document.createElement('div');
+    wrap.className = `msg-wrap ${role}`;
+
+    const avatarEl = `<div class="msg-avatar ${role}">${role === 'bot' ? '🤖' : userInitiale}</div>`;
+    const bubble = `<div class="msg-bubble ${role}">${formatText(text)}</div><div class="msg-time">${getTime()}</div>`;
+
+    wrap.innerHTML = role === 'user'
+      ? `${avatarEl}<div>${bubble}</div>`
+      : `${avatarEl}<div>${bubble}</div>`;
+
+    container.insertBefore(wrap, typing);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function formatText(text) {
+    return text
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/\n/g, '<br>');
-
-    const html = `
-      <div class="msg ${role}">
-        <div class="msg-avatar">${isUser ? 'K' : '🤖'}</div>
-        <div class="msg-content">
-          <div class="msg-bubble">${formattedText}</div>
-          <div class="msg-time">${time}</div>
-        </div>
-      </div>`;
-
-    list.insertAdjacentHTML('beforeend', html);
-    scrollToBottom();
+      .replace(/\n\n/g, '</p><p style="margin-top:8px;">')
+      .replace(/\n/g, '<br>')
+      .replace(/^/, '<p>')
+      .replace(/$/, '</p>');
   }
 
-  function sendSuggestion(btn) {
-    document.getElementById('chat-input').value = btn.textContent.replace(/^[^\s]+\s/, '');
-    sendMessage();
+  function showTyping(show) {
+    const el = document.getElementById('typing');
+    el.classList.toggle('visible', show);
+    if (show) {
+      document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+    }
   }
 
-  function askTopic(text) {
+  function sendSuggestion(text) {
     document.getElementById('chat-input').value = text;
     sendMessage();
   }
 
-  function handleKey(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  }
-
-  function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-  }
-
-  function scrollToBottom() {
-    const list = document.getElementById('messages');
-    setTimeout(() => list.scrollTop = list.scrollHeight, 50);
-  }
-
-  function getCurrentTime() {
+  function getTime() {
     return new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   }
 
-  function clearChat() {
-    conversationHistory = [];
-    const list = document.getElementById('messages');
-    list.innerHTML = '<div class="date-sep">Nouvelle conversation</div>';
-    document.getElementById('suggestions').style.display = 'flex';
-    appendMessage('sensei', 'Nouvelle conversation démarrée. Je suis prêt, Guerrier. Que veux-tu travailler aujourd\'hui ?', getCurrentTime());
-  }
-
-  scrollToBottom();
+  init();
 </script>
-
-<!-- MOBILE NAV -->
-<nav id="mobile-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #1e1e1e;padding:10px 0 20px;z-index:50;">
-  <div style="display:flex;justify-content:space-around;">
-    <a href="dashboard.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;padding:6px 10px;">
-      <span style="font-size:20px;">🏠</span>
-      <span class="mnl" style="font-size:9px;letter-spacing:1px;color:#555;text-transform:uppercase;">Home</span>
-    </a>
-    <a href="nutrition.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;padding:6px 10px;">
-      <span style="font-size:20px;">🍎</span>
-      <span class="mnl" style="font-size:9px;letter-spacing:1px;color:#555;text-transform:uppercase;">Nutrition</span>
-    </a>
-    <a href="entrainement.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;padding:6px 10px;">
-      <span style="font-size:20px;">💪</span>
-      <span class="mnl" style="font-size:9px;letter-spacing:1px;color:#555;text-transform:uppercase;">Sport</span>
-    </a>
-    <a href="classement.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;padding:6px 10px;">
-      <span style="font-size:20px;">🏆</span>
-      <span class="mnl" style="font-size:9px;letter-spacing:1px;color:#555;text-transform:uppercase;">Classement</span>
-    </a>
-    <a href="profil.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;padding:6px 10px;">
-      <span style="font-size:20px;">👤</span>
-      <span class="mnl" style="font-size:9px;letter-spacing:1px;color:#555;text-transform:uppercase;">Profil</span>
-    </a>
-  </div>
-</nav>
-<style>
-@media (max-width: 768px) {
-  #mobile-nav { display: block !important; }
-  .sidebar { display: none !important; }
-  .main { margin-left: 0 !important; padding-bottom: 80px !important; }
-}
-  /* ── MOBILE NAV BAR ── */
-  .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,10,0.97); border-top: 1px solid #1e1e1e; backdrop-filter: blur(16px); z-index: 200; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); }
-  .mobile-nav-items { display: flex; justify-content: space-around; align-items: center; }
-  .mobile-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; text-decoration: none; padding: 4px 12px; border-radius: 8px; transition: all 0.2s; -webkit-tap-highlight-color: transparent; }
-  .mobile-nav-item.active .mobile-nav-icon { color: #c82828; }
-  .mobile-nav-item.active .mobile-nav-label { color: #c82828; }
-  .mobile-nav-icon { font-size: 22px; color: #555; transition: color 0.2s; }
-  .mobile-nav-label { font-size: 9px; letter-spacing: 1px; color: #444; text-transform: uppercase; font-weight: 600; }
-  .mobile-nav-dot { width: 4px; height: 4px; border-radius: 50%; background: #c82828; display: none; margin-top: -2px; }
-  .mobile-nav-item.active .mobile-nav-dot { display: block; }
-  @media (max-width: 768px) { .mobile-nav { display: block; } .sidebar { display: none !important; } .main { margin-left: 0 !important; padding-bottom: 80px; } }
-</style>
-
-<nav class="mobile-nav"><div class="mobile-nav-items"><a class="mobile-nav-item " href="dashboard.html"><span class="mobile-nav-icon">🏠</span><div class="mobile-nav-dot"></div><span class="mobile-nav-label">Home</span></a><a class="mobile-nav-item " href="nutrition.html"><span class="mobile-nav-icon">🍎</span><div class="mobile-nav-dot"></div><span class="mobile-nav-label">Nutrition</span></a><a class="mobile-nav-item " href="entrainement.html"><span class="mobile-nav-icon">💪</span><div class="mobile-nav-dot"></div><span class="mobile-nav-label">Sport</span></a><a class="mobile-nav-item " href="progression.html"><span class="mobile-nav-icon">📊</span><div class="mobile-nav-dot"></div><span class="mobile-nav-label">Stats</span></a><a class="mobile-nav-item active" href="coach.html"><span class="mobile-nav-icon">🤖</span><div class="mobile-nav-dot"></div><span class="mobile-nav-label">Sensei</span></a><a class="mobile-nav-item " href="profil.html"><span class="mobile-nav-icon">👤</span><div class="mobile-nav-dot"></div><span class="mobile-nav-label">Profil</span></a></div></nav>
 </body>
 </html>
