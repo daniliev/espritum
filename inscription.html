@@ -27,7 +27,6 @@
     min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr;
   }
 
-  /* ── PANNEAU GAUCHE ── */
   .left-panel {
     background: var(--bg2); border-right: 1px solid var(--border);
     padding: 48px; display: flex; flex-direction: column;
@@ -64,31 +63,21 @@
   }
 
   .left-title .accent { color: var(--red); }
-
   .left-desc { font-size: 15px; color: var(--muted); line-height: 1.75; font-weight: 300; max-width: 380px; margin-bottom: 48px; }
 
   .perks { display: flex; flex-direction: column; gap: 16px; }
-
   .perk { display: flex; align-items: flex-start; gap: 14px; }
-
   .perk-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex-shrink: 0; margin-top: 6px; }
-
   .perk-text { font-size: 14px; color: #888; font-weight: 300; line-height: 1.5; }
   .perk-text strong { color: #ccc; font-weight: 500; }
 
   .left-bottom { margin-top: auto; padding-top: 48px; font-size: 12px; color: var(--muted2); letter-spacing: 1px; }
 
-  /* ── PANNEAU DROIT ── */
-  .right-panel {
-    padding: 48px; display: flex; flex-direction: column;
-    justify-content: center; min-height: 100vh;
-  }
+  .right-panel { padding: 48px; display: flex; flex-direction: column; justify-content: center; min-height: 100vh; }
 
   .form-container { max-width: 420px; width: 100%; margin: 0 auto; }
 
-  .auth-tabs {
-    display: flex; gap: 0; margin-bottom: 40px; border-bottom: 1px solid var(--border);
-  }
+  .auth-tabs { display: flex; gap: 0; margin-bottom: 40px; border-bottom: 1px solid var(--border); }
 
   .auth-tab {
     padding: 14px 0; margin-right: 32px;
@@ -100,12 +89,23 @@
 
   .auth-tab.active { color: #fff; border-bottom-color: var(--red); }
 
+  /* Plan badge */
+  .plan-badge {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px; margin-bottom: 24px;
+    background: rgba(200,40,40,0.06); border: 1px solid rgba(200,40,40,0.2);
+    border-radius: 6px;
+  }
+
+  .plan-badge-icon { font-size: 20px; }
+  .plan-badge-text { font-size: 12px; color: var(--muted); }
+  .plan-badge-name { font-family: var(--font-display); font-size: 20px; color: var(--red); letter-spacing: 2px; text-transform: uppercase; }
+
   .form-title { font-family: var(--font-display); font-size: 38px; font-weight: 400; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .form-sub { font-size: 14px; color: var(--muted); font-weight: 300; margin-bottom: 28px; line-height: 1.6; }
 
-  .form-sub { font-size: 14px; color: var(--muted); font-weight: 300; margin-bottom: 36px; line-height: 1.6; }
-
-  .field { margin-bottom: 20px; }
-  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  .field { margin-bottom: 18px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
 
   .field label { display: block; font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
 
@@ -126,12 +126,12 @@
   .pwd-bar.strong { background: #2e7d32; }
   .pwd-label { font-size: 11px; color: var(--muted); margin-top: 6px; letter-spacing: 1px; }
 
-  .checkbox-field { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 28px; cursor: pointer; }
+  .checkbox-field { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 24px; cursor: pointer; }
   .checkbox-field input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--red); cursor: pointer; flex-shrink: 0; margin-top: 2px; }
   .checkbox-label { font-size: 13px; color: var(--muted); font-weight: 300; line-height: 1.5; }
   .checkbox-label a { color: var(--red); text-decoration: none; }
 
-  .or-divider { display: flex; align-items: center; gap: 14px; margin: 24px 0; }
+  .or-divider { display: flex; align-items: center; gap: 14px; margin: 20px 0; }
   .or-line { flex: 1; height: 1px; background: var(--border); }
   .or-text { font-size: 11px; color: var(--muted2); letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; }
 
@@ -141,7 +141,7 @@
     font-family: var(--font-body); font-size: 13px; font-weight: 500;
     letter-spacing: 1px; cursor: pointer; display: flex;
     align-items: center; justify-content: center; gap: 10px;
-    transition: border-color 0.2s, color 0.2s; margin-bottom: 24px;
+    transition: border-color 0.2s, color 0.2s; margin-bottom: 20px;
   }
 
   .btn-google:hover { border-color: #333; color: #fff; }
@@ -152,7 +152,7 @@
     border: none; border-radius: 4px; color: #fff;
     font-family: var(--font-body); font-size: 14px; font-weight: 600;
     letter-spacing: 3px; text-transform: uppercase; cursor: pointer;
-    transition: background 0.2s; margin-bottom: 20px;
+    transition: background 0.2s; margin-bottom: 16px;
   }
 
   .btn-submit:hover { background: #d93030; }
@@ -164,12 +164,7 @@
   .form-panel { display: none; }
   .form-panel.active { display: block; }
 
-  /* Message erreur / succès */
-  .msg {
-    padding: 12px 16px; border-radius: 4px;
-    font-size: 13px; margin-bottom: 20px; display: none; line-height: 1.5;
-  }
-
+  .msg { padding: 12px 16px; border-radius: 4px; font-size: 13px; margin-bottom: 16px; display: none; line-height: 1.5; }
   .msg.error { background: rgba(200,40,40,0.1); border: 1px solid rgba(200,40,40,0.3); color: #ef9a9a; display: block; }
   .msg.success { background: rgba(46,125,50,0.1); border: 1px solid rgba(46,125,50,0.3); color: #a5d6a7; display: block; }
 
@@ -182,7 +177,6 @@
 </head>
 <body>
 
-<!-- GAUCHE -->
 <div class="left-panel">
   <div class="left-glow"></div>
   <a class="left-top" href="espritum_pricing_v5.html">
@@ -203,7 +197,6 @@
   <div class="left-bottom">© 2025 Espritum — Forge your body. Master your mind.</div>
 </div>
 
-<!-- DROITE -->
 <div class="right-panel">
   <div class="form-container">
 
@@ -214,8 +207,18 @@
 
     <!-- INSCRIPTION -->
     <div class="form-panel active" id="panel-inscription">
+
+      <!-- Badge plan si venu depuis tarifs -->
+      <div class="plan-badge" id="plan-badge" style="display:none">
+        <span class="plan-badge-icon" id="badge-icon">🛡️</span>
+        <div>
+          <div class="plan-badge-text">Tu as choisi le plan</div>
+          <div class="plan-badge-name" id="badge-name">Champion</div>
+        </div>
+      </div>
+
       <div class="form-title">Créer ton compte</div>
-      <p class="form-sub">Gratuit pour commencer. Aucune carte bancaire requise.</p>
+      <p class="form-sub" id="form-sub-text">Gratuit pour commencer. Aucune carte bancaire requise.</p>
 
       <div id="msg-inscription" class="msg"></div>
 
@@ -285,8 +288,8 @@
       <div class="field"><label>Adresse email</label><input type="email" id="email-login" placeholder="kaito@exemple.com"></div>
       <div class="field"><label>Mot de passe</label><input type="password" id="password-login" placeholder="••••••••"></div>
 
-      <div style="text-align:right;margin-bottom:24px;">
-        <a href="#" style="font-size:12px;color:var(--muted);text-decoration:none;letter-spacing:1px;" onclick="resetPassword()">Mot de passe oublié ?</a>
+      <div style="text-align:right;margin-bottom:20px;">
+        <a href="#" style="font-size:12px;color:var(--muted);text-decoration:none;" onclick="resetPassword()">Mot de passe oublié ?</a>
       </div>
 
       <button class="btn-submit" id="btn-connexion" onclick="submitConnexion()">Se connecter →</button>
@@ -298,16 +301,41 @@
 </div>
 
 <script>
-  // ── INIT SUPABASE ──
   const { createClient } = supabase;
   const sb = createClient(
     'https://lbxlvrtujzwlcnloheyh.supabase.co',
     'sb_publishable_40dpIdYthKMZkJImacoKoQ_ftEeaPeg'
   );
 
+  // Lire le plan depuis l'URL
+  const params = new URLSearchParams(window.location.search);
+  const plan = params.get('plan');
+
+  const planData = {
+    guerrier: { icon: '⚔️', name: 'Guerrier' },
+    champion: { icon: '🛡️', name: 'Champion' },
+    elite: { icon: '👑', name: 'Élite' }
+  };
+
+  // Afficher badge plan si venu depuis tarifs
+  if (plan && planData[plan]) {
+    const badge = document.getElementById('plan-badge');
+    badge.style.display = 'flex';
+    document.getElementById('badge-icon').textContent = planData[plan].icon;
+    document.getElementById('badge-name').textContent = planData[plan].name;
+    document.getElementById('form-sub-text').textContent = 'Crée ton compte pour accéder au paiement.';
+  }
+
   // Vérifier si déjà connecté
   sb.auth.getSession().then(({ data: { session } }) => {
-    if (session) window.location.href = 'dashboard.html';
+    if (session) {
+      // Si plan sélectionné → paiement, sinon dashboard
+      if (plan && planData[plan]) {
+        window.location.href = `paiement.html?plan=${plan}`;
+      } else {
+        window.location.href = 'dashboard.html';
+      }
+    }
   });
 
   // ── INSCRIPTION ──
@@ -321,7 +349,6 @@
     const msg = document.getElementById('msg-inscription');
 
     msg.className = 'msg';
-    msg.textContent = '';
 
     if (!prenom || !email || !pwd) { showMsg('inscription', 'error', 'Remplis tous les champs obligatoires.'); return; }
     if (pwd.length < 8) { showMsg('inscription', 'error', 'Mot de passe trop court — 8 caractères minimum.'); return; }
@@ -331,11 +358,8 @@
     btn.textContent = 'Création en cours...';
 
     const { data, error } = await sb.auth.signUp({
-      email,
-      password: pwd,
-      options: {
-        data: { prenom, nom, full_name: `${prenom} ${nom}` }
-      }
+      email, password: pwd,
+      options: { data: { prenom, nom, full_name: `${prenom} ${nom}` } }
     });
 
     if (error) {
@@ -345,19 +369,25 @@
       return;
     }
 
-    // Créer le profil dans la table users
+    // Créer profil dans users
     if (data.user) {
       await sb.from('users').insert({
         id: data.user.id,
-        email,
-        prenom,
-        nom,
+        email, prenom, nom,
         plan: 'gratuit'
       });
     }
 
-    showMsg('inscription', 'success', '✓ Compte créé ! Redirection vers le dashboard...');
-    setTimeout(() => window.location.href = 'dashboard.html', 1500);
+    showMsg('inscription', 'success', '✓ Compte créé ! Redirection...');
+
+    // ✅ FIX : rediriger vers paiement si plan sélectionné
+    setTimeout(() => {
+      if (plan && planData[plan]) {
+        window.location.href = `paiement.html?plan=${plan}`;
+      } else {
+        window.location.href = 'dashboard.html';
+      }
+    }, 1200);
   }
 
   // ── CONNEXION ──
@@ -365,16 +395,13 @@
     const email = document.getElementById('email-login').value.trim();
     const pwd = document.getElementById('password-login').value;
     const btn = document.getElementById('btn-connexion');
-    const msg = document.getElementById('msg-connexion');
-
-    msg.className = 'msg';
 
     if (!email || !pwd) { showMsg('connexion', 'error', 'Remplis tous les champs.'); return; }
 
     btn.disabled = true;
     btn.textContent = 'Connexion en cours...';
 
-    const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd });
+    const { error } = await sb.auth.signInWithPassword({ email, password: pwd });
 
     if (error) {
       showMsg('connexion', 'error', traduireErreur(error.message));
@@ -384,10 +411,17 @@
     }
 
     showMsg('connexion', 'success', '✓ Connecté ! Redirection...');
-    setTimeout(() => window.location.href = 'dashboard.html', 1000);
+
+    // ✅ FIX : rediriger vers paiement si plan sélectionné
+    setTimeout(() => {
+      if (plan && planData[plan]) {
+        window.location.href = `paiement.html?plan=${plan}`;
+      } else {
+        window.location.href = 'dashboard.html';
+      }
+    }, 1000);
   }
 
-  // ── MOT DE PASSE OUBLIÉ ──
   async function resetPassword() {
     const email = document.getElementById('email-login').value.trim();
     if (!email) { showMsg('connexion', 'error', 'Entre ton email d\'abord.'); return; }
@@ -396,16 +430,14 @@
     showMsg('connexion', 'success', '✓ Email de réinitialisation envoyé !');
   }
 
-  // ── GOOGLE AUTH ──
   async function googleAuth() {
     const { error } = await sb.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin + '/dashboard.html' }
+      options: { redirectTo: window.location.origin + (plan ? `/paiement.html?plan=${plan}` : '/dashboard.html') }
     });
     if (error) alert('Erreur Google : ' + error.message);
   }
 
-  // ── HELPERS ──
   function showMsg(panel, type, text) {
     const msg = document.getElementById(`msg-${panel}`);
     msg.className = `msg ${type}`;
