@@ -923,5 +923,39 @@ Tes réponses sont précises, pratiques et personnalisées. Tu tutoies l'utilisa
 
   scrollToBottom();
 </script>
+
+<!-- MOBILE NAV -->
+<nav id="mobile-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid #1e1e1e;padding:10px 0 20px;z-index:50;">
+  <div style="display:flex;justify-content:space-around;">
+    <a href="dashboard.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;padding:6px 10px;">
+      <span style="font-size:20px;">🏠</span>
+      <span class="mnl" style="font-size:9px;letter-spacing:1px;color:#555;text-transform:uppercase;">Home</span>
+    </a>
+    <a href="nutrition.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;padding:6px 10px;">
+      <span style="font-size:20px;">🍎</span>
+      <span class="mnl" style="font-size:9px;letter-spacing:1px;color:#555;text-transform:uppercase;">Nutrition</span>
+    </a>
+    <a href="entrainement.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;padding:6px 10px;">
+      <span style="font-size:20px;">💪</span>
+      <span class="mnl" style="font-size:9px;letter-spacing:1px;color:#555;text-transform:uppercase;">Sport</span>
+    </a>
+    <a href="classement.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;padding:6px 10px;">
+      <span style="font-size:20px;">🏆</span>
+      <span class="mnl" style="font-size:9px;letter-spacing:1px;color:#555;text-transform:uppercase;">Classement</span>
+    </a>
+    <a href="profil.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;padding:6px 10px;">
+      <span style="font-size:20px;">👤</span>
+      <span class="mnl" style="font-size:9px;letter-spacing:1px;color:#555;text-transform:uppercase;">Profil</span>
+    </a>
+  </div>
+</nav>
+<style>
+@media (max-width: 768px) {
+  #mobile-nav { display: block !important; }
+  .sidebar { display: none !important; }
+  .main { margin-left: 0 !important; padding-bottom: 80px !important; }
+}
+</style>
+
 </body>
 </html>

@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espritum — Corps 3D</title>
+<link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root {
+    --red: #c82828;
+    --bg: #080808;
+    --bg2: #0d0d0d;
+    --bg3: #111111;
+    --border: #1e1e1e;
+    --muted: #555;
+    --muted2: #333;
+    --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
+    --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
+    --sidebar: 240px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: #fff; font-family: var(--font-body); display: flex; }
+
+  /* SIDEBAR */
+  .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 50; }
+  .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 24px 20px; border-bottom: 1px solid var(--border); text-decoration: none; }
+  .sidebar-logo { width: 34px; height: 34px; object-fit: contain; border-radius: 6px; }
+  .sidebar-name { font-family: var(--font-display); font-size: 18px; letter-spacing: 5px; color: #fff; text-transform: uppercase; }
+  .sidebar-nav { flex: 1; padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .nav-section-label { font-size: 9px; letter-spacing: 3px; color: var(--muted2); text-transform: uppercase; font-weight: 700; padding: 14px 10px 6px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 6px; cursor: pointer; text-decoration: none; transition: background 0.2s, color 0.2s; color: var(--muted); font-size: 14px; font-weight: 500; }
+  .nav-item:hover { background: var(--bg3); color: #ccc; }
+  .nav-item.active { background: rgba(200,40,40,0.1); color: #fff; border-left: 2px solid var(--red); }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+  .sidebar-bottom { padding: 16px 12px; border-top: 1px solid var(--border); }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 6px; }
+  .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(200,40,40,0.15); border: 1px solid rgba(200,40,40,0.3); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; color: var(--red); flex-shrink: 0; }
+  .user-name { font-size: 13px; font-weight: 600; color: #ddd; }
+  .user-plan { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+
+  /* MAIN */
+  .main { margin-left: var(--sidebar); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+  .topbar { padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 40; }
+  .topbar-left { display: flex; flex-direction: column; gap: 2px; }
+  .topbar-tag { font-size: 10px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; font-weight: 600; }
+  .topbar-title { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; }
+
+  .content { padding: 28px 32px; display: flex; flex-direction: column; gap: 22px; flex: 1; }
+
+  /* Layout 3D */
+  .body3d-layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; flex: 1; }
+
+  /* Canvas 3D */
+  .canvas-card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden; position: relative; min-height: 600px;
+  }
+
+  #three-canvas { width: 100% !important; height: 100% !important; display: block; }
+
+  .canvas-overlay {
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 10px;
+  }
+
+  .view-btn {
+    padding: 8px 18px; background: rgba(0,0,0,0.6); border: 1px solid var(--border);
+    border-radius: 20px; color: var(--muted); font-family: var(--font-body);
+    font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s; backdrop-filter: blur(8px);
+  }
+
+  .view-btn:hover { border-color: #333; color: #aaa; }
+  .view-btn.active { border-color: var(--red); color: var(--red); background: rgba(200,40,40,0.1); }
+
+  .canvas-tip {
+    position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+    font-size: 11px; color: var(--muted); letter-spacing: 1px;
+    background: rgba(0,0,0,0.5); padding: 6px 14px; border-radius: 20px;
+    backdrop-filter: blur(8px);
+  }
+
+  /* Légende */
+  .legend {
+    position: absolute; top: 16px; right: 16px;
+    display: flex; flex-direction: column; gap: 8px;
+    background: rgba(0,0,0,0.6); padding: 12px 14px; border-radius: 8px;
+    backdrop-filter: blur(8px);
+  }
+
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #aaa; letter-spacing: 1px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Panneau droit */
+  .right-panel { display: flex; flex-direction: column; gap: 16px; }
+
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+  .card-title { font-family: var(--font-display); font-size: 16px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+
+  /* Stats corporelles */
+  .body-stats { display: flex; flex-direction: column; gap: 10px; }
+
+  .body-stat-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; }
+  .body-stat-label { font-size: 12px; color: var(--muted); }
+  .body-stat-val { font-family: var(--font-display); font-size: 20px; color: #fff; }
+  .body-stat-unit { font-size: 12px; color: var(--muted); }
+
+  /* Barre composition */
+  .composition-bar { margin-top: 16px; }
+  .comp-label { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .comp-track { height: 20px; background: var(--bg3); border-radius: 10px; overflow: hidden; display: flex; }
+  .comp-muscle { background: linear-gradient(90deg, #c82828, #e03030); transition: width 1s ease; display: flex; align-items: center; justify-content: center; font-size: 10px; color: rgba(255,255,255,0.8); font-weight: 600; }
+  .comp-fat { background: linear-gradient(90deg, #e8a000, #f5c842); transition: width 1s ease; display: flex; align-items: center; justify-content: center; font-size: 10px; color: rgba(0,0,0,0.6); font-weight: 600; }
+  .comp-other { background: var(--muted2); transition: width 1s ease; }
+
+  .comp-legend { display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
+  .comp-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+  .comp-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* Muscles actifs */
+  .muscle-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .muscle-item { display: flex; align-items: center; gap: 10px; }
+  .muscle-name { font-size: 13px; color: #ccc; flex: 1; }
+  .muscle-bar-track { flex: 2; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .muscle-bar-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
+  .muscle-pct { font-size: 11px; color: var(--muted); min-width: 32px; text-align: right; }
+
+  /* Mobile bottom nav */
+  .mobile-nav {
+    display: none; position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--bg2); border-top: 1px solid var(--border);
+    padding: 10px 0 20px; z-index: 50;
+  }
+
+  .mobile-nav-inner { display: flex; justify-content: space-around; }
+  .mobile-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; text-decoration: none; padding: 6px 12px; }
+  .mobile-nav-icon { font-size: 20px; }
+  .mobile-nav-label { font-size: 9px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
+  .mobile-nav-item.active .mobile-nav-label { color: var(--red); }
+  .mobile-nav-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--red); display: none; }
+  .mobile-nav-item.active .mobile-nav-dot { display: block; }
+
+  /* Loading */
+  .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
+  .loading-logo { font-family: var(--font-display); font-size: 48px; letter-spacing: 8px; color: var(--red); text-transform: uppercase; }
+  .loading-dots { display: flex; gap: 6px; }
+  .loading-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: blink 1.2s infinite; }
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100% { opacity: 0.2; } 40% { opacity: 1; } }
+
+  @media (max-width: 1100px) {
+    .body3d-layout { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding-bottom: 80px; }
+    .mobile-nav { display: block; }
+    .content { padding: 16px; }
+    .canvas-card { min-height: 400px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="loading-logo">Espritum</div>
+  <div class="loading-dots">
+    <div class="loading-dot"></div>
+    <div class="loading-dot"></div>
+    <div class="loading-dot"></div>
+  </div>
+</div>
+
+<aside class="sidebar">
+  <a class="sidebar-brand" href="dashboard.html">
+    <img class="sidebar-logo" src="data:image/jpeg;base64,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" alt="Espritum">
+    <span class="sidebar-name">Espritum</span>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Principal</div>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span> Dashboard</a>
+    <a class="nav-item" href="nutrition.html"><span class="nav-icon">🍎</span> Nutrition</a>
+    <a class="nav-item" href="entrainement.html"><span class="nav-icon">💪</span> Entraînement</a>
+    <a class="nav-item active" href="#"><span class="nav-icon">🫀</span> Corps 3D</a>
+    <a class="nav-item" href="progression.html"><span class="nav-icon">📊</span> Progression</a>
+    <div class="nav-section-label">IA & Motivation</div>
+    <a class="nav-item" href="coach.html"><span class="nav-icon">🤖</span> Coach Sensei</a>
+    <a class="nav-item" href="classement.html"><span class="nav-icon">🏆</span> Classement</a>
+    <div class="nav-section-label">Compte</div>
+    <a class="nav-item" href="profil.html"><span class="nav-icon">👤</span> Profil</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="user-card">
+      <div class="user-avatar" id="sidebar-avatar">?</div>
+      <div>
+        <div class="user-name" id="sidebar-name">Chargement...</div>
+        <div class="user-plan" id="sidebar-plan">—</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-tag">— Visualisation corporelle</div>
+      <div class="topbar-title">Mon Corps 3D</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="body3d-layout">
+
+      <!-- Canvas 3D -->
+      <div class="canvas-card">
+        <canvas id="three-canvas"></canvas>
+
+        <div class="canvas-tip">Glisse pour faire pivoter</div>
+
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#c82828"></div>Muscles</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f5c842"></div>Masse grasse</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#4fc3f7"></div>Os / Structure</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#888"></div>Peau</div>
+        </div>
+
+        <div class="canvas-overlay">
+          <button class="view-btn active" onclick="setView('muscles')">Muscles</button>
+          <button class="view-btn" onclick="setView('fat')">Masse grasse</button>
+          <button class="view-btn" onclick="setView('complet')">Vue complète</button>
+        </div>
+      </div>
+
+      <!-- Panneau droit -->
+      <div class="right-panel">
+
+        <!-- Stats -->
+        <div class="card">
+          <div class="card-title">Données corporelles</div>
+          <div class="body-stats">
+            <div class="body-stat-row">
+              <span class="body-stat-label">⚖️ Poids</span>
+              <span class="body-stat-val"><span id="stat-poids">—</span> <span class="body-stat-unit">kg</span></span>
+            </div>
+            <div class="body-stat-row">
+              <span class="body-stat-label">📏 Taille</span>
+              <span class="body-stat-val"><span id="stat-taille">—</span> <span class="body-stat-unit">cm</span></span>
+            </div>
+            <div class="body-stat-row">
+              <span class="body-stat-label">📸 Masse grasse</span>
+              <span class="body-stat-val"><span id="stat-mg">—</span> <span class="body-stat-unit">%</span></span>
+            </div>
+            <div class="body-stat-row">
+              <span class="body-stat-label">💪 Masse musculaire</span>
+              <span class="body-stat-val"><span id="stat-muscle">—</span> <span class="body-stat-unit">%</span></span>
+            </div>
+            <div class="body-stat-row">
+              <span class="body-stat-label">🧮 IMC</span>
+              <span class="body-stat-val"><span id="stat-imc">—</span></span>
+            </div>
+          </div>
+
+          <!-- Barre composition -->
+          <div class="composition-bar" style="margin-top:20px;">
+            <div class="comp-label">
+              <span>Composition corporelle</span>
+            </div>
+            <div class="comp-track">
+              <div class="comp-muscle" id="bar-muscle" style="width:40%">Muscle</div>
+              <div class="comp-fat" id="bar-fat" style="width:20%">Graisse</div>
+              <div class="comp-other" id="bar-other" style="width:40%"></div>
+            </div>
+            <div class="comp-legend">
+              <div class="comp-legend-item"><div class="comp-legend-dot" style="background:#c82828"></div><span id="leg-muscle">Muscles 40%</span></div>
+              <div class="comp-legend-item"><div class="comp-legend-dot" style="background:#f5c842"></div><span id="leg-fat">Graisse 20%</span></div>
+              <div class="comp-legend-item"><div class="comp-legend-dot" style="background:var(--muted2)"></div><span id="leg-other">Autre 40%</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Muscles travaillés cette semaine -->
+        <div class="card">
+          <div class="card-title">Muscles travaillés</div>
+          <div class="muscle-list" id="muscle-list">
+            <div style="font-size:13px;color:var(--muted);text-align:center;padding:12px;">Aucun exercice cette semaine</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- MOBILE NAV -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <a class="mobile-nav-item" href="dashboard.html"><span class="mobile-nav-icon">🏠</span><div class="mobile-nav-dot"></div><span class="mobile-nav-label">Home</span></a>
+    <a class="mobile-nav-item" href="nutrition.html"><span class="mobile-nav-icon">🍎</span><div class="mobile-nav-dot"></div><span class="mobile-nav-label">Nutrition</span></a>
+    <a class="mobile-nav-item" href="entrainement.html"><span class="mobile-nav-icon">💪</span><div class="mobile-nav-dot"></div><span class="mobile-nav-label">Sport</span></a>
+    <a class="mobile-nav-item active" href="#"><span class="mobile-nav-icon">🫀</span><div class="mobile-nav-dot"></div><span class="mobile-nav-label">Corps</span></a>
+    <a class="mobile-nav-item" href="profil.html"><span class="mobile-nav-icon">👤</span><div class="mobile-nav-dot"></div><span class="mobile-nav-label">Profil</span></a>
+  </div>
+</nav>
+
+<script>
+  const { createClient } = supabase;
+  const sb = createClient(
+    'https://lbxlvrtujzwlcnloheyh.supabase.co',
+    'sb_publishable_40dpIdYthKMZkJImacoKoQ_ftEeaPeg'
+  );
+
+  let scene, camera, renderer, bodyGroup;
+  let currentView = 'muscles';
+  let animFrameId;
+  let isDragging = false;
+  let prevMouse = { x: 0, y: 0 };
+  let rotationY = 0;
+  let userProfile = null;
+
+  const planLabel = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
+
+  // Couleurs
+  const COLORS = {
+    skin: 0x8a6552,
+    muscle: 0xc82828,
+    fat: 0xf5c842,
+    bone: 0x4fc3f7,
+    muscle_light: 0xe03030,
+    fat_light: 0xffd54f
+  };
+
+  async function init() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { window.location.href = 'inscription.html'; return; }
+
+    const { data: profile } = await sb.from('users').select('*').eq('id', session.user.id).single();
+    userProfile = profile;
+
+    const prenom = profile?.prenom || 'Guerrier';
+    document.getElementById('sidebar-avatar').textContent = prenom[0].toUpperCase();
+    document.getElementById('sidebar-name').textContent = prenom;
+    document.getElementById('sidebar-plan').textContent = planLabel[profile?.plan || 'gratuit'];
+
+    updateStats(profile);
+    await loadMuscles(session.user.id);
+
+    initThree();
+    document.getElementById('loading').style.display = 'none';
+  }
+
+  function updateStats(p) {
+    const poids = p?.poids;
+    const taille = p?.taille;
+    const mg = p?.masse_grasse || 18;
+
+    if (poids) document.getElementById('stat-poids').textContent = poids;
+    if (taille) document.getElementById('stat-taille').textContent = taille;
+    document.getElementById('stat-mg').textContent = mg;
+
+    const muscle = Math.round(100 - mg - 40);
+    const other = 100 - mg - muscle;
+    document.getElementById('stat-muscle').textContent = muscle;
+
+    if (poids && taille) {
+      const imc = (poids / ((taille / 100) ** 2)).toFixed(1);
+      document.getElementById('stat-imc').textContent = imc;
+    }
+
+    // Barre composition
+    document.getElementById('bar-muscle').style.width = muscle + '%';
+    document.getElementById('bar-fat').style.width = mg + '%';
+    document.getElementById('bar-other').style.width = other + '%';
+    document.getElementById('leg-muscle').textContent = `Muscles ${muscle}%`;
+    document.getElementById('leg-fat').textContent = `Graisse ${mg}%`;
+    document.getElementById('leg-other').textContent = `Autre ${other}%`;
+  }
+
+  async function loadMuscles(userId) {
+    const today = new Date();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (today.getDay() === 0 ? 6 : today.getDay() - 1));
+    const mondayStr = monday.toISOString().split('T')[0];
+
+    const { data: workouts } = await sb.from('workouts')
+      .select('muscle_cible, series')
+      .eq('user_id', userId)
+      .gte('date', mondayStr);
+
+    if (!workouts || workouts.length === 0) return;
+
+    const muscles = {};
+    workouts.forEach(w => {
+      if (w.muscle_cible) muscles[w.muscle_cible] = (muscles[w.muscle_cible] || 0) + (w.series || 0);
+    });
+
+    const total = Object.values(muscles).reduce((s, v) => s + v, 0);
+    const colors = { Poitrine:'#c82828', Dos:'#1565c0', Jambes:'#2e7d32', Épaules:'#e8a000', Biceps:'#9c27b0', Triceps:'#00897b', Abdos:'#f44336', Cardio:'#ef5350' };
+
+    document.getElementById('muscle-list').innerHTML = Object.entries(muscles)
+      .sort((a, b) => b[1] - a[1])
+      .map(([m, s]) => {
+        const pct = Math.round((s / total) * 100);
+        return `
+          <div class="muscle-item">
+            <span class="muscle-name">${m}</span>
+            <div class="muscle-bar-track">
+              <div class="muscle-bar-fill" style="width:${pct}%;background:${colors[m] || '#c82828'}"></div>
+            </div>
+            <span class="muscle-pct">${pct}%</span>
+          </div>
+        `;
+      }).join('');
+  }
+
+  function initThree() {
+    const canvas = document.getElementById('three-canvas');
+    const container = canvas.parentElement;
+
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a0a0a);
+
+    const w = container.clientWidth;
+    const h = container.clientHeight || 600;
+
+    camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+    camera.position.set(0, 1.5, 4);
+    camera.lookAt(0, 1, 0);
+
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+
+    // Lumières
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(3, 5, 3);
+    dirLight.castShadow = true;
+    scene.add(dirLight);
+
+    const backLight = new THREE.DirectionalLight(0x4444ff, 0.2);
+    backLight.position.set(-3, 2, -3);
+    scene.add(backLight);
+
+    // Construire le corps humain
+    buildHumanBody();
+
+    // Sol subtil
+    const floorGeo = new THREE.CylinderGeometry(1.2, 1.2, 0.02, 32);
+    const floorMat = new THREE.MeshStandardMaterial({ color: 0x111111, transparent: true, opacity: 0.5 });
+    const floor = new THREE.Mesh(floorGeo, floorMat);
+    floor.position.y = 0;
+    scene.add(floor);
+
+    // Événements souris/touch
+    canvas.addEventListener('mousedown', e => { isDragging = true; prevMouse = { x: e.clientX, y: e.clientY }; });
+    canvas.addEventListener('mouseup', () => isDragging = false);
+    canvas.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      const dx = e.clientX - prevMouse.x;
+      rotationY += dx * 0.01;
+      bodyGroup.rotation.y = rotationY;
+      prevMouse = { x: e.clientX, y: e.clientY };
+    });
+
+    canvas.addEventListener('touchstart', e => { isDragging = true; prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY }; });
+    canvas.addEventListener('touchend', () => isDragging = false);
+    canvas.addEventListener('touchmove', e => {
+      if (!isDragging) return;
+      const dx = e.touches[0].clientX - prevMouse.x;
+      rotationY += dx * 0.01;
+      bodyGroup.rotation.y = rotationY;
+      prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    });
+
+    window.addEventListener('resize', () => {
+      const w = container.clientWidth;
+      const h = container.clientHeight || 600;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    });
+
+    animate();
+  }
+
+  function buildHumanBody() {
+    bodyGroup = new THREE.Group();
+
+    const mg = userProfile?.masse_grasse || 18;
+    const fatScale = 1 + (mg / 100) * 0.4;
+
+    // Matériaux
+    const skinMat = new THREE.MeshStandardMaterial({ color: COLORS.skin, roughness: 0.8, metalness: 0.1 });
+    const muscleMat = new THREE.MeshStandardMaterial({ color: COLORS.muscle, roughness: 0.6, metalness: 0.2 });
+    const fatMat = new THREE.MeshStandardMaterial({ color: COLORS.fat, roughness: 0.9, metalness: 0.0, transparent: true, opacity: 0.85 });
+    const boneMat = new THREE.MeshStandardMaterial({ color: COLORS.bone, roughness: 0.4, metalness: 0.3 });
+
+    // ── TÊTE ──
+    const headGeo = new THREE.SphereGeometry(0.22, 16, 16);
+    const head = new THREE.Mesh(headGeo, skinMat);
+    head.position.y = 2.82;
+    head.castShadow = true;
+    bodyGroup.add(head);
+
+    // Cou
+    const neckGeo = new THREE.CylinderGeometry(0.07, 0.09, 0.2, 8);
+    const neck = new THREE.Mesh(neckGeo, skinMat);
+    neck.position.y = 2.58;
+    bodyGroup.add(neck);
+
+    // ── TORSE ──
+    const torsoGeo = new THREE.CylinderGeometry(0.28 * fatScale, 0.22 * fatScale, 0.7, 12);
+    const torso = new THREE.Mesh(torsoGeo, muscleMat);
+    torso.position.y = 2.1;
+    torso.userData.isMuscle = true;
+    bodyGroup.add(torso);
+
+    // Pectoraux
+    [-0.11, 0.11].forEach(x => {
+      const pecGeo = new THREE.SphereGeometry(0.13 * fatScale, 10, 10);
+      const pec = new THREE.Mesh(pecGeo, muscleMat);
+      pec.position.set(x, 2.25, 0.2);
+      pec.scale.set(1, 0.7, 0.6);
+      pec.userData.isMuscle = true;
+      bodyGroup.add(pec);
+    });
+
+    // Abdos
+    for (let i = 0; i < 3; i++) {
+      [-0.06, 0.06].forEach(x => {
+        const abGeo = new THREE.SphereGeometry(0.055, 8, 8);
+        const ab = new THREE.Mesh(abGeo, muscleMat);
+        ab.position.set(x, 1.95 - i * 0.13, 0.24);
+        ab.scale.set(1, 0.7, 0.5);
+        ab.userData.isMuscle = true;
+        bodyGroup.add(ab);
+      });
+    }
+
+    // ── ÉPAULES ──
+    [-0.36, 0.36].forEach(x => {
+      const shoulderGeo = new THREE.SphereGeometry(0.12, 10, 10);
+      const shoulder = new THREE.Mesh(shoulderGeo, muscleMat);
+      shoulder.position.set(x, 2.42, 0);
+      shoulder.userData.isMuscle = true;
+      bodyGroup.add(shoulder);
+    });
+
+    // ── BRAS ──
+    [-1, 1].forEach(side => {
+      const armX = side * 0.46;
+
+      // Biceps
+      const bicepGeo = new THREE.CylinderGeometry(0.075, 0.065, 0.3, 8);
+      const bicep = new THREE.Mesh(bicepGeo, muscleMat);
+      bicep.position.set(armX, 2.18, 0);
+      bicep.userData.isMuscle = true;
+      bodyGroup.add(bicep);
+
+      // Avant-bras
+      const forearmGeo = new THREE.CylinderGeometry(0.055, 0.045, 0.28, 8);
+      const forearm = new THREE.Mesh(forearmGeo, skinMat);
+      forearm.position.set(armX, 1.86, 0);
+      bodyGroup.add(forearm);
+
+      // Main
+      const handGeo = new THREE.SphereGeometry(0.055, 8, 8);
+      const hand = new THREE.Mesh(handGeo, skinMat);
+      hand.position.set(armX, 1.68, 0);
+      hand.scale.set(1, 0.7, 0.6);
+      bodyGroup.add(hand);
+    });
+
+    // ── BASSIN ──
+    const hipGeo = new THREE.CylinderGeometry(0.24 * fatScale, 0.2 * fatScale, 0.32, 12);
+    const hip = new THREE.Mesh(hipGeo, skinMat);
+    hip.position.y = 1.58;
+    bodyGroup.add(hip);
+
+    // Graisse abdominale (si masse grasse élevée)
+    if (mg > 15) {
+      const bellyGeo = new THREE.SphereGeometry(0.18 * fatScale, 10, 10);
+      const belly = new THREE.Mesh(bellyGeo, fatMat);
+      belly.position.set(0, 1.82, 0.18);
+      belly.scale.set(1.2, 0.8, 0.7);
+      belly.userData.isFat = true;
+      bodyGroup.add(belly);
+    }
+
+    // ── JAMBES ──
+    [-1, 1].forEach(side => {
+      const legX = side * 0.12;
+
+      // Quadriceps
+      const quadGeo = new THREE.CylinderGeometry(0.11 * fatScale, 0.09 * fatScale, 0.48, 8);
+      const quad = new THREE.Mesh(quadGeo, muscleMat);
+      quad.position.set(legX, 1.16, 0);
+      quad.userData.isMuscle = true;
+      bodyGroup.add(quad);
+
+      // Genou
+      const kneeGeo = new THREE.SphereGeometry(0.08, 8, 8);
+      const knee = new THREE.Mesh(kneeGeo, skinMat);
+      knee.position.set(legX, 0.88, 0);
+      bodyGroup.add(knee);
+
+      // Mollet
+      const calfGeo = new THREE.CylinderGeometry(0.08, 0.06, 0.4, 8);
+      const calf = new THREE.Mesh(calfGeo, muscleMat);
+      calf.position.set(legX, 0.62, 0);
+      calf.userData.isMuscle = true;
+      bodyGroup.add(calf);
+
+      // Pied
+      const footGeo = new THREE.BoxGeometry(0.1, 0.06, 0.2);
+      const foot = new THREE.Mesh(footGeo, skinMat);
+      foot.position.set(legX, 0.38, 0.04);
+      bodyGroup.add(foot);
+    });
+
+    bodyGroup.position.y = -1.4;
+    scene.add(bodyGroup);
+  }
+
+  function setView(view) {
+    currentView = view;
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+
+    bodyGroup.traverse(child => {
+      if (!child.isMesh) return;
+      const mat = child.material;
+
+      if (view === 'muscles') {
+        if (child.userData.isFat) { mat.opacity = 0.15; mat.transparent = true; }
+        else if (child.userData.isMuscle) { mat.color.setHex(COLORS.muscle); mat.opacity = 1; mat.transparent = false; }
+        else { mat.color.setHex(COLORS.skin); mat.opacity = 1; mat.transparent = false; }
+      } else if (view === 'fat') {
+        if (child.userData.isFat) { mat.color.setHex(COLORS.fat); mat.opacity = 0.9; mat.transparent = true; }
+        else if (child.userData.isMuscle) { mat.color.setHex(0x333333); mat.opacity = 0.4; mat.transparent = true; }
+        else { mat.color.setHex(0x222222); mat.opacity = 0.3; mat.transparent = true; }
+      } else {
+        if (child.userData.isFat) { mat.color.setHex(COLORS.fat); mat.opacity = 0.7; mat.transparent = true; }
+        else if (child.userData.isMuscle) { mat.color.setHex(COLORS.muscle); mat.opacity = 1; mat.transparent = false; }
+        else { mat.color.setHex(COLORS.skin); mat.opacity = 1; mat.transparent = false; }
+      }
+      mat.needsUpdate = true;
+    });
+  }
+
+  function animate() {
+    animFrameId = requestAnimationFrame(animate);
+    if (!isDragging && bodyGroup) {
+      bodyGroup.rotation.y += 0.004; // rotation lente automatique
+    }
+    renderer.render(scene, camera);
+  }
+
+  init();
+</script>
+</body>
+</html>
