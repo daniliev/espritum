@@ -308,6 +308,7 @@ Tes réponses : maximum 4 paragraphes, direct, actionnable. En français.`;
       document.getElementById('sidebar-avatar').textContent = userInitiale;
       document.getElementById('sidebar-name').textContent = prenom;
       document.getElementById('sidebar-plan').textContent = PLAN_LABEL[p?.plan || 'gratuit'];
+    initFreemium(p?.plan || 'gratuit');
       document.getElementById('ctx-poids').textContent = p?.poids ? p.poids + ' kg' : '—';
       document.getElementById('ctx-obj').textContent = OBJ_LABEL[p?.objectif] || '—';
       document.getElementById('ctx-cal').textContent = p?.calories_objectif ? p.calories_objectif + ' kcal' : '—';
@@ -495,17 +496,7 @@ Tes réponses : maximum 4 paragraphes, direct, actionnable. En français.`;
     document.getElementById('upgrade-modal').classList.remove('open');
   }
 
-  // Appel de sécurité — verrouiller IMMÉDIATEMENT au chargement
-  // avant même que Supabase réponde
-  document.addEventListener('DOMContentLoaded', function() {
-    // Vérifier si un plan vient d'être mis à jour
-    const cachedPlan = localStorage.getItem('espritum_plan');
-    if (cachedPlan) {
-      initFreemium(cachedPlan);
-    } else {
-      initFreemium('gratuit'); // verrouillé par défaut
-    }
-  });
+  // Le plan est lu depuis Supabase dans init() — pas de verrouillage par défaut
 </script>
 </body>
 </html>

@@ -391,6 +391,7 @@
       document.getElementById('sidebar-avatar').textContent = initiale;
       document.getElementById('sidebar-name').textContent = `${prenom} ${nom}`.trim();
       document.getElementById('sidebar-plan').textContent = PLAN_LABEL[profile?.plan || 'gratuit'];
+    initFreemium(profile?.plan || 'gratuit');
       document.getElementById('topbar-greeting').textContent = `Bonjour, ${prenom} 👊`;
       document.getElementById('streak-pill').textContent = `🔥 ${profile?.streak || 0} jour`;
 
@@ -568,11 +569,7 @@
     document.getElementById('upgrade-modal').classList.remove('open');
   }
 
-  // Appel de sécurité — verrouiller IMMÉDIATEMENT au chargement
-  // avant même que Supabase réponde
-  document.addEventListener('DOMContentLoaded', function() {
-    initFreemium('gratuit'); // verrouillé par défaut
-  });
+  // Le plan est lu depuis Supabase dans init() — pas de verrouillage par défaut
 </script>
 </body>
 </html>

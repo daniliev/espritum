@@ -361,6 +361,7 @@
     document.getElementById('sidebar-avatar').textContent = prenom[0].toUpperCase();
     document.getElementById('sidebar-name').textContent = prenom;
     document.getElementById('sidebar-plan').textContent = planLabel[profile?.plan || 'gratuit'];
+    initFreemium(profile?.plan || 'gratuit');
 
     if (profile?.poids_cible) document.getElementById('hero-poids-cible').textContent = profile.poids_cible;
 
@@ -589,17 +590,7 @@
     document.getElementById('upgrade-modal').classList.remove('open');
   }
 
-  // Appel de sécurité — verrouiller IMMÉDIATEMENT au chargement
-  // avant même que Supabase réponde
-  document.addEventListener('DOMContentLoaded', function() {
-    // Vérifier si un plan vient d'être mis à jour
-    const cachedPlan = localStorage.getItem('espritum_plan');
-    if (cachedPlan) {
-      initFreemium(cachedPlan);
-    } else {
-      initFreemium('gratuit'); // verrouillé par défaut
-    }
-  });
+  // Le plan est lu depuis Supabase dans init() — pas de verrouillage par défaut
 </script>
 </body>
 </html>
