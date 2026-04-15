@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espritum — Dashboard</title>
+<link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root {
+    --red: #c82828;
+    --bg: #080808;
+    --bg2: #0d0d0d;
+    --bg3: #111111;
+    --border: #1e1e1e;
+    --muted: #555;
+    --muted2: #333;
+    --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
+    --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
+    --sidebar: 240px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: #fff; font-family: var(--font-body); display: flex; }
+
+  /* SIDEBAR */
+  .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 50; }
+  .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 24px 20px; border-bottom: 1px solid var(--border); text-decoration: none; }
+  .sidebar-logo { width: 34px; height: 34px; object-fit: contain; border-radius: 6px; }
+  .sidebar-name { font-family: var(--font-display); font-size: 18px; letter-spacing: 5px; color: #fff; text-transform: uppercase; }
+  .sidebar-nav { flex: 1; padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .nav-section-label { font-size: 9px; letter-spacing: 3px; color: var(--muted2); text-transform: uppercase; font-weight: 700; padding: 14px 10px 6px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 6px; cursor: pointer; text-decoration: none; transition: background 0.2s, color 0.2s; color: var(--muted); font-size: 14px; font-weight: 500; }
+  .nav-item:hover { background: var(--bg3); color: #ccc; }
+  .nav-item.active { background: rgba(200,40,40,0.1); color: #fff; border-left: 2px solid var(--red); }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+  .sidebar-bottom { padding: 16px 12px; border-top: 1px solid var(--border); }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
+  .user-card:hover { background: var(--bg3); }
+  .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(200,40,40,0.15); border: 1px solid rgba(200,40,40,0.3); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; color: var(--red); flex-shrink: 0; }
+  .user-name { font-size: 13px; font-weight: 600; color: #ddd; }
+  .user-plan { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+
+  /* MAIN */
+  .main { margin-left: var(--sidebar); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+  .topbar { padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 40; }
+  .topbar-left { display: flex; flex-direction: column; gap: 2px; }
+  .topbar-tag { font-size: 10px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; font-weight: 600; }
+  .topbar-title { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .streak-pill { display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(200,40,40,0.08); border: 1px solid rgba(200,40,40,0.2); border-radius: 20px; font-size: 12px; color: var(--red); font-weight: 600; letter-spacing: 1px; }
+  .logout-btn { padding: 8px 16px; background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* CONTENT */
+  .content { padding: 28px 32px; display: flex; flex-direction: column; gap: 24px; }
+
+  /* Verset */
+  .verse-banner { background: linear-gradient(135deg, #0f0404, #1a0808); border: 1px solid rgba(200,40,40,0.2); border-left: 3px solid var(--red); border-radius: 8px; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .verse-left { display: flex; align-items: center; gap: 14px; }
+  .verse-emoji { font-size: 24px; }
+  .verse-quote { font-size: 14px; color: #bbb; font-style: italic; font-weight: 300; line-height: 1.5; }
+  .verse-ref { font-size: 11px; color: var(--red); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; font-weight: 600; }
+  .verse-date { font-size: 11px; color: var(--muted2); letter-spacing: 1px; white-space: nowrap; }
+
+  /* Stats */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 20px; transition: border-color 0.2s; }
+  .stat-card:hover { border-color: #2a2a2a; }
+  .stat-label { font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; font-weight: 600; margin-bottom: 10px; }
+  .stat-value { font-family: var(--font-display); font-size: 42px; font-weight: 400; line-height: 1; color: #fff; margin-bottom: 4px; }
+  .stat-unit { font-size: 16px; color: var(--muted); }
+  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .stat-delta { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-top: 6px; }
+  .delta-up { background: rgba(46,125,50,0.12); color: #4caf50; }
+
+  /* Main grid — 3 colonnes */
+  .main-grid { display: grid; grid-template-columns: 1fr 280px 280px; gap: 20px; }
+
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 22px; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .card-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; }
+  .card-action { font-size: 11px; color: var(--red); letter-spacing: 1px; cursor: pointer; text-transform: uppercase; font-weight: 600; text-decoration: none; }
+
+  /* Calories */
+  .cal-main { display: flex; align-items: flex-end; gap: 20px; margin-bottom: 16px; }
+  .cal-big { font-family: var(--font-display); font-size: 72px; line-height: 1; color: #fff; }
+  .cal-meta { padding-bottom: 8px; }
+  .cal-goal { font-size: 13px; color: var(--muted); }
+  .cal-remain { font-family: var(--font-display); font-size: 22px; color: var(--red); }
+  .progress-bar { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; margin-bottom: 16px; }
+  .progress-fill { height: 100%; background: var(--red); border-radius: 3px; transition: width 1s ease; }
+  .macros-row { display: flex; gap: 0; }
+  .macro-item { flex: 1; text-align: center; padding: 12px 0; border-right: 1px solid var(--border); }
+  .macro-item:last-child { border-right: none; }
+  .macro-val { font-family: var(--font-display); font-size: 26px; color: #fff; }
+  .macro-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+
+  /* ── CORPS 3D ── */
+  .body3d-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  #body3d-canvas {
+    width: 100%;
+    height: 320px;
+    border-radius: 6px;
+    cursor: grab;
+    display: block;
+  }
+
+  #body3d-canvas:active { cursor: grabbing; }
+
+  .body3d-legend {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 1px;
+  }
+
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  .body3d-muscles {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .muscle-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: rgba(200,40,40,0.1);
+    border: 1px solid rgba(200,40,40,0.2);
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--red);
+    letter-spacing: 1px;
+    width: fit-content;
+  }
+
+  .body3d-hint {
+    font-size: 10px;
+    color: var(--muted2);
+    text-align: center;
+    margin-top: 8px;
+    letter-spacing: 1px;
+  }
+
+  /* Repas */
+  .repas-list { display: flex; flex-direction: column; gap: 8px; }
+  .repas-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; }
+  .repas-left { display: flex; align-items: center; gap: 10px; }
+  .repas-icon { font-size: 18px; }
+  .repas-name { font-size: 13px; color: #ccc; font-weight: 500; }
+  .repas-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .repas-cal { font-family: var(--font-display); font-size: 18px; color: #fff; }
+  .empty-state { text-align: center; padding: 32px 20px; color: var(--muted); font-size: 14px; font-weight: 300; line-height: 1.7; }
+  .empty-icon { font-size: 32px; margin-bottom: 10px; }
+  .add-btn { width: 100%; padding: 12px; background: transparent; border: 1px dashed var(--border); border-radius: 6px; color: var(--muted); font-family: var(--font-body); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; margin-top: 8px; }
+  .add-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* Semaine */
+  .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 16px; }
+  .week-day { text-align: center; }
+  .week-label { font-size: 9px; color: var(--muted2); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .week-dot { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; margin: 0 auto; }
+  .week-dot.done { background: rgba(200,40,40,0.15); border-color: var(--red); color: var(--red); }
+  .week-dot.today { background: var(--red); border-color: var(--red); color: #fff; }
+  .week-dot.empty { color: var(--muted2); }
+
+  /* Coach */
+  .ai-teaser { background: linear-gradient(135deg, #0f0808, #1a0808); border: 1px solid rgba(200,40,40,0.2); border-radius: 8px; padding: 20px; cursor: pointer; transition: border-color 0.2s; }
+  .ai-teaser:hover { border-color: rgba(200,40,40,0.5); }
+  .ai-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .ai-avatar { width: 42px; height: 42px; border-radius: 50%; background: rgba(200,40,40,0.12); border: 1px solid rgba(200,40,40,0.3); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .ai-name { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); }
+  .ai-status { font-size: 11px; color: var(--muted); }
+  .ai-message { font-size: 13px; color: #888; line-height: 1.6; font-style: italic; font-weight: 300; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid var(--red); margin-bottom: 14px; }
+  .ai-cta { width: 100%; padding: 11px; background: transparent; border: 1px solid rgba(200,40,40,0.3); border-radius: 4px; color: var(--red); font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .ai-cta:hover { background: rgba(200,40,40,0.08); border-color: var(--red); }
+
+  /* Bottom grid */
+  .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  /* Loading */
+  .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
+  .loading-logo { font-family: var(--font-display); font-size: 48px; letter-spacing: 8px; color: var(--red); text-transform: uppercase; }
+  .loading-dots { display: flex; gap: 6px; }
+  .loading-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: blink 1.2s infinite; }
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100% { opacity: 0.2; } 40% { opacity: 1; } }
+
+  @media (max-width: 1300px) {
+    .main-grid { grid-template-columns: 1fr 260px; }
+    .body3d-card { display: none; }
+  }
+
+  @media (max-width: 1100px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .main-grid { grid-template-columns: 1fr; }
+    .bottom-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="loading-logo">Espritum</div>
+  <div class="loading-dots">
+    <div class="loading-dot"></div>
+    <div class="loading-dot"></div>
+    <div class="loading-dot"></div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a class="sidebar-brand" href="#">
+    <img class="sidebar-logo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAEsASwDASIAAhEBAxEB/8QAHQABAAAHAQEAAAAAAAAAAAAAAAIEBQYHCAkDAf/EAE0QAAEDAgMFAggICgcJAAAAAAABAgMEBQYHEQgSITFBUWETFCIycXKBsRUjM1JikaHBQkNzdYKSorLD0xhTY5Sz0uEXRFVWdIOT0fH/xAAbAQEAAgIDAAAAAAAAAAAAAAAAAwQBBgIFB//EADARAQABAwIEBAMIAwAAAAAAAAABAgMRBAUGEiExQVFhcRSBsRMVIkKRodHhMjPB/9oADAMBAAIRAxEAPwDWcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACNsUjk1bG9U7UaGYpmeyA96Kn8ZmWPf3PJ1101PFzXMXRzVavemh60cvgKlknRF4+g41Z5Zws6P7GnU0fER+DMc3t4+qcktStjc5Jt5URVRNzn9pTS50VFRFRdUXiilOq7YjnK+ByN147q8ira1HhXLeuIOEqYopu7bb6eMRMz7TGZnPyUkEcsckT1ZI1WuTopAXInLz2uiqiqaaoxMAADiAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABXbS9H0TU14tVUUoRM0FUtNLroqsdwchDeo56cQ7/hrdKNt10XLn+MxifSJ8flMR8lRu1K+eNr401ezp2oUZzXNcrXNVqp0VC5IZY5WI+NyOTuE0MczN2RiOT3Fa3fm3HLVDeN64VtbrXOs0tyIqqj3pn1zHb91Goa99Ong3pvx9nVPQVamqYahPi3cerV5oUavpVppdNd5jvNX7iXY5zHo9iq1yclQnqs0XI5qWr6DiLcNlufC6iM009JpnvHtP07x5LiqqeOoj3Hp6F6oW/PE+GV0b04p9pXaCoSpgR/JycHJ3kte4d6FsyJxYui+j/wC+8hsVzRVyS2HifbtPuWhjctN3iM+9Pr6x/MKQAC88vAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEUbHyLoxjnLz0ampEtPOiKqwSIicVVWqTFnfu1qJ85FT7/ALitSsSSJzF5ORUK929NFWMNw2Phq1umjqv88xVEzGOnlEx9Vtse9i6se5q9qLoVi1Vbp0dHLxe1NUXtQozmq1ytcmiouiofWPexdWPc1eWqLoSXLcXIw6jZt3vbXqYriZ5fGnz/ALV25xpJRSdrU3k9hQD0WedUVFmkVF4KiuU8zFm3NuMTKXiHdrW6amL9ujl6YnPiqNicqVEjOis1+pf9So1zUdRzIvzFX6uJIWKNd+SXjppup7//AETtxfuUUq9rdPr4FW71vdPRvGwxNHDtybvbFePbE/8AcrfABfeUgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACKN6xyNe3m1dULjglbNE2RnJyfUW0TVvq3Uz9F1WNV4p2d5Bftc8Zju2nhbfKds1E0Xf9dff0nwn+f6Tl0olkVZ4U1d+E3t7ykqiouipopc0UjJWI+NyOavVCCangm+Uja5e3r9ZBb1E0Ry1Q2nd+EbW4V/FaKuImrrj8s+sTGcZ+a3D2paaWofusTh1cvJCstoKRq6pCntVVJhrWtajWoiInJEQ51aqMfhh1+h4Du/aROruRy+VOZmfnMRj90FPEyCJsbE4J9pTr3Oiq2navLynfcTFwrmwIrI1R0v7pRXKrnK5yqqquqqpixbmZ56kvFe9WLWn+7dJjHSJx2iI/L7+f6PgALjzgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABHDLJC7eierV7upOx3WZvCSNj/RwUp5FFHJLI2OJjnvcuiNamqr7DhVbpq7wv6PddZouli5NMeXh+nZUVuy6cIERe93+hLT19TKmm+jE7G8CqUeCsZVjEfSYSv1Q1eSxW6VyL9TSOpwNjalarqnB+IYGpzWS2zNRPraYps0U9oWdTv+5amnkuXpx6dPphbwPSogmp5VhqIZIZG82ParVT2KeZI6cAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACZtdBW3S4QW63Us1XV1D0jhhiYrnvcvJERAJYyblbkjjjHzY6ylo22y0v4+P1qKxj07Y2+c/0omnehnzIvZytdgjp77jqKG53fg+OhXR1PTL9LpI9P1U6a8FM+11XRW2gkrK6pgo6SBm9JLM9GRxtTqqrwRAMMYH2Zsv7Gxkt7SqxFVpxV1Q9YoUXujYvLuc5xl2x2CxWKBILJZrfbY9NN2lpmRIvp3UTUwfmLtR4Ws0klFhOglv9S3VPGHuWGmRe5VTef7ERF6KYMxRtD5pXyR6RXuK0QO/E2+Bsen6bt5/7QG+oOaVdjnGtc9X1mL7/AFDv7S4yu97iCkxpjGkej6XFl+gcnWO4ytX7HAdJLrarXdqdae622jr4V5x1MDZW/U5FQxfjLZ2yyxCx76e1S2Oqdylt0m43X8murNPQiek1cw5n3mpZXt3cTy18Sc4q+Js6O9LlTf8AqchmHAu1hRzPjpsaYedSqvB1Xbnb7Ne1YnLqiehzl7gLDzG2Zsa4dZJWYeljxJRM1Xdhb4Opan5NVXe/RVVXsMH1UE9LUSU1TDJBNG5WyRyNVrmKnNFReKKdL8H4tw3i+2pcMN3mluUHDe8E/wAuNV6PYujmr3KiFAzSypwfmHSOS80CQ3BG6RXGmRGTs7NV/Db9F2qdmnMDnWDI2ceUGKMtqxZK2Px+zyP3YLlA1dxexr0/Ad3LwXoq8THIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHtRUtTXVkNHRwSVFTPI2OKKNquc9yrojUROaqpvRs55N0WXlnZdbrFFUYnqo/jpeDkpWr+KYv7zk5rw5Fg7GmVrIKVuY18ptZ5d5loienmM5Om07V4tb3ar1RTO2aON7Tl/hCqxDdnbyM8inp2ro+olVF3WN+rVV6Iir0Als18xsPZcYfW53qZXzyatpKONU8LUPToidGpw1cvBPSqIujmbGaeKsxrkst3q1gt7Ha09ugcqQxJ0VU/Dd9JePPTROBRMf4vveOMT1OIL9UrNUzLoxicGQsTzY2J0an28VXVVVSgAAAARdF1Q3e2eajAOZmAYp7lg/DM16t+7T3Fj7XAqudp5Mvm8nomvpRydDSEvvIzH9Tl1j6kvKK99vl+IuMLeO/C5U1VE+c1dHJ6NOSqBvBNlTlpKqq7AuH01+ZQsb7kQlX5NZXPXVcEWhPRGqe5S96Gqpq6igraOZk9NURtlhlYurXscmqORexUU192gs3sysssYMpKa2YfqrLWx+FoKielmVy6aI9jlbKibzVXoicHNAyxh3LHAeHbmy52PDdLb6yPzZoHva7Ts87inanJS8DS7+lfmJ/wAGwr/daj+cecm1XmO5OFtw0z1aSb75QNzbnQ0Vzt89vuNLDV0lQxY5oZmI5j2rzRUXmaW7ReRNXgmWbEmGIpavDb3b0sfF0lCq9HdXR9junJeir4z7UGZ8ieQ6yw+pRKvvcpTK7aMzVq4ZIX3mibHI1WvYlugc1UXgqKjmrqgGJAR1Erp55JnoxHSOVyoxiMaiquvBqIiInciaIQAAAAAAAAAAAAAAAAAAAAAAAAAAAALvycwZNj3MO2YdZvtp5ZPCVkjfxcDOL17lVOCd7kLQNvNhjCbaTDN2xlURfH3CbxOmcqcUhj4vVO5z10/7YGxdHTUtvoIaSlijp6WmibHFG3g2NjU0RE7ERENCdpPMiTMHHsvicyrY7arqe3sRfJemvlTel6pw+ije82f2ssaOwllVU0tJN4O43p3iMKovlNjVNZXJ+j5OvRXoaHgAAAAAAGZcjclLdmjh+qrqfG3wbXUc3g6miW2+FViLxY9HeFbqjtF6Jxaqd617MvZjuWFMGV+IbZib4bkoWeFlpEt3gXLEnnuRfCO1VqcdNOSL6FC8di3Mrxyhfl3d6jWopmumtT3rxfHzfF6W8XJ3K7o0zxmBgnDeO7PHacTUHjdNFMk0e7I5jmPRFTVHNVFTgqopzhw/dq+w3uivNrndT1tFM2aGROjmrrx7U6KnVOBsvNtdvSFiRYDasm6m+5100bvacdE8Fy9oGV6bZ8yig5YSSRe2SuqHfZ4TQnosj8qI/NwXQL6z5He9xgWq2tsSuVfFcJ2iJP7SaR/u3SRk2sMfL8nYcMt9aGdf4qAbF/7FMq/+Srb+3/mPGXIvKeVNHYMo09WaVvuea7JtX5ia8bLhbT/pp/5x7w7WWOEX47D2HH+rHM3+IoGcqrZ2yinRdzDEkCr1juFR7leqFj5pbOGBbXgS+XqxfC0NdQUMtVCx1Uj2OWNquVFRW6rqiL1JTLLaauuJsb2fDtzw1b6eO41TKZZ4Z36sV3BF3VRdeOnU2SudJFcLbVUEyaxVML4X+q5FRfeBy5B6VUL6eplp5U0kierHJ2Ki6KeYAAAAAAAAAAAAAAAAAAAAAAAAA6SZQ2FuGcscO2RGbj6egjWZNNPjXJvyftucc8sE25t3xlZLS5u82tuNPTqnaj5Gt+86bgaUbbOInXTNSCxsk1gs1Gxit14JLLpI5f1VjT2GCC7c5Lm68Zr4puDnbySXSdrF+g16tb+y1C0gAAAAAC+MkMe1OXePqO9sV76F/wARcIW/jIHKmuifObwcnemnJVOh1DVUdzt0FbSSx1NHVRNkikbxbIxyaoqdqKinLk2s2L8zkkiXLm81HlsR0tokevNOb4fZxc3u3k6IgGKdpjLV2X2Ony0ECtsN0V09CqJ5MS6+XD+iq8PoqnXUxSdIs2sD2/MHBFbh2u3WSPTwlJOqarBOiLuvTu4qip1RVQ524js1xw9fayyXamdTV1HKsU0buip2dqLzReqKigU8AAAABXMvqtaDHuHq5F0WnulNLr6srV+46ZHLm2vWK400ic2TMcnsVDqMBzTzOpm0WZWKKNqIjYLxVxoidjZnp9xbpdeciaZu4x/Ptb/jvLUAAAAAAAAAAAAAAAAAAAAAAAAAuvJtNc3MHfn2i/x2HSM5r5UVVNRZo4UrKyoip6aC80kk00r0YyNiTMVXOcvBERNVVV5G+dVmzlnTa+Ex1YXaf1dYyT91VA12qtlXGdbcamrqcR2GPw8z5F3FmevlKq9WJ2kxBsj3lflsaUDPUonu97kM21Oe+UtP8pjOld+Tp5n/ALrFKfPtGZRx+ZiWab1LdUJ72IBi6PZDlX5TH7G+raFX+MhMR7IdOnymPpXerakT+Kpfku0xlWzXdrrnJ6tC779CXftQZYtXRPht3elEn3uAs5NkSi1446qNPzYn8wiXZFt+nDHNVr+bm/zC612pctNfkL//AHNn+c+f0pctP6i//wBzZ/MAxvj3ZaqLFhC43mzYmlu1ZRwrM2jWhSNZWt4uRFR68d3VUTTiqadTXS2V1XbLjTXGgqJKarppWywysXRzHtXVFT0KhuuzahyxdzS+N9NGn3PNSc1ajCtZjq41+DFnSz1cnh4opofBrC53FzETXzUXXTuVE6Ab05GZiUeZGB4LsxY47lBpDcadq/JyonnInzXc09qc0UsTalyaqsdQU+I8LUscmIKdEimh32x+Nw9PKcqJvt6aqmqKqa8EQ1hySzDrst8bQXiHfloJtIbhTIvy0KrxVPpN5ovbw5KpvVhzMjAeIms+CMW2iokeiKkK1LWS/qOVHfYBoLiPLrHWHUc684Tu9LGzzplpnOiT9NurftLWOpyKipqnFC2sT4AwViZHLfcL2qtkdzmfTtSX/wAiaOT6wOawN0sV7LGBLjvyWKvudjlXzWI/xiFP0X+Uv65iDF+zBmFaN+WzSW+/wJxRIJfAzad7JNE9iOUDCtqjWa50sKc3zMantciHUU5yYZwjf7bmdhuzX2y19tnqLtTRIyqgdHvIsrUVU1TinenA6Ngc3M5OObmMfz7W/wCO8tQuDMmrSvzFxLXNXVtRd6qVPQ6Zy/eW+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABX8N41xdhxW/AWJbrb2N5Rw1T0jX0s13V9qGUcL7T2Y9r3GXT4MvkScHLUU/g5NO50e6mverVMHgDcnCW1Zg+vVkWIrNcbLIvOSJUqYU71VNH/U1TMOEseYNxY1q4exJba97k18CyZElRO+N2j09qHNU+sc5j0exytc1dUVF0VFA6lSxRSo1JY2SI1yPbvNRdHJyVO9CXvVdHbLPW3KXTwdJTyTv17GNVy+40EwXnhmVhXcipMRTV9Kz/drinjDNOxFd5bU7muQyVftp1MRZcXywXPDklFda+hkpYqiklR8Kq9N1yq12jmJuqvJXAa4TyPmmfNI7efI5XOXtVV1UgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/9k=" alt="Espritum">
+    <span class="sidebar-name">Espritum</span>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Principal</div>
+    <a class="nav-item active" href="#"><span class="nav-icon">🏠</span> Dashboard</a>
+    <a class="nav-item" href="nutrition.html"><span class="nav-icon">🍎</span> Nutrition</a>
+    <a class="nav-item" href="entrainement.html"><span class="nav-icon">💪</span> Entraînement</a>
+    <a class="nav-item" href="progression.html"><span class="nav-icon">📊</span> Progression</a>
+    <div class="nav-section-label">IA & Motivation</div>
+    <a class="nav-item" href="coach.html"><span class="nav-icon">🤖</span> Coach Sensei</a>
+    <a class="nav-item" href="#"><span class="nav-icon">📖</span> Versets & Prières</a>
+    <a class="nav-item" href="#"><span class="nav-icon">🏆</span> Classement</a>
+    <div class="nav-section-label">Compte</div>
+    <a class="nav-item" href="profil.html"><span class="nav-icon">👤</span> Profil</a>
+    <a class="nav-item" href="#"><span class="nav-icon">⚙️</span> Paramètres</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="user-card" onclick="window.location.href='profil.html'">
+      <div class="user-avatar" id="sidebar-avatar">?</div>
+      <div>
+        <div class="user-name" id="sidebar-name">Chargement...</div>
+        <div class="user-plan" id="sidebar-plan">—</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-tag" id="topbar-date">—</div>
+      <div class="topbar-title" id="topbar-greeting">Bonjour, Guerrier 👊</div>
+    </div>
+    <div class="topbar-right">
+      <div class="streak-pill" id="streak-pill">🔥 0 jour</div>
+      <button class="logout-btn" onclick="logout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Verset -->
+    <div class="verse-banner">
+      <div class="verse-left">
+        <span class="verse-emoji">✝️</span>
+        <div>
+          <div class="verse-quote" id="verse-text">"Il donne de la force à celui qui est fatigué."</div>
+          <div class="verse-ref" id="verse-ref">Ésaïe 40:29</div>
+        </div>
+      </div>
+      <div class="verse-date">Verset du jour</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">🔥 Calories</div>
+        <div class="stat-value"><span id="stat-cal">0</span> <span class="stat-unit">kcal</span></div>
+        <div class="stat-sub">Objectif : <span id="stat-cal-goal">2 400</span> kcal</div>
+        <div class="stat-delta delta-up" id="stat-cal-pct">0% atteint</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">⚖️ Poids</div>
+        <div class="stat-value"><span id="stat-poids">—</span> <span class="stat-unit">kg</span></div>
+        <div class="stat-sub">Objectif : <span id="stat-poids-cible">—</span> kg</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">📸 Masse grasse</div>
+        <div class="stat-value"><span id="stat-mg">—</span> <span class="stat-unit">%</span></div>
+        <div class="stat-sub">Dernière mesure</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">💪 Repas</div>
+        <div class="stat-value"><span id="stat-repas">0</span></div>
+        <div class="stat-sub">aujourd'hui</div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID : Calories | Corps 3D | Side -->
+    <div class="main-grid">
+
+      <!-- Gauche — Calories + Repas -->
+      <div style="display:flex;flex-direction:column;gap:20px;">
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Calories du jour</div>
+            <a class="card-action" href="nutrition.html">+ Ajouter repas</a>
+          </div>
+          <div class="cal-main">
+            <div class="cal-big" id="cal-big">0</div>
+            <div class="cal-meta">
+              <div class="cal-goal">sur <span id="cal-goal-label">2 400</span> kcal</div>
+              <div class="cal-remain" id="cal-remain">2 400 restantes</div>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="cal-bar" style="width:0%"></div>
+          </div>
+          <div class="macros-row">
+            <div class="macro-item"><div class="macro-val" id="macro-prot">0g</div><div class="macro-label">Protéines</div></div>
+            <div class="macro-item"><div class="macro-val" id="macro-carb">0g</div><div class="macro-label">Glucides</div></div>
+            <div class="macro-item"><div class="macro-val" id="macro-fat">0g</div><div class="macro-label">Lipides</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Repas du jour</div>
+            <a class="card-action" href="nutrition.html">Voir tout</a>
+          </div>
+          <div id="repas-container">
+            <div class="empty-state"><div class="empty-icon">🍽️</div>Aucun repas enregistré aujourd'hui.</div>
+          </div>
+          <button class="add-btn" onclick="window.location.href='nutrition.html'">+ Ajouter un repas</button>
+        </div>
+
+      </div>
+
+      <!-- Centre — Corps 3D -->
+      <div class="body3d-card">
+        <div class="card-header">
+          <div class="card-title">Corps 3D</div>
+          <span style="font-size:10px;color:var(--muted);letter-spacing:1px;">Glisse pour tourner</span>
+        </div>
+
+        <canvas id="body3d-canvas"></canvas>
+
+        <div class="body3d-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#c82828"></div>Muscles actifs</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#e8a000"></div>Graisse</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#e0e0e0"></div>Corps</div>
+        </div>
+
+        <div class="body3d-muscles" id="active-muscles">
+          <div style="font-size:11px;color:var(--muted);text-align:center;letter-spacing:1px;">Fais une séance pour voir tes muscles actifs</div>
+        </div>
+
+        <div class="body3d-hint">↔ Drag to rotate · Scroll to zoom</div>
+      </div>
+
+      <!-- Droite — Semaine + Coach -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">Cette semaine</div></div>
+          <div class="week-grid" id="week-grid"></div>
+        </div>
+
+        <div class="ai-teaser" onclick="window.location.href='coach.html'">
+          <div class="ai-header">
+            <div class="ai-avatar">🤖</div>
+            <div>
+              <div class="ai-name">Sensei</div>
+              <div class="ai-status">Coach IA • En ligne</div>
+            </div>
+          </div>
+          <div class="ai-message" id="ai-message">"Bienvenue, Guerrier. Je suis prêt à t'accompagner."</div>
+          <button class="ai-cta">Parler à Sensei →</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  // ── SUPABASE ──
+  const { createClient } = supabase;
+  const sb = createClient(
+    'https://lbxlvrtujzwlcnloheyh.supabase.co',
+    'sb_publishable_40dpIdYthKMZkJImacoKoQ_ftEeaPeg'
+  );
+
+  const versets = [
+    { text: '"Je puis tout par celui qui me fortifie."', ref: 'Philippiens 4:13' },
+    { text: '"Il donne de la force à celui qui est fatigué."', ref: 'Ésaïe 40:29' },
+    { text: '"Sois fort et courageux ! L\'Éternel, ton Dieu, est avec toi."', ref: 'Josué 1:9' },
+    { text: '"L\'Éternel est ma force et mon bouclier."', ref: 'Psaumes 28:7' },
+    { text: '"Commets ton sort à l\'Éternel, mets en lui ta confiance."', ref: 'Psaumes 37:5' },
+    { text: '"Je connais les projets que j\'ai formés sur vous, des projets de paix."', ref: 'Jérémie 29:11' },
+    { text: '"Ne tremble pas, ne t\'effraie pas, car l\'Éternel est avec toi."', ref: 'Josué 1:9' },
+  ];
+
+  let userProfile = null;
+  let activeMuscles = [];
+
+  // ── INIT ──
+  async function init() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { window.location.href = 'inscription.html'; return; }
+
+    const user = session.user;
+    const { data: profile } = await sb.from('users').select('*').eq('id', user.id).single();
+    userProfile = profile;
+
+    const prenom = profile?.prenom || user.user_metadata?.prenom || 'Guerrier';
+    const planLabel = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
+
+    document.getElementById('sidebar-avatar').textContent = prenom[0].toUpperCase();
+    document.getElementById('sidebar-name').textContent = `${prenom} ${profile?.nom || ''}`.trim();
+    document.getElementById('sidebar-plan').textContent = planLabel[profile?.plan || 'gratuit'];
+    document.getElementById('topbar-greeting').textContent = `Bonjour, Guerrier ${prenom} 👊`;
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('topbar-date').textContent = `— ${dateStr.charAt(0).toUpperCase() + dateStr.slice(1)}`;
+
+    if (profile?.poids) document.getElementById('stat-poids').textContent = profile.poids;
+    if (profile?.poids_cible) document.getElementById('stat-poids-cible').textContent = profile.poids_cible;
+    if (profile?.masse_grasse) document.getElementById('stat-mg').textContent = profile.masse_grasse;
+
+    const calObj = profile?.calories_objectif || 2400;
+    document.getElementById('stat-cal-goal').textContent = calObj.toLocaleString('fr-FR');
+    document.getElementById('cal-goal-label').textContent = calObj.toLocaleString('fr-FR');
+
+    document.getElementById('streak-pill').textContent = `🔥 ${profile?.streak || 0} jour${(profile?.streak || 0) > 1 ? 's' : ''}`;
+
+    const v = versets[now.getDay()];
+    document.getElementById('verse-text').textContent = v.text;
+    document.getElementById('verse-ref').textContent = v.ref;
+
+    await loadMeals(user.id, profile);
+    await loadWorkouts(user.id);
+    renderWeek();
+
+    document.getElementById('loading').style.display = 'none';
+    init3DBody();
+  }
+
+  async function loadMeals(userId, profile) {
+    const today = new Date().toISOString().split('T')[0];
+    const { data: meals } = await sb.from('meals').select('*').eq('user_id', userId).eq('date', today);
+
+    if (!meals || meals.length === 0) {
+      document.getElementById('stat-repas').textContent = '0';
+      updateCalories(0, 0, 0, 0, profile);
+      return;
+    }
+
+    const totalCal = meals.reduce((s, m) => s + (m.calories || 0), 0);
+    const totalProt = meals.reduce((s, m) => s + (m.proteines || 0), 0);
+    const totalCarb = meals.reduce((s, m) => s + (m.glucides || 0), 0);
+    const totalFat = meals.reduce((s, m) => s + (m.lipides || 0), 0);
+
+    document.getElementById('stat-repas').textContent = meals.length;
+    updateCalories(totalCal, totalProt, totalCarb, totalFat, profile);
+
+    const icons = { 'petit-dejeuner': '🌅', 'dejeuner': '☀️', 'collation': '🌤️', 'diner': '🌙' };
+    const container = document.getElementById('repas-container');
+    container.innerHTML = `<div class="repas-list">` +
+      meals.map(m => `
+        <div class="repas-item">
+          <div class="repas-left">
+            <span class="repas-icon">${icons[m.type_repas] || '🍴'}</span>
+            <div>
+              <div class="repas-name">${m.nom}</div>
+              <div class="repas-time">${m.type_repas || ''}</div>
+            </div>
+          </div>
+          <div class="repas-cal">${m.calories} kcal</div>
+        </div>
+      `).join('') +
+    `</div>`;
+  }
+
+  function updateCalories(cal, prot, carb, fat, profile) {
+    const objectif = profile?.calories_objectif || 2400;
+    const restantes = Math.max(0, objectif - cal);
+    const pct = Math.min(100, Math.round((cal / objectif) * 100));
+    document.getElementById('stat-cal').textContent = cal.toLocaleString('fr-FR');
+    document.getElementById('stat-cal-pct').textContent = `↑ ${pct}% atteint`;
+    document.getElementById('cal-big').textContent = cal.toLocaleString('fr-FR');
+    document.getElementById('cal-remain').textContent = `${restantes.toLocaleString('fr-FR')} restantes`;
+    document.getElementById('cal-bar').style.width = pct + '%';
+    document.getElementById('macro-prot').textContent = Math.round(prot) + 'g';
+    document.getElementById('macro-carb').textContent = Math.round(carb) + 'g';
+    document.getElementById('macro-fat').textContent = Math.round(fat) + 'g';
+  }
+
+  async function loadWorkouts(userId) {
+    const today = new Date().toISOString().split('T')[0];
+    const { data: workouts } = await sb.from('workouts').select('*').eq('user_id', userId).eq('date', today);
+    if (!workouts || workouts.length === 0) return;
+    activeMuscles = [...new Set(workouts.filter(w => w.termine).map(w => w.muscle_cible).filter(Boolean))];
+    renderActiveMuscles();
+  }
+
+  function renderActiveMuscles() {
+    const container = document.getElementById('active-muscles');
+    if (activeMuscles.length === 0) {
+      container.innerHTML = '<div style="font-size:11px;color:var(--muted);text-align:center;letter-spacing:1px;">Fais une séance pour voir tes muscles actifs</div>';
+      return;
+    }
+    container.innerHTML = activeMuscles.map(m => `<div class="muscle-tag">🔥 ${m}</div>`).join('');
+    update3DBody();
+  }
+
+  function renderWeek() {
+    const days = ['L','M','M','J','V','S','D'];
+    const today = new Date().getDay();
+    const todayIdx = today === 0 ? 6 : today - 1;
+    document.getElementById('week-grid').innerHTML = days.map((d, i) => `
+      <div class="week-day">
+        <div class="week-label">${d}</div>
+        <div class="week-dot ${i === todayIdx ? 'today' : i < todayIdx ? 'done' : 'empty'}">
+          ${i === todayIdx ? '●' : i < todayIdx ? '✓' : '—'}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function logout() {
+    await sb.auth.signOut();
+    window.location.href = 'inscription.html';
+  }
+
+  // ── CORPS 3D THREE.JS ──
+  let scene, camera, renderer, bodyGroup;
+  let isDragging = false;
+  let previousMouse = { x: 0, y: 0 };
+  let bodyParts = {};
+
+  function init3DBody() {
+    const canvas = document.getElementById('body3d-canvas');
+    const container = canvas.parentElement;
+    const w = canvas.clientWidth || 248;
+    const h = 320;
+
+    // Scene
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0d0d0d);
+
+    // Camera
+    camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+    camera.position.set(0, 1, 4.5);
+
+    // Renderer
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.shadowMap.enabled = true;
+
+    // Lumières
+    const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambient);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(3, 5, 3);
+    scene.add(dirLight);
+
+    const rimLight = new THREE.DirectionalLight(0xff4444, 0.3);
+    rimLight.position.set(-3, 2, -3);
+    scene.add(rimLight);
+
+    // Groupe principal
+    bodyGroup = new THREE.Group();
+    scene.add(bodyGroup);
+
+    buildBody();
+    addMouseControls(canvas);
+    animate();
+  }
+
+  function getBodyMat(color, opacity = 1) {
+    return new THREE.MeshPhongMaterial({
+      color,
+      transparent: opacity < 1,
+      opacity,
+      shininess: 40,
+    });
+  }
+
+  const COLOR_BODY   = 0xe8e8e8;  // blanc/gris — corps
+  const COLOR_MUSCLE = 0xc82828;  // rouge — muscles actifs
+  const COLOR_FAT    = 0xe8a000;  // jaune — graisse
+  const COLOR_JOINT  = 0xaaaaaa;  // gris joints
+
+  // Map muscle cible → parties du corps
+  const MUSCLE_MAP = {
+    'Poitrine':  ['chest'],
+    'Dos':       ['back_upper', 'back_lower'],
+    'Jambes':    ['thigh_l', 'thigh_r', 'calf_l', 'calf_r'],
+    'Épaules':   ['shoulder_l', 'shoulder_r'],
+    'Biceps':    ['bicep_l', 'bicep_r'],
+    'Triceps':   ['tricep_l', 'tricep_r'],
+    'Abdos':     ['abdomen'],
+    'Cardio':    ['chest', 'abdomen', 'thigh_l', 'thigh_r'],
+  };
+
+  function buildBody() {
+    // Tête
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), getBodyMat(COLOR_BODY));
+    head.position.set(0, 2.28, 0);
+    bodyGroup.add(head);
+    bodyParts['head'] = head;
+
+    // Cou
+    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.2, 12), getBodyMat(COLOR_JOINT));
+    neck.position.set(0, 2.0, 0);
+    bodyGroup.add(neck);
+
+    // Torse
+    const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.22, 0.7, 16), getBodyMat(COLOR_BODY));
+    torso.position.set(0, 1.55, 0);
+    bodyGroup.add(torso);
+    bodyParts['chest'] = torso;
+
+    // Abdomen
+    const abdomen = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.20, 0.45, 16), getBodyMat(COLOR_FAT));
+    abdomen.position.set(0, 1.05, 0);
+    bodyGroup.add(abdomen);
+    bodyParts['abdomen'] = abdomen;
+
+    // Bassin
+    const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.22, 0.3, 16), getBodyMat(COLOR_BODY));
+    pelvis.position.set(0, 0.72, 0);
+    bodyGroup.add(pelvis);
+
+    // Dos upper (derrière torse)
+    const backU = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.6, 0.12), getBodyMat(COLOR_BODY));
+    backU.position.set(0, 1.55, -0.17);
+    bodyGroup.add(backU);
+    bodyParts['back_upper'] = backU;
+
+    // Dos lower
+    const backL = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.4, 0.1), getBodyMat(COLOR_FAT));
+    backL.position.set(0, 1.0, -0.15);
+    bodyGroup.add(backL);
+    bodyParts['back_lower'] = backL;
+
+    // Épaules
+    [['shoulder_l', -0.38], ['shoulder_r', 0.38]].forEach(([key, x]) => {
+      const s = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 12), getBodyMat(COLOR_BODY));
+      s.position.set(x, 1.82, 0);
+      bodyGroup.add(s);
+      bodyParts[key] = s;
+    });
+
+    // Bras upper (biceps + triceps)
+    [
+      ['bicep_l', -0.48, 1.45], ['bicep_r', 0.48, 1.45],
+      ['tricep_l', -0.5, 1.42], ['tricep_r', 0.5, 1.42],
+    ].forEach(([key, x, y]) => {
+      const isTricep = key.includes('tricep');
+      const arm = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.085, 0.075, 0.4, 12),
+        getBodyMat(isTricep ? COLOR_FAT : COLOR_BODY)
+      );
+      arm.position.set(x, y, isTricep ? -0.05 : 0.05);
+      bodyGroup.add(arm);
+      bodyParts[key] = arm;
+    });
+
+    // Avant-bras
+    [[-0.52, 1.0], [0.52, 1.0]].forEach(([x, y]) => {
+      const fa = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.055, 0.38, 12), getBodyMat(COLOR_BODY));
+      fa.position.set(x, y, 0);
+      bodyGroup.add(fa);
+    });
+
+    // Mains
+    [[-0.54, 0.75], [0.54, 0.75]].forEach(([x, y]) => {
+      const hand = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 10), getBodyMat(COLOR_JOINT));
+      hand.position.set(x, y, 0);
+      bodyGroup.add(hand);
+    });
+
+    // Cuisses
+    [['thigh_l', -0.15, 0.32], ['thigh_r', 0.15, 0.32]].forEach(([key, x, y]) => {
+      const t = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.10, 0.6, 14), getBodyMat(COLOR_FAT));
+      t.position.set(x, y, 0);
+      bodyGroup.add(t);
+      bodyParts[key] = t;
+    });
+
+    // Genoux
+    [[-0.15, 0.0], [0.15, 0.0]].forEach(([x, y]) => {
+      const k = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 10), getBodyMat(COLOR_JOINT));
+      k.position.set(x, y, 0);
+      bodyGroup.add(k);
+    });
+
+    // Mollets
+    [['calf_l', -0.15, -0.35], ['calf_r', 0.15, -0.35]].forEach(([key, x, y]) => {
+      const c = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.065, 0.55, 12), getBodyMat(COLOR_BODY));
+      c.position.set(x, y, 0);
+      bodyGroup.add(c);
+      bodyParts[key] = c;
+    });
+
+    // Pieds
+    [[-0.15, -0.68], [0.15, -0.68]].forEach(([x, y]) => {
+      const f = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.07, 0.22), getBodyMat(COLOR_JOINT));
+      f.position.set(x, y, 0.05);
+      bodyGroup.add(f);
+    });
+
+    // Position initiale
+    bodyGroup.position.y = -0.8;
+  }
+
+  function update3DBody() {
+    // Reset toutes les couleurs par défaut
+    const defaults = {
+      head: COLOR_BODY, chest: COLOR_BODY, abdomen: COLOR_FAT,
+      back_upper: COLOR_BODY, back_lower: COLOR_FAT,
+      shoulder_l: COLOR_BODY, shoulder_r: COLOR_BODY,
+      bicep_l: COLOR_BODY, bicep_r: COLOR_BODY,
+      tricep_l: COLOR_FAT, tricep_r: COLOR_FAT,
+      thigh_l: COLOR_FAT, thigh_r: COLOR_FAT,
+      calf_l: COLOR_BODY, calf_r: COLOR_BODY,
+    };
+
+    Object.entries(defaults).forEach(([key, color]) => {
+      if (bodyParts[key]) bodyParts[key].material.color.setHex(color);
+    });
+
+    // Allumer les muscles actifs en rouge
+    activeMuscles.forEach(muscle => {
+      const parts = MUSCLE_MAP[muscle] || [];
+      parts.forEach(part => {
+        if (bodyParts[part]) {
+          bodyParts[part].material.color.setHex(COLOR_MUSCLE);
+        }
+      });
+    });
+  }
+
+  function addMouseControls(canvas) {
+    let startX, startY, rotX = 0, rotY = 0;
+
+    canvas.addEventListener('mousedown', e => {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+    });
+
+    window.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      rotY += dx * 0.01;
+      rotX += dy * 0.005;
+      rotX = Math.max(-0.6, Math.min(0.6, rotX));
+      bodyGroup.rotation.y = rotY;
+      bodyGroup.rotation.x = rotX;
+      startX = e.clientX;
+      startY = e.clientY;
+    });
+
+    window.addEventListener('mouseup', () => isDragging = false);
+
+    // Touch support
+    canvas.addEventListener('touchstart', e => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    });
+
+    canvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      const dx = e.touches[0].clientX - startX;
+      const dy = e.touches[0].clientY - startY;
+      rotY += dx * 0.01;
+      rotX += dy * 0.005;
+      rotX = Math.max(-0.6, Math.min(0.6, rotX));
+      bodyGroup.rotation.y = rotY;
+      bodyGroup.rotation.x = rotX;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }, { passive: false });
+
+    // Zoom scroll
+    canvas.addEventListener('wheel', e => {
+      camera.position.z += e.deltaY * 0.005;
+      camera.position.z = Math.max(2.5, Math.min(7, camera.position.z));
+    });
+
+    // Auto-rotation douce
+    let autoRotate = true;
+    canvas.addEventListener('mousedown', () => autoRotate = false);
+    canvas.addEventListener('touchstart', () => autoRotate = false);
+    setTimeout(() => {
+      function autoRot() {
+        if (autoRotate && bodyGroup) bodyGroup.rotation.y += 0.005;
+        requestAnimationFrame(autoRot);
+      }
+      autoRot();
+    }, 2000);
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+  }
+
+  init();
+</script>
+</body>
+</html>
