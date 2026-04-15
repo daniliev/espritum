@@ -574,7 +574,7 @@
           </thead>
           <tbody>
             <tr onclick="viewUser('Kaito Yamada')">
-              <td><div class="user-cell"><div class="user-mini-avatar">K</div><div><div class="user-mini-name">Kaito Yamada</div><div class="user-mini-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="345f555d405b74514c51594458511a575b59">[email&#160;protected]</a></div></div></div></td>
+              <td><div class="user-cell"><div class="user-mini-avatar">K</div><div><div class="user-mini-name">Kaito Yamada</div><div class="user-mini-email">kaito@exemple.com</div></div></div></td>
               <td><span class="plan-pill pill-champion">🛡️ Champion</span></td>
               <td>13 mars 2025</td>
               <td>Il y a 2h</td>
@@ -583,7 +583,7 @@
               <td><a class="card-action" href="#">Voir</a></td>
             </tr>
             <tr onclick="viewUser('Sarah Dupont')">
-              <td><div class="user-cell"><div class="user-mini-avatar">S</div><div><div class="user-mini-name">Sarah Dupont</div><div class="user-mini-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="196a786b7871597c617c7469757c377a7674">[email&#160;protected]</a></div></div></div></td>
+              <td><div class="user-cell"><div class="user-mini-avatar">S</div><div><div class="user-mini-name">Sarah Dupont</div><div class="user-mini-email">sarah@exemple.com</div></div></div></td>
               <td><span class="plan-pill pill-elite">👑 Élite</span></td>
               <td>12 avr. 2025</td>
               <td>Il y a 1j</td>
@@ -592,7 +592,7 @@
               <td><a class="card-action" href="#">Voir</a></td>
             </tr>
             <tr onclick="viewUser('Marc Lebrun')">
-              <td><div class="user-cell"><div class="user-mini-avatar">M</div><div><div class="user-mini-name">Marc Lebrun</div><div class="user-mini-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="335e52415073564b565e435f561d505c5e">[email&#160;protected]</a></div></div></div></td>
+              <td><div class="user-cell"><div class="user-mini-avatar">M</div><div><div class="user-mini-name">Marc Lebrun</div><div class="user-mini-email">marc@exemple.com</div></div></div></td>
               <td><span class="plan-pill pill-guerrier">⚔️ Guerrier</span></td>
               <td>10 avr. 2025</td>
               <td>Il y a 3j</td>
@@ -601,7 +601,7 @@
               <td><a class="card-action" href="#">Voir</a></td>
             </tr>
             <tr onclick="viewUser('Aïsha Koné')">
-              <td><div class="user-cell"><div class="user-mini-avatar">A</div><div><div class="user-mini-name">Aïsha Koné</div><div class="user-mini-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94f5fde7fcf5d4f1ecf1f9e4f8f1baf7fbf9">[email&#160;protected]</a></div></div></div></td>
+              <td><div class="user-cell"><div class="user-mini-avatar">A</div><div><div class="user-mini-name">Aïsha Koné</div><div class="user-mini-email">aisha@exemple.com</div></div></div></td>
               <td><span class="plan-pill pill-champion">🛡️ Champion</span></td>
               <td>8 avr. 2025</td>
               <td>Il y a 4h</td>
@@ -610,7 +610,7 @@
               <td><a class="card-action" href="#">Voir</a></td>
             </tr>
             <tr onclick="viewUser('Thomas Bernard')">
-              <td><div class="user-cell"><div class="user-mini-avatar">T</div><div><div class="user-mini-name">Thomas Bernard</div><div class="user-mini-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94e0fcfbf9f5e7d4f1ecf1f9e4f8f1baf7fbf9">[email&#160;protected]</a></div></div></div></td>
+              <td><div class="user-cell"><div class="user-mini-avatar">T</div><div><div class="user-mini-name">Thomas Bernard</div><div class="user-mini-email">thomas@exemple.com</div></div></div></td>
               <td><span class="plan-pill pill-gratuit">Gratuit</span></td>
               <td>13 avr. 2025</td>
               <td>Il y a 30min</td>
@@ -768,7 +768,7 @@
   </div>
 </main>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js" defer></script><script>
+<script>
   // Graphique revenus 6 mois
   new Chart(document.getElementById('revenueChart').getContext('2d'), {
     type: 'bar',
@@ -802,4 +802,33 @@
       plugins: { legend: { display: false } },
       scales: {
         x: { grid: { color: '#141414' }, ticks: { color: '#555', font: { size: 11 } } },
-        y: { grid: { color: '#141414' }, ticks: { color: '#555', font: { size: 11 }, callback: v => v + '€' }, 
+        y: { grid: { color: '#141414' }, ticks: { color: '#555', font: { size: 11 }, callback: v => v + '€' }, position: 'left' },
+        y1: { grid: { display: false }, ticks: { color: '#1565c0', font: { size: 11 } }, position: 'right' }
+      }
+    }
+  });
+
+  // Donut abonnements
+  new Chart(document.getElementById('donutChart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [684, 312, 247],
+        backgroundColor: ['#c82828', '#e8a000', '#1565c0'],
+        borderWidth: 0,
+        hoverOffset: 4
+      }]
+    },
+    options: {
+      cutout: '72%',
+      plugins: { legend: { display: false }, tooltip: { enabled: true } },
+      animation: { duration: 800 }
+    }
+  });
+
+  function viewUser(name) {
+    window.location.href = 'admin_users.html';
+  }
+</script>
+</body>
+</html>
