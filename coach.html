@@ -113,6 +113,21 @@
 
   @media (max-width: 1100px) { .chat-sidebar { display: none; } }
   @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } }
+
+  .nav-item.locked { opacity: 0.4; cursor: not-allowed; }
+  .nav-item.locked:hover { background: transparent; color: var(--muted); }
+  .nav-lock { font-size: 11px; margin-left: auto; opacity: 0.6; }
+
+  .upgrade-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center; }
+  .upgrade-modal.open { display: flex; }
+  .upgrade-box { background: #0d0d0d; border: 1px solid #1e1e1e; border-radius: 10px; padding: 36px; width: 420px; max-width: 95vw; text-align: center; }
+  .upgrade-icon { font-size: 48px; margin-bottom: 16px; }
+  .upgrade-title { font-family: var(--font-display); font-size: 32px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .upgrade-desc { font-size: 14px; color: #666; line-height: 1.7; font-weight: 300; margin-bottom: 24px; }
+  .upgrade-btn { width: 100%; padding: 15px; background: #c82828; border: none; border-radius: 4px; color: #fff; font-family: var(--font-body, sans-serif); font-size: 13px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; margin-bottom: 10px; }
+  .upgrade-btn:hover { background: #d93030; }
+  .upgrade-cancel { font-size: 12px; color: #555; cursor: pointer; letter-spacing: 1px; }
+  .upgrade-cancel:hover { color: #888; }
 </style>
 </head>
 <body>
@@ -128,18 +143,19 @@
     <span class="sidebar-name">Espritum</span>
   </a>
   <nav class="sidebar-nav">
+
     <div class="nav-section-label">Principal</div>
     <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span> Dashboard</a>
-    <a class="nav-item" href="nutrition.html"><span class="nav-icon">🍎</span> Nutrition</a>
-    <a class="nav-item" href="entrainement.html"><span class="nav-icon">💪</span> Entraînement</a>
-    <a class="nav-item" href="progression.html"><span class="nav-icon">📊</span> Progression</a>
+    <a class="nav-item nav-freemium" href="nutrition.html" data-feature="Nutrition"><span class="nav-icon">🍎</span> Nutrition<span class="nav-lock" id="lock-nutrition"></span></a>
+    <a class="nav-item nav-freemium" href="entrainement.html" data-feature="Entraînement"><span class="nav-icon">💪</span> Entraînement<span class="nav-lock" id="lock-entrainement"></span></a>
+    <a class="nav-item nav-freemium" href="progression.html" data-feature="Progression"><span class="nav-icon">📊</span> Progression<span class="nav-lock" id="lock-progression"></span></a>
     <div class="nav-section-label">IA & Motivation</div>
     <a class="nav-item" href="bodyfat.html"><span class="nav-icon">📸</span> Estimation corporelle</a>
-    <a class="nav-item active" href="#"><span class="nav-icon">🤖</span> Coach Sensei</a>
-    <a class="nav-item" href="classement.html"><span class="nav-icon">🏆</span> Classement</a>
+    <a class="nav-item  active nav-freemium" href="coach.html" data-feature="Coach Sensei"><span class="nav-icon">🤖</span> Coach Sensei<span class="nav-lock" id="lock-coach"></span></a>
+    <a class="nav-item nav-freemium" href="classement.html" data-feature="Classement"><span class="nav-icon">🏆</span> Classement<span class="nav-lock" id="lock-classement"></span></a>
     <div class="nav-section-label">Compte</div>
     <a class="nav-item" href="profil.html"><span class="nav-icon">👤</span> Profil</a>
-    <a class="nav-item" href="profil.html"><span class="nav-icon">⚙️</span> Paramètres</a>
+    <a class="nav-item" href="espritum_pricing_v5.html"><span class="nav-icon">⭐</span> Abonnement</a>
   </nav>
   <div class="sidebar-bottom">
     <div class="user-card">
@@ -434,6 +450,36 @@ Tes réponses : maximum 4 paragraphes, direct, actionnable. En français.`;
   function getTime() { return new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }); }
 
   init();
+</script>
+
+<script>
+  // Freemium sidebar logic
+  function initFreemium(plan) {
+    const locked = ['nutrition', 'entrainement', 'progression', 'coach', 'classement'];
+    const isPaid = ['guerrier', 'champion', 'elite'].includes(plan);
+    
+    if (!isPaid) {
+      document.querySelectorAll('.nav-freemium').forEach(el => {
+        el.classList.add('locked');
+        const lock = el.querySelector('.nav-lock');
+        if (lock) lock.textContent = '🔒';
+        el.addEventListener('click', function(e) {
+          e.preventDefault();
+          const feature = this.getAttribute('data-feature');
+          openUpgrade(feature);
+        });
+      });
+    }
+  }
+
+  function openUpgrade(feature) {
+    document.getElementById('upgrade-feature').textContent = feature || 'Cette fonctionnalité';
+    document.getElementById('upgrade-modal').classList.add('open');
+  }
+
+  function closeUpgrade() {
+    document.getElementById('upgrade-modal').classList.remove('open');
+  }
 </script>
 </body>
 </html>
