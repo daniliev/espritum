@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
 <style>
   :root {
     --red: #c82828;
@@ -111,16 +111,6 @@
     flex-direction: column;
     position: relative;
   }
-
-  #body3d-canvas {
-    width: 100%;
-    height: 320px;
-    border-radius: 6px;
-    cursor: grab;
-    display: block;
-  }
-
-  #body3d-canvas:active { cursor: grabbing; }
 
   .body3d-legend {
     display: flex;
@@ -379,26 +369,35 @@
 
       </div>
 
-      <!-- Centre — Corps 3D -->
+            <!-- Centre — Corps 3D Sketchfab -->
       <div class="body3d-card">
         <div class="card-header">
           <div class="card-title">Corps 3D</div>
-          <span style="font-size:10px;color:var(--muted);letter-spacing:1px;">Glisse pour tourner</span>
+          <span style="font-size:10px;color:var(--muted);letter-spacing:1px;">Interactif · Drag to rotate</span>
         </div>
 
-        <canvas id="body3d-canvas"></canvas>
+        <div style="position:relative;width:100%;height:340px;border-radius:6px;overflow:hidden;background:#0a0a0a;">
+          <iframe
+            title="man muscle human body"
+            frameborder="0"
+            allowfullscreen
+            mozallowfullscreen="true"
+            webkitallowfullscreen="true"
+            allow="autoplay; fullscreen; xr-spatial-tracking"
+            style="width:100%;height:100%;border:none;"
+            src="https://sketchfab.com/models/b57a6b16ad0d4e81adebda16a5a274df/embed?autospin=0.3&autostart=1&ui_theme=dark&ui_infos=0&ui_controls=1&ui_watermark=0&ui_watermark_link=0&ui_ar=0&ui_help=0&ui_settings=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&dnt=1">
+          </iframe>
+        </div>
 
         <div class="body3d-legend">
-          <div class="legend-item"><div class="legend-dot" style="background:#c82828"></div>Muscles actifs</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#c82828"></div>Muscles</div>
           <div class="legend-item"><div class="legend-dot" style="background:#e8a000"></div>Graisse</div>
           <div class="legend-item"><div class="legend-dot" style="background:#e0e0e0"></div>Corps</div>
         </div>
 
         <div class="body3d-muscles" id="active-muscles">
-          <div style="font-size:11px;color:var(--muted);text-align:center;letter-spacing:1px;">Fais une séance pour voir tes muscles actifs</div>
+          <div style="font-size:11px;color:var(--muted);text-align:center;letter-spacing:1px;">Muscles actifs aujourd'hui</div>
         </div>
-
-        <div class="body3d-hint">↔ Drag to rotate · Scroll to zoom</div>
       </div>
 
       <!-- Droite — Semaine + Coach -->
@@ -488,7 +487,6 @@
     renderWeek();
 
     document.getElementById('loading').style.display = 'none';
-    init3DBody();
   }
 
   async function loadMeals(userId, profile) {
@@ -576,285 +574,6 @@
   async function logout() {
     await sb.auth.signOut();
     window.location.href = 'inscription.html';
-  }
-
-  // ── CORPS 3D THREE.JS ──
-  let scene, camera, renderer, bodyGroup;
-  let isDragging = false;
-  let previousMouse = { x: 0, y: 0 };
-  let bodyParts = {};
-
-  function init3DBody() {
-    const canvas = document.getElementById('body3d-canvas');
-    const container = canvas.parentElement;
-    const w = canvas.clientWidth || 248;
-    const h = 320;
-
-    // Scene
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0d0d0d);
-
-    // Camera
-    camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
-    camera.position.set(0, 1, 4.5);
-
-    // Renderer
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    renderer.setSize(w, h);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.shadowMap.enabled = true;
-
-    // Lumières
-    const ambient = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambient);
-
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    dirLight.position.set(3, 5, 3);
-    scene.add(dirLight);
-
-    const rimLight = new THREE.DirectionalLight(0xff4444, 0.3);
-    rimLight.position.set(-3, 2, -3);
-    scene.add(rimLight);
-
-    // Groupe principal
-    bodyGroup = new THREE.Group();
-    scene.add(bodyGroup);
-
-    buildBody();
-    addMouseControls(canvas);
-    animate();
-  }
-
-  function getBodyMat(color, opacity = 1) {
-    return new THREE.MeshPhongMaterial({
-      color,
-      transparent: opacity < 1,
-      opacity,
-      shininess: 40,
-    });
-  }
-
-  const COLOR_BODY   = 0xe8e8e8;  // blanc/gris — corps
-  const COLOR_MUSCLE = 0xc82828;  // rouge — muscles actifs
-  const COLOR_FAT    = 0xe8a000;  // jaune — graisse
-  const COLOR_JOINT  = 0xaaaaaa;  // gris joints
-
-  // Map muscle cible → parties du corps
-  const MUSCLE_MAP = {
-    'Poitrine':  ['chest'],
-    'Dos':       ['back_upper', 'back_lower'],
-    'Jambes':    ['thigh_l', 'thigh_r', 'calf_l', 'calf_r'],
-    'Épaules':   ['shoulder_l', 'shoulder_r'],
-    'Biceps':    ['bicep_l', 'bicep_r'],
-    'Triceps':   ['tricep_l', 'tricep_r'],
-    'Abdos':     ['abdomen'],
-    'Cardio':    ['chest', 'abdomen', 'thigh_l', 'thigh_r'],
-  };
-
-  function buildBody() {
-    // Tête
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), getBodyMat(COLOR_BODY));
-    head.position.set(0, 2.28, 0);
-    bodyGroup.add(head);
-    bodyParts['head'] = head;
-
-    // Cou
-    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.2, 12), getBodyMat(COLOR_JOINT));
-    neck.position.set(0, 2.0, 0);
-    bodyGroup.add(neck);
-
-    // Torse
-    const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.22, 0.7, 16), getBodyMat(COLOR_BODY));
-    torso.position.set(0, 1.55, 0);
-    bodyGroup.add(torso);
-    bodyParts['chest'] = torso;
-
-    // Abdomen
-    const abdomen = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.20, 0.45, 16), getBodyMat(COLOR_FAT));
-    abdomen.position.set(0, 1.05, 0);
-    bodyGroup.add(abdomen);
-    bodyParts['abdomen'] = abdomen;
-
-    // Bassin
-    const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.22, 0.3, 16), getBodyMat(COLOR_BODY));
-    pelvis.position.set(0, 0.72, 0);
-    bodyGroup.add(pelvis);
-
-    // Dos upper (derrière torse)
-    const backU = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.6, 0.12), getBodyMat(COLOR_BODY));
-    backU.position.set(0, 1.55, -0.17);
-    bodyGroup.add(backU);
-    bodyParts['back_upper'] = backU;
-
-    // Dos lower
-    const backL = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.4, 0.1), getBodyMat(COLOR_FAT));
-    backL.position.set(0, 1.0, -0.15);
-    bodyGroup.add(backL);
-    bodyParts['back_lower'] = backL;
-
-    // Épaules
-    [['shoulder_l', -0.38], ['shoulder_r', 0.38]].forEach(([key, x]) => {
-      const s = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 12), getBodyMat(COLOR_BODY));
-      s.position.set(x, 1.82, 0);
-      bodyGroup.add(s);
-      bodyParts[key] = s;
-    });
-
-    // Bras upper (biceps + triceps)
-    [
-      ['bicep_l', -0.48, 1.45], ['bicep_r', 0.48, 1.45],
-      ['tricep_l', -0.5, 1.42], ['tricep_r', 0.5, 1.42],
-    ].forEach(([key, x, y]) => {
-      const isTricep = key.includes('tricep');
-      const arm = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.085, 0.075, 0.4, 12),
-        getBodyMat(isTricep ? COLOR_FAT : COLOR_BODY)
-      );
-      arm.position.set(x, y, isTricep ? -0.05 : 0.05);
-      bodyGroup.add(arm);
-      bodyParts[key] = arm;
-    });
-
-    // Avant-bras
-    [[-0.52, 1.0], [0.52, 1.0]].forEach(([x, y]) => {
-      const fa = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.055, 0.38, 12), getBodyMat(COLOR_BODY));
-      fa.position.set(x, y, 0);
-      bodyGroup.add(fa);
-    });
-
-    // Mains
-    [[-0.54, 0.75], [0.54, 0.75]].forEach(([x, y]) => {
-      const hand = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 10), getBodyMat(COLOR_JOINT));
-      hand.position.set(x, y, 0);
-      bodyGroup.add(hand);
-    });
-
-    // Cuisses
-    [['thigh_l', -0.15, 0.32], ['thigh_r', 0.15, 0.32]].forEach(([key, x, y]) => {
-      const t = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.10, 0.6, 14), getBodyMat(COLOR_FAT));
-      t.position.set(x, y, 0);
-      bodyGroup.add(t);
-      bodyParts[key] = t;
-    });
-
-    // Genoux
-    [[-0.15, 0.0], [0.15, 0.0]].forEach(([x, y]) => {
-      const k = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 10), getBodyMat(COLOR_JOINT));
-      k.position.set(x, y, 0);
-      bodyGroup.add(k);
-    });
-
-    // Mollets
-    [['calf_l', -0.15, -0.35], ['calf_r', 0.15, -0.35]].forEach(([key, x, y]) => {
-      const c = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.065, 0.55, 12), getBodyMat(COLOR_BODY));
-      c.position.set(x, y, 0);
-      bodyGroup.add(c);
-      bodyParts[key] = c;
-    });
-
-    // Pieds
-    [[-0.15, -0.68], [0.15, -0.68]].forEach(([x, y]) => {
-      const f = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.07, 0.22), getBodyMat(COLOR_JOINT));
-      f.position.set(x, y, 0.05);
-      bodyGroup.add(f);
-    });
-
-    // Position initiale
-    bodyGroup.position.y = -0.8;
-  }
-
-  function update3DBody() {
-    // Reset toutes les couleurs par défaut
-    const defaults = {
-      head: COLOR_BODY, chest: COLOR_BODY, abdomen: COLOR_FAT,
-      back_upper: COLOR_BODY, back_lower: COLOR_FAT,
-      shoulder_l: COLOR_BODY, shoulder_r: COLOR_BODY,
-      bicep_l: COLOR_BODY, bicep_r: COLOR_BODY,
-      tricep_l: COLOR_FAT, tricep_r: COLOR_FAT,
-      thigh_l: COLOR_FAT, thigh_r: COLOR_FAT,
-      calf_l: COLOR_BODY, calf_r: COLOR_BODY,
-    };
-
-    Object.entries(defaults).forEach(([key, color]) => {
-      if (bodyParts[key]) bodyParts[key].material.color.setHex(color);
-    });
-
-    // Allumer les muscles actifs en rouge
-    activeMuscles.forEach(muscle => {
-      const parts = MUSCLE_MAP[muscle] || [];
-      parts.forEach(part => {
-        if (bodyParts[part]) {
-          bodyParts[part].material.color.setHex(COLOR_MUSCLE);
-        }
-      });
-    });
-  }
-
-  function addMouseControls(canvas) {
-    let startX, startY, rotX = 0, rotY = 0;
-
-    canvas.addEventListener('mousedown', e => {
-      isDragging = true;
-      startX = e.clientX;
-      startY = e.clientY;
-    });
-
-    window.addEventListener('mousemove', e => {
-      if (!isDragging) return;
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-      rotY += dx * 0.01;
-      rotX += dy * 0.005;
-      rotX = Math.max(-0.6, Math.min(0.6, rotX));
-      bodyGroup.rotation.y = rotY;
-      bodyGroup.rotation.x = rotX;
-      startX = e.clientX;
-      startY = e.clientY;
-    });
-
-    window.addEventListener('mouseup', () => isDragging = false);
-
-    // Touch support
-    canvas.addEventListener('touchstart', e => {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-    });
-
-    canvas.addEventListener('touchmove', e => {
-      e.preventDefault();
-      const dx = e.touches[0].clientX - startX;
-      const dy = e.touches[0].clientY - startY;
-      rotY += dx * 0.01;
-      rotX += dy * 0.005;
-      rotX = Math.max(-0.6, Math.min(0.6, rotX));
-      bodyGroup.rotation.y = rotY;
-      bodyGroup.rotation.x = rotX;
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-    }, { passive: false });
-
-    // Zoom scroll
-    canvas.addEventListener('wheel', e => {
-      camera.position.z += e.deltaY * 0.005;
-      camera.position.z = Math.max(2.5, Math.min(7, camera.position.z));
-    });
-
-    // Auto-rotation douce
-    let autoRotate = true;
-    canvas.addEventListener('mousedown', () => autoRotate = false);
-    canvas.addEventListener('touchstart', () => autoRotate = false);
-    setTimeout(() => {
-      function autoRot() {
-        if (autoRotate && bodyGroup) bodyGroup.rotation.y += 0.005;
-        requestAnimationFrame(autoRot);
-      }
-      autoRot();
-    }, 2000);
-  }
-
-  function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
   }
 
   init();
