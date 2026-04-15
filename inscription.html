@@ -292,6 +292,12 @@
   }
 
   // Vérifier si déjà connecté
+  // Auto-switch to connexion tab if ?tab=connexion
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('tab') === 'connexion') {
+    switchTab('connexion');
+  }
+
   sb.auth.getSession().then(({ data: { session } }) => {
     if (session) {
       // Si plan sélectionné → paiement, sinon dashboard

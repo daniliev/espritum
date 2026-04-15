@@ -16,8 +16,8 @@
     --border: #1e1e1e;
     --muted: #555;
     --muted2: #333;
-    --gold: #f5c842;
-    --silver: #b0b0b0;
+    --gold: #f5c518;
+    --silver: #aaaaaa;
     --bronze: #cd7f32;
     --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
     --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
@@ -39,7 +39,7 @@
   .nav-item.active { background: rgba(200,40,40,0.1); color: #fff; border-left: 2px solid var(--red); }
   .nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
   .sidebar-bottom { padding: 16px 12px; border-top: 1px solid var(--border); }
-  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 6px; }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 6px; cursor: pointer; }
   .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(200,40,40,0.15); border: 1px solid rgba(200,40,40,0.3); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; color: var(--red); flex-shrink: 0; }
   .user-name { font-size: 13px; font-weight: 600; color: #ddd; }
   .user-plan { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
@@ -56,16 +56,10 @@
   .period-tab:hover { border-color: #333; color: #aaa; }
   .period-tab.active { background: var(--red); border-color: var(--red); color: #fff; }
 
-  .content { padding: 28px 32px; display: flex; flex-direction: column; gap: 22px; }
+  .content { padding: 28px 32px; display: flex; flex-direction: column; gap: 24px; }
 
   /* Podium top 3 */
-  .podium {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 16px;
-    padding: 40px 0 0;
-  }
+  .podium { display: flex; align-items: flex-end; justify-content: center; gap: 16px; padding: 32px 0 0; }
 
   .podium-item { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 
@@ -73,87 +67,75 @@
     width: 64px; height: 64px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     font-family: var(--font-display); font-size: 28px;
-    border: 3px solid transparent; position: relative;
+    border: 3px solid;
+    position: relative;
   }
 
-  .podium-item:nth-child(1) .podium-avatar { border-color: var(--silver); background: rgba(176,176,176,0.1); width: 56px; height: 56px; }
-  .podium-item:nth-child(2) .podium-avatar { border-color: var(--gold); background: rgba(245,200,66,0.1); width: 72px; height: 72px; font-size: 32px; }
-  .podium-item:nth-child(3) .podium-avatar { border-color: var(--bronze); background: rgba(205,127,50,0.1); width: 56px; height: 56px; }
+  .podium-crown {
+    position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+    font-size: 20px;
+  }
 
-  .podium-crown { position: absolute; top: -14px; font-size: 20px; }
+  .podium-item.gold .podium-avatar { border-color: var(--gold); background: rgba(245,197,24,0.1); color: var(--gold); }
+  .podium-item.silver .podium-avatar { border-color: var(--silver); background: rgba(170,170,170,0.1); color: var(--silver); }
+  .podium-item.bronze .podium-avatar { border-color: var(--bronze); background: rgba(205,127,50,0.1); color: var(--bronze); }
 
-  .podium-name { font-family: var(--font-display); font-size: 16px; letter-spacing: 1px; text-transform: uppercase; color: #fff; text-align: center; }
-  .podium-score { font-family: var(--font-display); font-size: 22px; color: var(--red); }
-  .podium-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+  .podium-name { font-family: var(--font-display); font-size: 16px; letter-spacing: 1px; text-transform: uppercase; color: #fff; }
+  .podium-score { font-size: 12px; color: var(--muted); }
+  .podium-plan { font-size: 10px; letter-spacing: 1px; }
 
   .podium-block {
-    border-radius: 8px 8px 0 0;
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-display); font-size: 28px; color: rgba(255,255,255,0.3);
-    width: 100px;
+    display: flex; align-items: flex-end; justify-content: center;
+    border-radius: 6px 6px 0 0;
+    width: 80px;
   }
 
-  .podium-item:nth-child(1) .podium-block { background: rgba(176,176,176,0.08); border: 1px solid rgba(176,176,176,0.2); height: 80px; }
-  .podium-item:nth-child(2) .podium-block { background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.2); height: 120px; }
-  .podium-item:nth-child(3) .podium-block { background: rgba(205,127,50,0.08); border: 1px solid rgba(205,127,50,0.2); height: 60px; }
-
-  /* Ma position */
-  .my-rank-card {
-    background: linear-gradient(135deg, #0f0404, var(--bg2));
-    border: 1px solid rgba(200,40,40,0.25); border-radius: 8px; padding: 20px 24px;
-    display: flex; align-items: center; gap: 20px;
+  .podium-rank {
+    font-family: var(--font-display);
+    font-size: 32px; padding: 12px 0;
   }
 
-  .my-rank-num { font-family: var(--font-display); font-size: 48px; color: var(--red); line-height: 1; min-width: 60px; }
-  .my-rank-avatar { width: 44px; height: 44px; border-radius: 50%; background: rgba(200,40,40,0.15); border: 2px solid var(--red); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 20px; color: var(--red); flex-shrink: 0; }
-  .my-rank-info { flex: 1; }
-  .my-rank-name { font-family: var(--font-display); font-size: 22px; letter-spacing: 1px; text-transform: uppercase; color: #fff; }
-  .my-rank-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
-  .my-rank-score { text-align: right; }
-  .my-rank-val { font-family: var(--font-display); font-size: 36px; color: var(--red); }
-  .my-rank-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+  .podium-item.gold .podium-block { background: rgba(245,197,24,0.1); border: 1px solid rgba(245,197,24,0.3); height: 90px; }
+  .podium-item.gold .podium-rank { color: var(--gold); }
+  .podium-item.silver .podium-block { background: rgba(170,170,170,0.08); border: 1px solid rgba(170,170,170,0.2); height: 70px; }
+  .podium-item.silver .podium-rank { color: var(--silver); }
+  .podium-item.bronze .podium-block { background: rgba(205,127,50,0.08); border: 1px solid rgba(205,127,50,0.2); height: 55px; }
+  .podium-item.bronze .podium-rank { color: var(--bronze); }
 
-  /* Explication score */
-  .score-info {
-    background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px;
-    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
-  }
+  /* Tabs catégories */
+  .category-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); }
+  .cat-tab { padding: 12px 24px; font-size: 12px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+  .cat-tab:hover { color: #aaa; }
+  .cat-tab.active { color: #fff; border-bottom-color: var(--red); }
 
-  .score-info-title { font-family: var(--font-display); font-size: 16px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
-  .score-info-desc { font-size: 13px; color: var(--muted); font-weight: 300; line-height: 1.6; }
+  /* Grid principale */
+  .main-grid { display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
 
-  .score-formula { display: flex; gap: 12px; flex-wrap: wrap; }
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 22px; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .card-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; }
 
-  .formula-item { padding: 8px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; text-align: center; }
-  .formula-val { font-family: var(--font-display); font-size: 18px; color: var(--red); }
-  .formula-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
-
-  /* Table classement */
-  .rank-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-  .rank-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-  .rank-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; }
-
-  .rank-list { display: flex; flex-direction: column; }
+  /* Liste classement */
+  .rank-list { display: flex; flex-direction: column; gap: 8px; }
 
   .rank-item {
-    display: flex; align-items: center; gap: 16px;
-    padding: 14px 20px; border-bottom: 1px solid var(--border);
-    transition: background 0.15s;
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 6px; transition: border-color 0.2s;
   }
 
-  .rank-item:hover { background: var(--bg3); }
-  .rank-item:last-child { border-bottom: none; }
-  .rank-item.me { background: rgba(200,40,40,0.05); border-left: 3px solid var(--red); }
+  .rank-item:hover { border-color: #2a2a2a; }
+  .rank-item.me { border-color: rgba(200,40,40,0.3); background: rgba(200,40,40,0.04); }
 
-  .rank-pos {
+  .rank-num {
     font-family: var(--font-display); font-size: 22px;
-    min-width: 40px; text-align: center;
+    width: 36px; text-align: center; flex-shrink: 0;
   }
 
-  .rank-pos.gold { color: var(--gold); }
-  .rank-pos.silver { color: var(--silver); }
-  .rank-pos.bronze { color: var(--bronze); }
-  .rank-pos.normal { color: var(--muted); }
+  .rank-num.gold { color: var(--gold); }
+  .rank-num.silver { color: var(--silver); }
+  .rank-num.bronze { color: var(--bronze); }
+  .rank-num.normal { color: var(--muted); }
 
   .rank-avatar {
     width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
@@ -162,22 +144,45 @@
   }
 
   .rank-info { flex: 1; }
-  .rank-name { font-size: 14px; font-weight: 500; color: #ddd; }
+  .rank-name { font-size: 14px; color: #ddd; font-weight: 500; }
   .rank-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
   .rank-badge { padding: 3px 10px; border-radius: 10px; font-size: 10px; font-weight: 600; letter-spacing: 1px; }
-  .badge-elite { background: rgba(232,160,0,0.1); color: #ffd54f; }
-  .badge-champion { background: rgba(200,40,40,0.1); color: #ef9a9a; }
-  .badge-guerrier { background: rgba(21,101,192,0.1); color: #64b5f6; }
+  .pill-gratuit { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
+  .pill-guerrier { background: rgba(21,101,192,0.1); color: #64b5f6; border: 1px solid rgba(21,101,192,0.2); }
+  .pill-champion { background: rgba(200,40,40,0.1); color: #ef9a9a; border: 1px solid rgba(200,40,40,0.2); }
+  .pill-elite { background: rgba(232,160,0,0.1); color: #ffd54f; border: 1px solid rgba(232,160,0,0.2); }
 
-  .rank-score { text-align: right; }
-  .rank-score-val { font-family: var(--font-display); font-size: 24px; color: #fff; }
-  .rank-score-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .rank-score { text-align: right; flex-shrink: 0; }
+  .rank-score-val { font-family: var(--font-display); font-size: 22px; color: #fff; }
+  .rank-score-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
 
-  .rank-delta { font-size: 11px; margin-top: 2px; }
-  .delta-up { color: #4caf50; }
-  .delta-down { color: var(--red); }
-  .delta-same { color: var(--muted); }
+  .me-tag { font-size: 9px; color: var(--red); letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
+
+  /* Ma position */
+  .my-position {
+    background: linear-gradient(135deg, #0f0404, var(--bg2));
+    border: 1px solid rgba(200,40,40,0.2); border-radius: 8px; padding: 20px;
+  }
+
+  .my-pos-header { font-family: var(--font-display); font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); margin-bottom: 14px; }
+
+  .my-pos-rank { font-family: var(--font-display); font-size: 64px; color: #fff; line-height: 1; margin-bottom: 4px; }
+  .my-pos-sub { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+
+  .my-stats { display: flex; flex-direction: column; gap: 10px; }
+  .my-stat-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--bg3); border: 1px solid var(--border); border-radius: 5px; }
+  .my-stat-label { font-size: 12px; color: var(--muted); }
+  .my-stat-val { font-family: var(--font-display); font-size: 20px; color: #fff; }
+
+  /* Défi */
+  .challenge-card { background: linear-gradient(135deg, #0a0808, var(--bg2)); border: 1px solid rgba(200,40,40,0.15); border-radius: 8px; padding: 20px; }
+  .challenge-tag { font-size: 10px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; font-weight: 600; margin-bottom: 10px; }
+  .challenge-title { font-family: var(--font-display); font-size: 22px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .challenge-desc { font-size: 13px; color: var(--muted); line-height: 1.6; font-weight: 300; margin-bottom: 16px; }
+  .challenge-progress { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+  .challenge-fill { height: 100%; background: var(--red); border-radius: 3px; }
+  .challenge-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
 
   /* Loading */
   .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
@@ -188,40 +193,15 @@
   .loading-dot:nth-child(3) { animation-delay: 0.4s; }
   @keyframes blink { 0%,80%,100% { opacity: 0.2; } 40% { opacity: 1; } }
 
-  /* Mobile bottom nav */
-  .mobile-nav {
-    display: none;
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: var(--bg2); border-top: 1px solid var(--border);
-    padding: 10px 0 20px; z-index: 50;
-  }
-
-  .mobile-nav-inner { display: flex; justify-content: space-around; }
-
-  .mobile-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; text-decoration: none; padding: 6px 12px; }
-  .mobile-nav-icon { font-size: 20px; }
-  .mobile-nav-label { font-size: 9px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
-  .mobile-nav-item.active .mobile-nav-label { color: var(--red); }
-  .mobile-nav-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--red); display: none; }
-  .mobile-nav-item.active .mobile-nav-dot { display: block; }
-
-  @media (max-width: 768px) {
-    .sidebar { display: none; }
-    .main { margin-left: 0; padding-bottom: 80px; }
-    .mobile-nav { display: block; }
-    .content { padding: 20px 16px; }
-  }
+  @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } .podium { gap: 8px; } }
 </style>
 </head>
 <body>
 
 <div class="loading-overlay" id="loading">
   <div class="loading-logo">Espritum</div>
-  <div class="loading-dots">
-    <div class="loading-dot"></div>
-    <div class="loading-dot"></div>
-    <div class="loading-dot"></div>
-  </div>
+  <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
 </div>
 
 <aside class="sidebar">
@@ -264,121 +244,107 @@
     <div class="period-tabs">
       <button class="period-tab active" onclick="setPeriod(this,'semaine')">Cette semaine</button>
       <button class="period-tab" onclick="setPeriod(this,'mois')">Ce mois</button>
-      <button class="period-tab" onclick="setPeriod(this,'tout')">Tout temps</button>
+      <button class="period-tab" onclick="setPeriod(this,'total')">Total</button>
     </div>
   </div>
 
   <div class="content">
 
-    <!-- Explication du score -->
-    <div class="score-info">
-      <div style="flex:1">
-        <div class="score-info-title">Comment est calculé le score ?</div>
-        <div class="score-info-desc">Ton score est calculé selon le volume total soulevé, la régularité de tes séances et ton streak. Plus tu t'entraînes, plus tu montes dans le classement !</div>
+    <!-- Podium Top 3 -->
+    <div class="podium">
+      <!-- 2ème -->
+      <div class="podium-item silver">
+        <div class="podium-avatar" style="width:56px;height:56px;font-size:24px;">S</div>
+        <div class="podium-name">Sarah D.</div>
+        <div class="podium-score">🔥 12j streak</div>
+        <div class="podium-block"><div class="podium-rank">2</div></div>
       </div>
-      <div class="score-formula">
-        <div class="formula-item">
-          <div class="formula-val">×1</div>
-          <div class="formula-label">Volume (kg)</div>
+
+      <!-- 1er -->
+      <div class="podium-item gold">
+        <div class="podium-avatar">
+          <div class="podium-crown">👑</div>
+          J
         </div>
-        <div class="formula-item">
-          <div class="formula-val">×50</div>
-          <div class="formula-label">Séances</div>
-        </div>
-        <div class="formula-item">
-          <div class="formula-val">×10</div>
-          <div class="formula-label">Streak (j)</div>
-        </div>
+        <div class="podium-name">Julie M.</div>
+        <div class="podium-score">🔥 21j streak</div>
+        <div class="podium-block"><div class="podium-rank">1</div></div>
+      </div>
+
+      <!-- 3ème -->
+      <div class="podium-item bronze">
+        <div class="podium-avatar" style="width:52px;height:52px;font-size:22px;">A</div>
+        <div class="podium-name">Aïsha K.</div>
+        <div class="podium-score">🔥 5j streak</div>
+        <div class="podium-block"><div class="podium-rank">3</div></div>
       </div>
     </div>
 
-    <!-- Ma position -->
-    <div class="my-rank-card">
-      <div class="my-rank-num" id="my-rank">#—</div>
-      <div class="my-rank-avatar" id="my-avatar">?</div>
-      <div class="my-rank-info">
-        <div class="my-rank-name" id="my-name">Mon classement</div>
-        <div class="my-rank-sub" id="my-sub">Calcul en cours...</div>
-      </div>
-      <div class="my-rank-score">
-        <div class="my-rank-val" id="my-score">0</div>
-        <div class="my-rank-label">points</div>
-      </div>
+    <!-- Tabs catégories -->
+    <div class="category-tabs">
+      <div class="cat-tab active" onclick="setCategory(this,'streak')">🔥 Streak</div>
+      <div class="cat-tab" onclick="setCategory(this,'seances')">💪 Séances</div>
+      <div class="cat-tab" onclick="setCategory(this,'calories')">🍎 Nutrition</div>
+      <div class="cat-tab" onclick="setCategory(this,'progression')">📊 Progression</div>
     </div>
 
-    <!-- Podium top 3 -->
-    <div class="rank-card">
-      <div class="rank-header">
-        <div class="rank-title">🏆 Top Guerriers</div>
-        <span style="font-size:12px;color:var(--muted);" id="total-users">— guerriers</span>
-      </div>
+    <!-- Grid -->
+    <div class="main-grid">
 
-      <!-- Podium -->
-      <div class="podium" id="podium-section">
-        <div class="podium-item" id="podium-2">
-          <div class="podium-name" id="p2-name">—</div>
-          <div class="podium-score" id="p2-score">0 pts</div>
-          <div class="podium-avatar" style="border-color:var(--silver);background:rgba(176,176,176,0.1)">
-            <span id="p2-avatar">?</span>
-          </div>
-          <div class="podium-block">2</div>
+      <!-- Classement -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Top Guerriers</div>
+          <span style="font-size:11px;color:var(--muted);">Classé par streak 🔥</span>
         </div>
-        <div class="podium-item" id="podium-1">
-          <div class="podium-name" id="p1-name">—</div>
-          <div class="podium-score" id="p1-score">0 pts</div>
-          <div class="podium-avatar" style="border-color:var(--gold);background:rgba(245,200,66,0.1)">
-            <span class="podium-crown">👑</span>
-            <span id="p1-avatar">?</span>
-          </div>
-          <div class="podium-block">1</div>
-        </div>
-        <div class="podium-item" id="podium-3">
-          <div class="podium-name" id="p3-name">—</div>
-          <div class="podium-score" id="p3-score">0 pts</div>
-          <div class="podium-avatar" style="border-color:var(--bronze);background:rgba(205,127,50,0.1)">
-            <span id="p3-avatar">?</span>
-          </div>
-          <div class="podium-block">3</div>
+        <div class="rank-list" id="rank-list">
+          <!-- Rempli par JS -->
         </div>
       </div>
 
-      <!-- Liste complète -->
-      <div class="rank-list" id="rank-list"></div>
+      <!-- Sidebar droite -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+
+        <!-- Ma position -->
+        <div class="my-position">
+          <div class="my-pos-header">Ma position</div>
+          <div class="my-pos-rank" id="my-rank">#—</div>
+          <div class="my-pos-sub">sur <span id="total-users">—</span> guerriers</div>
+          <div class="my-stats">
+            <div class="my-stat-row">
+              <span class="my-stat-label">🔥 Streak actuel</span>
+              <span class="my-stat-val" id="my-streak">0j</span>
+            </div>
+            <div class="my-stat-row">
+              <span class="my-stat-label">💪 Séances totales</span>
+              <span class="my-stat-val" id="my-seances">0</span>
+            </div>
+            <div class="my-stat-row">
+              <span class="my-stat-label">📅 Membre depuis</span>
+              <span class="my-stat-val" id="my-since">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Défi de la semaine -->
+        <div class="challenge-card">
+          <div class="challenge-tag">— Défi de la semaine</div>
+          <div class="challenge-title">7 jours sans manquer</div>
+          <div class="challenge-desc">Complète une séance chaque jour pendant 7 jours consécutifs et monte dans le classement.</div>
+          <div class="challenge-progress">
+            <div class="challenge-fill" id="challenge-fill" style="width:0%"></div>
+          </div>
+          <div class="challenge-meta">
+            <span id="challenge-days">0 / 7 jours</span>
+            <span style="color:var(--red);">+50 pts</span>
+          </div>
+        </div>
+
+      </div>
     </div>
 
   </div>
 </main>
-
-<!-- MOBILE NAV -->
-<nav class="mobile-nav">
-  <div class="mobile-nav-inner">
-    <a class="mobile-nav-item" href="dashboard.html">
-      <span class="mobile-nav-icon">🏠</span>
-      <div class="mobile-nav-dot"></div>
-      <span class="mobile-nav-label">Home</span>
-    </a>
-    <a class="mobile-nav-item" href="nutrition.html">
-      <span class="mobile-nav-icon">🍎</span>
-      <div class="mobile-nav-dot"></div>
-      <span class="mobile-nav-label">Nutrition</span>
-    </a>
-    <a class="mobile-nav-item" href="entrainement.html">
-      <span class="mobile-nav-icon">💪</span>
-      <div class="mobile-nav-dot"></div>
-      <span class="mobile-nav-label">Sport</span>
-    </a>
-    <a class="mobile-nav-item active" href="#">
-      <span class="mobile-nav-icon">🏆</span>
-      <div class="mobile-nav-dot"></div>
-      <span class="mobile-nav-label">Classement</span>
-    </a>
-    <a class="mobile-nav-item" href="profil.html">
-      <span class="mobile-nav-icon">👤</span>
-      <div class="mobile-nav-dot"></div>
-      <span class="mobile-nav-label">Profil</span>
-    </a>
-  </div>
-</nav>
 
 <script>
   const { createClient } = supabase;
@@ -388,124 +354,105 @@
   );
 
   const planLabel = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
-  const planBadge = { gratuit: '', guerrier: 'badge-guerrier', champion: 'badge-champion', elite: 'badge-elite' };
-  const planBadgeLabel = { gratuit: '', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
+  const planPill = {
+    gratuit: 'pill-gratuit', guerrier: 'pill-guerrier',
+    champion: 'pill-champion', elite: 'pill-elite'
+  };
 
-  let userId = null;
-  let allUsers = [];
+  // Données simulées + utilisateur réel
+  const mockUsers = [
+    { id:'mock1', prenom:'Julie', nom:'M.', plan:'elite', streak:21, seances:48, color:'#e8a000' },
+    { id:'mock2', prenom:'Sarah', nom:'D.', plan:'champion', streak:12, seances:32, color:'#c82828' },
+    { id:'mock3', prenom:'Aïsha', nom:'K.', plan:'champion', streak:5, seances:18, color:'#c82828' },
+    { id:'mock4', prenom:'Thomas', nom:'B.', plan:'guerrier', streak:3, seances:9, color:'#1565c0' },
+    { id:'mock5', prenom:'Emma', nom:'R.', plan:'elite', streak:2, seances:41, color:'#e8a000' },
+    { id:'mock6', prenom:'Pierre', nom:'M.', plan:'gratuit', streak:1, seances:3, color:'#555' },
+  ];
+
+  let myUserId = null;
+  let myProfile = null;
 
   async function init() {
     const { data: { session } } = await sb.auth.getSession();
     if (!session) { window.location.href = 'inscription.html'; return; }
-    userId = session.user.id;
 
-    const { data: profile } = await sb.from('users').select('*').eq('id', userId).single();
+    myUserId = session.user.id;
+    const { data: profile } = await sb.from('users').select('*').eq('id', myUserId).single();
+    myProfile = profile;
+
     const prenom = profile?.prenom || 'Guerrier';
-
     document.getElementById('sidebar-avatar').textContent = prenom[0].toUpperCase();
     document.getElementById('sidebar-name').textContent = prenom;
     document.getElementById('sidebar-plan').textContent = planLabel[profile?.plan || 'gratuit'];
-    document.getElementById('my-avatar').textContent = prenom[0].toUpperCase();
 
-    await loadRanking();
+    // Stats perso
+    document.getElementById('my-streak').textContent = (profile?.streak || 0) + 'j';
+    const { data: workouts } = await sb.from('workouts').select('id').eq('user_id', myUserId);
+    document.getElementById('my-seances').textContent = workouts?.length || 0;
+
+    const created = new Date(session.user.created_at);
+    document.getElementById('my-since').textContent = created.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
+
+    // Défi semaine
+    const streak = profile?.streak || 0;
+    const pct = Math.min(100, Math.round((streak / 7) * 100));
+    document.getElementById('challenge-fill').style.width = pct + '%';
+    document.getElementById('challenge-days').textContent = `${Math.min(7, streak)} / 7 jours`;
+
+    // Construire le classement avec l'utilisateur réel
+    const myEntry = {
+      id: myUserId,
+      prenom: prenom,
+      nom: profile?.nom || '',
+      plan: profile?.plan || 'gratuit',
+      streak: profile?.streak || 0,
+      seances: workouts?.length || 0,
+      color: '#c82828',
+      isMe: true
+    };
+
+    // Fusionner et trier
+    const allUsers = [...mockUsers, myEntry].sort((a, b) => b.streak - a.streak);
+    const myRank = allUsers.findIndex(u => u.isMe) + 1;
+
+    document.getElementById('my-rank').textContent = `#${myRank}`;
+    document.getElementById('total-users').textContent = allUsers.length;
+
+    renderRankList(allUsers);
     document.getElementById('loading').style.display = 'none';
   }
 
-  async function loadRanking() {
-    // Charger tous les users
-    const { data: users } = await sb.from('users').select('id, prenom, nom, plan, streak, poids');
+  function renderRankList(users) {
+    const list = document.getElementById('rank-list');
+    const rankClass = ['gold', 'silver', 'bronze'];
 
-    if (!users || users.length === 0) {
-      document.getElementById('rank-list').innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);font-size:14px;">Aucun guerrier encore. Sois le premier !</div>';
-      document.getElementById('loading').style.display = 'none';
-      return;
-    }
-
-    // Charger workouts pour calculer volume
-    const { data: workouts } = await sb.from('workouts').select('user_id, series, reps, poids');
-
-    // Calculer score pour chaque user
-    // Score = volume total (series × reps × poids) + séances × 50 + streak × 10
-    const scores = users.map(u => {
-      const userWorkouts = (workouts || []).filter(w => w.user_id === u.id);
-      const volume = userWorkouts.reduce((s, w) => s + ((w.series || 0) * (w.reps || 0) * (w.poids || 0)), 0);
-      const sessions = userWorkouts.length;
-      const streak = u.streak || 0;
-      const score = Math.round(volume + sessions * 50 + streak * 10);
-
-      return { ...u, score, volume, sessions };
-    });
-
-    // Trier par score
-    scores.sort((a, b) => b.score - a.score);
-    allUsers = scores;
-
-    document.getElementById('total-users').textContent = `${scores.length} guerrier${scores.length > 1 ? 's' : ''}`;
-
-    // Ma position
-    const myIdx = scores.findIndex(u => u.id === userId);
-    if (myIdx !== -1) {
-      const me = scores[myIdx];
-      document.getElementById('my-rank').textContent = `#${myIdx + 1}`;
-      document.getElementById('my-name').textContent = `${me.prenom || 'Guerrier'} ${me.nom || ''}`.trim();
-      document.getElementById('my-sub').textContent = `${me.sessions} séances · ${me.streak || 0} jours de streak`;
-      document.getElementById('my-score').textContent = me.score.toLocaleString('fr-FR');
-    }
-
-    // Podium top 3
-    renderPodium(scores);
-
-    // Liste
-    renderList(scores);
-  }
-
-  function renderPodium(scores) {
-    const positions = [scores[1], scores[0], scores[2]]; // 2ème, 1er, 3ème
-    const ids = ['p2', 'p1', 'p3'];
-
-    positions.forEach((u, i) => {
-      if (!u) return;
-      const id = ids[i];
-      document.getElementById(`${id}-name`).textContent = (u.prenom || 'Guerrier').toUpperCase();
-      document.getElementById(`${id}-score`).textContent = u.score.toLocaleString('fr-FR') + ' pts';
-      document.getElementById(`${id}-avatar`).textContent = (u.prenom || '?')[0].toUpperCase();
-    });
-  }
-
-  function renderList(scores) {
-    const posColors = ['gold', 'silver', 'bronze'];
-    const posEmojis = ['🥇', '🥈', '🥉'];
-
-    document.getElementById('rank-list').innerHTML = scores.map((u, i) => {
-      const isMe = u.id === userId;
-      const posClass = i < 3 ? posColors[i] : 'normal';
-      const posLabel = i < 3 ? posEmojis[i] : `${i + 1}`;
-
-      return `
-        <div class="rank-item ${isMe ? 'me' : ''}">
-          <div class="rank-pos ${posClass}">${posLabel}</div>
-          <div class="rank-avatar" style="background:rgba(200,40,40,0.1);border:1px solid rgba(200,40,40,0.2);color:var(--red);">
-            ${(u.prenom || '?')[0].toUpperCase()}
-          </div>
-          <div class="rank-info">
-            <div class="rank-name">${u.prenom || 'Guerrier'} ${u.nom || ''} ${isMe ? '(Toi)' : ''}</div>
-            <div class="rank-detail">${u.sessions} séances · 🔥 ${u.streak || 0}j streak</div>
-          </div>
-          ${u.plan && u.plan !== 'gratuit' ? `<span class="rank-badge ${planBadge[u.plan]}">${planBadgeLabel[u.plan]}</span>` : ''}
-          <div class="rank-score">
-            <div class="rank-score-val">${u.score.toLocaleString('fr-FR')}</div>
-            <div class="rank-score-label">points</div>
-          </div>
+    list.innerHTML = users.map((u, i) => `
+      <div class="rank-item ${u.isMe ? 'me' : ''}">
+        <div class="rank-num ${i < 3 ? rankClass[i] : 'normal'}">${i + 1}</div>
+        <div class="rank-avatar" style="background:${u.color}18;border:1px solid ${u.color}33;color:${u.color};">
+          ${u.prenom[0]}
         </div>
-      `;
-    }).join('');
+        <div class="rank-info">
+          <div class="rank-name">${u.prenom} ${u.nom || ''} ${u.isMe ? '<span class="me-tag">— Toi</span>' : ''}</div>
+          <div class="rank-detail">${u.seances} séances · ${u.streak}j streak</div>
+        </div>
+        <span class="rank-badge ${planPill[u.plan] || 'pill-gratuit'}">${planLabel[u.plan]}</span>
+        <div class="rank-score">
+          <div class="rank-score-val">🔥 ${u.streak}j</div>
+          <div class="rank-score-label">streak</div>
+        </div>
+      </div>
+    `).join('');
   }
 
   function setPeriod(btn, period) {
-    document.querySelectorAll('.period-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
-    // Pour l'instant affiche le même classement — à affiner avec des filtres de date
-    renderList(allUsers);
+  }
+
+  function setCategory(btn, cat) {
+    document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
   }
 
   init();
