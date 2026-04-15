@@ -619,23 +619,37 @@
 </script>
 
 <script>
-  // Freemium sidebar logic
+  // Freemium sidebar logic — verrouillé par défaut, déverrouillé si payant
   function initFreemium(plan) {
-    const locked = ['nutrition', 'entrainement', 'progression', 'coach', 'classement'];
     const isPaid = ['guerrier', 'champion', 'elite'].includes(plan);
-    
-    if (!isPaid) {
-      document.querySelectorAll('.nav-freemium').forEach(el => {
+
+    document.querySelectorAll('.nav-freemium').forEach(el => {
+      if (!isPaid) {
+        // Verrouiller
         el.classList.add('locked');
         const lock = el.querySelector('.nav-lock');
         if (lock) lock.textContent = '🔒';
-        el.addEventListener('click', function(e) {
+
+        // Intercepter le clic
+        el.onclick = function(e) {
           e.preventDefault();
+          e.stopPropagation();
           const feature = this.getAttribute('data-feature');
           openUpgrade(feature);
-        });
-      });
-    }
+          return false;
+        };
+
+        // Bloquer aussi le href
+        el.removeAttribute('href');
+        el.style.pointerEvents = 'auto';
+      } else {
+        // Déverrouiller
+        el.classList.remove('locked');
+        const lock = el.querySelector('.nav-lock');
+        if (lock) lock.textContent = '';
+        el.onclick = null;
+      }
+    });
   }
 
   function openUpgrade(feature) {
@@ -646,6 +660,12 @@
   function closeUpgrade() {
     document.getElementById('upgrade-modal').classList.remove('open');
   }
+
+  // Appel de sécurité — verrouiller IMMÉDIATEMENT au chargement
+  // avant même que Supabase réponde
+  document.addEventListener('DOMContentLoaded', function() {
+    initFreemium('gratuit'); // verrouillé par défaut
+  });
 </script>
 </body>
 </html>
