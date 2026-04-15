@@ -331,7 +331,7 @@
       <div class="success-icon">🎉</div>
       <div class="success-title">Bienvenue,<br><span style="color:var(--red)" id="success-name">Guerrier</span> !</div>
       <div class="success-sub">Ton abonnement a été activé avec succès.<br>Toutes tes nouvelles fonctionnalités sont maintenant disponibles.</div>
-      <button class="btn-dashboard" onclick="window.location.href='dashboard.html'">Accéder au dashboard →</button>
+      <button class="btn-dashboard" onclick="window.location.replace('dashboard.html')">Accéder au dashboard →</button>
     </div>
 
   </div>
@@ -530,7 +530,12 @@
 
     try {
       // Mettre à jour le plan dans Supabase
-      await sb.from('users').update({ plan: selectedPlan }).eq('id', userId);
+      const { error: updateError } = await sb.from('users').update({ plan: selectedPlan }).eq('id', userId);
+      
+      if (updateError) throw updateError;
+
+      // Forcer le refresh de la session Supabase
+      await sb.auth.refreshSession();
 
       // Afficher le succès
       document.getElementById('payment-form').classList.remove('visible');
@@ -538,6 +543,9 @@
       document.getElementById('current-plan-card').style.display = 'none';
       document.getElementById('success-name').textContent = userPrenom;
       document.getElementById('success-screen').classList.add('visible');
+      
+      // Stocker le plan en localStorage pour que le dashboard le lise immédiatement
+      localStorage.setItem('espritum_plan', selectedPlan);
 
     } catch(e) {
       showToast('error', 'Erreur lors du paiement. Réessaie.');

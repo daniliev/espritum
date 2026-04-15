@@ -592,7 +592,13 @@
   // Appel de sécurité — verrouiller IMMÉDIATEMENT au chargement
   // avant même que Supabase réponde
   document.addEventListener('DOMContentLoaded', function() {
-    initFreemium('gratuit'); // verrouillé par défaut
+    // Vérifier si un plan vient d'être mis à jour
+    const cachedPlan = localStorage.getItem('espritum_plan');
+    if (cachedPlan) {
+      initFreemium(cachedPlan);
+    } else {
+      initFreemium('gratuit'); // verrouillé par défaut
+    }
   });
 </script>
 </body>
