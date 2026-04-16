@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Espritum — Coach Sensei</title>
 <link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -150,6 +150,17 @@
     .main { padding-bottom: 72px; }
     .sidebar { display: none !important; }
   }
+
+  /* ── MOBILE TOPBAR COMPACT ── */
+  @media (max-width: 768px) {
+    .topbar { padding: 14px 16px; }
+    .topbar-title { font-size: 22px; }
+    .content { padding: 16px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .main-grid { grid-template-columns: 1fr; gap: 14px; }
+    .bottom-grid { grid-template-columns: 1fr; gap: 14px; }
+    .card { padding: 16px; }
+  }
 </style>
 </head>
 <body>
@@ -193,7 +204,7 @@
 <main class="main">
   <div class="topbar">
     <div class="topbar-left">
-      <div class="topbar-tag">— Intelligence Artificielle</div>
+      
       <div class="topbar-title">Coach Sensei</div>
     </div>
     <div class="sensei-status">
