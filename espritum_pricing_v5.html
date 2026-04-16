@@ -708,10 +708,10 @@
     <span class="nav-name">Espritum</span>
   </a>
   <ul class="nav-links">
-    <li><a href="#a-propos">À propos</a></li>
-    <li><a href="#fonctionnalites">Fonctionnalités</a></li>
-    <li><a href="#tarifs">Tarifs</a></li>
-    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#a-propos" data-i18n="landing_about">À propos</a></li>
+    <li><a href="#fonctionnalites" data-i18n="landing_features">Fonctionnalités</a></li>
+    <li><a href="#tarifs" data-i18n="landing_pricing">Tarifs</a></li>
+    <li><a href="#faq" data-i18n="landing_faq">FAQ</a></li>
   </ul>
   <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
     <button onclick="window.location.href='inscription.html?tab=connexion'" style="padding:8px 14px;background:transparent;border:1px solid #333;border-radius:4px;color:#aaa;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;" data-i18n="landing_connect">Connexion</button>
@@ -726,19 +726,19 @@
 
 <!-- HERO -->
 <section id="hero">
-  <h1 class="hero-title">CHOISIS<br>TON <span class="accent">ARMURE.</span></h1>
-  <p class="hero-sub">Chaque plan est une étape vers une meilleure version de toi-même. Commence gratuitement, monte en puissance quand tu es prêt.</p>
+  <h1 class="hero-title" data-i18n="landing_hero">CHOISIS TON ARMURE.</h1>
+  <p class="hero-sub" data-i18n="landing_sub">Chaque plan est une étape vers une meilleure version de toi-même. Commence gratuitement, monte en puissance quand tu es prêt.</p>
   <p style="font-size:12px;letter-spacing:5px;color:var(--red);text-align:center;margin-top:16px;font-weight:600;text-transform:uppercase;">NOT JUST FLESH, BUT SPIRIT.</p>
 </section>
 
 <!-- À PROPOS -->
 <section id="a-propos">
   <div class="section-wrap">
-    <h2 class="section-heading">À propos</h2>
+    <h2 class="section-heading" data-i18n="landing_about">À propos</h2>
     <div class="verse-card">
-      <div class="verse-tag">— Verset du jour</div>
-      <p class="verse-text">"Ne sais-tu pas ? N'as-tu pas entendu ? L'Éternel est un Dieu éternel... Il donne de la force à celui qui est fatigué."</p>
-      <div class="verse-ref">Ésaïe 40 : 28-29</div>
+      <div class="verse-tag" data-i18n="landing_verse_tag">— Verset du jour</div>
+      <p class="verse-text" data-i18n="landing_verse">"Ne sais-tu pas ? L'Éternel donne de la force à celui qui est fatigué."</p>
+      <div class="verse-ref" data-i18n="landing_verse_ref">Ésaïe 40 : 28-29</div>
     </div>
   </div>
 </section>
@@ -746,36 +746,36 @@
 <!-- FONCTIONNALITÉS -->
 <section id="fonctionnalites">
   <div class="section-wrap">
-    <h2 class="section-heading">Fonctionnalités</h2>
+    <h2 class="section-heading" data-i18n="landing_features">Fonctionnalités</h2>
     <div class="features-grid">
       <div class="feat-card">
         <span class="feat-icon">📸</span>
-        <div class="feat-title">Masse grasse par caméra</div>
+        <div class="feat-title" data-i18n="feat_bodyfat_title">Masse grasse par caméra</div>
         <p class="feat-desc">L'IA analyse ta silhouette et estime ton taux de masse grasse en quelques secondes. Disponible gratuitement.</p>
       </div>
       <div class="feat-card">
         <span class="feat-icon">🤖</span>
-        <div class="feat-title">Coach IA Sensei</div>
+        <div class="feat-title" data-i18n="feat_coach_title">Coach IA Sensei</div>
         <p class="feat-desc">Un mentor alimenté par l'IA, disponible 24h/24. Conseils nutrition, entraînement et motivation dans le style anime.</p>
       </div>
       <div class="feat-card">
         <span class="feat-icon">🍎</span>
-        <div class="feat-title">Suivi nutrition</div>
+        <div class="feat-title" data-i18n="feat_nutrition_title">Suivi nutrition</div>
         <p class="feat-desc">Calories, macros, scan de code-barre et repas favoris. Tout pour maîtriser ton alimentation au quotidien.</p>
       </div>
       <div class="feat-card">
         <span class="feat-icon">💪</span>
-        <div class="feat-title">Plans d'entraînement</div>
+        <div class="feat-title" data-i18n="feat_training_title">Plans d'entraînement</div>
         <p class="feat-desc">Des programmes générés selon ton profil, ton objectif et ton niveau. Mis à jour automatiquement chaque semaine.</p>
       </div>
       <div class="feat-card">
         <span class="feat-icon">📊</span>
-        <div class="feat-title">Progression corporelle</div>
+        <div class="feat-title" data-i18n="feat_progress_title">Progression corporelle</div>
         <p class="feat-desc">Photos avant/après, mensurations, poids — tout est tracé avec des graphiques clairs semaine après semaine.</p>
       </div>
       <div class="feat-card">
         <span class="feat-icon">📖</span>
-        <div class="feat-title">Motivation chrétienne</div>
+        <div class="feat-title" data-i18n="feat_faith_title">Motivation chrétienne</div>
         <p class="feat-desc">Un verset biblique chaque matin, des prières avant l'entraînement et des citations de figures bibliques pour tenir le cap.</p>
       </div>
     </div>
@@ -785,11 +785,11 @@
 <!-- TARIFS -->
 <section id="tarifs">
   <div class="section-wrap">
-    <h2 class="section-heading">Tarifs</h2>
+    <h2 class="section-heading" data-i18n="landing_pricing">Tarifs</h2>
 
     <!-- Toggle -->
     <div class="toggle-wrap">
-      <span class="toggle-label on" id="lbl-monthly">Mensuel</span>
+      <span class="toggle-label on" id="lbl-monthly" data-i18n="landing_monthly">Mensuel</span>
       <div class="toggle" id="toggle" onclick="switchBilling()">
         <div class="toggle-knob"></div>
       </div>
@@ -898,7 +898,7 @@
 <!-- FAQ -->
 <section id="faq">
   <div class="section-wrap">
-    <h2 class="section-heading">FAQ</h2>
+    <h2 class="section-heading" data-i18n="faq_title">Questions fréquentes</h2>
     <div class="faq-list">
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)">Comment fonctionne l'estimation de masse grasse par caméra ?<span class="faq-arrow">+</span></div>

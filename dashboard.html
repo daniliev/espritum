@@ -127,19 +127,7 @@
   .week-dot.done { background: rgba(200,40,40,0.15); border-color: var(--red); color: var(--red); }
   .week-dot.today { background: var(--red); border-color: var(--red); color: #fff; }
   .week-dot.empty { color: var(--muted2); }
-
-  /* Sensei */
-  .sensei-card { background: linear-gradient(135deg, #0f0808, #1a0808); border: 1px solid rgba(200,40,40,0.2); border-radius: 8px; padding: 20px; cursor: pointer; transition: border-color 0.2s; }
-  .sensei-card:hover { border-color: rgba(200,40,40,0.5); }
-  .sensei-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-  .sensei-avatar { width: 42px; height: 42px; border-radius: 50%; background: rgba(200,40,40,0.12); border: 1px solid rgba(200,40,40,0.3); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-  .sensei-name { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); }
-  .sensei-status { font-size: 11px; color: var(--muted); }
-  .sensei-msg { font-size: 13px; color: #888; line-height: 1.6; font-style: italic; font-weight: 300; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid var(--red); margin-bottom: 14px; }
-  .sensei-cta { width: 100%; padding: 11px; background: transparent; border: 1px solid rgba(200,40,40,0.3); border-radius: 4px; color: var(--red); font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
-  .sensei-cta:hover { background: rgba(200,40,40,0.08); }
-
-  /* Loading */
+/* Loading */
   .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
   .loading-logo { font-family: var(--font-display); font-size: 48px; letter-spacing: 8px; color: var(--red); text-transform: uppercase; }
   .loading-dots { display: flex; gap: 6px; }
@@ -221,8 +209,7 @@
     .logout-btn { display: none !important; }
     .free-badge { display: none !important; }
     .period-tabs { display: none !important; }
-    .sensei-status { display: none !important; }
-    .date-nav .date-label { font-size: 12px; min-width: 80px; }
+.date-nav .date-label { font-size: 12px; min-width: 80px; }
   }
 
   /* ── OVERFLOW FIX GLOBAL ── */
@@ -432,16 +419,7 @@
         <div class="card-header"><div class="card-title">Cette semaine</div></div>
         <div class="week-grid" id="week-grid"></div>
       </div>
-
-      <!-- Coach Sensei -->
-      <div>
-            <div class="sensei-name">Sensei</div>
-            
-          </div>
-        </div>
-        <div class="sensei-msg" id="sensei-msg">"Bienvenue, Guerrier. Je suis prêt à t'accompagner dans ta transformation."</div>
-        <button class="sensei-cta">Parler à Sensei →</button>
-      </div>
+</div>
 
     </div>
 
@@ -529,10 +507,7 @@
       // Semaine
       renderWeek();
 
-      // Message Sensei
-      updateSensei(prenom, meals || [], profile);
-
-    } catch (err) {
+} catch (err) {
       console.error('Dashboard error:', err);
     } finally {
       clearTimeout(safetyTimeout);
@@ -593,17 +568,10 @@
       ? muscles.map(m => `<div class="muscle-tag">🔥 ${m}</div>`).join('')
       : '';
   }
-
-  function updateSensei(prenom, meals, profile) {
-    const cal = meals.reduce((s, m) => s + (m.calories || 0), 0);
-    const obj = profile?.calories_objectif || 2400;
-    const reste = obj - cal;
-    let msg;
-    if (cal === 0) msg = `"Bienvenue, ${prenom}. Commence par enregistrer ton premier repas — chaque pas compte."`;
+. Commence par enregistrer ton premier repas — chaque pas compte."`;
     else if (reste > 500) msg = `"Tu as consommé ${cal} kcal. Il te reste ${reste} kcal à atteindre. Reste discipliné !"`;
     else if (reste > 0) msg = `"Excellent, ${prenom} ! Tu es à ${reste} kcal de ton objectif. Presque là !"`;
     else msg = `"Objectif atteint, Guerrier ! Repose-toi bien ce soir — la récupération fait partie de la bataille."`;
-    document.getElementById('sensei-msg').textContent = msg;
   }
 
   function renderWeek() {
