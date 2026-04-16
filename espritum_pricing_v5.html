@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
 <title>Espritum — Tarifs</title>
 <link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -654,6 +654,34 @@
   @media (max-width: 560px) {
     .features-grid { grid-template-columns: 1fr; }
   }
+
+  /* ── LANDING MOBILE ── */
+  @media (max-width: 768px) {
+    body { overflow-x: hidden; }
+    nav { padding: 12px 16px !important; }
+    .nav-name { font-size: 14px !important; letter-spacing: 3px !important; }
+    .nav-logo { width: 28px !important; height: 28px !important; }
+    .hero-title { font-size: clamp(48px, 14vw, 80px) !important; }
+    section { padding: 40px 16px !important; }
+    .pricing-grid { grid-template-columns: 1fr !important; }
+    .features-grid { grid-template-columns: 1fr !important; }
+    .faq-grid { grid-template-columns: 1fr !important; }
+  }
+
+  /* ── LANGUAGE SELECTOR ── */
+  .lang-selector {
+    display: flex; gap: 4px; align-items: center;
+  }
+  .lang-btn {
+    width: 28px; height: 28px; border-radius: 4px;
+    background: transparent; border: 1px solid transparent;
+    cursor: pointer; font-size: 16px; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.2s; padding: 0;
+    opacity: 0.45;
+  }
+  .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
+  .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
 </style>
 </head>
 <body>
@@ -670,17 +698,22 @@
     <li><a href="#tarifs">Tarifs</a></li>
     <li><a href="#faq">FAQ</a></li>
   </ul>
-  <div style="display:flex;gap:10px;align-items:center;">
-    <button onclick="window.location.href='inscription.html?tab=connexion'" style="padding:10px 20px;background:transparent;border:1px solid #333;border-radius:4px;color:#aaa;font-family:inherit;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='#fff';this.style.color='#fff'" onmouseout="this.style.borderColor='#333';this.style.color='#aaa'">Se connecter</button>
-    <button class="nav-btn" onclick="window.location.href='inscription.html'">S'inscrire</button>
+  <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+    <button onclick="window.location.href='inscription.html?tab=connexion'" style="padding:8px 14px;background:transparent;border:1px solid #333;border-radius:4px;color:#aaa;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;">Connexion</button>
+    <button class="nav-btn" onclick="window.location.href='inscription.html'" style="padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;">S'inscrire</button>
   </div>
-</nav>
+  <div class="lang-selector" style="display:flex;gap:4px;align-items:center;">
+      <button class="lang-btn" data-lang="fr" onclick="setLang('fr')" title="Français">🇫🇷</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')" title="English">🇬🇧</button>
+      <button class="lang-btn" data-lang="bg" onclick="setLang('bg')" title="Български">🇧🇬</button>
+    </div>
+  </nav>
 
 <!-- HERO -->
 <section id="hero">
-  <div class="hero-tag">— Forge ton corps. Maîtrise ton esprit.</div>
   <h1 class="hero-title">CHOISIS<br>TON <span class="accent">ARMURE.</span></h1>
   <p class="hero-sub">Chaque plan est une étape vers une meilleure version de toi-même. Commence gratuitement, monte en puissance quand tu es prêt.</p>
+  <p style="font-size:12px;letter-spacing:5px;color:var(--red);text-align:center;margin-top:16px;font-weight:600;text-transform:uppercase;">NOT JUST FLESH, BUT SPIRIT.</p>
 </section>
 
 <!-- À PROPOS -->
@@ -916,5 +949,9 @@
     if (!wasOpen) item.classList.add('open');
   }
 </script>
+
+  <!-- i18n -->
+  <script src="i18n.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', initI18n);</script>
 </body>
 </html>

@@ -88,6 +88,21 @@
   .msg.success { background: rgba(46,125,50,0.1); border: 1px solid rgba(46,125,50,0.3); color: #a5d6a7; display: block; }
 
   @media (max-width: 900px) { body { grid-template-columns: 1fr; } .left { display: none; } .right { padding: 32px 24px; } }
+
+  /* ── LANGUAGE SELECTOR ── */
+  .lang-selector {
+    display: flex; gap: 4px; align-items: center;
+  }
+  .lang-btn {
+    width: 28px; height: 28px; border-radius: 4px;
+    background: transparent; border: 1px solid transparent;
+    cursor: pointer; font-size: 16px; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.2s; padding: 0;
+    opacity: 0.45;
+  }
+  .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
+  .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
 </style>
 </head>
 <body>
@@ -337,5 +352,9 @@
     label.style.color = cls === 'strong' ? '#2e7d32' : cls === 'medium' ? '#e8a000' : '#c82828';
   }
 </script>
+
+  <!-- i18n -->
+  <script src="i18n.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', initI18n);</script>
 </body>
 </html>

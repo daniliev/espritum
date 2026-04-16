@@ -196,6 +196,21 @@
     * { max-width: 100%; }
     img { max-width: 100%; }
   }
+
+  /* ── LANGUAGE SELECTOR ── */
+  .lang-selector {
+    display: flex; gap: 4px; align-items: center;
+  }
+  .lang-btn {
+    width: 28px; height: 28px; border-radius: 4px;
+    background: transparent; border: 1px solid transparent;
+    cursor: pointer; font-size: 16px; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.2s; padding: 0;
+    opacity: 0.45;
+  }
+  .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
+  .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
 </style>
 </head>
 <body>
@@ -226,6 +241,12 @@
     <a class="nav-item" href="abonnement.html"><span class="nav-icon">⭐</span> Abonnement</a>
   </nav>
   <div class="sidebar-bottom">
+    <div class="lang-selector" style="display:flex;gap:4px;align-items:center;">
+      <button class="lang-btn" data-lang="fr" onclick="setLang('fr')" title="Français">🇫🇷</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')" title="English">🇬🇧</button>
+      <button class="lang-btn" data-lang="bg" onclick="setLang('bg')" title="Български">🇧🇬</button>
+    </div>
+
     <div class="user-card">
       <div class="user-avatar" id="sidebar-avatar">?</div>
       <div>
@@ -237,10 +258,10 @@
 </aside>
 
 <main class="main">
-  <div class="topbar">
+  <div class="topbar" style="justify-content:space-between;">
     <div class="topbar-left">
       
-      <div class="topbar-title">Coach Sensei</div>
+      <div class="topbar-title" data-i18n="nav_coach">Coach Sensei</div>
     </div>
     
       En ligne · Prêt à t'envoyer au tapis
@@ -570,24 +591,28 @@ Tes réponses : maximum 4 paragraphes, direct, actionnable. En français.`;
 <nav class="mobile-nav">
   <a class="mobile-nav-item " href="dashboard.html">
     <span class="mobile-nav-icon">🏠</span>
-    <span class="mobile-nav-label">Home</span>
+    <span class="mobile-nav-label" data-i18n="nav_dashboard">Home</span>
   </a>
   <a class="mobile-nav-item " href="nutrition.html">
     <span class="mobile-nav-icon">🍎</span>
-    <span class="mobile-nav-label">Nutrition</span>
+    <span class="mobile-nav-label" data-i18n="nav_nutrition">Nutrition</span>
   </a>
   <a class="mobile-nav-item " href="entrainement.html">
     <span class="mobile-nav-icon">💪</span>
-    <span class="mobile-nav-label">Training</span>
+    <span class="mobile-nav-label" data-i18n="nav_training">Training</span>
   </a>
   <a class="mobile-nav-item " href="bodyfat.html">
     <span class="mobile-nav-icon">📸</span>
-    <span class="mobile-nav-label">Analyse</span>
+    <span class="mobile-nav-label" data-i18n="nav_bodyfat">Analyse</span>
   </a>
   <a class="mobile-nav-item " href="profil.html">
     <span class="mobile-nav-icon">👤</span>
-    <span class="mobile-nav-label">Profil</span>
+    <span class="mobile-nav-label" data-i18n="nav_profil">Profil</span>
   </a>
 </nav>
+
+  <!-- i18n -->
+  <script src="i18n.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', initI18n);</script>
 </body>
 </html>
