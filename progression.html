@@ -217,6 +217,15 @@
     .sensei-status { display: none !important; }
     .date-nav .date-label { font-size: 12px; min-width: 80px; }
   }
+
+  /* ── OVERFLOW FIX GLOBAL ── */
+  @media (max-width: 768px) {
+    body { overflow-x: hidden; }
+    .main { overflow-x: hidden; width: 100%; }
+    .content { overflow-x: hidden; }
+    * { max-width: 100%; }
+    img { max-width: 100%; }
+  }
 </style>
 </head>
 <body>
