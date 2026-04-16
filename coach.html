@@ -457,22 +457,24 @@ Tes réponses : maximum 4 paragraphes, direct, actionnable. En français.`;
 
       const systemPrompt = SYSTEM_PROMPT.replace('{CONTEXT}', ctx);
 
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
+      // Appel via Edge Function Supabase (proxy sécurisé)
+      const PROXY_URL = 'https://lbxlvrtujzwlcnloheyh.supabase.co/functions/v1/coach-proxy';
+
+      const response = await fetch(PROXY_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'anthropic-dangerous-direct-browser-access': 'true'
+          'Authorization': `Bearer sb_publishable_40dpIdYthKMZkJImacoKoQ_ftEeaPeg`,
         },
         body: JSON.stringify({
-          model: 'claude-haiku-4-5-20251001',
-          max_tokens: 800,
           system: systemPrompt,
           messages: conversationHistory
         })
       });
 
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
-      if (data.error) throw new Error(data.error.message);
+      if (data.error) throw new Error(data.error.message || data.error);
 
       const reply = data.content?.[0]?.text || "J'ai pas capté frerot, reformule !";
       conversationHistory.push({ role: 'assistant', content: reply });
