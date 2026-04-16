@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Espritum — Inscription</title>
 <link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -103,6 +106,18 @@
   }
   .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
   .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
+
+  /* ── BULGARIAN FONT ── */
+  html[lang="bg"] * {
+    font-family: 'Sofia Sans Condensed', var(--font-body, sans-serif) !important;
+  }
+  html[lang="bg"] .topbar-title,
+  html[lang="bg"] .sidebar-name,
+  html[lang="bg"] .card-title,
+  html[lang="bg"] .stat-val,
+  html[lang="bg"] .nav-item {
+    font-family: 'Sofia Sans Condensed', var(--font-display, sans-serif) !important;
+  }
 </style>
 </head>
 <body>

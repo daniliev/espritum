@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
 <title>Espritum — Estimation Corporelle</title>
 <link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -290,6 +293,18 @@
     .mobile-lang-bar { display: flex; }
     .topbar { margin-top: 44px; }
     .main { padding-top: 0; }
+  }
+
+  /* ── BULGARIAN FONT ── */
+  html[lang="bg"] * {
+    font-family: 'Sofia Sans Condensed', var(--font-body, sans-serif) !important;
+  }
+  html[lang="bg"] .topbar-title,
+  html[lang="bg"] .sidebar-name,
+  html[lang="bg"] .card-title,
+  html[lang="bg"] .stat-val,
+  html[lang="bg"] .nav-item {
+    font-family: 'Sofia Sans Condensed', var(--font-display, sans-serif) !important;
   }
 </style>
 </head>
