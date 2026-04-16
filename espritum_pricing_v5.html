@@ -702,14 +702,44 @@
   }
 
   /* ── BULGARIAN FONT ── */
-  :lang(bg), html[lang="bg"] * {
-    font-family: 'Sofia Sans Condensed', 'acumin-pro-condensed', sans-serif !important;
+  html[lang="bg"] body,
+  html[lang="bg"] p,
+  html[lang="bg"] li,
+  html[lang="bg"] span,
+  html[lang="bg"] div,
+  html[lang="bg"] a,
+  html[lang="bg"] button {
+    font-family: 'Sofia Sans Condensed', sans-serif !important;
+    font-weight: 500;
   }
-  html[lang="bg"] .hero-title,
-  html[lang="bg"] .section-heading,
+  html[lang="bg"] .hero-title {
+    font-family: 'Sofia Sans Condensed', sans-serif !important;
+    font-weight: 900 !important;
+    letter-spacing: 2px;
+  }
+  html[lang="bg"] .section-heading {
+    font-family: 'Sofia Sans Condensed', sans-serif !important;
+    font-weight: 900 !important;
+    letter-spacing: 3px;
+  }
   html[lang="bg"] .plan-name,
-  html[lang="bg"] .free-title {
-    font-family: 'Sofia Sans Condensed', 'Bebas Neue', sans-serif !important;
+  html[lang="bg"] .free-title,
+  html[lang="bg"] .feat-title,
+  html[lang="bg"] .nav-name,
+  html[lang="bg"] .plan-tier .plan-name {
+    font-family: 'Sofia Sans Condensed', sans-serif !important;
+    font-weight: 800 !important;
+    letter-spacing: 2px;
+  }
+  html[lang="bg"] .feat-desc,
+  html[lang="bg"] .plan-desc,
+  html[lang="bg"] .free-desc,
+  html[lang="bg"] .faq-q span,
+  html[lang="bg"] .faq-a {
+    font-family: 'Sofia Sans Condensed', sans-serif !important;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.6;
   }
 </style>
 </head>
@@ -765,32 +795,32 @@
       <div class="feat-card">
         <span class="feat-icon">📸</span>
         <div class="feat-title" data-i18n="feat_bodyfat_title">Masse grasse par caméra</div>
-        <p class="feat-desc">L'IA analyse ta silhouette et estime ton taux de masse grasse en quelques secondes. Disponible gratuitement.</p>
+        <p class="feat-desc" data-i18n="feat_bodyfat_desc">L'IA analyse ta silhouette et estime ton taux de masse grasse en quelques secondes. Disponible gratuitement.</p>
       </div>
       <div class="feat-card">
         <span class="feat-icon">🤖</span>
         <div class="feat-title" data-i18n="feat_coach_title">Coach IA Sensei</div>
-        <p class="feat-desc">Un mentor alimenté par l'IA, disponible 24h/24. Conseils nutrition, entraînement et motivation dans le style anime.</p>
+        <p class="feat-desc" data-i18n="feat_coach_desc">Un mentor alimenté par l'IA, disponible 24h/24. Conseils nutrition, entraînement et motivation dans le style anime.</p>
       </div>
       <div class="feat-card">
         <span class="feat-icon">🍎</span>
         <div class="feat-title" data-i18n="feat_nutrition_title">Suivi nutrition</div>
-        <p class="feat-desc">Calories, macros, scan de code-barre et repas favoris. Tout pour maîtriser ton alimentation au quotidien.</p>
+        <p class="feat-desc" data-i18n="feat_nutrition_desc">Calories, macros, scan de code-barre et repas favoris. Tout pour maîtriser ton alimentation au quotidien.</p>
       </div>
       <div class="feat-card">
         <span class="feat-icon">💪</span>
         <div class="feat-title" data-i18n="feat_training_title">Plans d'entraînement</div>
-        <p class="feat-desc">Des programmes générés selon ton profil, ton objectif et ton niveau. Mis à jour automatiquement chaque semaine.</p>
+        <p class="feat-desc" data-i18n="feat_training_desc">Des programmes générés selon ton profil, ton objectif et ton niveau. Mis à jour automatiquement chaque semaine.</p>
       </div>
       <div class="feat-card">
         <span class="feat-icon">📊</span>
         <div class="feat-title" data-i18n="feat_progress_title">Progression corporelle</div>
-        <p class="feat-desc">Photos avant/après, mensurations, poids — tout est tracé avec des graphiques clairs semaine après semaine.</p>
+        <p class="feat-desc" data-i18n="feat_progress_desc">Photos avant/après, mensurations, poids — tout est tracé avec des graphiques clairs semaine après semaine.</p>
       </div>
       <div class="feat-card">
         <span class="feat-icon">📖</span>
         <div class="feat-title" data-i18n="feat_faith_title">Motivation chrétienne</div>
-        <p class="feat-desc">Un verset biblique chaque matin, des prières avant l'entraînement et des citations de figures bibliques pour tenir le cap.</p>
+        <p class="feat-desc" data-i18n="feat_faith_desc">Un verset biblique chaque matin, des prières avant l'entraînement et des citations de figures bibliques pour tenir le cap.</p>
       </div>
     </div>
   </div>
