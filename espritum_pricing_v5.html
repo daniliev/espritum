@@ -1091,14 +1091,8 @@
     }
 
     function selectLang(lang) {
+      // setLang recharge la page automatiquement
       setLang(lang);
-      document.getElementById('lang-current-flag').textContent = FLAGS[lang];
-      document.getElementById('lang-menu').classList.remove('open');
-      document.getElementById('lang-trigger').classList.remove('open');
-      // Marquer l'option active
-      document.querySelectorAll('.lang-option').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('onclick').includes(lang));
-      });
     }
 
     // Fermer si on clique ailleurs

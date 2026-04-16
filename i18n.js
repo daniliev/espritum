@@ -492,8 +492,8 @@ function getLang() {
 
 function setLang(lang) {
   localStorage.setItem('espritum_lang', lang);
-  applyTranslations(lang);
-  updateFlagButtons(lang);
+  // Recharger la page avec la nouvelle langue — garantit que TOUT est traduit
+  window.location.reload();
 }
 
 function t(key) {
@@ -722,8 +722,25 @@ function translateDynamic(key) {
 }
 
 function updateFlagButtons(lang) {
+  const FLAGS = { fr: '🇫🇷', en: '🇬🇧', bg: '🇧🇬' };
+  
+  // Anciens boutons lang-btn
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+  });
+
+  // Dropdown landing page
+  const currentFlag = document.getElementById('lang-current-flag');
+  if (currentFlag) currentFlag.textContent = FLAGS[lang];
+
+  // Dropdown app mobile
+  const appFlag = document.getElementById('app-lang-flag');
+  if (appFlag) appFlag.textContent = FLAGS[lang];
+
+  // Options actives dans les menus
+  document.querySelectorAll('.lang-option').forEach(btn => {
+    const onclick = btn.getAttribute('onclick') || '';
+    btn.classList.toggle('active', onclick.includes(`'${lang}'`));
   });
 }
 
@@ -731,6 +748,13 @@ function initI18n() {
   const lang = getLang();
   applyTranslations(lang);
   updateFlagButtons(lang);
+  // Appliquer aussi après que le DOM soit complètement chargé
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      applyTranslations(lang);
+      updateFlagButtons(lang);
+    });
+  }
 }
 
 // HTML du sélecteur de drapeaux
