@@ -502,21 +502,217 @@ function t(key) {
 }
 
 function applyTranslations(lang) {
+  const T = TRANSLATIONS[lang] || TRANSLATIONS['fr'];
+  
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    const val = (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || TRANSLATIONS['fr'][key];
+    const val = T[key] || TRANSLATIONS['fr'][key];
     if (!val) return;
+
     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
       el.placeholder = val;
     } else if (key === 'landing_hero') {
-      // Hero title — split pour mettre l'accent sur le dernier mot
       const words = val.split(' ');
       const last = words.pop();
       el.innerHTML = words.join(' ') + '<br><span class="accent">' + last + '</span>';
+    } else if (key === 'free_title') {
+      // Titre gratuit avec span rouge
+      const parts = val.split(' ');
+      const last = parts.pop();
+      el.innerHTML = parts.join(' ') + '<br><span>' + last + '</span>';
     } else {
       el.textContent = val;
     }
   });
+
+  // Forcer aussi les éléments sans data-i18n via leurs classes CSS
+  // (pour les éléments qui auraient le tag mais pas détectés)
+  const directMap = {
+    '.free-tag':    'free_tag',
+    '.free-title':  'free_title', 
+    '.free-desc':   'free_desc',
+    '.free-cta':    'plan_start',
+    '.featured-badge': 'plan_popular',
+    '#lbl-monthly': 'landing_monthly',
+    '#lbl-yearly':  'landing_yearly',
+    '.save-badge':  'landing_save',
+    '.price-period': 'price_period',
+  };
+
+  for (const [selector, key] of Object.entries(directMap)) {
+    const val = T[key] || TRANSLATIONS['fr'][key];
+    if (!val) continue;
+    document.querySelectorAll(selector).forEach(el => {
+      if (key === 'free_title') {
+        const parts = val.split(' ');
+        const last = parts.pop();
+        el.innerHTML = parts.join(' ') + '<br><span>' + last + '</span>';
+      } else {
+        el.textContent = val;
+      }
+    });
+  }
+
+  // Features du plan gratuit (par index)
+  const freeFeats = ['free_f1','free_f2','free_f3','free_f4','free_f5'];
+  document.querySelectorAll('.free-feature').forEach((el, i) => {
+    if (freeFeats[i]) {
+      const val = T[freeFeats[i]] || TRANSLATIONS['fr'][freeFeats[i]];
+      if (val) {
+        const dot = el.querySelector('.free-dot');
+        el.innerHTML = '';
+        if (dot) el.appendChild(dot);
+        el.appendChild(document.createTextNode(val));
+      }
+    }
+  });
+
+  // Plan descriptions par index
+  const planDescs = ['warrior_desc','champion_desc','elite_desc'];
+  document.querySelectorAll('.plan-desc').forEach((el, i) => {
+    if (planDescs[i]) {
+      const val = T[planDescs[i]] || TRANSLATIONS['fr'][planDescs[i]];
+      if (val) el.textContent = val;
+    }
+  });
+
+  // Plan CTAs par index
+  const planCtas = ['warrior_cta','champion_cta','elite_cta'];
+  document.querySelectorAll('.plan-cta').forEach((el, i) => {
+    if (planCtas[i]) {
+      const val = T[planCtas[i]] || TRANSLATIONS['fr'][planCtas[i]];
+      if (val) el.textContent = val;
+    }
+  });
+
+  // Plan "Inclus dans ce plan"
+  const incl = T['plan_included'] || TRANSLATIONS['fr']['plan_included'];
+  if (incl) document.querySelectorAll('.features-label').forEach(el => el.textContent = incl);
+
+  // Features par clé wf1-wf7, cf1-cf7, ef1-ef6
+  const allFeatureKeys = [
+    'wf1','wf2','wf3','wf4','wf5','wf6','wf7',
+    'cf1','cf2','cf3','cf4','cf5','cf6','cf7',
+    'ef1','ef2','ef3','ef4','ef5','ef6'
+  ];
+  document.querySelectorAll('.feature span[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = T[key] || TRANSLATIONS['fr'][key];
+    if (val) el.textContent = val;
+  });
+
+  // Features sans data-i18n — par ordre dans les listes .features
+  const planCards = document.querySelectorAll('.plan-card');
+  const featureGroups = [
+    ['wf1','wf2','wf3','wf4','wf5','wf6','wf7'],
+    ['cf1','cf2','cf3','cf4','cf5','cf6','cf7'],
+    ['ef1','ef2','ef3','ef4','ef5','ef6'],
+  ];
+  planCards.forEach((card, ci) => {
+    const keys = featureGroups[ci];
+    if (!keys) return;
+    card.querySelectorAll('.feature').forEach((li, fi) => {
+      if (keys[fi]) {
+        const val = T[keys[fi]] || TRANSLATIONS['fr'][keys[fi]];
+        if (val) {
+          const check = li.querySelector('.check');
+          li.innerHTML = '';
+          if (check) li.appendChild(check);
+          li.appendChild(document.createTextNode(val));
+        }
+      }
+    });
+  });
+
+  // Feat descriptions par ordre
+  const featDescKeys = [
+    'feat_bodyfat_desc','feat_coach_desc','feat_nutrition_desc',
+    'feat_training_desc','feat_progress_desc','feat_faith_desc'
+  ];
+  document.querySelectorAll('.feat-desc').forEach((el, i) => {
+    if (featDescKeys[i]) {
+      const val = T[featDescKeys[i]] || TRANSLATIONS['fr'][featDescKeys[i]];
+      if (val) el.textContent = val;
+    }
+  });
+
+  // Feat titles
+  const featTitleKeys = [
+    'feat_bodyfat_title','feat_coach_title','feat_nutrition_title',
+    'feat_training_title','feat_progress_title','feat_faith_title'
+  ];
+  document.querySelectorAll('.feat-title').forEach((el, i) => {
+    if (featTitleKeys[i]) {
+      const val = T[featTitleKeys[i]] || TRANSLATIONS['fr'][featTitleKeys[i]];
+      if (val) el.textContent = val;
+    }
+  });
+
+  // FAQ questions et réponses par ordre
+  const faqQKeys = ['faq_q1b','faq_q2','faq_q3b','faq_q4','faq_q5','faq_q6','faq_q7'];
+  const faqAKeys = ['faq_a1b','faq_a2','faq_a3b','faq_a4','faq_a5','faq_a6','faq_a7'];
+  document.querySelectorAll('.faq-q').forEach((el, i) => {
+    if (faqQKeys[i]) {
+      const val = T[faqQKeys[i]] || TRANSLATIONS['fr'][faqQKeys[i]];
+      if (val) {
+        const arrow = el.querySelector('.faq-arrow');
+        el.innerHTML = '';
+        el.appendChild(document.createTextNode(val));
+        if (arrow) el.appendChild(arrow);
+      }
+    }
+  });
+  document.querySelectorAll('.faq-a').forEach((el, i) => {
+    if (faqAKeys[i]) {
+      const val = T[faqAKeys[i]] || TRANSLATIONS['fr'][faqAKeys[i]];
+      if (val) el.textContent = val;
+    }
+  });
+
+  // Nav links landing
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const navKeys = ['landing_about','landing_features','landing_pricing','landing_faq'];
+  navLinks.forEach((el, i) => {
+    if (navKeys[i]) {
+      const val = T[navKeys[i]] || TRANSLATIONS['fr'][navKeys[i]];
+      if (val) el.textContent = val;
+    }
+  });
+
+  // Hero sub + slogan
+  const heroSub = T['landing_sub'] || TRANSLATIONS['fr']['landing_sub'];
+  if (heroSub) document.querySelectorAll('.hero-sub').forEach(el => el.textContent = heroSub);
+
+  const slogan = T['landing_slogan'] || TRANSLATIONS['fr']['landing_slogan'];
+  if (slogan) document.querySelectorAll('[data-i18n="landing_slogan"]').forEach(el => el.textContent = slogan);
+
+  // Boutons nav
+  const btnConnect = T['landing_connect'] || TRANSLATIONS['fr']['landing_connect'];
+  const btnSignup = T['landing_signup'] || TRANSLATIONS['fr']['landing_signup'];
+  document.querySelectorAll('[data-i18n="landing_connect"]').forEach(el => { if(btnConnect) el.textContent = btnConnect; });
+  document.querySelectorAll('[data-i18n="landing_signup"]').forEach(el => { if(btnSignup) el.textContent = btnSignup; });
+
+  // Verset
+  const verseTag = T['landing_verse_tag'];
+  const verseText = T['landing_verse'];
+  const verseRef = T['landing_verse_ref'];
+  if (verseTag) document.querySelectorAll('.verse-tag').forEach(el => el.textContent = verseTag);
+  if (verseText) document.querySelectorAll('.verse-text').forEach(el => el.textContent = verseText);
+  if (verseRef) document.querySelectorAll('.verse-ref').forEach(el => el.textContent = verseRef);
+
+  // Section headings par ordre
+  const headingKeys = ['landing_about','landing_features','landing_pricing','faq_title'];
+  document.querySelectorAll('.section-heading').forEach((el, i) => {
+    if (headingKeys[i]) {
+      const val = T[headingKeys[i]] || TRANSLATIONS['fr'][headingKeys[i]];
+      if (val) el.textContent = val;
+    }
+  });
+
+  // Footer
+  const footer = T['footer_rights'];
+  if (footer) document.querySelectorAll('[data-i18n="footer_rights"]').forEach(el => el.textContent = footer);
+
   document.documentElement.lang = lang;
 }
 
