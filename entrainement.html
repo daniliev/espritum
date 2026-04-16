@@ -208,6 +208,36 @@
 
   @media (max-width: 1100px) { .exercises-layout { grid-template-columns: 1fr; } .muscle-grid { grid-template-columns: repeat(2,1fr); } .stats-row { grid-template-columns: repeat(2,1fr); } }
   @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } }
+
+  /* ── BOTTOM NAV MOBILE ── */
+  .mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #0a0a0a;
+    border-top: 1px solid #1e1e1e;
+    padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+    z-index: 100;
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .mobile-nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 6px 4px; text-decoration: none; transition: all 0.2s;
+    color: #555; cursor: pointer;
+  }
+
+  .mobile-nav-item.active { color: #c82828; }
+  .mobile-nav-item:hover { color: #aaa; }
+
+  .mobile-nav-icon { font-size: 20px; }
+  .mobile-nav-label { font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 600; }
+
+  @media (max-width: 768px) {
+    .mobile-nav { display: grid; }
+    .main { padding-bottom: 72px; }
+    .sidebar { display: none !important; }
+  }
 </style>
 </head>
 <body>
@@ -379,44 +409,56 @@
 
   const PLAN_LABEL = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
 
-  // GIFs depuis muscles.wiki (domaine public / libre de droits)
-  const EXERCISE_GIFS = {
-    'Développé couché':         'https://muscles.wiki/img/exercises/thumbnails/barbell-bench-press.png',
-    'Développé incliné haltères': 'https://muscles.wiki/img/exercises/thumbnails/incline-dumbbell-bench-press.png',
-    'Écarté haltères plat':     'https://muscles.wiki/img/exercises/thumbnails/dumbbell-fly.png',
-    'Dips poitrine':            'https://muscles.wiki/img/exercises/thumbnails/chest-dip.png',
-    'Poulie croisée haute':     'https://muscles.wiki/img/exercises/thumbnails/cable-crossover.png',
-    'Pompes lestées':           'https://muscles.wiki/img/exercises/thumbnails/push-up.png',
-    'Traction pronation':       'https://muscles.wiki/img/exercises/thumbnails/pull-up.png',
-    'Rowing barre':             'https://muscles.wiki/img/exercises/thumbnails/barbell-row.png',
-    'Tirage poulie haute':      'https://muscles.wiki/img/exercises/thumbnails/lat-pulldown.png',
-    'Rowing haltère unilatéral':'https://muscles.wiki/img/exercises/thumbnails/one-arm-dumbbell-row.png',
-    'Tirage poulie basse':      'https://muscles.wiki/img/exercises/thumbnails/seated-cable-row.png',
-    'Shrugs haltères':          'https://muscles.wiki/img/exercises/thumbnails/dumbbell-shrug.png',
-    'Curl barre droite':        'https://muscles.wiki/img/exercises/thumbnails/barbell-curl.png',
-    'Curl haltères alterné':    'https://muscles.wiki/img/exercises/thumbnails/alternating-dumbbell-curl.png',
-    'Curl marteau':             'https://muscles.wiki/img/exercises/thumbnails/hammer-curl.png',
-    'Extension triceps poulie': 'https://muscles.wiki/img/exercises/thumbnails/tricep-pushdown.png',
-    'Barre au front (Skull crusher)': 'https://muscles.wiki/img/exercises/thumbnails/skull-crusher.png',
-    'Dips banc triceps':        'https://muscles.wiki/img/exercises/thumbnails/bench-dip.png',
-    'Développé militaire barre':'https://muscles.wiki/img/exercises/thumbnails/overhead-press.png',
-    'Élévations latérales':     'https://muscles.wiki/img/exercises/thumbnails/lateral-raise.png',
-    'Élévations frontales':     'https://muscles.wiki/img/exercises/thumbnails/front-raise.png',
-    'Oiseau haltères (rear delt)':'https://muscles.wiki/img/exercises/thumbnails/bent-over-reverse-fly.png',
-    'Upright row barre':        'https://muscles.wiki/img/exercises/thumbnails/upright-row.png',
-    'Squat barre':              'https://muscles.wiki/img/exercises/thumbnails/squat.png',
-    'Presse à cuisses':         'https://muscles.wiki/img/exercises/thumbnails/leg-press.png',
-    'Soulevé de terre jambes tendues': 'https://muscles.wiki/img/exercises/thumbnails/romanian-deadlift.png',
-    'Fentes avant haltères':    'https://muscles.wiki/img/exercises/thumbnails/dumbbell-lunge.png',
-    'Leg curl allongé':         'https://muscles.wiki/img/exercises/thumbnails/lying-leg-curl.png',
-    'Mollets debout':           'https://muscles.wiki/img/exercises/thumbnails/standing-calf-raise.png',
-    'Crunch classique':         'https://muscles.wiki/img/exercises/thumbnails/crunch.png',
-    'Planche':                  'https://muscles.wiki/img/exercises/thumbnails/plank.png',
-    'Relevé de jambes suspendu':'https://muscles.wiki/img/exercises/thumbnails/hanging-leg-raise.png',
-    'Crunch oblique':           'https://muscles.wiki/img/exercises/thumbnails/oblique-crunch.png',
-    'Russian twist':            'https://muscles.wiki/img/exercises/thumbnails/russian-twist.png',
-    'Soulevé de terre':         'https://muscles.wiki/img/exercises/thumbnails/deadlift.png',
+  // Badges visuels par exercice (emoji + couleur selon groupe musculaire)
+  const EXERCISE_VISUALS = {
+    'Développé couché':               { emoji: '🏋️', color: '#c82828', label: 'PECS' },
+    'Développé incliné haltères':     { emoji: '💪', color: '#c82828', label: 'PECS' },
+    'Écarté haltères plat':           { emoji: '🫁', color: '#c82828', label: 'PECS' },
+    'Dips poitrine':                  { emoji: '⬇️', color: '#c82828', label: 'TRICEPS' },
+    'Poulie croisée haute':           { emoji: '🔀', color: '#c82828', label: 'PECS' },
+    'Pompes lestées':                 { emoji: '⬆️', color: '#c82828', label: 'PECS' },
+    'Traction pronation':             { emoji: '⬆️', color: '#1565c0', label: 'DORSAUX' },
+    'Rowing barre':                   { emoji: '🚣', color: '#1565c0', label: 'DOS' },
+    'Tirage poulie haute':            { emoji: '⬇️', color: '#1565c0', label: 'DORSAUX' },
+    'Rowing haltère unilatéral':      { emoji: '💪', color: '#1565c0', label: 'DORSAL' },
+    'Tirage poulie basse':            { emoji: '🎯', color: '#1565c0', label: 'DOS' },
+    'Shrugs haltères':                { emoji: '🤷', color: '#1565c0', label: 'TRAPÈZES' },
+    'Curl barre droite':              { emoji: '💪', color: '#e8a000', label: 'BICEPS' },
+    'Curl haltères alterné':          { emoji: '🔄', color: '#e8a000', label: 'BICEPS' },
+    'Curl marteau':                   { emoji: '🔨', color: '#e8a000', label: 'BICEPS' },
+    'Extension triceps poulie':       { emoji: '⬇️', color: '#7b1fa2', label: 'TRICEPS' },
+    'Barre au front (Skull crusher)': { emoji: '💀', color: '#7b1fa2', label: 'TRICEPS' },
+    'Dips banc triceps':              { emoji: '⬇️', color: '#7b1fa2', label: 'TRICEPS' },
+    'Développé militaire barre':      { emoji: '🏋️', color: '#00838f', label: 'ÉPAULES' },
+    'Élévations latérales':           { emoji: '↔️', color: '#00838f', label: 'DELTOÏDE' },
+    'Élévations frontales':           { emoji: '⬆️', color: '#00838f', label: 'ÉPAULES' },
+    'Oiseau haltères (rear delt)':    { emoji: '🦅', color: '#00838f', label: 'REAR DELT' },
+    'Upright row barre':              { emoji: '⬆️', color: '#00838f', label: 'TRAPÈZES' },
+    'Squat barre':                    { emoji: '🦵', color: '#2e7d32', label: 'QUADS' },
+    'Presse à cuisses':               { emoji: '🦵', color: '#2e7d32', label: 'QUADS' },
+    'Soulevé de terre jambes tendues':{ emoji: '🔱', color: '#2e7d32', label: 'ISCHIOS' },
+    'Fentes avant haltères':          { emoji: '🚶', color: '#2e7d32', label: 'JAMBES' },
+    'Leg curl allongé':               { emoji: '🦵', color: '#2e7d32', label: 'ISCHIOS' },
+    'Mollets debout':                 { emoji: '🦶', color: '#2e7d32', label: 'MOLLETS' },
+    'Crunch classique':               { emoji: '🎯', color: '#c82828', label: 'ABDOS' },
+    'Planche':                        { emoji: '📏', color: '#c82828', label: 'CORE' },
+    'Relevé de jambes suspendu':      { emoji: '🦵', color: '#c82828', label: 'ABDOS BAS' },
+    'Crunch oblique':                 { emoji: '🔄', color: '#c82828', label: 'OBLIQUES' },
+    'Russian twist':                  { emoji: '🔄', color: '#c82828', label: 'OBLIQUES' },
+    'Soulevé de terre':               { emoji: '🏋️', color: '#555', label: 'FULL BODY' },
+    'Course à pied':                  { emoji: '🏃', color: '#e91e63', label: 'CARDIO' },
+    'Burpees':                        { emoji: '⚡', color: '#e91e63', label: 'CARDIO' },
+    'Corde à sauter':                 { emoji: '🪢', color: '#e91e63', label: 'CARDIO' },
   };
+
+  function getExVisual(name, muscle) {
+    const v = EXERCISE_VISUALS[name];
+    if (v) return `<div class="ex-image" style="background:${v.color}18;border-color:${v.color}33;flex-direction:column;gap:4px;display:flex;align-items:center;justify-content:center;">
+      <span style="font-size:24px;">${v.emoji}</span>
+      <span style="font-size:8px;letter-spacing:1px;color:${v.color};font-weight:700;">${v.label}</span>
+    </div>`;
+    return `<div class="ex-image">${getExIcon(muscle)}</div>`;
+  }
 
   const PROGRAMS = {
     pecs: {
@@ -829,5 +871,29 @@
 
   init();
 </script>
+
+<!-- BARRE NAVIGATION MOBILE -->
+<nav class="mobile-nav">
+  <a class="mobile-nav-item" href="dashboard.html">
+    <span class="mobile-nav-icon">🏠</span>
+    <span class="mobile-nav-label">Home</span>
+  </a>
+  <a class="mobile-nav-item" href="nutrition.html">
+    <span class="mobile-nav-icon">🍎</span>
+    <span class="mobile-nav-label">Nutrition</span>
+  </a>
+  <a class="mobile-nav-item active" href="entrainement.html">
+    <span class="mobile-nav-icon">💪</span>
+    <span class="mobile-nav-label">Training</span>
+  </a>
+  <a class="mobile-nav-item" href="bodyfat.html">
+    <span class="mobile-nav-icon">📸</span>
+    <span class="mobile-nav-label">Analyse</span>
+  </a>
+  <a class="mobile-nav-item" href="profil.html">
+    <span class="mobile-nav-icon">👤</span>
+    <span class="mobile-nav-label">Profil</span>
+  </a>
+</nav>
 </body>
 </html>
