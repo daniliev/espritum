@@ -656,17 +656,13 @@
     const list = document.getElementById('exercise-list');
     list.innerHTML = currentProgram.exercises.map((ex, i) => {
       const allDone = Object.values(seriesState[i] || {}).every(s => s.done);
-      const gifUrl = EXERCISE_GIFS[ex.name];
       const seriesDone = Object.values(seriesState[i] || {}).filter(s => s.done).length;
 
       return `
         <div class="exercise-card ${allDone ? 'completed' : ''}" id="ex-card-${i}">
           <div class="exercise-card-header" onclick="toggleCard(${i})">
             <div class="ex-done-badge">${allDone ? '✓' : ''}</div>
-            ${gifUrl
-              ? `<img class="ex-image" src="${gifUrl}" alt="${ex.name}" onerror="this.outerHTML='<div class=\\'ex-image\\'>${getExIcon(ex.muscle)}</div>'">`
-              : `<div class="ex-image">${getExIcon(ex.muscle)}</div>`
-            }
+            ${getExVisual(ex.name, ex.muscle)}
             <div class="ex-main-info">
               <div class="ex-name">${ex.name}</div>
               <div class="ex-muscle-tag">${ex.muscle}</div>
