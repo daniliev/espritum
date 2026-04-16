@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
 <title>Espritum — Profil</title>
 <link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -217,6 +217,32 @@
     .main-grid { grid-template-columns: 1fr; gap: 14px; }
     .bottom-grid { grid-template-columns: 1fr; gap: 14px; }
     .card { padding: 16px; }
+  }
+
+  /* ── ANTI-ZOOM GLOBAL ── */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    touch-action: pan-x pan-y;
+  }
+  input, select, textarea {
+    font-size: 16px !important; /* empêche le zoom auto sur iOS */
+  }
+  * {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  /* MOBILE : topbar ultra simplifié */
+  @media (max-width: 768px) {
+    .topbar-right { display: none !important; }
+    .topbar { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .topbar-title { font-size: 24px; }
+    .streak-pill { display: none !important; }
+    .logout-btn { display: none !important; }
+    .free-badge { display: none !important; }
+    .period-tabs { display: none !important; }
+    .sensei-status { display: none !important; }
+    .date-nav .date-label { font-size: 12px; min-width: 80px; }
   }
 </style>
 </head>
@@ -475,6 +501,19 @@
         <button class="btn-save" style="margin-top:16px;" onclick="changePassword()">Mettre à jour →</button>
       </div>
 
+      <!-- Déconnexion -->
+      <div class="card" style="border-color:rgba(200,40,40,0.15);">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:14px;color:#ddd;font-weight:500;margin-bottom:4px;">Se déconnecter</div>
+            <div style="font-size:12px;color:var(--muted);">Tu seras redirigé vers la page de connexion</div>
+          </div>
+          <button onclick="logoutUser()" style="padding:10px 20px;background:transparent;border:1px solid rgba(200,40,40,0.3);border-radius:4px;color:var(--red);font-family:var(--font-body);font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;">
+            Déconnexion
+          </button>
+        </div>
+      </div>
+
       <div class="danger-zone">
         <div class="danger-title">⚠️ Zone dangereuse</div>
         <div class="danger-desc">La suppression de ton compte est irréversible. Toutes tes données seront définitivement effacées.</div>
@@ -650,6 +689,11 @@
       const tdee = Math.round(bmr * (facteurs[activite] || 1.55));
       document.getElementById('bmr-val').innerHTML = `${tdee} <span class="body-stat-unit">kcal</span>`;
     }
+  }
+
+  async function logoutUser() {
+    await sb.auth.signOut();
+    window.location.href = 'inscription.html';
   }
 
   async function changePassword() {
