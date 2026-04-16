@@ -741,6 +741,63 @@
     font-size: 16px;
     line-height: 1.6;
   }
+
+  /* ── LANG DROPDOWN ── */
+  .lang-dropdown {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .lang-trigger {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 12px; background: transparent;
+    border: 1px solid #333; border-radius: 6px;
+    cursor: pointer; transition: all 0.2s;
+    font-size: 18px; color: #aaa;
+  }
+
+  .lang-trigger:hover { border-color: #555; }
+  .lang-trigger.open { border-color: var(--red); }
+
+  .lang-arrow {
+    font-size: 11px; color: #666;
+    transition: transform 0.2s;
+    line-height: 1;
+  }
+  .lang-trigger.open .lang-arrow { transform: rotate(180deg); }
+
+  .lang-menu {
+    display: none;
+    position: absolute; top: calc(100% + 8px); right: 0;
+    background: #0d0d0d; border: 1px solid #2a2a2a;
+    border-radius: 8px; overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    z-index: 100; min-width: 140px;
+    animation: fadeDown 0.15s ease;
+  }
+
+  .lang-menu.open { display: block; }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .lang-option {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; padding: 11px 16px;
+    background: transparent; border: none;
+    color: #aaa; font-family: inherit; font-size: 13px;
+    font-weight: 500; cursor: pointer; transition: all 0.15s;
+    text-align: left; letter-spacing: 0.5px;
+  }
+
+  .lang-option:hover { background: rgba(255,255,255,0.05); color: #fff; }
+  .lang-option.active { color: var(--red); background: rgba(200,40,40,0.06); }
+  .lang-option span { font-size: 18px; }
+
+  /* Supprimer l'ancienne lang-bar */
+  .lang-bar { display: none !important; }
 </style>
 <script src="site-config.js"></script>
 </head>
@@ -762,11 +819,18 @@
     <button onclick="window.location.href='inscription.html?tab=connexion'" style="padding:8px 14px;background:transparent;border:1px solid #333;border-radius:4px;color:#aaa;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;" data-i18n="landing_connect">Connexion</button>
     <button class="nav-btn" onclick="window.location.href='inscription.html'" style="padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" data-i18n="landing_signup">S'inscrire</button>
   </div>
-  <div class="lang-selector" style="display:flex;gap:4px;align-items:center;">
-      <button class="lang-btn" data-lang="fr" onclick="setLang('fr')" title="Français">🇫🇷</button>
-      <button class="lang-btn" data-lang="en" onclick="setLang('en')" title="English">🇬🇧</button>
-      <button class="lang-btn" data-lang="bg" onclick="setLang('bg')" title="Български">🇧🇬</button>
+  <!-- Dropdown langue -->
+  <div class="lang-dropdown" id="lang-dropdown">
+    <button class="lang-trigger" onclick="toggleLangMenu(event)" id="lang-trigger">
+      <span id="lang-current-flag">🇫🇷</span>
+      <span class="lang-arrow" id="lang-arrow">▾</span>
+    </button>
+    <div class="lang-menu" id="lang-menu">
+      <button class="lang-option" onclick="selectLang('fr')"><span>🇫🇷</span> Français</button>
+      <button class="lang-option" onclick="selectLang('en')"><span>🇬🇧</span> English</button>
+      <button class="lang-option" onclick="selectLang('bg')"><span>🇧🇬</span> Български</button>
     </div>
+  </div>
   </nav>
 
 <!-- HERO -->
@@ -1012,6 +1076,45 @@
 
   <!-- i18n -->
   <script src="i18n.js"></script>
-  <script>document.addEventListener('DOMContentLoaded', initI18n);</script>
+  <script>
+    document.addEventListener('DOMContentLoaded', initI18n);
+
+    const FLAGS = { fr: '🇫🇷', en: '🇬🇧', bg: '🇧🇬' };
+
+    function toggleLangMenu(e) {
+      e.stopPropagation();
+      const menu = document.getElementById('lang-menu');
+      const trigger = document.getElementById('lang-trigger');
+      const isOpen = menu.classList.contains('open');
+      menu.classList.toggle('open', !isOpen);
+      trigger.classList.toggle('open', !isOpen);
+    }
+
+    function selectLang(lang) {
+      setLang(lang);
+      document.getElementById('lang-current-flag').textContent = FLAGS[lang];
+      document.getElementById('lang-menu').classList.remove('open');
+      document.getElementById('lang-trigger').classList.remove('open');
+      // Marquer l'option active
+      document.querySelectorAll('.lang-option').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('onclick').includes(lang));
+      });
+    }
+
+    // Fermer si on clique ailleurs
+    document.addEventListener('click', () => {
+      document.getElementById('lang-menu')?.classList.remove('open');
+      document.getElementById('lang-trigger')?.classList.remove('open');
+    });
+
+    // Initialiser le drapeau selon la langue sauvegardée
+    document.addEventListener('DOMContentLoaded', () => {
+      const lang = localStorage.getItem('espritum_lang') || 'fr';
+      document.getElementById('lang-current-flag').textContent = FLAGS[lang];
+      document.querySelectorAll('.lang-option').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('onclick').includes(lang));
+      });
+    });
+  </script>
 </body>
 </html>
