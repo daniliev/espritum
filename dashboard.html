@@ -463,9 +463,14 @@
   const PLAN_LABEL = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
 
   // ── INIT ──
+  function setEl(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
   async function init() {
-    // Timeout de sécurité — masque le loading après 5s quoi qu'il arrive
-    const safetyTimeout = setTimeout(hideLoading, 5000);
+    // Timeout de sécurité — masque le loading après 3s quoi qu'il arrive
+    const safetyTimeout = setTimeout(hideLoading, 3000);
 
     try {
       const { data: { session }, error: sessErr } = await sb.auth.getSession();
@@ -485,12 +490,12 @@
       const nom = profile?.nom || '';
       const initiale = prenom[0]?.toUpperCase() || '?';
 
-      document.getElementById('sidebar-avatar').textContent = initiale;
-      document.getElementById('sidebar-name').textContent = `${prenom} ${nom}`.trim();
-      document.getElementById('sidebar-plan').textContent = PLAN_LABEL[profile?.plan || 'gratuit'];
-    initFreemium(profile?.plan || 'gratuit');
-      document.getElementById('topbar-greeting').textContent = `Bonjour, ${prenom} 👊`;
-      document.getElementById('streak-pill').textContent = `🔥 ${profile?.streak || 0} jour`;
+      setEl('sidebar-avatar', initiale);
+      setEl('sidebar-name', `${prenom} ${nom}`.trim());
+      setEl('sidebar-plan', PLAN_LABEL[profile?.plan || 'gratuit']);
+      initFreemium(profile?.plan || 'gratuit');
+      setEl('topbar-greeting', `Bonjour, ${prenom} 👊`);
+      setEl('streak-pill', `🔥 ${profile?.streak || 0} jour`);
 
       // Date
       const now = new Date();

@@ -335,6 +335,15 @@
   html[lang="bg"] .nav-item {
     font-family: 'Sofia Sans Condensed', var(--font-display, sans-serif) !important;
   }
+
+  /* ── MUSCLE CARD IMAGES ── */
+  .muscle-img {
+    width: 80px; height: 80px;
+    object-fit: contain;
+    filter: brightness(0.9);
+    transition: filter 0.2s;
+  }
+  .muscle-card:hover .muscle-img { filter: brightness(1.1); }
 </style>
 <script src="site-config.js"></script>
 </head>
@@ -427,14 +436,38 @@
     <div id="programs-section">
       <div class="section-title" style="margin-bottom:16px;" data-i18n="train_choose">Choisir une séance</div>
       <div class="muscle-grid">
-        <div class="muscle-card" onclick="startSession('pecs')"><div class="muscle-icon">🫁</div><div class="muscle-name">Pecs</div><div class="muscle-count">6 exercices</div></div>
-        <div class="muscle-card" onclick="startSession('dos')"><div class="muscle-icon">🔙</div><div class="muscle-name">Dos</div><div class="muscle-count">6 exercices</div></div>
-        <div class="muscle-card" onclick="startSession('bras')"><div class="muscle-icon">💪</div><div class="muscle-name">Bras</div><div class="muscle-count">6 exercices</div></div>
-        <div class="muscle-card" onclick="startSession('epaules')"><div class="muscle-icon">🏋️</div><div class="muscle-name">Épaules</div><div class="muscle-count">5 exercices</div></div>
-        <div class="muscle-card" onclick="startSession('jambes')"><div class="muscle-icon">🦵</div><div class="muscle-name">Jambes</div><div class="muscle-count">6 exercices</div></div>
-        <div class="muscle-card" onclick="startSession('abdos')"><div class="muscle-icon">🎯</div><div class="muscle-name">Abdos</div><div class="muscle-count">5 exercices</div></div>
-        <div class="muscle-card" onclick="startSession('cardio')"><div class="muscle-icon">❤️</div><div class="muscle-name">Cardio</div><div class="muscle-count">5 exercices</div></div>
-        <div class="muscle-card" onclick="startSession('fullbody')"><div class="muscle-icon">⚡</div><div class="muscle-name">Full Body</div><div class="muscle-count">8 exercices</div></div>
+        <div class="muscle-card" onclick="startSession('pecs')">
+          <img src="body/pectoraux.png" class="muscle-img" alt="Pecs" onerror="this.outerHTML='<div class=muscle-icon>🫁</div>'">
+          <div class="muscle-name">Pecs</div><div class="muscle-count">6 exercices</div>
+        </div>
+        <div class="muscle-card" onclick="startSession('dos')">
+          <img src="body/dos.png" class="muscle-img" alt="Dos" onerror="this.outerHTML='<div class=muscle-icon>🔙</div>'">
+          <div class="muscle-name">Dos</div><div class="muscle-count">6 exercices</div>
+        </div>
+        <div class="muscle-card" onclick="startSession('bras')">
+          <img src="body/bras.png" class="muscle-img" alt="Bras" onerror="this.outerHTML='<div class=muscle-icon>💪</div>'">
+          <div class="muscle-name">Bras</div><div class="muscle-count">6 exercices</div>
+        </div>
+        <div class="muscle-card" onclick="startSession('epaules')">
+          <img src="body/epaule.png" class="muscle-img" alt="Épaules" onerror="this.outerHTML='<div class=muscle-icon>🏋️</div>'">
+          <div class="muscle-name">Épaules</div><div class="muscle-count">5 exercices</div>
+        </div>
+        <div class="muscle-card" onclick="startSession('jambes')">
+          <img src="body/jambes.png" class="muscle-img" alt="Jambes" onerror="this.outerHTML='<div class=muscle-icon>🦵</div>'">
+          <div class="muscle-name">Jambes</div><div class="muscle-count">6 exercices</div>
+        </div>
+        <div class="muscle-card" onclick="startSession('abdos')">
+          <img src="body/abdos.png" class="muscle-img" alt="Abdos" onerror="this.outerHTML='<div class=muscle-icon>🎯</div>'">
+          <div class="muscle-name">Abdos</div><div class="muscle-count">5 exercices</div>
+        </div>
+        <div class="muscle-card" onclick="startSession('cardio')">
+          <img src="body/cardio.png" class="muscle-img" alt="Cardio" onerror="this.outerHTML='<div class=muscle-icon>❤️</div>'">
+          <div class="muscle-name">Cardio</div><div class="muscle-count">5 exercices</div>
+        </div>
+        <div class="muscle-card" onclick="startSession('fullbody')">
+          <img src="body/full-body.png" class="muscle-img" alt="Full Body" onerror="this.outerHTML='<div class=muscle-icon>⚡</div>'">
+          <div class="muscle-name">Full Body</div><div class="muscle-count">8 exercices</div>
+        </div>
       </div>
     </div>
 
@@ -514,6 +547,44 @@
 
   // Images réelles des exercices
   const EXERCISE_IMAGES = {
+    'Développé couché':               'exercices/Développé couché.png',
+    'Développé incliné haltères':     'exercices/Développé incliné haltères.png',
+    'Écarté haltères plat':           'exercices/Écarté haltères plat.png',
+    'Dips poitrine':                  'exercices/Dips poitrine.png',
+    'Poulie croisée haute':           'exercices/Poulie croisée haute.png',
+    'Pompes lestées':                 'exercices/Pompes lestées.png',
+    'Traction pronation':             'exercices/Traction pronation.png',
+    'Rowing barre':                   'exercices/Rowing barre.png',
+    'Tirage poulie haute':            'exercices/Tirage poulie haute.png',
+    'Rowing haltère unilatéral':      'exercices/Rowing haltère unilatéral.png',
+    'Tirage poulie basse':            'exercices/Tirage poulie basse.png',
+    'Shrugs haltères':                'exercices/Shrugs haltères.png',
+    'Curl barre droite':              'exercices/Curl barre droite.png',
+    'Curl haltères alterné':          'exercices/Curl haltères alterné.png',
+    'Curl marteau':                   'exercices/Curl marteau.png',
+    'Extension triceps poulie':       'exercices/Extension triceps poulie.png',
+    'Barre au front (Skull crusher)': 'exercices/Barre au front (Skull crusher).png',
+    'Dips banc triceps':              'exercices/Dips banc triceps.png',
+    'Développé militaire barre':      'exercices/Développé militaire barre.png',
+    'Élévations latérales':           'exercices/Élévations latérales.png',
+    'Élévations frontales':           'exercices/Élévations frontales.png',
+    'Oiseau haltères (rear delt)':    'exercices/Oiseau haltères (rear delt).png',
+    'Upright row barre':              'exercices/Upright row barre.png',
+    'Squat barre':                    'exercices/Squat barre.png',
+    'Presse à cuisses':               'exercices/Presse à cuisses.png',
+    'Soulevé de terre jambes tendues':'exercices/Soulevé de terre jambes tendues.png',
+    'Soulevé de terre':               'exercices/Soulevé de terre.png',
+    'Fentes avant haltères':          'exercices/Fentes avant haltères.png',
+    'Leg curl allongé':               'exercices/Leg curl allongé.png',
+    'Mollets debout':                 'exercices/Mollets debout.png',
+    'Crunch classique':               'exercices/Crunch classique.png',
+    'Planche':                        'exercices/Planche.png',
+    'Relevé de jambes suspendu':      'exercices/Relevé de jambes suspendu.png',
+    'Crunch oblique':                 'exercices/Crunch oblique.png',
+    'Russian twist':                  'exercices/Russian twist.png',
+    'Course à pied':                  'exercices/Course à pied.png',
+    'Burpees':                        'exercices/Burpees.png',
+    'Corde à sauter':                 'exercices/Corde à sauter.png',
     'Développé couché':               'exercices/Développé couché.png',
     'Développé incliné haltères':     'exercices/Développé incliné haltères.png',
     'Écarté haltères plat':           'exercices/Écarté haltères plat.png',
@@ -715,7 +786,7 @@
   let timerRunning = false;
 
   async function init() {
-    setTimeout(() => document.getElementById('loading').style.display = 'none', 5000);
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 3000);
     try {
       const { data: { session } } = await sb.auth.getSession();
       if (!session) { window.location.href = 'inscription.html'; return; }

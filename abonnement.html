@@ -532,7 +532,7 @@
   let userPrenom = 'Guerrier';
 
   async function init() {
-    setTimeout(() => document.getElementById('loading').style.display = 'none', 5000);
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 3000);
     try {
       const { data: { session } } = await sb.auth.getSession();
       if (!session) { window.location.href = 'inscription.html'; return; }
