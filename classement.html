@@ -293,6 +293,27 @@
   }
   .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
   .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
+
+  /* ── LANG BAR MOBILE IN APP ── */
+  .mobile-lang-bar {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #080808;
+    border-bottom: 1px solid #1e1e1e;
+    padding: 8px 16px;
+    z-index: 101;
+    justify-content: flex-end;
+    gap: 6px;
+    align-items: center;
+  }
+  .mobile-lang-bar .lang-btn { width: 28px; height: 28px; font-size: 16px; }
+
+  @media (max-width: 768px) {
+    .mobile-lang-bar { display: flex; }
+    .topbar { margin-top: 44px; }
+    .main { padding-top: 0; }
+  }
 </style>
 </head>
 <body>

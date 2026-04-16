@@ -682,6 +682,21 @@
   }
   .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
   .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
+
+  /* ── LANDING NAVBAR MOBILE FIX ── */
+  .lang-bar {
+    display: flex; justify-content: center; gap: 8px;
+    padding: 8px 16px; border-bottom: 1px solid #1a1a1a;
+    background: #060606;
+  }
+  .lang-bar .lang-btn { width: 32px; height: 32px; font-size: 18px; }
+
+  @media (max-width: 600px) {
+    nav { padding: 10px 14px !important; gap: 8px !important; }
+    .nav-name { display: none !important; }
+    .nav-logo { width: 30px !important; height: 30px !important; }
+    nav button { padding: 7px 10px !important; font-size: 10px !important; letter-spacing: 1px !important; }
+  }
 </style>
 </head>
 <body>
@@ -699,8 +714,8 @@
     <li><a href="#faq">FAQ</a></li>
   </ul>
   <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
-    <button onclick="window.location.href='inscription.html?tab=connexion'" style="padding:8px 14px;background:transparent;border:1px solid #333;border-radius:4px;color:#aaa;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;">Connexion</button>
-    <button class="nav-btn" onclick="window.location.href='inscription.html'" style="padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;">S'inscrire</button>
+    <button onclick="window.location.href='inscription.html?tab=connexion'" style="padding:8px 14px;background:transparent;border:1px solid #333;border-radius:4px;color:#aaa;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;" data-i18n="landing_connect">Connexion</button>
+    <button class="nav-btn" onclick="window.location.href='inscription.html'" style="padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" data-i18n="landing_signup">S'inscrire</button>
   </div>
   <div class="lang-selector" style="display:flex;gap:4px;align-items:center;">
       <button class="lang-btn" data-lang="fr" onclick="setLang('fr')" title="Français">🇫🇷</button>

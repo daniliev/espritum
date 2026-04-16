@@ -72,6 +72,26 @@ const TRANSLATIONS = {
     plan_warrior: '⚔️ Guerrier',
     plan_champion: '🛡️ Champion',
     plan_elite: '👑 Élite',
+    // Stats entraînement
+    train_today: 'aujourd\'hui',
+    train_planned: 'prévues',
+    train_sets_x_reps: 'séries × reps × poids',
+    train_stopwatch: 'chronomètre',
+    train_session: 'Séance',
+    train_week: 'Semaine',
+    train_progress: 'Progression séance',
+    // Nutrition labels
+    nutr_objective: 'Objectif',
+    nutr_remaining: 'Restantes',
+    nutr_7days_chart: 'Calories — 7 jours',
+    nutr_add_repas: '+ Ajouter',
+    // Common
+    common_save: 'Sauvegarder',
+    common_cancel: 'Annuler',
+    common_add: 'Ajouter',
+    common_delete: 'Supprimer',
+    common_edit: 'Modifier',
+    common_close: 'Fermer',
     // Landing
     landing_slogan: 'NOT JUST FLESH, BUT SPIRIT.',
     landing_connect: 'Connexion',
@@ -161,6 +181,23 @@ const TRANSLATIONS = {
     plan_warrior: '⚔️ Warrior',
     plan_champion: '🛡️ Champion',
     plan_elite: '👑 Elite',
+    train_today: 'today',
+    train_planned: 'planned',
+    train_sets_x_reps: 'sets × reps × weight',
+    train_stopwatch: 'stopwatch',
+    train_session: 'Session',
+    train_week: 'Week',
+    train_progress: 'Session progress',
+    nutr_objective: 'Goal',
+    nutr_remaining: 'Remaining',
+    nutr_7days_chart: 'Calories — 7 days',
+    nutr_add_repas: '+ Add',
+    common_save: 'Save',
+    common_cancel: 'Cancel',
+    common_add: 'Add',
+    common_delete: 'Delete',
+    common_edit: 'Edit',
+    common_close: 'Close',
     landing_slogan: 'NOT JUST FLESH, BUT SPIRIT.',
     landing_connect: 'Login',
     landing_signup: 'Sign up',
@@ -248,6 +285,23 @@ const TRANSLATIONS = {
     plan_warrior: '⚔️ Войн',
     plan_champion: '🛡️ Шампион',
     plan_elite: '👑 Елит',
+    train_today: 'днес',
+    train_planned: 'планирани',
+    train_sets_x_reps: 'серии × повторения × тегло',
+    train_stopwatch: 'хронометър',
+    train_session: 'Тренировка',
+    train_week: 'Седмица',
+    train_progress: 'Напредък',
+    nutr_objective: 'Цел',
+    nutr_remaining: 'Оставащи',
+    nutr_7days_chart: 'Калории — 7 дни',
+    nutr_add_repas: '+ Добави',
+    common_save: 'Запази',
+    common_cancel: 'Отказ',
+    common_add: 'Добави',
+    common_delete: 'Изтрий',
+    common_edit: 'Редактирай',
+    common_close: 'Затвори',
     landing_slogan: 'NOT JUST FLESH, BUT SPIRIT.',
     landing_connect: 'Вход',
     landing_signup: 'Регистрация',
@@ -290,8 +344,21 @@ function applyTranslations(lang) {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     const val = (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || TRANSLATIONS['fr'][key];
-    if (val) el.textContent = val;
+    if (!val) return;
+    // Placeholder pour les inputs
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      el.placeholder = val;
+    } else {
+      el.textContent = val;
+    }
   });
+  // Mettre à jour html lang
+  document.documentElement.lang = lang;
+}
+
+// Traduire aussi les textes dynamiques
+function translateDynamic(key) {
+  return t(key);
 }
 
 function updateFlagButtons(lang) {

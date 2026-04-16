@@ -299,6 +299,27 @@
   }
   .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
   .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
+
+  /* ── LANG BAR MOBILE IN APP ── */
+  .mobile-lang-bar {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #080808;
+    border-bottom: 1px solid #1e1e1e;
+    padding: 8px 16px;
+    z-index: 101;
+    justify-content: flex-end;
+    gap: 6px;
+    align-items: center;
+  }
+  .mobile-lang-bar .lang-btn { width: 28px; height: 28px; font-size: 16px; }
+
+  @media (max-width: 768px) {
+    .mobile-lang-bar { display: flex; }
+    .topbar { margin-top: 44px; }
+    .main { padding-top: 0; }
+  }
 </style>
 </head>
 <body>
@@ -366,30 +387,30 @@
     <!-- Stats -->
     <div class="stats-row">
       <div class="stat-card">
-        <div class="stat-label">💪 Exercices</div>
+        <div class="stat-label">💪 <span data-i18n="train_exercises">Exercices</span></div>
         <div class="stat-val"><span id="stat-total">0</span></div>
-        <div class="stat-sub">aujourd'hui</div>
+        <div class="stat-sub" data-i18n="train_today">aujourd'hui</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">✅ Séries validées</div>
+        <div class="stat-label">✅ <span data-i18n="train_series">Séries validées</span></div>
         <div class="stat-val"><span id="stat-series">0</span></div>
         <div class="stat-sub">sur <span id="stat-series-total">0</span> prévues</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">🏋️ Volume total</div>
+        <div class="stat-label">🏋️ <span data-i18n="train_volume">Volume total</span></div>
         <div class="stat-val"><span id="stat-volume">0</span> <span class="stat-unit">kg</span></div>
         <div class="stat-sub">séries × reps × poids</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">⏱️ Durée</div>
+        <div class="stat-label">⏱️ <span data-i18n="train_duration">Durée</span></div>
         <div class="stat-val" id="stat-duree">00:00</div>
-        <div class="stat-sub">chronomètre</div>
+        <div class="stat-sub" data-i18n="train_stopwatch">chronomètre</div>
       </div>
     </div>
 
     <!-- Choix programme -->
     <div id="programs-section">
-      <div class="section-title" style="margin-bottom:16px;">Choisir une séance</div>
+      <div class="section-title" style="margin-bottom:16px;" data-i18n="train_choose">Choisir une séance</div>
       <div class="muscle-grid">
         <div class="muscle-card" onclick="startSession('pecs')"><div class="muscle-icon">🫁</div><div class="muscle-name">Pecs</div><div class="muscle-count">6 exercices</div></div>
         <div class="muscle-card" onclick="startSession('dos')"><div class="muscle-icon">🔙</div><div class="muscle-name">Dos</div><div class="muscle-count">6 exercices</div></div>
@@ -431,10 +452,10 @@
         <div style="display:flex;flex-direction:column;gap:16px;">
 
           <div class="timer-card">
-            <div class="timer-label">Chronomètre</div>
+            <div class="timer-label" data-i18n="train_timer">Chronomètre</div>
             <div class="timer-display" id="timer-display">00:00</div>
             <div class="timer-btns">
-              <button class="timer-btn timer-start" id="timer-btn" onclick="toggleTimer()">▶ Démarrer</button>
+              <button class="timer-btn timer-start" id="timer-btn" onclick="toggleTimer()"><span data-i18n="train_start">▶ Démarrer</span></button>
               <button class="timer-btn timer-stop" onclick="resetTimer()">↺ Reset</button>
             </div>
           </div>
@@ -450,7 +471,7 @@
           </div>
 
           <div class="card">
-            <div class="card-header"><div class="card-title">Semaine</div></div>
+            <div class="card-header"><div class="card-title" data-i18n="train_week">Semaine</div></div>
             <div class="week-grid" id="week-grid"></div>
           </div>
 
@@ -883,7 +904,7 @@
     timerSeconds = 0;
     document.getElementById('timer-display').textContent = '00:00';
     document.getElementById('stat-duree').textContent = '00:00';
-    document.getElementById('timer-btn').textContent = '▶ Démarrer';
+    document.getElementById('timer-btn').textContent = '<span data-i18n="train_start">▶ Démarrer</span>';
   }
 
   function changeDay(dir) {

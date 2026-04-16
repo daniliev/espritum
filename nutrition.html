@@ -318,6 +318,27 @@
   }
   .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
   .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
+
+  /* ── LANG BAR MOBILE IN APP ── */
+  .mobile-lang-bar {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #080808;
+    border-bottom: 1px solid #1e1e1e;
+    padding: 8px 16px;
+    z-index: 101;
+    justify-content: flex-end;
+    gap: 6px;
+    align-items: center;
+  }
+  .mobile-lang-bar .lang-btn { width: 28px; height: 28px; font-size: 16px; }
+
+  @media (max-width: 768px) {
+    .mobile-lang-bar { display: flex; }
+    .topbar { margin-top: 44px; }
+    .main { padding-top: 0; }
+  }
 </style>
 </head>
 <body>
@@ -384,7 +405,7 @@
     <div class="topbar-right">
       <div class="date-nav">
         <button class="date-btn" onclick="changeDay(-1)">‹</button>
-        <span class="date-label" id="date-label">Aujourd'hui</span>
+        <span class="date-label" id="date-label" data-i18n="nutr_today">Aujourd'hui</span>
         <button class="date-btn" onclick="changeDay(1)">›</button>
       </div>
       <button class="btn-add" onclick="openModal()">+ Ajouter</button>
@@ -396,7 +417,7 @@
     <!-- Résumé calories -->
     <div class="cal-summary">
       <div class="cal-main-card">
-        <div class="card-title" style="margin-bottom:18px;">Calories du jour</div>
+        <div class="card-title" style="margin-bottom:18px;" data-i18n="nutr_calories">Calories du jour</div>
         <div class="cal-ring-wrap">
           <div class="ring-container">
             <canvas id="ringChart"></canvas>
@@ -408,14 +429,14 @@
           <div class="cal-details">
             <div>
               <div class="cal-detail-row">
-                <span class="cal-detail-label">Objectif</span>
+                <span class="cal-detail-label" data-i18n="nutr_objective">Objectif</span>
                 <span class="cal-detail-val" id="objectif-val">2 400</span>
               </div>
               <div class="cal-detail-bar"><div class="cal-detail-fill" id="cal-bar" style="width:0%;background:var(--red)"></div></div>
             </div>
             <div>
               <div class="cal-detail-row">
-                <span class="cal-detail-label">Restantes</span>
+                <span class="cal-detail-label" data-i18n="nutr_remaining">Restantes</span>
                 <span class="cal-detail-val" id="restantes-val" style="color:var(--red)">2 400</span>
               </div>
             </div>
@@ -424,7 +445,7 @@
       </div>
 
       <div class="macros-card">
-        <div class="card-title">Macronutriments</div>
+        <div class="card-title" data-i18n="nutr_macros">Macronutriments</div>
         <div class="macro-bars">
           <div class="macro-row">
             <div class="macro-header">
@@ -460,7 +481,7 @@
     <div class="meals-grid">
       <div class="meal-card">
         <div class="meal-header">
-          <div class="meal-left"><span class="meal-icon">🌅</span><div><div class="meal-name">Petit-déjeuner</div></div></div>
+          <div class="meal-left"><span class="meal-icon">🌅</span><div><div class="meal-name" data-i18n="nutr_breakfast">Petit-déjeuner</div></div></div>
           <div class="meal-total" id="total-petit-dejeuner">0 kcal</div>
         </div>
         <div class="food-list" id="list-petit-dejeuner"><div class="empty-meal">Aucun aliment</div></div>
@@ -469,7 +490,7 @@
 
       <div class="meal-card">
         <div class="meal-header">
-          <div class="meal-left"><span class="meal-icon">☀️</span><div><div class="meal-name">Déjeuner</div></div></div>
+          <div class="meal-left"><span class="meal-icon">☀️</span><div><div class="meal-name" data-i18n="nutr_lunch">Déjeuner</div></div></div>
           <div class="meal-total" id="total-dejeuner">0 kcal</div>
         </div>
         <div class="food-list" id="list-dejeuner"><div class="empty-meal">Aucun aliment</div></div>
@@ -478,7 +499,7 @@
 
       <div class="meal-card">
         <div class="meal-header">
-          <div class="meal-left"><span class="meal-icon">🌤️</span><div><div class="meal-name">Collation</div></div></div>
+          <div class="meal-left"><span class="meal-icon">🌤️</span><div><div class="meal-name" data-i18n="nutr_snack">Collation</div></div></div>
           <div class="meal-total" id="total-collation">0 kcal</div>
         </div>
         <div class="food-list" id="list-collation"><div class="empty-meal">Aucun aliment</div></div>
@@ -487,7 +508,7 @@
 
       <div class="meal-card">
         <div class="meal-header">
-          <div class="meal-left"><span class="meal-icon">🌙</span><div><div class="meal-name">Dîner</div></div></div>
+          <div class="meal-left"><span class="meal-icon">🌙</span><div><div class="meal-name" data-i18n="nutr_dinner">Dîner</div></div></div>
           <div class="meal-total" id="total-diner">0 kcal</div>
         </div>
         <div class="food-list" id="list-diner"><div class="empty-meal">Aucun aliment</div></div>
