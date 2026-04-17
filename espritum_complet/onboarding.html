@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Espritum — Bienvenue</title>
+<link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --red: #c82828;
+    --bg: #080808;
+    --bg2: #0d0d0d;
+    --bg3: #111111;
+    --border: #1e1e1e;
+    --muted: #555;
+    --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
+    --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: #fff;
+    font-family: var(--font-body);
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px 20px;
+  }
+
+  /* ── LOGO ── */
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 48px; text-decoration: none;
+  }
+
+  .brand-logo { width: 36px; height: 36px; object-fit: contain; border-radius: 8px; }
+  .brand-name { font-family: var(--font-display); font-size: 20px; letter-spacing: 6px; color: #fff; text-transform: uppercase; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap { width: 100%; max-width: 520px; margin-bottom: 40px; }
+
+  .progress-steps { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 12px; }
+
+  .step-dot {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; transition: all 0.4s;
+    border: 2px solid var(--border); color: var(--muted); background: var(--bg2);
+    flex-shrink: 0;
+  }
+
+  .step-dot.active { border-color: var(--red); color: var(--red); background: rgba(200,40,40,0.1); }
+  .step-dot.done { border-color: var(--red); background: var(--red); color: #fff; }
+
+  .step-line { flex: 1; height: 2px; background: var(--border); transition: background 0.4s; max-width: 80px; }
+  .step-line.done { background: var(--red); }
+
+  .progress-labels { display: flex; justify-content: space-between; padding: 0 4px; }
+  .progress-label { font-size: 10px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; text-align: center; flex: 1; }
+  .progress-label.active { color: var(--red); }
+
+  /* ── CARDS ── */
+  .step-card {
+    width: 100%; max-width: 520px;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 40px; display: none;
+  }
+
+  .step-card.active { display: block; animation: fadeIn 0.35s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .step-tag { font-size: 10px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; font-weight: 600; margin-bottom: 10px; }
+  .step-title { font-family: var(--font-display); font-size: 42px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; margin-bottom: 8px; }
+  .step-sub { font-size: 14px; color: var(--muted); font-weight: 300; line-height: 1.6; margin-bottom: 32px; }
+
+  /* ── CHOIX GENRE ── */
+  .genre-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 28px; }
+
+  .choice-card {
+    padding: 28px 20px; border: 2px solid var(--border);
+    border-radius: 8px; text-align: center; cursor: pointer;
+    transition: all 0.2s; background: var(--bg3);
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+  }
+
+  .choice-card:hover { border-color: rgba(200,40,40,0.4); background: rgba(200,40,40,0.04); }
+  .choice-card.selected { border-color: var(--red); background: rgba(200,40,40,0.08); }
+
+  .choice-icon { font-size: 42px; }
+  .choice-name { font-family: var(--font-display); font-size: 24px; letter-spacing: 2px; text-transform: uppercase; }
+  .choice-card.selected .choice-name { color: var(--red); }
+
+  /* ── CHOIX OBJECTIF ── */
+  .objectif-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+
+  .obj-card {
+    padding: 22px 16px; border: 2px solid var(--border);
+    border-radius: 8px; cursor: pointer;
+    transition: all 0.2s; background: var(--bg3);
+    display: flex; flex-direction: column; gap: 8px;
+  }
+
+  .obj-card:hover { border-color: rgba(200,40,40,0.4); background: rgba(200,40,40,0.04); }
+  .obj-card.selected { border-color: var(--red); background: rgba(200,40,40,0.08); }
+
+  .obj-icon { font-size: 28px; }
+  .obj-name { font-family: var(--font-display); font-size: 20px; letter-spacing: 1px; text-transform: uppercase; }
+  .obj-card.selected .obj-name { color: var(--red); }
+  .obj-desc { font-size: 12px; color: var(--muted); font-weight: 300; line-height: 1.5; }
+
+  /* ── PLANS ── */
+  .plans-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+
+  .plan-card {
+    display: flex; align-items: center; gap: 16px;
+    padding: 18px 20px; border: 2px solid var(--border);
+    border-radius: 8px; cursor: pointer;
+    transition: all 0.2s; background: var(--bg3);
+    position: relative;
+  }
+
+  .plan-card:hover { border-color: rgba(200,40,40,0.4); }
+  .plan-card.selected { border-color: var(--red); background: rgba(200,40,40,0.06); }
+  .plan-card.popular { border-color: rgba(200,40,40,0.3); }
+
+  .popular-tag {
+    position: absolute; top: -10px; right: 16px;
+    padding: 2px 12px; background: var(--red); border-radius: 10px;
+    font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  }
+
+  .plan-icon { font-size: 28px; flex-shrink: 0; }
+
+  .plan-info { flex: 1; }
+  .plan-name { font-family: var(--font-display); font-size: 22px; letter-spacing: 1px; text-transform: uppercase; color: #fff; }
+  .plan-card.selected .plan-name { color: var(--red); }
+  .plan-features { font-size: 12px; color: var(--muted); margin-top: 3px; font-weight: 300; }
+
+  .plan-price { text-align: right; flex-shrink: 0; }
+  .plan-amount { font-family: var(--font-display); font-size: 28px; color: #fff; }
+  .plan-card.selected .plan-amount { color: var(--red); }
+  .plan-period { font-size: 11px; color: var(--muted); }
+
+  .plan-check {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 2px solid var(--border); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; transition: all 0.2s;
+  }
+
+  .plan-card.selected .plan-check { background: var(--red); border-color: var(--red); color: #fff; }
+
+  /* ── BOUTONS ── */
+  .btn-next {
+    width: 100%; padding: 17px; background: var(--red); border: none;
+    border-radius: 6px; color: #fff; font-family: var(--font-body);
+    font-size: 14px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+    cursor: pointer; transition: background 0.2s;
+  }
+
+  .btn-next:hover { background: #d93030; }
+  .btn-next:disabled { background: var(--muted); cursor: not-allowed; }
+
+  .btn-back {
+    width: 100%; padding: 13px; background: transparent;
+    border: 1px solid var(--border); border-radius: 6px;
+    color: var(--muted); font-family: var(--font-body);
+    font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s; margin-top: 10px;
+  }
+
+  .btn-back:hover { border-color: #333; color: #aaa; }
+
+  /* ── CONFIRMATION ── */
+  .confirm-card {
+    width: 100%; max-width: 520px;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 48px 40px;
+    text-align: center; display: none;
+  }
+
+  .confirm-card.active { display: block; animation: fadeIn 0.35s ease; }
+
+  .confirm-icon { font-size: 56px; margin-bottom: 20px; }
+  .confirm-title { font-family: var(--font-display); font-size: 52px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  .confirm-sub { font-size: 14px; color: var(--muted); line-height: 1.7; font-weight: 300; margin-bottom: 28px; }
+
+  .confirm-summary {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px 20px; margin-bottom: 24px; text-align: left;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+
+  .confirm-row { display: flex; justify-content: space-between; align-items: center; }
+  .confirm-label { font-size: 12px; color: var(--muted); }
+  .confirm-val { font-family: var(--font-display); font-size: 18px; color: #fff; }
+
+  /* Loading */
+  .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
+  .loading-logo { font-family: var(--font-display); font-size: 48px; letter-spacing: 8px; color: var(--red); text-transform: uppercase; }
+  .loading-dots { display: flex; gap: 6px; }
+  .loading-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: blink 1.2s infinite; }
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100%{opacity:0.2;} 40%{opacity:1;} }
+
+  @media (max-width: 600px) {
+    .step-card { padding: 28px 20px; }
+    .genre-grid { grid-template-columns: 1fr 1fr; }
+    .objectif-grid { grid-template-columns: 1fr; }
+    .step-title { font-size: 34px; }
+  }
+
+  /* ── LANGUAGE SELECTOR ── */
+  .lang-selector {
+    display: flex; gap: 4px; align-items: center;
+  }
+  .lang-btn {
+    width: 28px; height: 28px; border-radius: 4px;
+    background: transparent; border: 1px solid transparent;
+    cursor: pointer; font-size: 16px; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.2s; padding: 0;
+    opacity: 0.45;
+  }
+  .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
+  .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
+
+  /* ── BULGARIAN FONT ── */
+  html[lang="bg"] * {
+    font-family: 'Sofia Sans Condensed', var(--font-body, sans-serif) !important;
+  }
+  html[lang="bg"] .topbar-title,
+  html[lang="bg"] .sidebar-name,
+  html[lang="bg"] .card-title,
+  html[lang="bg"] .stat-val,
+  html[lang="bg"] .nav-item {
+    font-family: 'Sofia Sans Condensed', var(--font-display, sans-serif) !important;
+  }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="loading-logo">Espritum</div>
+  <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+</div>
+
+<!-- Brand -->
+<div class="lang-selector" style="display:flex;gap:4px;align-items:center;">
+      <button class="lang-btn" data-lang="fr" onclick="setLang('fr')" title="Français">🇫🇷</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')" title="English">🇬🇧</button>
+      <button class="lang-btn" data-lang="bg" onclick="setLang('bg')" title="Български">🇧🇬</button>
+    </div>
+<a class="brand" href="espritum_pricing_v5.html">
+  <img class="brand-logo" src="data:image/png;base64,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Rppoj1IPln293sX2jT3Lk5/LBreINs2y32aaomY6U04/XKPq9fKb82lY+jo361B5PeP9n/n7lhB5nUoeZ1KK1s2abVOIco3jeL+63+9u8ojpHhEe/nIiIsqpEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEX1Gx8jwyNjnuPINaNSV7VHh2XVjQ6jxa+VDT0MVvleD9DUHhosklwLOoW8UuF5HG30utcwH9VeNcLZcreeGvt9XSH0TwuZ7wg6iIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiDmdAgL0cesd5yG6R2uxWusudbJ5kFLC6R58dB3eKn3YNut5DmDYb3mrqnHrI7R8dPwAVdU3wB/a2+Lhqe4ac1dLAsGxPBbULbitkpbbDoON0bdZJSO97zq559ZKCnWzbc+y67sirMzu1Nj1O4cRpoQKip9R0IY36XepWAwzdi2R46yN01ilvlSzTWa5zmQE/8ALbws/NU0LxMry7F8UpfhOSZBbLTHpqPhVS1jnfNaTq72AoOxZMesFjibFZbJbbaxvINpKVkQH8UBemoFybey2S2lz46Cou17e3kDR0Zawn50pZ9OhWD12+tZWOIosCuEze4zXBkZ+gMcgtkvioghqIjFUQxzRu6se0OB9hVR6ffYpi7/AFjZ3M0ell2BP1xBZFZN8rAamQMuuO3+36/u42xzNH5wP1IJeynY7swyZr/vvhFmfI/zpoKcQSn8uPhd9ahnOtzfEq9kk+IX+4Wac82wVQFTB6geTx6yXKVsP287JspdHFb8yoKeof0gryaV+vo+MABPqJUkwyRzRNlhkZJG8atc06gj0goNa20rd72n4MJamqsbrrbo9Sa22EzsDfS5uge31lunionW4NRPtb3f9nm0QS1dVbfvReHg6XC3gRvcfTIzzZPEkcXiEGtRFLG2nYJnGzEvraunbdrHxaNudG0ljR3dq3rGfXq30EqJ0BERAREQEREBERAREQEREBERAREQEREBERARF9wRSzzMggjfLLI4MYxjSXOcToAAOpKDlttFV3K4U9vt9NLVVdTK2GCGJpc+R7jo1oA6kkgK9G7Nu10GHx02U51T09wyLyZaakOj4aA9QT3PlHp6NI5anyl6O6fsGpMAtEGVZRRsly2qj1ax+jhbmHXyG93aEacT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" alt="Espritum">
+  <span class="brand-name">Espritum</span>
+</a>
+
+<!-- Progress -->
+<div class="progress-wrap">
+  <div class="progress-steps">
+    <div class="step-dot active" id="dot1">1</div>
+    <div class="step-line" id="line1"></div>
+    <div class="step-dot" id="dot2">2</div>
+    <div class="step-line" id="line2"></div>
+    <div class="step-dot" id="dot3">3</div>
+  </div>
+  <div class="progress-labels">
+    <span class="progress-label active" id="lbl1">Genre</span>
+    <span class="progress-label" id="lbl2">Objectif</span>
+    <span class="progress-label" id="lbl3">Plan</span>
+  </div>
+</div>
+
+<!-- ÉTAPE 1 — Genre -->
+<div class="step-card active" id="step1">
+  
+  <div class="step-title">Tu es<br>qui, toi ?</div>
+  <div class="step-sub">Ça nous aide à personnaliser ton expérience et tes objectifs.</div>
+
+  <div class="genre-grid">
+    <div class="choice-card" id="genre-homme" onclick="selectGenre('homme')">
+      <span class="choice-icon">👨</span>
+      <span class="choice-name">Homme</span>
+    </div>
+    <div class="choice-card" id="genre-femme" onclick="selectGenre('femme')">
+      <span class="choice-icon">👩</span>
+      <span class="choice-name">Femme</span>
+    </div>
+  </div>
+
+  <button class="btn-next" id="btn1" onclick="goTo(2)" disabled>Continuer →</button>
+</div>
+
+<!-- ÉTAPE 2 — Objectif -->
+<div class="step-card" id="step2">
+  
+  <div class="step-title">Ton<br>objectif.</div>
+  <div class="step-sub">Sois honnête avec toi-même — c'est la base de tout.</div>
+
+  <div class="objectif-grid">
+    <div class="obj-card" id="obj-perte_gras" onclick="selectObj('perte_gras')">
+      <span class="obj-icon">🔥</span>
+      <div class="obj-name">Perte de gras</div>
+      <div class="obj-desc">Brûler les graisses et révéler ta musculature</div>
+    </div>
+    <div class="obj-card" id="obj-prise_masse" onclick="selectObj('prise_masse')">
+      <span class="obj-icon">💪</span>
+      <div class="obj-name">Prise de masse</div>
+      <div class="obj-desc">Développer ta musculature et prendre du volume</div>
+    </div>
+    <div class="obj-card" id="obj-endurance" onclick="selectObj('endurance')">
+      <span class="obj-icon">⚡</span>
+      <div class="obj-name">Endurance</div>
+      <div class="obj-desc">Améliorer tes performances cardio et ta résistance</div>
+    </div>
+    <div class="obj-card" id="obj-reequilibrage" onclick="selectObj('reequilibrage')">
+      <span class="obj-icon">⚖️</span>
+      <div class="obj-name">Rééquilibrage</div>
+      <div class="obj-desc">Adopter un mode de vie sain et équilibré</div>
+    </div>
+  </div>
+
+  <button class="btn-next" id="btn2" onclick="goTo(3)" disabled>Continuer →</button>
+  <button class="btn-back" onclick="goTo(1)">← Retour</button>
+</div>
+
+<!-- ÉTAPE 3 — Plan -->
+<div class="step-card" id="step3">
+  
+  <div class="step-title">Choisis<br>ton armure.</div>
+  <div class="step-sub">Commence gratuitement. Monte en puissance quand tu es prêt.</div>
+
+  <div class="plans-list">
+
+    <div class="plan-card selected" id="plan-gratuit" onclick="selectPlan('gratuit')">
+      <span class="plan-icon">🛡️</span>
+      <div class="plan-info">
+        <div class="plan-name">Soldat</div>
+        <div class="plan-features">Estimation masse grasse · Verset du jour · Dashboard</div>
+      </div>
+      <div class="plan-price">
+        <div class="plan-amount">Gratuit</div>
+        <div class="plan-period">pour toujours</div>
+      </div>
+      <div class="plan-check">✓</div>
+    </div>
+
+    <div class="plan-card" id="plan-guerrier" onclick="selectPlan('guerrier')">
+      <span class="plan-icon">⚔️</span>
+      <div class="plan-info">
+        <div class="plan-name">Guerrier</div>
+        <div class="plan-features">Nutrition complète · 3 plans entraînement · Historique 30j</div>
+      </div>
+      <div class="plan-price">
+        <div class="plan-amount">5€</div>
+        <div class="plan-period">par mois</div>
+      </div>
+      <div class="plan-check"></div>
+    </div>
+
+    <div class="plan-card popular" id="plan-champion" onclick="selectPlan('champion')">
+      <div class="popular-tag">⭐ Populaire</div>
+      <span class="plan-icon">🛡️</span>
+      <div class="plan-info">
+        <div class="plan-name">Champion</div>
+        <div class="plan-features">Coach IA Sensei · Scan repas · Mensurations · Classement</div>
+      </div>
+      <div class="plan-price">
+        <div class="plan-amount">15€</div>
+        <div class="plan-period">par mois</div>
+      </div>
+      <div class="plan-check"></div>
+    </div>
+
+    <div class="plan-card" id="plan-elite" onclick="selectPlan('elite')">
+      <span class="plan-icon">👑</span>
+      <div class="plan-info">
+        <div class="plan-name">Élite</div>
+        <div class="plan-features">Plan IA 100% · Analyse morphologique · Support prioritaire</div>
+      </div>
+      <div class="plan-price">
+        <div class="plan-amount">30€</div>
+        <div class="plan-period">par mois</div>
+      </div>
+      <div class="plan-check"></div>
+    </div>
+
+  </div>
+
+  <button class="btn-next" id="btn3" onclick="finish()">Commencer →</button>
+  <button class="btn-back" onclick="goTo(2)">← Retour</button>
+</div>
+
+<!-- CONFIRMATION -->
+<div class="confirm-card" id="confirm">
+  <div class="confirm-icon">🔥</div>
+  <div class="confirm-title">C'est parti,<br><span id="confirm-prenom" style="color:var(--red);">Guerrier</span> !</div>
+  <div class="confirm-sub">Ton profil est prêt. Forger ton corps commence maintenant.<br>Philippiens 4:13 — "Je puis tout par celui qui me fortifie."</div>
+
+  <div class="confirm-summary">
+    <div class="confirm-row">
+      <span class="confirm-label">Genre</span>
+      <span class="confirm-val" id="sum-genre">—</span>
+    </div>
+    <div class="confirm-row">
+      <span class="confirm-label">Objectif</span>
+      <span class="confirm-val" id="sum-obj">—</span>
+    </div>
+    <div class="confirm-row">
+      <span class="confirm-label">Plan</span>
+      <span class="confirm-val" id="sum-plan">—</span>
+    </div>
+  </div>
+
+  <button class="btn-next" onclick="goToDashboard()">Accéder au dashboard →</button>
+</div>
+
+<script>
+  const { createClient } = supabase;
+  const sb = createClient(
+    'https://lbxlvrtujzwlcnloheyh.supabase.co',
+    'sb_publishable_40dpIdYthKMZkJImacoKoQ_ftEeaPeg'
+  );
+
+  let currentStep = 1;
+  let selectedGenre = null;
+  let selectedObj = null;
+  let selectedPlan = 'gratuit';
+  let userId = null;
+  let userPrenom = 'Guerrier';
+
+  const OBJ_LABEL = {
+    perte_gras: '🔥 Perte de gras',
+    prise_masse: '💪 Prise de masse',
+    endurance: '⚡ Endurance',
+    reequilibrage: '⚖️ Rééquilibrage'
+  };
+
+  const PLAN_LABEL = {
+    gratuit: '🛡️ Soldat — Gratuit',
+    guerrier: '⚔️ Guerrier — 5€/mois',
+    champion: '🛡️ Champion — 15€/mois',
+    elite: '👑 Élite — 30€/mois'
+  };
+
+  async function init() {
+    const safetyTimeout = setTimeout(() => {
+      document.getElementById('loading').style.display = 'none';
+    }, 5000);
+
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+
+      // Si pas connecté → retour inscription
+      if (!session) {
+        window.location.href = 'inscription.html';
+        return;
+      }
+
+      userId = session.user.id;
+
+      const { data: profile } = await sb.from('users').select('*').eq('id', userId).single();
+      userPrenom = profile?.prenom || session.user.user_metadata?.prenom || 'Guerrier';
+
+      // Si profil déjà configuré → dashboard directement
+      if (profile?.objectif && profile?.genre) {
+        window.location.href = 'dashboard.html';
+        return;
+      }
+
+    } catch(e) {
+      console.error(e);
+    } finally {
+      clearTimeout(safetyTimeout);
+      document.getElementById('loading').style.display = 'none';
+    }
+  }
+
+  // ── NAVIGATION ──
+  function goTo(step) {
+    // Cacher étape actuelle
+    document.getElementById(`step${currentStep}`).classList.remove('active');
+
+    // Mettre à jour progress
+    updateProgress(step);
+
+    currentStep = step;
+    document.getElementById(`step${step}`).classList.add('active');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress(targetStep) {
+    for (let i = 1; i <= 3; i++) {
+      const dot = document.getElementById(`dot${i}`);
+      const lbl = document.getElementById(`lbl${i}`);
+
+      if (i < targetStep) {
+        dot.className = 'step-dot done';
+        dot.textContent = '✓';
+        lbl.className = 'progress-label';
+      } else if (i === targetStep) {
+        dot.className = 'step-dot active';
+        dot.textContent = i;
+        lbl.className = 'progress-label active';
+      } else {
+        dot.className = 'step-dot';
+        dot.textContent = i;
+        lbl.className = 'progress-label';
+      }
+
+      if (i < 3) {
+        document.getElementById(`line${i}`).className = i < targetStep ? 'step-line done' : 'step-line';
+      }
+    }
+  }
+
+  // ── SÉLECTIONS ──
+  function selectGenre(genre) {
+    selectedGenre = genre;
+    document.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById(`genre-${genre}`).classList.add('selected');
+    document.getElementById('btn1').disabled = false;
+  }
+
+  function selectObj(obj) {
+    selectedObj = obj;
+    document.querySelectorAll('.obj-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById(`obj-${obj}`).classList.add('selected');
+    document.getElementById('btn2').disabled = false;
+  }
+
+  function selectPlan(plan) {
+    selectedPlan = plan;
+    document.querySelectorAll('.plan-card').forEach(c => {
+      c.classList.remove('selected');
+      c.querySelector('.plan-check').textContent = '';
+    });
+    const card = document.getElementById(`plan-${plan}`);
+    card.classList.add('selected');
+    card.querySelector('.plan-check').textContent = '✓';
+  }
+
+  // ── FINISH ──
+  async function finish() {
+    const btn = document.getElementById('btn3');
+    btn.disabled = true;
+    btn.textContent = 'Sauvegarde...';
+
+    try {
+      // Calculer objectifs nutritionnels selon genre et objectif
+      const cal = selectedObj === 'perte_gras' ? 2000 :
+                  selectedObj === 'prise_masse' ? 2800 :
+                  selectedObj === 'endurance' ? 2400 : 2200;
+
+      const prot = selectedObj === 'prise_masse' ? 180 : 150;
+      const carb = selectedObj === 'perte_gras' ? 200 : 300;
+      const fat = 70;
+
+      // Sauvegarder dans Supabase
+      await sb.from('users').update({
+        genre: selectedGenre,
+        objectif: selectedObj,
+        plan: selectedPlan,
+        calories_objectif: cal,
+        proteines_objectif: prot,
+        glucides_objectif: carb,
+        lipides_objectif: fat,
+      }).eq('id', userId);
+
+      // Si plan payant → paiement
+      if (selectedPlan !== 'gratuit') {
+        window.location.href = `paiement.html?plan=${selectedPlan}`;
+        return;
+      }
+
+      // Plan gratuit → confirmation
+      document.getElementById(`step3`).classList.remove('active');
+      document.getElementById('confirm').classList.add('active');
+      document.getElementById('confirm-prenom').textContent = userPrenom;
+      document.getElementById('sum-genre').textContent = selectedGenre === 'homme' ? '👨 Homme' : '👩 Femme';
+      document.getElementById('sum-obj').textContent = OBJ_LABEL[selectedObj];
+      document.getElementById('sum-plan').textContent = PLAN_LABEL[selectedPlan];
+
+      updateProgress(4);
+
+    } catch(e) {
+      console.error(e);
+      btn.disabled = false;
+      btn.textContent = 'Commencer →';
+    }
+  }
+
+  function goToDashboard() {
+    window.location.href = 'dashboard.html';
+  }
+
+  init();
+</script>
+
+  <!-- i18n -->
+  <script src="i18n.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', initI18n);</script>
+</body>
+</html>

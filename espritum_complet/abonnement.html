@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+<title>Espritum — Mon Abonnement</title>
+<link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --red: #c82828;
+    --bg: #080808;
+    --bg2: #0d0d0d;
+    --bg3: #111111;
+    --border: #1e1e1e;
+    --muted: #555;
+    --muted2: #333;
+    --gold: #f5c518;
+    --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
+    --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
+    --sidebar: 240px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: #fff; font-family: var(--font-body); display: flex; }
+
+  /* SIDEBAR */
+  .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 50; }
+  .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 24px 20px; border-bottom: 1px solid var(--border); text-decoration: none; }
+  .sidebar-logo { width: 34px; height: 34px; object-fit: contain; border-radius: 6px; }
+  .sidebar-name { font-family: var(--font-display); font-size: 18px; letter-spacing: 5px; color: #fff; text-transform: uppercase; }
+  .sidebar-nav { flex: 1; padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .nav-section-label { font-size: 9px; letter-spacing: 3px; color: var(--muted2); text-transform: uppercase; font-weight: 700; padding: 14px 10px 6px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 6px; text-decoration: none; transition: background 0.2s, color 0.2s; color: var(--muted); font-size: 14px; font-weight: 500; }
+  .nav-item:hover { background: var(--bg3); color: #ccc; }
+  .nav-item.active { background: rgba(200,40,40,0.1); color: #fff; border-left: 2px solid var(--red); }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+  .nav-lock { font-size: 11px; margin-left: auto; opacity: 0.6; }
+  .sidebar-bottom { padding: 16px 12px; border-top: 1px solid var(--border); }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 6px; }
+  .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(200,40,40,0.15); border: 1px solid rgba(200,40,40,0.3); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; color: var(--red); flex-shrink: 0; }
+  .user-name { font-size: 13px; font-weight: 600; color: #ddd; }
+  .user-plan { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+
+  /* MAIN */
+  .main { margin-left: var(--sidebar); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+  .topbar { padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 40; }
+  .topbar-left { display: flex; flex-direction: column; gap: 2px; }
+  .topbar-tag { font-size: 10px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; font-weight: 600; }
+  .topbar-title { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; }
+
+  .content { padding: 28px 32px; display: flex; flex-direction: column; gap: 22px; max-width: 900px; }
+
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 24px; }
+  .card-title { font-family: var(--font-display); font-size: 20px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+
+  /* Plan actuel */
+  .current-plan-card {
+    background: linear-gradient(135deg, #0f0404, var(--bg2));
+    border: 1px solid rgba(200,40,40,0.25); border-radius: 10px; padding: 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  }
+
+  .plan-left { display: flex; align-items: center; gap: 20px; }
+  .plan-badge-icon { font-size: 52px; }
+  .plan-badge-name { font-family: var(--font-display); font-size: 42px; letter-spacing: 2px; text-transform: uppercase; color: #fff; line-height: 1; }
+  .plan-badge-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .plan-price-big { font-family: var(--font-display); font-size: 52px; color: var(--red); line-height: 1; }
+  .plan-price-period { font-size: 13px; color: var(--muted); margin-top: 4px; text-align: right; }
+
+  /* Features du plan */
+  .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .feature-item { display: flex; align-items: center; gap: 10px; padding: 11px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; }
+  .feature-icon { font-size: 16px; flex-shrink: 0; }
+  .feature-text { font-size: 13px; color: #ccc; }
+  .feature-item.locked .feature-text { color: var(--muted); }
+  .feature-lock { font-size: 12px; margin-left: auto; color: var(--muted2); }
+
+  /* Plans upgrade */
+  .plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+  .plan-card {
+    background: var(--bg3); border: 2px solid var(--border);
+    border-radius: 8px; padding: 22px; cursor: pointer;
+    transition: all 0.2s; position: relative; display: flex; flex-direction: column; gap: 14px;
+  }
+
+  .plan-card:hover { border-color: rgba(200,40,40,0.4); transform: translateY(-2px); }
+  .plan-card.current { border-color: var(--muted2); cursor: default; opacity: 0.6; }
+  .plan-card.current:hover { transform: none; }
+  .plan-card.recommended { border-color: var(--red); }
+
+  .plan-card-badge {
+    position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+    padding: 3px 14px; border-radius: 10px; font-size: 10px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase; white-space: nowrap;
+  }
+
+  .badge-current { background: var(--muted2); color: #888; }
+  .badge-popular { background: var(--red); color: #fff; }
+  .badge-premium { background: var(--gold); color: #000; }
+
+  .plan-card-icon { font-size: 32px; }
+  .plan-card-name { font-family: var(--font-display); font-size: 26px; letter-spacing: 2px; text-transform: uppercase; }
+  .plan-card-price { font-family: var(--font-display); font-size: 36px; color: var(--red); line-height: 1; }
+  .plan-card-period { font-size: 12px; color: var(--muted); }
+  .plan-card-features { display: flex; flex-direction: column; gap: 6px; }
+  .plan-card-feat { font-size: 12px; color: #888; display: flex; align-items: center; gap: 6px; }
+  .plan-card-feat::before { content: '✓'; color: var(--red); font-weight: 700; flex-shrink: 0; }
+
+  .btn-select {
+    width: 100%; padding: 12px; border-radius: 4px;
+    font-family: var(--font-body); font-size: 12px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+    transition: all 0.2s; border: none; margin-top: auto;
+  }
+
+  .btn-select.active { background: var(--red); color: #fff; }
+  .btn-select.active:hover { background: #d93030; }
+  .btn-select.disabled { background: var(--muted2); color: var(--muted); cursor: not-allowed; }
+
+  /* Formulaire paiement */
+  .payment-form { display: none; }
+  .payment-form.visible { display: flex; flex-direction: column; gap: 20px; }
+
+  .selected-plan-banner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; background: rgba(200,40,40,0.08);
+    border: 1px solid rgba(200,40,40,0.25); border-radius: 6px;
+  }
+
+  .selected-plan-info { display: flex; align-items: center; gap: 12px; }
+  .selected-plan-name { font-family: var(--font-display); font-size: 22px; letter-spacing: 1px; text-transform: uppercase; }
+  .selected-plan-price { font-family: var(--font-display); font-size: 28px; color: var(--red); }
+
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field label { font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; font-weight: 600; }
+  .field input, .field select {
+    padding: 13px 16px; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 4px; color: #fff; font-family: var(--font-body); font-size: 14px;
+    outline: none; transition: border-color 0.2s;
+  }
+  .field input:focus { border-color: rgba(200,40,40,0.4); }
+  .field input::placeholder { color: var(--muted2); }
+
+  .field-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; }
+
+  .card-icons { display: flex; gap: 8px; margin-top: 6px; }
+  .card-icon { padding: 4px 10px; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; font-size: 12px; color: var(--muted); }
+
+  .secure-badge { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); padding: 10px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; }
+
+  .btn-pay {
+    width: 100%; padding: 17px; background: var(--red); border: none; border-radius: 6px;
+    color: #fff; font-family: var(--font-body); font-size: 14px; font-weight: 600;
+    letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;
+  }
+  .btn-pay:hover { background: #d93030; }
+  .btn-pay:disabled { background: var(--muted2); cursor: not-allowed; }
+
+  .btn-back-plan {
+    width: 100%; padding: 13px; background: transparent; border: 1px solid var(--border);
+    border-radius: 6px; color: var(--muted); font-family: var(--font-body); font-size: 12px;
+    font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+  }
+  .btn-back-plan:hover { border-color: #333; color: #888; }
+
+  /* Succès */
+  .success-screen { display: none; text-align: center; padding: 48px; }
+  .success-screen.visible { display: block; }
+  .success-icon { font-size: 64px; margin-bottom: 20px; }
+  .success-title { font-family: var(--font-display); font-size: 48px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  .success-sub { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 28px; }
+  .btn-dashboard { padding: 15px 40px; background: var(--red); border: none; border-radius: 4px; color: #fff; font-family: var(--font-body); font-size: 13px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 28px; right: 28px; padding: 14px 20px; border-radius: 6px; font-size: 13px; font-weight: 500; z-index: 300; transform: translateY(80px); opacity: 0; transition: all 0.3s ease; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.error { background: rgba(200,40,40,0.9); border: 1px solid rgba(200,40,40,0.5); color: #ef9a9a; }
+  .toast.success { background: rgba(46,125,50,0.9); border: 1px solid rgba(46,125,50,0.5); color: #a5d6a7; }
+
+  /* Loading */
+  .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
+  .loading-logo { font-family: var(--font-display); font-size: 48px; letter-spacing: 8px; color: var(--red); text-transform: uppercase; }
+  .loading-dots { display: flex; gap: 6px; }
+  .loading-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: blink 1.2s infinite; }
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100%{opacity:0.2;} 40%{opacity:1;} }
+
+  @media (max-width: 1000px) { .plans-grid { grid-template-columns: 1fr 1fr; } .features-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } .plans-grid { grid-template-columns: 1fr; } .field-row { grid-template-columns: 1fr 1fr; } }
+
+  /* ── BOTTOM NAV MOBILE ── */
+  .mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #0a0a0a;
+    border-top: 1px solid #1e1e1e;
+    padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+    z-index: 100;
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .mobile-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 4px; text-decoration: none; transition: all 0.2s; color: #555; cursor: pointer; }
+  .mobile-nav-item.active { color: #c82828; }
+  .mobile-nav-item:hover { color: #aaa; }
+  .mobile-nav-icon { font-size: 20px; }
+  .mobile-nav-label { font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 600; }
+  @media (max-width: 768px) {
+    .mobile-nav { display: grid; }
+    .main { padding-bottom: 72px; }
+    .sidebar { display: none !important; }
+  }
+
+  /* ── MOBILE TOPBAR COMPACT ── */
+  @media (max-width: 768px) {
+    .topbar { padding: 14px 16px; }
+    .topbar-title { font-size: 22px; }
+    .content { padding: 16px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .main-grid { grid-template-columns: 1fr; gap: 14px; }
+    .bottom-grid { grid-template-columns: 1fr; gap: 14px; }
+    .card { padding: 16px; }
+  }
+
+  /* ── ANTI-ZOOM GLOBAL ── */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    touch-action: pan-x pan-y;
+  }
+  input, select, textarea {
+    font-size: 16px !important; /* empêche le zoom auto sur iOS */
+  }
+  * {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  /* MOBILE : topbar ultra simplifié */
+  @media (max-width: 768px) {
+    .topbar-right { display: none !important; }
+    .topbar { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .topbar-title { font-size: 24px; }
+    .streak-pill { display: none !important; }
+    .logout-btn { display: none !important; }
+    .free-badge { display: none !important; }
+    .period-tabs { display: none !important; }
+    .sensei-status { display: none !important; }
+    .date-nav .date-label { font-size: 12px; min-width: 80px; }
+  }
+
+  /* ── OVERFLOW FIX GLOBAL ── */
+  @media (max-width: 768px) {
+    body { overflow-x: hidden; }
+    .main { overflow-x: hidden; width: 100%; }
+    .content { overflow-x: hidden; }
+    * { max-width: 100%; }
+    img { max-width: 100%; }
+  }
+
+  /* ── LANGUAGE SELECTOR ── */
+  .lang-selector {
+    display: flex; gap: 4px; align-items: center;
+  }
+  .lang-btn {
+    width: 28px; height: 28px; border-radius: 4px;
+    background: transparent; border: 1px solid transparent;
+    cursor: pointer; font-size: 16px; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.2s; padding: 0;
+    opacity: 0.45;
+  }
+  .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
+  .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
+
+  /* ── LANG BAR MOBILE IN APP ── */
+  .mobile-lang-bar {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #080808;
+    border-bottom: 1px solid #1e1e1e;
+    padding: 8px 16px;
+    z-index: 101;
+    justify-content: flex-end;
+    gap: 6px;
+    align-items: center;
+  }
+  .mobile-lang-bar .lang-btn { width: 28px; height: 28px; font-size: 16px; }
+
+  @media (max-width: 768px) {
+    .mobile-lang-bar { display: flex; }
+    .topbar { margin-top: 44px; }
+    .main { padding-top: 0; }
+  }
+
+  /* ── BULGARIAN FONT ── */
+  html[lang="bg"] * {
+    font-family: 'Sofia Sans Condensed', var(--font-body, sans-serif) !important;
+  }
+  html[lang="bg"] .topbar-title,
+  html[lang="bg"] .sidebar-name,
+  html[lang="bg"] .card-title,
+  html[lang="bg"] .stat-val,
+  html[lang="bg"] .nav-item {
+    font-family: 'Sofia Sans Condensed', var(--font-display, sans-serif) !important;
+  }
+</style>
+<script src="site-config.js"></script>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="loading-logo">Espritum</div>
+  <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<aside class="sidebar">
+  <a class="sidebar-brand" href="dashboard.html">
+    <img class="sidebar-logo" src="data:image/png;base64,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Rppoj1IPln293sX2jT3Lk5/LBreINs2y32aaomY6U04/XKPq9fKb82lY+jo361B5PeP9n/n7lhB5nUoeZ1KK1s2abVOIco3jeL+63+9u8ojpHhEe/nIiIsqpEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEX1Gx8jwyNjnuPINaNSV7VHh2XVjQ6jxa+VDT0MVvleD9DUHhosklwLOoW8UuF5HG30utcwH9VeNcLZcreeGvt9XSH0TwuZ7wg6iIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiDmdAgL0cesd5yG6R2uxWusudbJ5kFLC6R58dB3eKn3YNut5DmDYb3mrqnHrI7R8dPwAVdU3wB/a2+Lhqe4ac1dLAsGxPBbULbitkpbbDoON0bdZJSO97zq559ZKCnWzbc+y67sirMzu1Nj1O4cRpoQKip9R0IY36XepWAwzdi2R46yN01ilvlSzTWa5zmQE/8ALbws/NU0LxMry7F8UpfhOSZBbLTHpqPhVS1jnfNaTq72AoOxZMesFjibFZbJbbaxvINpKVkQH8UBemoFybey2S2lz46Cou17e3kDR0Zawn50pZ9OhWD12+tZWOIosCuEze4zXBkZ+gMcgtkvioghqIjFUQxzRu6se0OB9hVR6ffYpi7/AFjZ3M0ell2BP1xBZFZN8rAamQMuuO3+36/u42xzNH5wP1IJeynY7swyZr/vvhFmfI/zpoKcQSn8uPhd9ahnOtzfEq9kk+IX+4Wac82wVQFTB6geTx6yXKVsP287JspdHFb8yoKeof0gryaV+vo+MABPqJUkwyRzRNlhkZJG8atc06gj0goNa20rd72n4MJamqsbrrbo9Sa22EzsDfS5uge31lunionW4NRPtb3f9nm0QS1dVbfvReHg6XC3gRvcfTIzzZPEkcXiEGtRFLG2nYJnGzEvraunbdrHxaNudG0ljR3dq3rGfXq30EqJ0BERAREQEREBERAREQEREBERAREQEREBERARF9wRSzzMggjfLLI4MYxjSXOcToAAOpKDlttFV3K4U9vt9NLVVdTK2GCGJpc+R7jo1oA6kkgK9G7Nu10GHx02U51T09wyLyZaakOj4aA9QT3PlHp6NI5anyl6O6fsGpMAtEGVZRRsly2qj1ax+jhbmHXyG93aEacT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" alt="Espritum">
+    <span class="sidebar-name">Espritum</span>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Principal</div>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span> Dashboard</a>
+    <a class="nav-item nav-freemium" href="nutrition.html" data-feature="Nutrition"><span class="nav-icon">🍎</span> Nutrition<span class="nav-lock"></span></a>
+    <a class="nav-item nav-freemium" href="entrainement.html" data-feature="Entraînement"><span class="nav-icon">💪</span> Entraînement<span class="nav-lock"></span></a>
+    <a class="nav-item nav-freemium" href="progression.html" data-feature="Progression"><span class="nav-icon">📊</span> Progression<span class="nav-lock"></span></a>
+    <div class="nav-section-label">IA & Motivation</div>
+    <a class="nav-item" href="bodyfat.html"><span class="nav-icon">📸</span> Estimation corporelle</a>
+    <a class="nav-item nav-freemium" href="classement.html" data-feature="Classement"><span class="nav-icon">🏆</span> Classement<span class="nav-lock"></span></a>
+    <div class="nav-section-label">Compte</div>
+    <a class="nav-item" href="profil.html"><span class="nav-icon">👤</span> Profil</a>
+    <a class="nav-item active" href="abonnement.html"><span class="nav-icon">⭐</span> Abonnement</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="lang-selector" style="display:flex;gap:4px;align-items:center;">
+      <button class="lang-btn" data-lang="fr" onclick="setLang('fr')" title="Français">🇫🇷</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')" title="English">🇬🇧</button>
+      <button class="lang-btn" data-lang="bg" onclick="setLang('bg')" title="Български">🇧🇬</button>
+    </div>
+
+    <div class="user-card">
+      <div class="user-avatar" id="sidebar-avatar">?</div>
+      <div>
+        <div class="user-name" id="sidebar-name">—</div>
+        <div class="user-plan" id="sidebar-plan">—</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar" style="justify-content:space-between;">
+    <div class="topbar-left">
+      
+      <div class="topbar-title" data-i18n="nav_abonnement">Mon Abonnement</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Plan actuel -->
+    <div class="current-plan-card" id="current-plan-card">
+      <div class="plan-left">
+        <div class="plan-badge-icon" id="plan-icon">🛡️</div>
+        <div>
+          <div class="plan-badge-name" id="plan-name">Soldat</div>
+          <div class="plan-badge-sub" id="plan-sub">Plan actuel</div>
+        </div>
+      </div>
+      <div>
+        <div class="plan-price-big" id="plan-price">Gratuit</div>
+        <div class="plan-price-period" id="plan-period">pour toujours</div>
+      </div>
+    </div>
+
+    <!-- Fonctionnalités du plan actuel -->
+    <div class="card">
+      <div class="card-title">Ce que tu as avec ton plan</div>
+      <div class="features-grid" id="features-grid"></div>
+    </div>
+
+    <!-- Choisir un autre plan -->
+    <div class="card" id="plans-section">
+      <div class="card-title">Changer de plan</div>
+      <div class="plans-grid" id="plans-grid"></div>
+    </div>
+
+    <!-- Formulaire paiement -->
+    <div class="card payment-form" id="payment-form">
+      <div class="card-title">Informations de paiement</div>
+
+      <div class="selected-plan-banner" id="selected-banner">
+        <div class="selected-plan-info">
+          <span id="sel-icon" style="font-size:28px;">⚔️</span>
+          <div>
+            <div class="selected-plan-name" id="sel-name">Guerrier</div>
+            <div style="font-size:12px;color:var(--muted);">Débité chaque mois · Annulable à tout moment</div>
+          </div>
+        </div>
+        <div class="selected-plan-price" id="sel-price">5€/mois</div>
+      </div>
+
+      <div class="field">
+        <label>Nom sur la carte</label>
+        <input type="text" id="card-name" placeholder="Jean Dupont">
+      </div>
+
+      <div class="field">
+        <label>Numéro de carte</label>
+        <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
+        <div class="card-icons">
+          <span class="card-icon">💳 Visa</span>
+          <span class="card-icon">💳 Mastercard</span>
+          <span class="card-icon">💳 Amex</span>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Date d'expiration</label>
+          <input type="text" id="card-expiry" placeholder="MM/AA" maxlength="5" oninput="formatExpiry(this)">
+        </div>
+        <div class="field">
+          <label>CVV</label>
+          <input type="text" id="card-cvv" placeholder="123" maxlength="4">
+        </div>
+        <div class="field">
+          <label>Code postal</label>
+          <input type="text" id="card-zip" placeholder="75001" maxlength="10">
+        </div>
+      </div>
+
+      <div class="secure-badge">
+        🔒 Paiement 100% sécurisé · Chiffrement SSL · Powered by Stripe
+      </div>
+
+      <button class="btn-pay" id="btn-pay" onclick="processPay()">
+        Confirmer mon abonnement →
+      </button>
+      <button class="btn-back-plan" onclick="backToPlans()">← Changer de plan</button>
+    </div>
+
+    <!-- Succès -->
+    <div class="card success-screen" id="success-screen">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Bienvenue,<br><span style="color:var(--red)" id="success-name">Guerrier</span> !</div>
+      <div class="success-sub">Ton abonnement a été activé avec succès.<br>Toutes tes nouvelles fonctionnalités sont maintenant disponibles.</div>
+      <button class="btn-dashboard" onclick="window.location.replace('dashboard.html')">Accéder au dashboard →</button>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  const { createClient } = supabase;
+  const sb = createClient(
+    'https://lbxlvrtujzwlcnloheyh.supabase.co',
+    'sb_publishable_40dpIdYthKMZkJImacoKoQ_ftEeaPeg'
+  );
+
+  const PLANS = {
+    gratuit: {
+      icon: '🛡️', name: 'Soldat', price: 'Gratuit', period: 'pour toujours',
+      features: [
+        { icon: '📸', text: 'Estimation masse grasse', locked: false },
+        { icon: '✝️', text: 'Verset du jour', locked: false },
+        { icon: '🏠', text: 'Dashboard basique', locked: false },
+        { icon: '🍎', text: 'Nutrition complète', locked: true },
+        { icon: '💪', text: 'Programmes entraînement', locked: true },
+        { icon: '🤖', text: 'Coach Sensei IA', locked: true },
+        { icon: '📊', text: 'Historique progression', locked: true },
+        { icon: '🏆', text: 'Classement communauté', locked: true },
+      ]
+    },
+    guerrier: {
+      icon: '⚔️', name: 'Guerrier', price: '5€', period: 'par mois',
+      features: [
+        { icon: '📸', text: 'Estimation masse grasse', locked: false },
+        { icon: '✝️', text: 'Verset du jour', locked: false },
+        { icon: '🍎', text: 'Nutrition complète', locked: false },
+        { icon: '💪', text: '3 programmes entraînement', locked: false },
+        { icon: '📊', text: 'Historique 30 jours', locked: false },
+        { icon: '🏅', text: 'Badges motivation', locked: false },
+        { icon: '🤖', text: 'Coach Sensei IA', locked: true },
+        { icon: '🏆', text: 'Classement communauté', locked: true },
+      ]
+    },
+    champion: {
+      icon: '🛡️', name: 'Champion', price: '15€', period: 'par mois',
+      features: [
+        { icon: '📸', text: 'Estimation masse grasse avancée', locked: false },
+        { icon: '🍎', text: 'Nutrition + scan repas', locked: false },
+        { icon: '💪', text: 'Tous les programmes', locked: false },
+        { icon: '🤖', text: 'Coach Sensei IA illimité', locked: false },
+        { icon: '📊', text: 'Mensurations + photos', locked: false },
+        { icon: '🏆', text: 'Classement communauté', locked: false },
+        { icon: '📅', text: 'Historique illimité', locked: false },
+        { icon: '⭐', text: 'Support prioritaire', locked: false },
+      ]
+    },
+    elite: {
+      icon: '👑', name: 'Élite', price: '30€', period: 'par mois',
+      features: [
+        { icon: '🤖', text: 'Plan nutrition 100% IA', locked: false },
+        { icon: '📸', text: 'Analyse morphologique avancée', locked: false },
+        { icon: '💪', text: 'Programme sur-mesure IA', locked: false },
+        { icon: '🏆', text: 'Tout Champion inclus', locked: false },
+        { icon: '📞', text: 'Support prioritaire 24/7', locked: false },
+        { icon: '🎯', text: 'Objectifs personnalisés IA', locked: false },
+        { icon: '📊', text: 'Analytics avancés', locked: false },
+        { icon: '👑', text: 'Badge Élite exclusif', locked: false },
+      ]
+    }
+  };
+
+  const PLAN_LABEL = { gratuit: 'Soldat — Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
+
+  let userId = null;
+  let currentPlan = 'gratuit';
+  let selectedPlan = null;
+  let userPrenom = 'Guerrier';
+
+  function hideLoading() {
+    const el = document.getElementById('loading');
+    if (el) el.style.display = 'none';
+  }
+
+  async function init() {
+    const safetyTimeout = setTimeout(hideLoading, 3000);
+    try {
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 3000);
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { window.location.href = 'inscription.html'; return; }
+
+      userId = session.user.id;
+      const { data: profile } = await sb.from('users').select('*').eq('id', userId).single();
+
+      currentPlan = profile?.plan || 'gratuit';
+      userPrenom = profile?.prenom || 'Guerrier';
+
+      // Sidebar
+      document.getElementById('sidebar-avatar').textContent = userPrenom[0].toUpperCase();
+      document.getElementById('sidebar-name').textContent = userPrenom;
+      document.getElementById('sidebar-plan').textContent = PLAN_LABEL[currentPlan];
+
+      // Plan actuel
+      const p = PLANS[currentPlan];
+      document.getElementById('plan-icon').textContent = p.icon;
+      document.getElementById('plan-name').textContent = p.name;
+      document.getElementById('plan-price').textContent = p.price;
+      document.getElementById('plan-period').textContent = p.period;
+
+      // Features
+      renderFeatures(currentPlan);
+
+      // Plans grid
+      renderPlans();
+
+      // Freemium sidebar
+      initFreemium(currentPlan);
+
+    } catch(e) {
+      console.error(e);
+    } finally {
+      document.getElementById('loading').style.display = 'none';
+    }
+  }
+
+  function renderFeatures(plan) {
+    const features = PLANS[plan].features;
+    document.getElementById('features-grid').innerHTML = features.map(f => `
+      <div class="feature-item ${f.locked ? 'locked' : ''}">
+        <span class="feature-icon">${f.icon}</span>
+        <span class="feature-text">${f.text}</span>
+        ${f.locked ? '<span class="feature-lock">🔒</span>' : '<span style="margin-left:auto;color:#4caf50;font-size:12px;">✓</span>'}
+      </div>
+    `).join('');
+  }
+
+  function renderPlans() {
+    const order = ['guerrier', 'champion', 'elite'];
+    document.getElementById('plans-grid').innerHTML = order.map(key => {
+      const p = PLANS[key];
+      const isCurrent = key === currentPlan;
+      const badges = {
+        guerrier: { cls: '', label: '' },
+        champion: { cls: 'popular', label: '⭐ Populaire' },
+        elite: { cls: '', label: '👑 Premium' }
+      };
+      const b = badges[key];
+
+      return `
+        <div class="plan-card ${isCurrent ? 'current' : b.cls}" id="plancard-${key}">
+          ${isCurrent ? '<div class="plan-card-badge badge-current">Plan actuel</div>' :
+            b.label ? `<div class="plan-card-badge ${key === 'champion' ? 'badge-popular' : 'badge-premium'}">${b.label}</div>` : ''}
+          <div class="plan-card-icon">${p.icon}</div>
+          <div>
+            <div class="plan-card-name">${p.name}</div>
+            <div class="plan-card-price">${p.price}</div>
+            <div class="plan-card-period">${p.period}</div>
+          </div>
+          <div class="plan-card-features">
+            ${p.features.filter(f => !f.locked).slice(0,4).map(f => `<div class="plan-card-feat">${f.text}</div>`).join('')}
+          </div>
+          <button class="btn-select ${isCurrent ? 'disabled' : 'active'}"
+            ${isCurrent ? 'disabled' : `onclick="selectPlan('${key}')"`}>
+            ${isCurrent ? 'Plan actuel' : 'Choisir ce plan →'}
+          </button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function selectPlan(plan) {
+    selectedPlan = plan;
+    const p = PLANS[plan];
+
+    document.getElementById('sel-icon').textContent = p.icon;
+    document.getElementById('sel-name').textContent = p.name;
+    document.getElementById('sel-price').textContent = `${p.price}/${p.period === 'par mois' ? 'mois' : 'an'}`;
+
+    document.getElementById('plans-section').style.display = 'none';
+    document.getElementById('payment-form').classList.add('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function backToPlans() {
+    document.getElementById('payment-form').classList.remove('visible');
+    document.getElementById('plans-section').style.display = 'block';
+    selectedPlan = null;
+  }
+
+  async function processPay() {
+    const name = document.getElementById('card-name').value.trim();
+    const number = document.getElementById('card-number').value.replace(/\s/g, '');
+    const expiry = document.getElementById('card-expiry').value.trim();
+    const cvv = document.getElementById('card-cvv').value.trim();
+
+    if (!name) { showToast('error', 'Entre le nom sur la carte.'); return; }
+    if (number.length < 16) { showToast('error', 'Numéro de carte invalide.'); return; }
+    if (!expiry || expiry.length < 5) { showToast('error', 'Date d\'expiration invalide.'); return; }
+    if (!cvv || cvv.length < 3) { showToast('error', 'CVV invalide.'); return; }
+
+    const btn = document.getElementById('btn-pay');
+    btn.disabled = true;
+    btn.textContent = 'Traitement en cours...';
+
+    // Simuler le traitement Stripe (2 secondes)
+    await new Promise(r => setTimeout(r, 2000));
+
+    try {
+      // Mettre à jour le plan dans Supabase
+      const { error: updateError } = await sb.from('users').update({ plan: selectedPlan }).eq('id', userId);
+      
+      if (updateError) throw updateError;
+
+      // Forcer le refresh de la session Supabase
+      await sb.auth.refreshSession();
+
+      // Afficher le succès
+      document.getElementById('payment-form').classList.remove('visible');
+      document.getElementById('plans-section').style.display = 'none';
+      document.getElementById('current-plan-card').style.display = 'none';
+      document.getElementById('success-name').textContent = userPrenom;
+      document.getElementById('success-screen').classList.add('visible');
+      
+      // Stocker le plan en localStorage pour que le dashboard le lise immédiatement
+      localStorage.setItem('espritum_plan', selectedPlan);
+
+    } catch(e) {
+      showToast('error', 'Erreur lors du paiement. Réessaie.');
+      btn.disabled = false;
+      btn.textContent = 'Confirmer mon abonnement →';
+    }
+  }
+
+  // Formatage carte
+  function formatCard(input) {
+    let val = input.value.replace(/\D/g, '').substring(0, 16);
+    input.value = val.match(/.{1,4}/g)?.join(' ') || val;
+  }
+
+  function formatExpiry(input) {
+    let val = input.value.replace(/\D/g, '').substring(0, 4);
+    if (val.length >= 2) val = val.substring(0,2) + '/' + val.substring(2);
+    input.value = val;
+  }
+
+  function showToast(type, msg) {
+    const t = document.getElementById('toast');
+    t.className = `toast ${type}`;
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  function initFreemium(plan) {
+    const isPaid = ['guerrier', 'champion', 'elite'].includes(plan);
+    if (!isPaid) {
+      document.querySelectorAll('.nav-freemium').forEach(el => {
+        el.classList.add('locked');
+        const lock = el.querySelector('.nav-lock');
+        if (lock) lock.textContent = '🔒';
+        el.onclick = e => { e.preventDefault(); };
+      });
+    }
+  }
+
+  init();
+</script>
+
+<!-- BARRE NAVIGATION MOBILE -->
+<nav class="mobile-nav">
+  <a class="mobile-nav-item " href="dashboard.html">
+    <span class="mobile-nav-icon">🏠</span>
+    <span class="mobile-nav-label" data-i18n="nav_dashboard">Home</span>
+  </a>
+  <a class="mobile-nav-item " href="nutrition.html">
+    <span class="mobile-nav-icon">🍎</span>
+    <span class="mobile-nav-label" data-i18n="nav_nutrition">Nutrition</span>
+  </a>
+  <a class="mobile-nav-item " href="entrainement.html">
+    <span class="mobile-nav-icon">💪</span>
+    <span class="mobile-nav-label" data-i18n="nav_training">Training</span>
+  </a>
+  <a class="mobile-nav-item " href="bodyfat.html">
+    <span class="mobile-nav-icon">📸</span>
+    <span class="mobile-nav-label" data-i18n="nav_bodyfat">Analyse</span>
+  </a>
+  <a class="mobile-nav-item " href="profil.html">
+    <span class="mobile-nav-icon">👤</span>
+    <span class="mobile-nav-label" data-i18n="nav_profil">Profil</span>
+  </a>
+</nav>
+
+  <!-- i18n -->
+  <script src="i18n.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', initI18n);</script>
+</body>
+</html>
