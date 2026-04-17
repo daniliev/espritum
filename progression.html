@@ -475,7 +475,14 @@
   let fatChart = null;
   const planLabel = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
 
+  function hideLoading() {
+    const el = document.getElementById('loading');
+    if (el) el.style.display = 'none';
+  }
+
   async function init() {
+    const safetyTimeout = setTimeout(hideLoading, 3000);
+    try {
     const { data: { session } } = await sb.auth.getSession();
     if (!session) { window.location.href = 'inscription.html'; return; }
     userId = session.user.id;
@@ -492,7 +499,12 @@
 
     initCharts();
     await loadData(profile);
-    document.getElementById('loading').style.display = 'none';
+    } catch(err) {
+      console.error('Init error:', err);
+    } finally {
+      clearTimeout(safetyTimeout);
+      hideLoading();
+    }
   }
 
   function initCharts() {

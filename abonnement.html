@@ -531,7 +531,14 @@
   let selectedPlan = null;
   let userPrenom = 'Guerrier';
 
+  function hideLoading() {
+    const el = document.getElementById('loading');
+    if (el) el.style.display = 'none';
+  }
+
   async function init() {
+    const safetyTimeout = setTimeout(hideLoading, 3000);
+    try {
     setTimeout(() => document.getElementById('loading').style.display = 'none', 3000);
     try {
       const { data: { session } } = await sb.auth.getSession();

@@ -509,7 +509,14 @@
   let myUserId = null;
   let myProfile = null;
 
+  function hideLoading() {
+    const el = document.getElementById('loading');
+    if (el) el.style.display = 'none';
+  }
+
   async function init() {
+    const safetyTimeout = setTimeout(hideLoading, 3000);
+    try {
     const { data: { session } } = await sb.auth.getSession();
     if (!session) { window.location.href = 'inscription.html'; return; }
 
@@ -557,7 +564,12 @@
     document.getElementById('total-users').textContent = allUsers.length;
 
     renderRankList(allUsers);
-    document.getElementById('loading').style.display = 'none';
+    } catch(err) {
+      console.error('Init error:', err);
+    } finally {
+      clearTimeout(safetyTimeout);
+      hideLoading();
+    }
   }
 
   function renderRankList(users) {

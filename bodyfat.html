@@ -532,7 +532,14 @@
   let hasImage = false;
   let camStream = null;
 
+  function hideLoading() {
+    const el = document.getElementById('loading');
+    if (el) el.style.display = 'none';
+  }
+
   async function init() {
+    const safetyTimeout = setTimeout(hideLoading, 3000);
+    try {
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
       userId = session.user.id;
@@ -549,7 +556,12 @@
       document.getElementById('sidebar-name').textContent = 'Invité';
       document.getElementById('sidebar-plan').textContent = 'Gratuit';
     }
-    document.getElementById('loading').style.display = 'none';
+    } catch(err) {
+      console.error('Init error:', err);
+    } finally {
+      clearTimeout(safetyTimeout);
+      hideLoading();
+    }
   }
 
   // ── UPLOAD / CAMERA ──

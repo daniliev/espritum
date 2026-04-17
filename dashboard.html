@@ -276,7 +276,7 @@
 </head>
 <body>
 
-<div class="loading-overlay" id="loading">
+<div class="loading-overlay" id="loading" style="display:flex;">
   <div class="loading-logo">Espritum</div>
   <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
 </div>
@@ -444,6 +444,14 @@
 
 <script>
   // ── INIT SUPABASE ──
+  // Masquer loading dès que possible
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      const el = document.getElementById('loading');
+      if (el) el.style.display = 'none';
+    }, 1500);
+  });
+
   const { createClient } = supabase;
   const sb = createClient(
     'https://lbxlvrtujzwlcnloheyh.supabase.co',
@@ -470,7 +478,7 @@
 
   async function init() {
     // Timeout de sécurité — masque le loading après 3s quoi qu'il arrive
-    const safetyTimeout = setTimeout(hideLoading, 3000);
+    const safetyTimeout = setTimeout(hideLoading, 1500);
 
     try {
       const { data: { session }, error: sessErr } = await sb.auth.getSession();
@@ -500,21 +508,21 @@
       // Date
       const now = new Date();
       const dateStr = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-      document.getElementById('topbar-date').textContent = `— ${dateStr.charAt(0).toUpperCase() + dateStr.slice(1)}`;
+      setEl('topbar-date', `— ${dateStr.charAt(0).toUpperCase() + dateStr.slice(1)}`);
 
       // Stats corps
-      if (profile?.poids) document.getElementById('s-poids').textContent = profile.poids;
-      if (profile?.poids_cible) document.getElementById('s-poids-obj').textContent = profile.poids_cible;
-      if (profile?.masse_grasse) document.getElementById('s-mg').textContent = profile.masse_grasse;
+      if (profile?.poids) setEl('s-poids', profile.poids);
+      if (profile?.poids_cible) setEl('s-poids-obj', profile.poids_cible);
+      if (profile?.masse_grasse) setEl('s-mg', profile.masse_grasse);
 
       const calObj = profile?.calories_objectif || 2400;
-      document.getElementById('s-cal-obj').textContent = calObj.toLocaleString('fr-FR');
-      document.getElementById('cal-obj').textContent = calObj.toLocaleString('fr-FR');
+      setEl('s-cal-obj', calObj.toLocaleString('fr-FR'));
+      setEl('cal-obj', calObj.toLocaleString('fr-FR'));
 
       // Verset du jour
       const v = VERSETS[now.getDay()];
-      document.getElementById('verse-text').textContent = v.text;
-      document.getElementById('verse-ref').textContent = v.ref;
+      setEl('verse-text', v.text);
+      setEl('verse-ref', v.ref);
 
       // Repas du jour
       const today = now.toISOString().split('T')[0];

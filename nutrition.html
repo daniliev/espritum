@@ -603,34 +603,49 @@
   let weekChart = null;
   let allMeals = [];
 
+  function hideLoading() {
+    const el = document.getElementById('loading');
+    if (el) el.style.display = 'none';
+  }
+
   async function init() {
-    const { data: { session } } = await sb.auth.getSession();
-    if (!session) { window.location.href = 'inscription.html'; return; }
+    // Sécurité — masque le loading après 3s quoi qu'il arrive
+    const safetyTimeout = setTimeout(hideLoading, 3000);
 
-    userId = session.user.id;
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { window.location.href = 'inscription.html'; return; }
 
-    const { data: profile } = await sb.from('users').select('*').eq('id', userId).single();
-    userProfile = profile;
+      userId = session.user.id;
 
-    const prenom = profile?.prenom || 'Guerrier';
-    const planLabel = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
+      const { data: profile } = await sb.from('users').select('*').eq('id', userId).single();
+      userProfile = profile;
 
-    document.getElementById('sidebar-avatar').textContent = prenom[0].toUpperCase();
-    document.getElementById('sidebar-name').textContent = prenom;
-    document.getElementById('sidebar-plan').textContent = planLabel[profile?.plan || 'gratuit'];
-    initFreemium(profile?.plan || 'gratuit');
+      const prenom = profile?.prenom || 'Guerrier';
+      const planLabel = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
 
-    // Objectifs
-    if (profile?.calories_objectif) document.getElementById('objectif-val').textContent = profile.calories_objectif.toLocaleString('fr-FR');
-    if (profile?.proteines_objectif) document.getElementById('prot-goal').textContent = profile.proteines_objectif;
-    if (profile?.glucides_objectif) document.getElementById('carb-goal').textContent = profile.glucides_objectif;
-    if (profile?.lipides_objectif) document.getElementById('fat-goal').textContent = profile.lipides_objectif;
+      const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-    initCharts();
-    await loadMeals();
-    await loadWeekData();
+      setEl('sidebar-avatar', prenom[0].toUpperCase());
+      setEl('sidebar-name', prenom);
+      setEl('sidebar-plan', planLabel[profile?.plan || 'gratuit']);
+      initFreemium(profile?.plan || 'gratuit');
 
-    document.getElementById('loading').style.display = 'none';
+      if (profile?.calories_objectif) setEl('objectif-val', profile.calories_objectif.toLocaleString('fr-FR'));
+      if (profile?.proteines_objectif) setEl('prot-goal', profile.proteines_objectif);
+      if (profile?.glucides_objectif) setEl('carb-goal', profile.glucides_objectif);
+      if (profile?.lipides_objectif) setEl('fat-goal', profile.lipides_objectif);
+
+      initCharts();
+      await loadMeals();
+      await loadWeekData();
+
+    } catch(err) {
+      console.error('Nutrition init error:', err);
+    } finally {
+      clearTimeout(safetyTimeout);
+      hideLoading();
+    }
   }
 
   function initCharts() {

@@ -6,13 +6,17 @@
     const SUPABASE_URL = 'https://lbxlvrtujzwlcnloheyh.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_40dpIdYthKMZkJImacoKoQ_ftEeaPeg';
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2000);
     const res = await fetch(`${SUPABASE_URL}/rest/v1/site_config?select=id,value`, {
+      signal: controller.signal,
       headers: {
         'apikey': SUPABASE_KEY,
         'Authorization': `Bearer ${SUPABASE_KEY}`
       }
     });
 
+    clearTimeout(timeout);
     if (!res.ok) return;
     const data = await res.json();
     if (!data || !data.length) return;
