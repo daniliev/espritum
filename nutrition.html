@@ -359,29 +359,19 @@
   .nav-icon img {
     width: 18px; height: 18px;
     object-fit: contain;
-    filter: brightness(0.6);
-    transition: filter 0.2s;
+    opacity: 0.5;
+    transition: opacity 0.2s;
   }
-  .nav-item:hover .nav-icon img,
-  .nav-item.active .nav-icon img {
-    filter: brightness(1);
-  }
-  .nav-item.active .nav-icon img {
-    filter: brightness(1) sepia(1) saturate(5) hue-rotate(310deg);
-  }
-  /* Mobile bottom nav icons */
+  .nav-item:hover .nav-icon img { opacity: 0.85; }
+  .nav-item.active .nav-icon img { opacity: 1; }
   .mobile-nav-icon img {
     width: 22px; height: 22px;
     object-fit: contain;
-    filter: brightness(0.5);
-    transition: filter 0.2s;
+    opacity: 0.45;
+    transition: opacity 0.2s;
   }
-  .mobile-nav-item.active .mobile-nav-icon img {
-    filter: brightness(1) sepia(1) saturate(5) hue-rotate(310deg);
-  }
-  .mobile-nav-item:hover .mobile-nav-icon img {
-    filter: brightness(0.9);
-  }
+  .mobile-nav-item.active .mobile-nav-icon img { opacity: 1; }
+  .mobile-nav-item:hover .mobile-nav-icon img { opacity: 0.8; }
 </style>
 <script src="site-config.js"></script>
 </head>
@@ -409,16 +399,16 @@
   <nav class="sidebar-nav">
 
     <div class="nav-section-label">Principal</div>
-    <a class="nav-item" href="dashboard.html"><span class="nav-icon"><img src="icons/dashboard.png" alt="Dashboard"></span> Dashboard</a>
-    <a class="nav-item  active nav-freemium" href="nutrition.html" data-feature="Nutrition"><span class="nav-icon"><img src="icons/nutrition.png" alt="Nutrition"></span> Nutrition<span class="nav-lock" id="lock-nutrition"></span></a>
-    <a class="nav-item nav-freemium" href="entrainement.html" data-feature="Entraînement"><span class="nav-icon"><img src="icons/entrainement.png" alt="Entraînement"></span> Entraînement<span class="nav-lock" id="lock-entrainement"></span></a>
-    <a class="nav-item nav-freemium" href="progression.html" data-feature="Progression"><span class="nav-icon"><img src="icons/progression.png" alt="Progression"></span> Progression<span class="nav-lock" id="lock-progression"></span></a>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon"><img src="icons/dashboard.png" alt="Dashboard"></span data-i18n="nav_dashboard"> Dashboard</a>
+    <a class="nav-item  active nav-freemium" href="nutrition.html" data-feature="Nutrition"><span class="nav-icon"><img src="icons/nutrition.png" alt="Nutrition"></span data-i18n="nav_nutrition"> Nutrition<span class="nav-lock" id="lock-nutrition"></span></a>
+    <a class="nav-item nav-freemium" href="entrainement.html" data-feature="Entraînement"><span class="nav-icon"><img src="icons/entrainement.png" alt="Entraînement"></span data-i18n="nav_training"> Training<span class="nav-lock" id="lock-entrainement"></span></a>
+    <a class="nav-item nav-freemium" href="progression.html" data-feature="Progression"><span class="nav-icon"><img src="icons/progression.png" alt="Progression"></span data-i18n="nav_progression"> Progression<span class="nav-lock" id="lock-progression"></span></a>
     <div class="nav-section-label">IA & Motivation</div>
-    <a class="nav-item" href="bodyfat.html"><span class="nav-icon"><img src="icons/estimation.png" alt="Estimation"></span> Estimation corporelle</a>
-    <a class="nav-item nav-freemium" href="classement.html" data-feature="Classement"><span class="nav-icon"><img src="icons/classement.png" alt="Classement"></span> Classement<span class="nav-lock" id="lock-classement"></span></a>
+    <a class="nav-item" href="bodyfat.html"><span class="nav-icon"><img src="icons/estimation.png" alt="Estimation"></span data-i18n="nav_bodyfat"> Estimation</a>
+    <a class="nav-item nav-freemium" href="classement.html" data-feature="Classement"><span class="nav-icon"><img src="icons/classement.png" alt="Classement"></span data-i18n="nav_classement"> Classement<span class="nav-lock" id="lock-classement"></span></a>
     <div class="nav-section-label">Compte</div>
-    <a class="nav-item" href="profil.html"><span class="nav-icon"><img src="icons/profil.png" alt="Profil"></span> Profil</a>
-    <a class="nav-item" href="abonnement.html"><span class="nav-icon"><img src="icons/abonnement.png" alt="Abonnement"></span> Abonnement</a>
+    <a class="nav-item" href="profil.html"><span class="nav-icon"><img src="icons/profil.png" alt="Profil"></span data-i18n="nav_profil"> Profil</a>
+    <a class="nav-item" href="abonnement.html"><span class="nav-icon"><img src="icons/abonnement.png" alt="Abonnement"></span data-i18n="nav_abonnement"> Abonnement</a>
   </nav>
   <div class="sidebar-bottom">
     <div class="lang-selector" style="display:flex;gap:4px;align-items:center;">
@@ -638,7 +628,7 @@
 
   async function init() {
     // Sécurité — masque le loading après 3s quoi qu'il arrive
-    const safetyTimeout = setTimeout(hideLoading, 3000);
+    const safetyTimeout = setTimeout(hideLoading, 1000);
 
     try {
       const { data: { session } } = await sb.auth.getSession();
