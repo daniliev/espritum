@@ -277,6 +277,34 @@
   html[lang="bg"] .nav-item {
     font-family: 'Sofia Sans Condensed', var(--font-display, sans-serif) !important;
   }
+
+  /* ── CUSTOM NAV ICONS ── */
+  .nav-icon img {
+    width: 18px; height: 18px;
+    object-fit: contain;
+    filter: brightness(0.6);
+    transition: filter 0.2s;
+  }
+  .nav-item:hover .nav-icon img,
+  .nav-item.active .nav-icon img {
+    filter: brightness(1);
+  }
+  .nav-item.active .nav-icon img {
+    filter: brightness(1) sepia(1) saturate(5) hue-rotate(310deg);
+  }
+  /* Mobile bottom nav icons */
+  .mobile-nav-icon img {
+    width: 22px; height: 22px;
+    object-fit: contain;
+    filter: brightness(0.5);
+    transition: filter 0.2s;
+  }
+  .mobile-nav-item.active .mobile-nav-icon img {
+    filter: brightness(1) sepia(1) saturate(5) hue-rotate(310deg);
+  }
+  .mobile-nav-item:hover .mobile-nav-icon img {
+    filter: brightness(0.9);
+  }
 </style>
 <script src="site-config.js"></script>
 </head>
@@ -301,16 +329,16 @@
   <nav class="sidebar-nav">
 
     <div class="nav-section-label">Principal</div>
-    <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span> Dashboard</a>
-    <a class="nav-item nav-freemium" href="nutrition.html" data-feature="Nutrition"><span class="nav-icon">🍎</span> Nutrition<span class="nav-lock" id="lock-nutrition"></span></a>
-    <a class="nav-item nav-freemium" href="entrainement.html" data-feature="Entraînement"><span class="nav-icon">💪</span> Entraînement<span class="nav-lock" id="lock-entrainement"></span></a>
-    <a class="nav-item  active nav-freemium" href="progression.html" data-feature="Progression"><span class="nav-icon">📊</span> Progression<span class="nav-lock" id="lock-progression"></span></a>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon"><img src="icons/dashboard.png" alt="Dashboard"></span> Dashboard</a>
+    <a class="nav-item nav-freemium" href="nutrition.html" data-feature="Nutrition"><span class="nav-icon"><img src="icons/nutrition.png" alt="Nutrition"></span> Nutrition<span class="nav-lock" id="lock-nutrition"></span></a>
+    <a class="nav-item nav-freemium" href="entrainement.html" data-feature="Entraînement"><span class="nav-icon"><img src="icons/entrainement.png" alt="Entraînement"></span> Entraînement<span class="nav-lock" id="lock-entrainement"></span></a>
+    <a class="nav-item  active nav-freemium" href="progression.html" data-feature="Progression"><span class="nav-icon"><img src="icons/progression.png" alt="Progression"></span> Progression<span class="nav-lock" id="lock-progression"></span></a>
     <div class="nav-section-label">IA & Motivation</div>
-    <a class="nav-item" href="bodyfat.html"><span class="nav-icon">📸</span> Estimation corporelle</a>
-    <a class="nav-item nav-freemium" href="classement.html" data-feature="Classement"><span class="nav-icon">🏆</span> Classement<span class="nav-lock" id="lock-classement"></span></a>
+    <a class="nav-item" href="bodyfat.html"><span class="nav-icon"><img src="icons/estimation.png" alt="Estimation"></span> Estimation corporelle</a>
+    <a class="nav-item nav-freemium" href="classement.html" data-feature="Classement"><span class="nav-icon"><img src="icons/classement.png" alt="Classement"></span> Classement<span class="nav-lock" id="lock-classement"></span></a>
     <div class="nav-section-label">Compte</div>
-    <a class="nav-item" href="profil.html"><span class="nav-icon">👤</span> Profil</a>
-    <a class="nav-item" href="abonnement.html"><span class="nav-icon">⭐</span> Abonnement</a>
+    <a class="nav-item" href="profil.html"><span class="nav-icon"><img src="icons/profil.png" alt="Profil"></span> Profil</a>
+    <a class="nav-item" href="abonnement.html"><span class="nav-icon"><img src="icons/abonnement.png" alt="Abonnement"></span> Abonnement</a>
   </nav>
   <div class="sidebar-bottom">
     <div class="lang-selector" style="display:flex;gap:4px;align-items:center;">
@@ -733,23 +761,23 @@
 <!-- BARRE NAVIGATION MOBILE -->
 <nav class="mobile-nav">
   <a class="mobile-nav-item " href="dashboard.html">
-    <span class="mobile-nav-icon">🏠</span>
+    <span class="mobile-nav-icon"><img src="icons/dashboard.png" alt="Home"></span>
     <span class="mobile-nav-label" data-i18n="nav_dashboard">Home</span>
   </a>
   <a class="mobile-nav-item " href="nutrition.html">
-    <span class="mobile-nav-icon">🍎</span>
+    <span class="mobile-nav-icon"><img src="icons/nutrition.png" alt="Nutrition"></span>
     <span class="mobile-nav-label" data-i18n="nav_nutrition">Nutrition</span>
   </a>
   <a class="mobile-nav-item " href="entrainement.html">
-    <span class="mobile-nav-icon">💪</span>
+    <span class="mobile-nav-icon"><img src="icons/entrainement.png" alt="Training"></span>
     <span class="mobile-nav-label" data-i18n="nav_training">Training</span>
   </a>
   <a class="mobile-nav-item " href="bodyfat.html">
-    <span class="mobile-nav-icon">📸</span>
+    <span class="mobile-nav-icon"><img src="icons/estimation.png" alt="Analyse"></span>
     <span class="mobile-nav-label" data-i18n="nav_bodyfat">Analyse</span>
   </a>
   <a class="mobile-nav-item " href="profil.html">
-    <span class="mobile-nav-icon">👤</span>
+    <span class="mobile-nav-icon"><img src="icons/profil.png" alt="Profil"></span>
     <span class="mobile-nav-label" data-i18n="nav_profil">Profil</span>
   </a>
 </nav>
