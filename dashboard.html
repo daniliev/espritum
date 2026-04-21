@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
 <style>
   :root {
     --red: #c82828;
@@ -470,11 +471,7 @@
     }, 1500);
   });
 
-  const { createClient } = supabase;
-  const sb = createClient(
-    'https://lbxlvrtujzwlcnloheyh.supabase.co',
-    'sb_publishable_40dpIdYthKMZkJImacoKoQ_ftEeaPeg'
-  );
+  const sb = window.sb;
 
   const VERSETS = [
     { text: '"Je puis tout par celui qui me fortifie."', ref: 'Philippiens 4:13' },
@@ -495,7 +492,7 @@
   }
 
   async function init() {
-    // Timeout de sécurité — masque le loading après 3s quoi qu'il arrive
+    // Timeout de sécurité — masque le loading après 1s quoi qu'il arrive
     const safetyTimeout = setTimeout(hideLoading, 1000);
 
     try {
@@ -614,11 +611,6 @@
     container.innerHTML = muscles.length
       ? muscles.map(m => `<div class="muscle-tag">🔥 ${m}</div>`).join('')
       : '';
-  }
-. Commence par enregistrer ton premier repas — chaque pas compte."`;
-    else if (reste > 500) msg = `"Tu as consommé ${cal} kcal. Il te reste ${reste} kcal à atteindre. Reste discipliné !"`;
-    else if (reste > 0) msg = `"Excellent, ${prenom} ! Tu es à ${reste} kcal de ton objectif. Presque là !"`;
-    else msg = `"Objectif atteint, Guerrier ! Repose-toi bien ce soir — la récupération fait partie de la bataille."`;
   }
 
   function renderWeek() {

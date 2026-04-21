@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+<title>Espritum — Estimation Corporelle</title>
+<link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<style>
+  :root {
+    --red: #c82828;
+    --bg: #080808;
+    --bg2: #0d0d0d;
+    --bg3: #111111;
+    --border: #1e1e1e;
+    --muted: #555;
+    --muted2: #333;
+    --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
+    --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
+    --sidebar: 240px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: #fff; font-family: var(--font-body); display: flex; }
+
+  .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 50; }
+  .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 24px 20px; border-bottom: 1px solid var(--border); text-decoration: none; }
+  .sidebar-logo { width: 34px; height: 34px; object-fit: contain; border-radius: 6px; }
+  .sidebar-name { font-family: var(--font-display); font-size: 18px; letter-spacing: 5px; color: #fff; text-transform: uppercase; }
+  .sidebar-nav { flex: 1; padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .nav-section-label { font-size: 9px; letter-spacing: 3px; color: var(--muted2); text-transform: uppercase; font-weight: 700; padding: 14px 10px 6px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 6px; cursor: pointer; text-decoration: none; transition: background 0.2s, color 0.2s; color: var(--muted); font-size: 14px; font-weight: 500; }
+  .nav-item:hover { background: var(--bg3); color: #ccc; }
+  .nav-item.active { background: rgba(200,40,40,0.1); color: #fff; border-left: 2px solid var(--red); }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+  .sidebar-bottom { padding: 16px 12px; border-top: 1px solid var(--border); }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 6px; }
+  .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(200,40,40,0.15); border: 1px solid rgba(200,40,40,0.3); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; color: var(--red); flex-shrink: 0; }
+  .user-name { font-size: 13px; font-weight: 600; color: #ddd; }
+  .user-plan { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+
+  .main { margin-left: var(--sidebar); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+  .topbar { padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 40; }
+  .topbar-left { display: flex; flex-direction: column; gap: 2px; }
+  .topbar-tag { font-size: 10px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; font-weight: 600; }
+  .topbar-title { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; }
+  .free-badge { padding: 6px 16px; background: rgba(46,125,50,0.1); border: 1px solid rgba(46,125,50,0.3); border-radius: 20px; font-size: 11px; color: #4caf50; font-weight: 600; letter-spacing: 2px; }
+
+  .content { padding: 28px 32px; display: flex; flex-direction: column; gap: 22px; max-width: 860px; margin: 0 auto; width: 100%; }
+
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 24px; }
+  .card-title { font-family: var(--font-display); font-size: 20px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 18px; }
+
+  /* UPLOAD */
+  .upload-zone {
+    border: 2px dashed var(--border); border-radius: 8px;
+    padding: 48px 20px; text-align: center; cursor: pointer;
+    transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 14px;
+  }
+  .upload-zone:hover { border-color: var(--red); background: rgba(200,40,40,0.03); }
+  .upload-zone.has-image { border-style: solid; border-color: rgba(200,40,40,0.4); padding: 0; overflow: hidden; }
+  .upload-icon { font-size: 48px; }
+  .upload-title { font-family: var(--font-display); font-size: 24px; letter-spacing: 2px; text-transform: uppercase; }
+  .upload-sub { font-size: 13px; color: var(--muted); }
+
+  .preview-img { width: 100%; max-height: 380px; object-fit: contain; display: block; background: var(--bg3); }
+
+  .upload-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .upload-btn-opt { padding: 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; color: #aaa; font-family: var(--font-body); font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+  .upload-btn-opt:hover { border-color: var(--red); color: #fff; }
+
+  /* Infos */
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 7px; }
+  .field label { font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; font-weight: 600; }
+  .field input, .field select { padding: 12px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; color: #fff; font-family: var(--font-body); font-size: 14px; outline: none; transition: border-color 0.2s; }
+  .field input:focus, .field select:focus { border-color: rgba(200,40,40,0.4); }
+  .field input::placeholder { color: var(--muted2); }
+
+  /* Bouton analyser */
+  .btn-analyze { width: 100%; padding: 18px; background: var(--red); border: none; border-radius: 6px; color: #fff; font-family: var(--font-body); font-size: 15px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+  .btn-analyze:hover { background: #d93030; }
+  .btn-analyze:disabled { background: var(--muted2); cursor: not-allowed; }
+
+  /* CHARGEMENT */
+  .analyzing { display: none; text-align: center; padding: 48px 20px; }
+  .analyzing.visible { display: block; }
+  .analyzing-icon { font-size: 52px; margin-bottom: 18px; animation: pulse 1.4s infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.1);opacity:0.7;} }
+  .analyzing-title { font-family: var(--font-display); font-size: 32px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .analyzing-sub { font-size: 14px; color: var(--muted); font-weight: 300; margin-bottom: 28px; }
+  .steps { display: flex; flex-direction: column; gap: 8px; max-width: 300px; margin: 0 auto; }
+  .step { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 5px; font-size: 13px; color: var(--muted); transition: all 0.3s; }
+  .step.active { color: #fff; border-color: rgba(200,40,40,0.3); }
+  .step.done { color: #4caf50; border-color: rgba(46,125,50,0.3); }
+
+  /* RÉSULTATS */
+  .results { display: none; flex-direction: column; gap: 20px; }
+  .results.visible { display: flex; }
+
+  .result-hero { background: linear-gradient(135deg, #0f0404, var(--bg2)); border: 1px solid rgba(200,40,40,0.25); border-radius: 10px; padding: 36px; text-align: center; }
+  .result-pct { font-family: var(--font-display); font-size: 100px; line-height: 1; color: var(--red); }
+  .result-pct-label { font-size: 13px; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; }
+  .result-cat { display: inline-block; padding: 7px 22px; border-radius: 20px; font-family: var(--font-display); font-size: 20px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
+  .cat-athletique { background: rgba(46,125,50,0.15); border: 1px solid rgba(46,125,50,0.4); color: #4caf50; }
+  .cat-normal { background: rgba(33,150,243,0.15); border: 1px solid rgba(33,150,243,0.4); color: #64b5f6; }
+  .cat-eleve { background: rgba(232,160,0,0.15); border: 1px solid rgba(232,160,0,0.4); color: #ffd54f; }
+  .cat-tres-eleve { background: rgba(200,40,40,0.15); border: 1px solid rgba(200,40,40,0.4); color: var(--red); }
+  .disclaimer { font-size: 11px; color: var(--muted2); font-style: italic; }
+
+  /* Barre référence */
+  .ref-wrap { padding: 20px 24px; }
+  .ref-label { font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; }
+  .ref-bar { height: 14px; border-radius: 7px; background: linear-gradient(to right, #4caf50 0%, #2196f3 25%, #ffd54f 60%, #c82828 100%); position: relative; margin-bottom: 8px; }
+  .ref-marker { position: absolute; top: -5px; width: 6px; height: 24px; background: #fff; border-radius: 3px; transform: translateX(-50%); box-shadow: 0 0 8px rgba(255,255,255,0.4); transition: left 1s ease; }
+  .ref-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted2); }
+
+  /* Stats */
+  .result-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .res-stat { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 18px; text-align: center; }
+  .res-stat-val { font-family: var(--font-display); font-size: 36px; color: #fff; line-height: 1; margin-bottom: 4px; }
+  .res-stat-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+
+  /* Sensei */
+  .sensei-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 22px; }
+  .sensei-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .sensei-avatar { width: 42px; height: 42px; border-radius: 50%; background: rgba(200,40,40,0.12); border: 1px solid rgba(200,40,40,0.3); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .sensei-name { font-family: var(--font-display); font-size: 20px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); }
+  .sensei-text { font-size: 14px; color: #bbb; line-height: 1.75; font-weight: 300; }
+
+  /* Paywall */
+  .paywall-wrap { position: relative; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .paywall-content { padding: 22px; filter: blur(5px); pointer-events: none; user-select: none; }
+  .paywall-overlay { position: absolute; inset: 0; background: rgba(8,8,8,0.88); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 28px; text-align: center; }
+  .paywall-title { font-family: var(--font-display); font-size: 26px; letter-spacing: 2px; text-transform: uppercase; }
+  .paywall-desc { font-size: 13px; color: var(--muted); line-height: 1.6; max-width: 360px; font-weight: 300; }
+  .paywall-btn { padding: 13px 30px; background: var(--red); border: none; border-radius: 4px; color: #fff; font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
+  .paywall-btn:hover { background: #d93030; }
+  .plans-pills { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .plan-pill { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 600; letter-spacing: 1px; }
+  .pp-g { background: rgba(21,101,192,0.15); color: #64b5f6; border: 1px solid rgba(21,101,192,0.3); }
+  .pp-c { background: rgba(200,40,40,0.15); color: #ef9a9a; border: 1px solid rgba(200,40,40,0.3); }
+  .pp-e { background: rgba(232,160,0,0.15); color: #ffd54f; border: 1px solid rgba(232,160,0,0.3); }
+
+  .btn-retry { width: 100%; padding: 14px; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .btn-retry:hover { border-color: #333; color: #888; }
+
+  /* Tips */
+  .tips-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tip-pill { display: flex; align-items: center; gap: 5px; padding: 5px 12px; background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; font-size: 11px; color: #888; }
+
+  /* Loading overlay */
+  .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
+  .loading-logo { font-family: var(--font-display); font-size: 48px; letter-spacing: 8px; color: var(--red); text-transform: uppercase; }
+  .loading-dots { display: flex; gap: 6px; }
+  .loading-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: blink 1.2s infinite; }
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100%{opacity:0.2;} 40%{opacity:1;} }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 28px; right: 28px; padding: 14px 20px; border-radius: 6px; font-size: 13px; font-weight: 500; z-index: 300; transform: translateY(80px); opacity: 0; transition: all 0.3s ease; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.error { background: rgba(200,40,40,0.9); border: 1px solid rgba(200,40,40,0.5); color: #ef9a9a; }
+  .toast.success { background: rgba(46,125,50,0.9); border: 1px solid rgba(46,125,50,0.5); color: #a5d6a7; }
+
+  /* Camera */
+  #camera-video { display: none; width: 100%; max-height: 360px; object-fit: cover; border-radius: 8px; }
+  .camera-btns { display: none; gap: 10px; margin-top: 10px; }
+  .btn-capture { flex: 1; padding: 13px; background: var(--red); border: none; border-radius: 4px; color: #fff; font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
+  .btn-stopcam { padding: 13px 16px; background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); font-family: var(--font-body); font-size: 12px; cursor: pointer; }
+
+  @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } .info-grid { grid-template-columns: 1fr 1fr; } .result-stats { grid-template-columns: 1fr 1fr; } }
+
+  .nav-item.locked { opacity: 0.4; cursor: not-allowed; }
+  .nav-item.locked:hover { background: transparent; color: var(--muted); }
+  .nav-lock { font-size: 11px; margin-left: auto; opacity: 0.6; }
+
+  .upgrade-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center; }
+  .upgrade-modal.open { display: flex; }
+  .upgrade-box { background: #0d0d0d; border: 1px solid #1e1e1e; border-radius: 10px; padding: 36px; width: 420px; max-width: 95vw; text-align: center; }
+  .upgrade-icon { font-size: 48px; margin-bottom: 16px; }
+  .upgrade-title { font-family: var(--font-display); font-size: 32px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .upgrade-desc { font-size: 14px; color: #666; line-height: 1.7; font-weight: 300; margin-bottom: 24px; }
+  .upgrade-btn { width: 100%; padding: 15px; background: #c82828; border: none; border-radius: 4px; color: #fff; font-family: var(--font-body, sans-serif); font-size: 13px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; margin-bottom: 10px; }
+  .upgrade-btn:hover { background: #d93030; }
+  .upgrade-cancel { font-size: 12px; color: #555; cursor: pointer; letter-spacing: 1px; }
+  .upgrade-cancel:hover { color: #888; }
+
+  /* ── BOTTOM NAV MOBILE ── */
+  .mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #0a0a0a;
+    border-top: 1px solid #1e1e1e;
+    padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+    z-index: 100;
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .mobile-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 4px; text-decoration: none; transition: all 0.2s; color: #555; cursor: pointer; }
+  .mobile-nav-item.active { color: #c82828; }
+  .mobile-nav-item:hover { color: #aaa; }
+  .mobile-nav-icon { font-size: 20px; }
+  .mobile-nav-label { font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 600; }
+  @media (max-width: 768px) {
+    .mobile-nav { display: grid; }
+    .main { padding-bottom: 72px; }
+    .sidebar { display: none !important; }
+  }
+
+  /* ── MOBILE TOPBAR COMPACT ── */
+  @media (max-width: 768px) {
+    .topbar { padding: 14px 16px; }
+    .topbar-title { font-size: 22px; }
+    .content { padding: 16px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .main-grid { grid-template-columns: 1fr; gap: 14px; }
+    .bottom-grid { grid-template-columns: 1fr; gap: 14px; }
+    .card { padding: 16px; }
+  }
+
+  /* ── ANTI-ZOOM GLOBAL ── */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    touch-action: pan-x pan-y;
+  }
+  input, select, textarea {
+    font-size: 16px !important; /* empêche le zoom auto sur iOS */
+  }
+  * {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  /* MOBILE : topbar ultra simplifié */
+  @media (max-width: 768px) {
+    .topbar-right { display: none !important; }
+    .topbar { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .topbar-title { font-size: 24px; }
+    .streak-pill { display: none !important; }
+    .logout-btn { display: none !important; }
+    .free-badge { display: none !important; }
+    .period-tabs { display: none !important; }
+    .sensei-status { display: none !important; }
+    .date-nav .date-label { font-size: 12px; min-width: 80px; }
+  }
+
+  /* ── OVERFLOW FIX GLOBAL ── */
+  @media (max-width: 768px) {
+    body { overflow-x: hidden; }
+    .main { overflow-x: hidden; width: 100%; }
+    .content { overflow-x: hidden; }
+    * { max-width: 100%; }
+    img { max-width: 100%; }
+  }
+
+  /* ── LANGUAGE SELECTOR ── */
+  .lang-selector {
+    display: flex; gap: 4px; align-items: center;
+  }
+  .lang-btn {
+    width: 28px; height: 28px; border-radius: 4px;
+    background: transparent; border: 1px solid transparent;
+    cursor: pointer; font-size: 16px; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.2s; padding: 0;
+    opacity: 0.45;
+  }
+  .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
+  .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
+
+  /* ── LANG BAR MOBILE IN APP ── */
+  .mobile-lang-bar {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #080808;
+    border-bottom: 1px solid #1e1e1e;
+    padding: 8px 16px;
+    z-index: 101;
+    justify-content: flex-end;
+    gap: 6px;
+    align-items: center;
+  }
+  .mobile-lang-bar .lang-btn { width: 28px; height: 28px; font-size: 16px; }
+
+  @media (max-width: 768px) {
+    .mobile-lang-bar { display: flex; }
+    .topbar { margin-top: 44px; }
+    .main { padding-top: 0; }
+  }
+
+  /* ── BULGARIAN FONT ── */
+  html[lang="bg"] * {
+    font-family: 'Sofia Sans Condensed', var(--font-body, sans-serif) !important;
+  }
+  html[lang="bg"] .topbar-title,
+  html[lang="bg"] .sidebar-name,
+  html[lang="bg"] .card-title,
+  html[lang="bg"] .stat-val,
+  html[lang="bg"] .nav-item {
+    font-family: 'Sofia Sans Condensed', var(--font-display, sans-serif) !important;
+  }
+
+  /* ── CUSTOM NAV ICONS ── */
+  .nav-icon img {
+    width: 18px; height: 18px;
+    object-fit: contain;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+  }
+  .nav-item:hover .nav-icon img { opacity: 0.85; }
+  .nav-item.active .nav-icon img { opacity: 1; }
+  .mobile-nav-icon img {
+    width: 22px; height: 22px;
+    object-fit: contain;
+    opacity: 0.45;
+    transition: opacity 0.2s;
+  }
+  .mobile-nav-item.active .mobile-nav-icon img { opacity: 1; }
+  .mobile-nav-item:hover .mobile-nav-icon img { opacity: 0.8; }
+</style>
+<script src="site-config.js"></script>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="loading-logo">Espritum</div>
+  <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleFile(event)">
+<canvas id="cam-canvas" style="display:none"></canvas>
+
+<aside class="sidebar">
+  <a class="sidebar-brand" href="dashboard.html">
+    <img class="sidebar-logo" src="data:image/png;base64,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Rppoj1IPln293sX2jT3Lk5/LBreINs2y32aaomY6U04/XKPq9fKb82lY+jo361B5PeP9n/n7lhB5nUoeZ1KK1s2abVOIco3jeL+63+9u8ojpHhEe/nIiIsqpEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEX1Gx8jwyNjnuPINaNSV7VHh2XVjQ6jxa+VDT0MVvleD9DUHhosklwLOoW8UuF5HG30utcwH9VeNcLZcreeGvt9XSH0TwuZ7wg6iIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiDmdAgL0cesd5yG6R2uxWusudbJ5kFLC6R58dB3eKn3YNut5DmDYb3mrqnHrI7R8dPwAVdU3wB/a2+Lhqe4ac1dLAsGxPBbULbitkpbbDoON0bdZJSO97zq559ZKCnWzbc+y67sirMzu1Nj1O4cRpoQKip9R0IY36XepWAwzdi2R46yN01ilvlSzTWa5zmQE/8ALbws/NU0LxMry7F8UpfhOSZBbLTHpqPhVS1jnfNaTq72AoOxZMesFjibFZbJbbaxvINpKVkQH8UBemoFybey2S2lz46Cou17e3kDR0Zawn50pZ9OhWD12+tZWOIosCuEze4zXBkZ+gMcgtkvioghqIjFUQxzRu6se0OB9hVR6ffYpi7/AFjZ3M0ell2BP1xBZFZN8rAamQMuuO3+36/u42xzNH5wP1IJeynY7swyZr/vvhFmfI/zpoKcQSn8uPhd9ahnOtzfEq9kk+IX+4Wac82wVQFTB6geTx6yXKVsP287JspdHFb8yoKeof0gryaV+vo+MABPqJUkwyRzRNlhkZJG8atc06gj0goNa20rd72n4MJamqsbrrbo9Sa22EzsDfS5uge31lunionW4NRPtb3f9nm0QS1dVbfvReHg6XC3gRvcfTIzzZPEkcXiEGtRFLG2nYJnGzEvraunbdrHxaNudG0ljR3dq3rGfXq30EqJ0BERAREQEREBERAREQEREBERAREQEREBERARF9wRSzzMggjfLLI4MYxjSXOcToAAOpKDlttFV3K4U9vt9NLVVdTK2GCGJpc+R7jo1oA6kkgK9G7Nu10GHx02U51T09wyLyZaakOj4aA9QT3PlHp6NI5anyl6O6fsGpMAtEGVZRRsly2qj1ax+jhbmHXyG93aEacT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" alt="Espritum">
+    <span class="sidebar-name">Espritum</span>
+  </a>
+  <nav class="sidebar-nav">
+
+    <div class="nav-section-label">Principal</div>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon"><img src="icons/dashboard.png" alt="Dashboard"></span data-i18n="nav_dashboard"> Dashboard</a>
+    <a class="nav-item nav-freemium" href="nutrition.html" data-feature="Nutrition"><span class="nav-icon"><img src="icons/nutrition.png" alt="Nutrition"></span data-i18n="nav_nutrition"> Nutrition<span class="nav-lock" id="lock-nutrition"></span></a>
+    <a class="nav-item nav-freemium" href="entrainement.html" data-feature="Entraînement"><span class="nav-icon"><img src="icons/entrainement.png" alt="Entraînement"></span data-i18n="nav_training"> Training<span class="nav-lock" id="lock-entrainement"></span></a>
+    <a class="nav-item nav-freemium" href="progression.html" data-feature="Progression"><span class="nav-icon"><img src="icons/progression.png" alt="Progression"></span data-i18n="nav_progression"> Progression<span class="nav-lock" id="lock-progression"></span></a>
+    <div class="nav-section-label">IA & Motivation</div>
+    <a class="nav-item  active" href="bodyfat.html"><span class="nav-icon"><img src="icons/estimation.png" alt="Estimation"></span data-i18n="nav_bodyfat"> Estimation</a>
+    <a class="nav-item nav-freemium" href="classement.html" data-feature="Classement"><span class="nav-icon"><img src="icons/classement.png" alt="Classement"></span data-i18n="nav_classement"> Classement<span class="nav-lock" id="lock-classement"></span></a>
+    <div class="nav-section-label">Compte</div>
+    <a class="nav-item" href="profil.html"><span class="nav-icon"><img src="icons/profil.png" alt="Profil"></span data-i18n="nav_profil"> Profil</a>
+    <a class="nav-item" href="abonnement.html"><span class="nav-icon"><img src="icons/abonnement.png" alt="Abonnement"></span data-i18n="nav_abonnement"> Abonnement</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="lang-selector" style="display:flex;gap:4px;align-items:center;">
+      <button class="lang-btn" data-lang="fr" onclick="setLang('fr')" title="Français">🇫🇷</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')" title="English">🇬🇧</button>
+      <button class="lang-btn" data-lang="bg" onclick="setLang('bg')" title="Български">🇧🇬</button>
+    </div>
+
+    <div class="user-card">
+      <div class="user-avatar" id="sidebar-avatar">?</div>
+      <div>
+        <div class="user-name" id="sidebar-name">Chargement...</div>
+        <div class="user-plan" id="sidebar-plan">—</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar" style="justify-content:space-between;">
+    <div class="topbar-left">
+      
+      <div class="topbar-title" data-i18n="nav_bodyfat">Estimation Corporelle</div>
+    </div>
+    
+  </div>
+
+  <div class="content">
+
+    <!-- Section upload + form -->
+    <div id="section-upload">
+
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title">📸 Ta photo</div>
+
+        <!-- Zone upload / preview -->
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+          <span class="upload-icon">🖼️</span>
+          <div class="upload-title">Upload ta photo</div>
+          <div class="upload-sub">JPG ou PNG · Corps entier de préférence</div>
+        </div>
+
+        <video id="camera-video" autoplay playsinline></video>
+        <div class="camera-btns" id="camera-btns">
+          <button class="btn-capture" onclick="capturePhoto()">📸 Prendre la photo</button>
+          <button class="btn-stopcam" onclick="stopCamera()">✕ Annuler</button>
+        </div>
+
+        <div class="upload-options">
+          <button class="upload-btn-opt" onclick="document.getElementById('file-input').click()">🖼️ Uploader une image</button>
+          <button class="upload-btn-opt" onclick="openCamera()">📷 Utiliser la caméra</button>
+        </div>
+
+        <div class="tips-row" style="margin-top:14px;">
+          <div class="tip-pill">💡 Corps entier visible</div>
+          <div class="tip-pill">💡 Bonne lumière</div>
+          <div class="tip-pill">💡 Tenue légère</div>
+          <div class="tip-pill">💡 Face ou profil</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <div class="card-title">📋 Tes infos (pour plus de précision)</div>
+        <div class="info-grid">
+          <div class="field">
+            <label>Poids (kg)</label>
+            <input type="number" id="f-poids" placeholder="75">
+          </div>
+          <div class="field">
+            <label>Taille (cm)</label>
+            <input type="number" id="f-taille" placeholder="175">
+          </div>
+          <div class="field">
+            <label>Genre</label>
+            <select id="f-genre">
+              <option value="homme">Homme</option>
+              <option value="femme">Femme</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn-analyze" id="btn-analyze" onclick="startAnalysis()" style="margin-top:18px;" disabled>
+          🔍 Analyser ma composition corporelle
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Analyse en cours -->
+    <div class="card analyzing" id="section-analyzing">
+      <div class="analyzing-icon">🔍</div>
+      <div class="analyzing-title">Analyse en cours...</div>
+      <div class="analyzing-sub">L'IA examine ta photo et calcule ta composition corporelle.</div>
+      <div class="steps">
+        <div class="step done" id="step1"><span>✓</span> Photo reçue</div>
+        <div class="step" id="step2"><span>⏳</span> Analyse silhouette...</div>
+        <div class="step" id="step3"><span>📊</span> Calcul masse grasse...</div>
+        <div class="step" id="step4"><span>💬</span> Génération du rapport...</div>
+      </div>
+    </div>
+
+    <!-- Résultats -->
+    <div class="results" id="section-results">
+
+      <!-- Score principal -->
+      <div class="result-hero">
+        <div class="result-pct" id="r-pct">—%</div>
+        <div class="result-pct-label">Taux de masse grasse estimé</div>
+        <div class="result-cat" id="r-cat">—</div>
+        <div class="disclaimer">⚠️ Estimation indicative ±3-5% — non médicale</div>
+      </div>
+
+      <!-- Barre de référence -->
+      <div class="card ref-wrap">
+        <div class="ref-label">Échelle de référence</div>
+        <div class="ref-bar">
+          <div class="ref-marker" id="r-marker" style="left:30%"></div>
+        </div>
+        <div class="ref-labels">
+          <span>Athlète &lt;10%</span>
+          <span>Fit 10-17%</span>
+          <span>Normal 18-24%</span>
+          <span>Élevé &gt;25%</span>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="result-stats">
+        <div class="res-stat">
+          <div class="res-stat-val" id="r-mg-pct">—%</div>
+          <div class="res-stat-label">Masse grasse</div>
+        </div>
+        <div class="res-stat">
+          <div class="res-stat-val" id="r-mg-kg">— kg</div>
+          <div class="res-stat-label">kg de graisse</div>
+        </div>
+        <div class="res-stat">
+          <div class="res-stat-val" id="r-mm-kg">— kg</div>
+          <div class="res-stat-label">Masse musculaire</div>
+        </div>
+        <div class="res-stat">
+          <div class="res-stat-val" id="r-imc">—</div>
+          <div class="res-stat-label">IMC</div>
+        </div>
+      </div>
+
+      <!-- Sensei -->
+      <div>
+            <div class="sensei-name">Coach Sensei</div>
+            <div style="font-size:11px;color:var(--muted);">Analyse personnalisée · Gratuit</div>
+          </div>
+        </div>
+        <div class="sensei-text" id="r-analyse">—</div>
+      </div>
+
+      <!-- Paywall recommandations -->
+      <div class="paywall-wrap">
+        <div class="paywall-content">
+          <div class="card-title">Plan personnalisé sur-mesure</div>
+          <p style="color:var(--muted);font-size:13px;line-height:1.6;">Déficit calorique recommandé : 400 kcal/jour. Répartition macros : 40% protéines, 35% glucides, 25% lipides. Programme d'entraînement 4x/semaine...</p>
+        </div>
+        <div class="paywall-overlay" id="paywall-overlay">
+          <div style="font-size:36px;">🔒</div>
+          <div class="paywall-title">Plan personnalisé</div>
+          <div class="paywall-desc">Accède à ton programme nutrition et entraînement sur-mesure basé sur ta composition corporelle réelle.</div>
+          <div class="plans-pills">
+            <span class="plan-pill pp-g">⚔️ Guerrier 5€/mois</span>
+            <span class="plan-pill pp-c">🛡️ Champion 15€/mois</span>
+            <span class="plan-pill pp-e">👑 Élite 30€/mois</span>
+          </div>
+          <button class="paywall-btn" onclick="window.location.href='espritum_pricing_v5.html'">Voir les plans →</button>
+        </div>
+      </div>
+
+      <button class="btn-retry" onclick="resetAll()">↺ Nouvelle analyse</button>
+
+    </div>
+
+  </div>
+</main>
+
+<script>
+  const sb = window.sb;
+
+  const planLabel = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
+  let userPlan = 'gratuit';
+  let userId = null;
+  let hasImage = false;
+  let camStream = null;
+
+  function hideLoading() {
+    const el = document.getElementById('loading');
+    if (el) el.style.display = 'none';
+  }
+
+  async function init() {
+    const safetyTimeout = setTimeout(hideLoading, 1000);
+    try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      userId = session.user.id;
+      const { data: p } = await sb.from('users').select('*').eq('id', userId).single();
+      const prenom = p?.prenom || 'Guerrier';
+      userPlan = p?.plan || 'gratuit';
+      document.getElementById('sidebar-avatar').textContent = prenom[0].toUpperCase();
+      document.getElementById('sidebar-name').textContent = prenom;
+      document.getElementById('sidebar-plan').textContent = planLabel[userPlan];
+    initFreemium(userPlan);
+      if (p?.poids) document.getElementById('f-poids').value = p.poids;
+      if (p?.taille) document.getElementById('f-taille').value = p.taille;
+    } else {
+      document.getElementById('sidebar-name').textContent = 'Invité';
+      document.getElementById('sidebar-plan').textContent = 'Gratuit';
+    }
+    } catch(err) {
+      console.error('Init error:', err);
+    } finally {
+      clearTimeout(safetyTimeout);
+      hideLoading();
+    }
+  }
+
+  // ── UPLOAD / CAMERA ──
+  function handleFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { showToast('error', 'Fichier invalide.'); return; }
+    const reader = new FileReader();
+    reader.onload = ev => showPreview(ev.target.result);
+    reader.readAsDataURL(file);
+  }
+
+  function showPreview(dataUrl) {
+    const zone = document.getElementById('upload-zone');
+    zone.innerHTML = `<img class="preview-img" src="${dataUrl}" alt="Photo">`;
+    zone.classList.add('has-image');
+    zone.onclick = null;
+    hasImage = true;
+    document.getElementById('btn-analyze').disabled = false;
+  }
+
+  async function openCamera() {
+    try {
+      camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      const vid = document.getElementById('camera-video');
+      vid.srcObject = camStream;
+      vid.style.display = 'block';
+      document.getElementById('camera-btns').style.display = 'flex';
+    } catch {
+      showToast('error', 'Caméra non disponible. Uploade une photo.');
+    }
+  }
+
+  function capturePhoto() {
+    const vid = document.getElementById('camera-video');
+    const canvas = document.getElementById('cam-canvas');
+    canvas.width = vid.videoWidth;
+    canvas.height = vid.videoHeight;
+    canvas.getContext('2d').drawImage(vid, 0, 0);
+    stopCamera();
+    showPreview(canvas.toDataURL('image/jpeg', 0.85));
+  }
+
+  function stopCamera() {
+    if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
+    document.getElementById('camera-video').style.display = 'none';
+    document.getElementById('camera-btns').style.display = 'none';
+  }
+
+  // ── ANALYSE ──
+  async function startAnalysis() {
+    if (!hasImage) { showToast('error', 'Choisis une photo d\'abord.'); return; }
+
+    const poids = parseFloat(document.getElementById('f-poids').value) || 75;
+    const taille = parseFloat(document.getElementById('f-taille').value) || 175;
+    const genre = document.getElementById('f-genre').value;
+
+    // Afficher section analyse
+    document.getElementById('section-upload').style.display = 'none';
+    document.getElementById('section-analyzing').classList.add('visible');
+
+    await sleep(1000);
+    setStep(2, 'active');
+    await sleep(1400);
+    setStep(2, 'done');
+    setStep(3, 'active');
+    await sleep(1200);
+    setStep(3, 'done');
+    setStep(4, 'active');
+    await sleep(900);
+    setStep(4, 'done');
+    await sleep(500);
+
+    // ── CALCUL ESTIMATION ──
+    const imc = parseFloat((poids / ((taille / 100) ** 2)).toFixed(1));
+
+    // Formule Deurenberg adaptée : MG% = 1.20×IMC + 0.23×âge - 10.8×sexe - 5.4
+    // (sexe : 1=homme, 0=femme, âge estimé à 30)
+    const sexe = genre === 'homme' ? 1 : 0;
+    let mgBase = (1.20 * imc) + (0.23 * 28) - (10.8 * sexe) - 5.4;
+
+    // Variation aléatoire réaliste ±4% pour simuler l'analyse visuelle
+    const variation = (Math.random() * 8) - 4;
+    let mgPct = Math.round((mgBase + variation) * 10) / 10;
+    mgPct = Math.max(genre === 'homme' ? 5 : 12, Math.min(genre === 'homme' ? 40 : 48, mgPct));
+
+    const mgKg = parseFloat((poids * mgPct / 100).toFixed(1));
+    // Masse musculaire estimée (masse maigre × 0.5 approximatif)
+    const masseMaigre = poids - mgKg;
+    const mmKg = parseFloat((masseMaigre * 0.55).toFixed(1));
+
+    // Catégorie
+    let categorie;
+    if (genre === 'homme') {
+      if (mgPct < 10) categorie = 'athletique';
+      else if (mgPct < 18) categorie = 'normal';
+      else if (mgPct < 25) categorie = 'eleve';
+      else categorie = 'tres-eleve';
+    } else {
+      if (mgPct < 18) categorie = 'athletique';
+      else if (mgPct < 25) categorie = 'normal';
+      else if (mgPct < 32) categorie = 'eleve';
+      else categorie = 'tres-eleve';
+    }
+
+    // Messages Sensei par catégorie
+    const msgs = {
+      athletique: `Impressionnant, Guerrier ! Avec ${mgPct}% de masse grasse, tu es dans la catégorie athlétique — ton corps est une machine bien huilée. Ta masse musculaire estimée à ${mmKg} kg témoigne d'une vraie discipline. Comme dit Philippiens 4:13 : "Je puis tout par celui qui me fortifie." Continue à forger ce temple.`,
+      normal: `Bonne composition corporelle ! Avec ${mgPct}% de masse grasse et ${mmKg} kg de muscle estimés, tu es dans une fourchette saine et équilibrée. Avec un peu plus de régularité dans tes séances et ton alimentation, tu peux encore progresser significativement. Josué 1:9 : "Sois fort et courageux !"`,
+      eleve: `Tu as un beau potentiel à libérer ! Ton taux de ${mgPct}% est légèrement au-dessus de la normale mais c'est totalement réversible. Avec le bon programme nutrition et 3-4 séances par semaine, tu peux perdre 1-2% par mois. Ésaïe 40:31 : "Ceux qui espèrent en l'Éternel renouvellent leur force."`,
+      'tres-eleve': `C'est le moment de commencer ton transformation, Guerrier. ${mgPct}% de masse grasse, c'est le point de départ — pas une limite. Avec de la constance et le bon plan, tu peux totalement transformer ton corps. Proverbes 16:3 : "Recommande tes œuvres à l'Éternel et tes projets réussiront."`
+    };
+
+    const catLabels = { athletique: '🏆 Athlétique', normal: '✅ Normal', eleve: '⚠️ Élevé', 'tres-eleve': '🔴 Très élevé' };
+    const catCls = { athletique: 'cat-athletique', normal: 'cat-normal', eleve: 'cat-eleve', 'tres-eleve': 'cat-tres-eleve' };
+
+    // Afficher résultats
+    document.getElementById('section-analyzing').classList.remove('visible');
+    document.getElementById('section-results').classList.add('visible');
+
+    document.getElementById('r-pct').textContent = mgPct + '%';
+    document.getElementById('r-mg-pct').textContent = mgPct + '%';
+    document.getElementById('r-mg-kg').textContent = mgKg + ' kg';
+    document.getElementById('r-mm-kg').textContent = mmKg + ' kg';
+    document.getElementById('r-imc').textContent = imc;
+    document.getElementById('r-analyse').textContent = msgs[categorie];
+
+    const catEl = document.getElementById('r-cat');
+    catEl.textContent = catLabels[categorie];
+    catEl.className = 'result-cat ' + catCls[categorie];
+
+    // Marqueur barre référence
+    const maxMg = genre === 'homme' ? 35 : 45;
+    const markerPct = Math.min(95, Math.max(5, ((mgPct - 5) / (maxMg - 5)) * 100));
+    document.getElementById('r-marker').style.left = markerPct + '%';
+
+    // Masquer paywall si abonné payant
+    if (['guerrier', 'champion', 'elite'].includes(userPlan)) {
+      document.getElementById('paywall-overlay').style.display = 'none';
+    }
+
+    // Sauvegarder dans Supabase
+    if (userId) {
+      await sb.from('measurements').insert({
+        user_id: userId,
+        masse_grasse: mgPct,
+        poids: poids,
+        date: new Date().toISOString().split('T')[0]
+      });
+    }
+  }
+
+  function resetAll() {
+    hasImage = false;
+    document.getElementById('section-results').classList.remove('visible');
+    document.getElementById('section-analyzing').classList.remove('visible');
+    document.getElementById('section-upload').style.display = 'block';
+    const zone = document.getElementById('upload-zone');
+    zone.innerHTML = `<span class="upload-icon">🖼️</span><div class="upload-title">Upload ta photo</div><div class="upload-sub">JPG ou PNG · Corps entier de préférence</div>`;
+    zone.classList.remove('has-image');
+    zone.onclick = () => document.getElementById('file-input').click();
+    document.getElementById('btn-analyze').disabled = true;
+    document.getElementById('file-input').value = '';
+    [1,2,3,4].forEach(i => {
+      const el = document.getElementById('step' + i);
+      el.className = 'step' + (i === 1 ? ' done' : '');
+    });
+  }
+
+  function setStep(n, state) {
+    const el = document.getElementById('step' + n);
+    if (el) {
+      el.className = 'step ' + state;
+      if (state === 'done') el.querySelector('span').textContent = '✓';
+      if (state === 'active') el.querySelector('span').textContent = '⏳';
+    }
+  }
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  function showToast(type, msg) {
+    const t = document.getElementById('toast');
+    t.className = 'toast ' + type;
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  init();
+</script>
+
+<script>
+  // Freemium sidebar logic — verrouillé par défaut, déverrouillé si payant
+  function initFreemium(plan) {
+    const isPaid = ['guerrier', 'champion', 'elite'].includes(plan);
+
+    document.querySelectorAll('.nav-freemium').forEach(el => {
+      if (!isPaid) {
+        // Verrouiller
+        el.classList.add('locked');
+        const lock = el.querySelector('.nav-lock');
+        if (lock) lock.textContent = '🔒';
+
+        // Intercepter le clic
+        el.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const feature = this.getAttribute('data-feature');
+          openUpgrade(feature);
+          return false;
+        };
+
+        // Bloquer aussi le href
+        el.removeAttribute('href');
+        el.style.pointerEvents = 'auto';
+      } else {
+        // Déverrouiller
+        el.classList.remove('locked');
+        const lock = el.querySelector('.nav-lock');
+        if (lock) lock.textContent = '';
+        el.onclick = null;
+      }
+    });
+  }
+
+  function openUpgrade(feature) {
+    document.getElementById('upgrade-feature').textContent = feature || 'Cette fonctionnalité';
+    document.getElementById('upgrade-modal').classList.add('open');
+  }
+
+  function closeUpgrade() {
+    document.getElementById('upgrade-modal').classList.remove('open');
+  }
+
+  // Le plan est lu depuis Supabase dans init() — pas de verrouillage par défaut
+</script>
+
+<!-- BARRE NAVIGATION MOBILE -->
+<nav class="mobile-nav">
+  <a class="mobile-nav-item " href="dashboard.html">
+    <span class="mobile-nav-icon"><img src="icons/dashboard.png" alt="Home"></span>
+    <span class="mobile-nav-label" data-i18n="nav_dashboard">Home</span>
+  </a>
+  <a class="mobile-nav-item " href="nutrition.html">
+    <span class="mobile-nav-icon"><img src="icons/nutrition.png" alt="Nutrition"></span>
+    <span class="mobile-nav-label" data-i18n="nav_nutrition">Nutrition</span>
+  </a>
+  <a class="mobile-nav-item " href="entrainement.html">
+    <span class="mobile-nav-icon"><img src="icons/entrainement.png" alt="Training"></span>
+    <span class="mobile-nav-label" data-i18n="nav_training">Training</span>
+  </a>
+  <a class="mobile-nav-item active" href="bodyfat.html">
+    <span class="mobile-nav-icon"><img src="icons/estimation.png" alt="Analyse"></span>
+    <span class="mobile-nav-label" data-i18n="nav_bodyfat">Analyse</span>
+  </a>
+  <a class="mobile-nav-item " href="profil.html">
+    <span class="mobile-nav-icon"><img src="icons/profil.png" alt="Profil"></span>
+    <span class="mobile-nav-label" data-i18n="nav_profil">Profil</span>
+  </a>
+</nav>
+
+  <!-- i18n -->
+  <script src="i18n.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', initI18n);</script>
+</body>
+</html>

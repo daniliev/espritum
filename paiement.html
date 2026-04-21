@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
 <style>
   :root {
@@ -354,11 +355,7 @@
 </div>
 
 <script>
-  const { createClient } = supabase;
-  const sb = createClient(
-    'https://lbxlvrtujzwlcnloheyh.supabase.co',
-    'sb_publishable_40dpIdYthKMZkJImacoKoQ_ftEeaPeg'
-  );
+  const sb = window.sb;
 
   // Stripe
   const stripe = Stripe('pk_test_51TLk5xCiYumIwbBh4lvCNsOEswvAsqwY9GjXQ98iIhSgqr2nhOVGS3bpJhG7r3Xm2TWd3JggitNtIG0b9sjbdmes00kDWX7SoT');
@@ -383,21 +380,18 @@
   cardElement.on('focus', () => document.getElementById('card-element').classList.add('focused'));
   cardElement.on('blur', () => document.getElementById('card-element').classList.remove('focused'));
 
-  // Données plans
+  // Données plans (côté affichage uniquement — la source de vérité des priceId est côté backend)
   const plans = {
     guerrier: {
       icon: '⚔️', name: 'Guerrier', price: 5,
-      priceId: 'price_1TMMvzCiYumIwbBhOK63ZSsx',
       features: ['Suivi nutrition complet', '3 plans d\'entraînement', 'Historique 30 jours', 'Badges & niveaux']
     },
     champion: {
       icon: '🛡️', name: 'Champion', price: 15,
-      priceId: 'price_1TMMwZCiYumIwbBhv6ck8nsR',
       features: ['Coach IA Sensei illimité', 'Scan de repas caméra', 'Suivi mensurations', 'Classement communautaire']
     },
     elite: {
       icon: '👑', name: 'Élite', price: 30,
-      priceId: 'price_1TMMwwCiYumIwbBhtygo0UmK',
       features: ['Plan nutrition 100% IA', 'Analyse morphologique', 'Accès prioritaire nouveautés', 'Badge Élite exclusif']
     }
   };
@@ -441,49 +435,83 @@
     errorMsg.style.display = 'none';
 
     try {
-      // Créer PaymentMethod avec Stripe
-      const { paymentMethod, error } = await stripe.createPaymentMethod({
+      // 1) Tokenize la carte
+      const { paymentMethod, error: pmError } = await stripe.createPaymentMethod({
         type: 'card',
         card: cardElement,
         billing_details: { email: userEmail }
       });
 
-      if (error) {
-        showError(traduireErreur(error.message));
-        btn.disabled = false;
-        btn.textContent = '🔒 Payer maintenant';
+      if (pmError) {
+        showError(traduireErreur(pmError.message));
+        resetBtn(btn);
         return;
       }
 
-      // Sauvegarder l'abonnement dans Supabase
-      await sb.from('subscriptions').insert({
-        user_id: userId,
-        plan: planKey,
-        statut: 'active',
-        stripe_customer_id: paymentMethod.id,
-        montant: plan.price,
-        debut: new Date().toISOString(),
-        prochain_paiement: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-      });
+      // 2) Récupère le JWT pour authentifier l'appel Edge Function
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { window.location.href = 'inscription.html'; return; }
 
-      // Mettre à jour le plan dans users
-      await sb.from('users').update({ plan: planKey }).eq('id', userId);
+      // 3) Crée la Subscription côté serveur via Edge Function
+      //    L'Edge Function crée Customer + Subscription + renvoie client_secret
+      const res = await fetch(
+        'https://lbxlvrtujzwlcnloheyh.supabase.co/functions/v1/create-subscription',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+            'apikey': 'sb_publishable_40dpIdYthKMZkJImacoKoQ_ftEeaPeg',
+          },
+          body: JSON.stringify({
+            plan: planKey,
+            payment_method_id: paymentMethod.id
+          })
+        }
+      );
 
-      // Afficher succès
+      const result = await res.json();
+
+      if (!res.ok || result.error) {
+        showError(traduireErreur(result.error || `Erreur serveur (${res.status})`));
+        resetBtn(btn);
+        return;
+      }
+
+      // 4) Si Stripe demande une action (3D Secure), on la déclenche ici
+      if (result.status === 'requires_action' && result.client_secret) {
+        const { error: confirmError } = await stripe.confirmCardPayment(result.client_secret);
+        if (confirmError) {
+          showError(traduireErreur(confirmError.message));
+          resetBtn(btn);
+          return;
+        }
+      } else if (result.status !== 'active' && result.status !== 'trialing' && result.status !== 'succeeded') {
+        showError('Paiement non finalisé. Statut : ' + result.status);
+        resetBtn(btn);
+        return;
+      }
+
+      // 5) Succès — la base est mise à jour par le webhook Stripe côté serveur
+      //    On affiche juste la confirmation à l'utilisateur
       document.getElementById('payment-form').style.display = 'none';
       document.getElementById('success-screen').style.display = 'block';
 
-      // Étape 3 active
       document.querySelectorAll('.step-item')[1].classList.remove('active');
       document.querySelectorAll('.step-item')[1].classList.add('done');
       document.querySelectorAll('.step-item')[1].querySelector('.step-num').textContent = '✓';
       document.querySelectorAll('.step-item')[2].classList.add('active');
 
     } catch (err) {
+      console.error('Payment error:', err);
       showError('Une erreur est survenue. Réessaie.');
-      btn.disabled = false;
-      btn.textContent = '🔒 Payer maintenant';
+      resetBtn(btn);
     }
+  }
+
+  function resetBtn(btn) {
+    btn.disabled = false;
+    btn.textContent = '🔒 Payer maintenant';
   }
 
   function showError(msg) {
@@ -493,11 +521,13 @@
   }
 
   function traduireErreur(msg) {
+    if (!msg) return 'Une erreur est survenue.';
     if (msg.includes('card number')) return 'Numéro de carte invalide.';
     if (msg.includes('expir')) return 'Date d\'expiration invalide.';
     if (msg.includes('CVC')) return 'Code CVC invalide.';
     if (msg.includes('insufficient')) return 'Fonds insuffisants sur la carte.';
     if (msg.includes('declined')) return 'Carte refusée. Vérifie tes informations.';
+    if (msg.includes('authentication')) return 'Authentification 3D Secure échouée.';
     return msg;
   }
 

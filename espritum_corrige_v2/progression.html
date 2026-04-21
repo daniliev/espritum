@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+<title>Espritum — Progression</title>
+<link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --red: #c82828;
+    --bg: #080808;
+    --bg2: #0d0d0d;
+    --bg3: #111111;
+    --border: #1e1e1e;
+    --muted: #555;
+    --muted2: #333;
+    --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
+    --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
+    --sidebar: 240px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: #fff; font-family: var(--font-body); display: flex; }
+
+  .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 50; }
+  .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 24px 20px; border-bottom: 1px solid var(--border); text-decoration: none; }
+  .sidebar-logo { width: 34px; height: 34px; object-fit: contain; border-radius: 6px; }
+  .sidebar-name { font-family: var(--font-display); font-size: 18px; letter-spacing: 5px; color: #fff; text-transform: uppercase; }
+  .sidebar-nav { flex: 1; padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .nav-section-label { font-size: 9px; letter-spacing: 3px; color: var(--muted2); text-transform: uppercase; font-weight: 700; padding: 14px 10px 6px; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 6px; cursor: pointer; text-decoration: none; transition: background 0.2s, color 0.2s; color: var(--muted); font-size: 14px; font-weight: 500; }
+  .nav-item:hover { background: var(--bg3); color: #ccc; }
+  .nav-item.active { background: rgba(200,40,40,0.1); color: #fff; border-left: 2px solid var(--red); }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+  .sidebar-bottom { padding: 16px 12px; border-top: 1px solid var(--border); }
+  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 6px; }
+  .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(200,40,40,0.15); border: 1px solid rgba(200,40,40,0.3); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; color: var(--red); flex-shrink: 0; }
+  .user-name { font-size: 13px; font-weight: 600; color: #ddd; }
+  .user-plan { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+
+  .main { margin-left: var(--sidebar); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+  .topbar { padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 40; }
+  .topbar-left { display: flex; flex-direction: column; gap: 2px; }
+  .topbar-tag { font-size: 10px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; font-weight: 600; }
+  .topbar-title { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; }
+
+  .btn-add { padding: 10px 22px; background: var(--red); border: none; border-radius: 4px; color: #fff; font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+  .btn-add:hover { background: #d93030; }
+
+  .content { padding: 28px 32px; display: flex; flex-direction: column; gap: 22px; }
+
+  /* Stats hero */
+  .stats-hero { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+  .stat-hero-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 22px; transition: border-color 0.2s; }
+  .stat-hero-card:hover { border-color: #2a2a2a; }
+  .stat-hero-card.highlight { border-color: rgba(200,40,40,0.3); background: linear-gradient(135deg, #0f0404, var(--bg2)); }
+  .stat-hero-label { font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; font-weight: 600; margin-bottom: 12px; }
+  .stat-hero-val { font-family: var(--font-display); font-size: 48px; font-weight: 400; line-height: 1; color: #fff; margin-bottom: 4px; }
+  .stat-hero-unit { font-size: 18px; color: var(--muted); }
+  .stat-hero-sub { font-size: 12px; color: var(--muted2); margin-top: 6px; }
+  .stat-delta { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 10px; border-radius: 10px; margin-top: 8px; }
+  .delta-good { background: rgba(46,125,50,0.12); color: #4caf50; }
+  .delta-neutral { background: rgba(255,255,255,0.04); color: var(--muted); }
+
+  /* Charts */
+  .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 22px; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .card-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; }
+  .card-action { font-size: 11px; color: var(--red); letter-spacing: 1px; cursor: pointer; text-transform: uppercase; font-weight: 600; text-decoration: none; }
+
+  /* Mensurations */
+  .mensuration-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+  .mens-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 16px; text-align: center; }
+  .mens-icon { font-size: 20px; margin-bottom: 8px; }
+  .mens-label { font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+  .mens-val { font-family: var(--font-display); font-size: 28px; color: #fff; }
+  .mens-unit { font-size: 12px; color: var(--muted); }
+
+  /* Historique mesures */
+  .history-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .history-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; }
+  .history-date { font-size: 12px; color: var(--muted); }
+  .history-vals { display: flex; gap: 20px; }
+  .history-val { text-align: center; }
+  .history-num { font-family: var(--font-display); font-size: 18px; color: #fff; }
+  .history-lbl { font-size: 9px; color: var(--muted2); letter-spacing: 1px; text-transform: uppercase; }
+  .history-delete { font-size: 13px; color: var(--muted2); cursor: pointer; transition: color 0.2s; }
+  .history-delete:hover { color: var(--red); }
+
+  .empty-state { text-align: center; padding: 32px 20px; color: var(--muted); font-size: 14px; line-height: 1.7; font-weight: 300; }
+  .empty-icon { font-size: 32px; margin-bottom: 10px; }
+
+  /* Modal */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 28px; width: 440px; max-width: 95vw; }
+  .modal-title { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 22px; }
+  .modal-field { margin-bottom: 16px; }
+  .modal-label { font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 8px; }
+  .modal-input { width: 100%; padding: 13px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; color: #fff; font-family: var(--font-body); font-size: 14px; outline: none; transition: border-color 0.2s; }
+  .modal-input:focus { border-color: var(--red); }
+  .modal-input::placeholder { color: var(--muted2); }
+  .modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .modal-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 22px; }
+  .btn-cancel { flex: 1; padding: 13px; background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); font-family: var(--font-body); font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
+  .btn-cancel:hover { border-color: #333; color: #888; }
+  .btn-confirm { flex: 2; padding: 13px; background: var(--red); border: none; border-radius: 4px; color: #fff; font-family: var(--font-body); font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
+  .btn-confirm:hover { background: #d93030; }
+  .btn-confirm:disabled { background: var(--muted2); cursor: not-allowed; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 28px; right: 28px; padding: 14px 20px; border-radius: 6px; font-size: 13px; font-weight: 500; z-index: 300; transform: translateY(80px); opacity: 0; transition: all 0.3s ease; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: rgba(46,125,50,0.9); border: 1px solid rgba(46,125,50,0.5); color: #a5d6a7; }
+  .toast.error { background: rgba(200,40,40,0.9); border: 1px solid rgba(200,40,40,0.5); color: #ef9a9a; }
+
+  .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
+  .loading-logo { font-family: var(--font-display); font-size: 48px; letter-spacing: 8px; color: var(--red); text-transform: uppercase; }
+  .loading-dots { display: flex; gap: 6px; }
+  .loading-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: blink 1.2s infinite; }
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100% { opacity: 0.2; } 40% { opacity: 1; } }
+
+  @media (max-width: 1100px) {
+    .stats-hero { grid-template-columns: repeat(2, 1fr); }
+    .charts-grid { grid-template-columns: 1fr; }
+    .mensuration-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+  }
+
+  .nav-item.locked { opacity: 0.4; cursor: not-allowed; }
+  .nav-item.locked:hover { background: transparent; color: var(--muted); }
+  .nav-lock { font-size: 11px; margin-left: auto; opacity: 0.6; }
+
+  .upgrade-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center; }
+  .upgrade-modal.open { display: flex; }
+  .upgrade-box { background: #0d0d0d; border: 1px solid #1e1e1e; border-radius: 10px; padding: 36px; width: 420px; max-width: 95vw; text-align: center; }
+  .upgrade-icon { font-size: 48px; margin-bottom: 16px; }
+  .upgrade-title { font-family: var(--font-display); font-size: 32px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .upgrade-desc { font-size: 14px; color: #666; line-height: 1.7; font-weight: 300; margin-bottom: 24px; }
+  .upgrade-btn { width: 100%; padding: 15px; background: #c82828; border: none; border-radius: 4px; color: #fff; font-family: var(--font-body, sans-serif); font-size: 13px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; margin-bottom: 10px; }
+  .upgrade-btn:hover { background: #d93030; }
+  .upgrade-cancel { font-size: 12px; color: #555; cursor: pointer; letter-spacing: 1px; }
+  .upgrade-cancel:hover { color: #888; }
+
+  /* ── BOTTOM NAV MOBILE ── */
+  .mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #0a0a0a;
+    border-top: 1px solid #1e1e1e;
+    padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+    z-index: 100;
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .mobile-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 4px; text-decoration: none; transition: all 0.2s; color: #555; cursor: pointer; }
+  .mobile-nav-item.active { color: #c82828; }
+  .mobile-nav-item:hover { color: #aaa; }
+  .mobile-nav-icon { font-size: 20px; }
+  .mobile-nav-label { font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 600; }
+  @media (max-width: 768px) {
+    .mobile-nav { display: grid; }
+    .main { padding-bottom: 72px; }
+    .sidebar { display: none !important; }
+  }
+
+  /* ── MOBILE TOPBAR COMPACT ── */
+  @media (max-width: 768px) {
+    .topbar { padding: 14px 16px; }
+    .topbar-title { font-size: 22px; }
+    .content { padding: 16px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .main-grid { grid-template-columns: 1fr; gap: 14px; }
+    .bottom-grid { grid-template-columns: 1fr; gap: 14px; }
+    .card { padding: 16px; }
+  }
+
+  /* ── ANTI-ZOOM GLOBAL ── */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    touch-action: pan-x pan-y;
+  }
+  input, select, textarea {
+    font-size: 16px !important; /* empêche le zoom auto sur iOS */
+  }
+  * {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  /* MOBILE : topbar ultra simplifié */
+  @media (max-width: 768px) {
+    .topbar-right { display: none !important; }
+    .topbar { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .topbar-title { font-size: 24px; }
+    .streak-pill { display: none !important; }
+    .logout-btn { display: none !important; }
+    .free-badge { display: none !important; }
+    .period-tabs { display: none !important; }
+    .sensei-status { display: none !important; }
+    .date-nav .date-label { font-size: 12px; min-width: 80px; }
+  }
+
+  /* ── OVERFLOW FIX GLOBAL ── */
+  @media (max-width: 768px) {
+    body { overflow-x: hidden; }
+    .main { overflow-x: hidden; width: 100%; }
+    .content { overflow-x: hidden; }
+    * { max-width: 100%; }
+    img { max-width: 100%; }
+  }
+
+  /* ── LANGUAGE SELECTOR ── */
+  .lang-selector {
+    display: flex; gap: 4px; align-items: center;
+  }
+  .lang-btn {
+    width: 28px; height: 28px; border-radius: 4px;
+    background: transparent; border: 1px solid transparent;
+    cursor: pointer; font-size: 16px; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.2s; padding: 0;
+    opacity: 0.45;
+  }
+  .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
+  .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
+
+  /* ── LANG BAR MOBILE IN APP ── */
+  .mobile-lang-bar {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #080808;
+    border-bottom: 1px solid #1e1e1e;
+    padding: 8px 16px;
+    z-index: 101;
+    justify-content: flex-end;
+    gap: 6px;
+    align-items: center;
+  }
+  .mobile-lang-bar .lang-btn { width: 28px; height: 28px; font-size: 16px; }
+
+  @media (max-width: 768px) {
+    .mobile-lang-bar { display: flex; }
+    .topbar { margin-top: 44px; }
+    .main { padding-top: 0; }
+  }
+
+  /* ── BULGARIAN FONT ── */
+  html[lang="bg"] * {
+    font-family: 'Sofia Sans Condensed', var(--font-body, sans-serif) !important;
+  }
+  html[lang="bg"] .topbar-title,
+  html[lang="bg"] .sidebar-name,
+  html[lang="bg"] .card-title,
+  html[lang="bg"] .stat-val,
+  html[lang="bg"] .nav-item {
+    font-family: 'Sofia Sans Condensed', var(--font-display, sans-serif) !important;
+  }
+
+  /* ── CUSTOM NAV ICONS ── */
+  .nav-icon img {
+    width: 18px; height: 18px;
+    object-fit: contain;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+  }
+  .nav-item:hover .nav-icon img { opacity: 0.85; }
+  .nav-item.active .nav-icon img { opacity: 1; }
+  .mobile-nav-icon img {
+    width: 22px; height: 22px;
+    object-fit: contain;
+    opacity: 0.45;
+    transition: opacity 0.2s;
+  }
+  .mobile-nav-item.active .mobile-nav-icon img { opacity: 1; }
+  .mobile-nav-item:hover .mobile-nav-icon img { opacity: 0.8; }
+</style>
+<script src="site-config.js"></script>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="loading-logo">Espritum</div>
+  <div class="loading-dots">
+    <div class="loading-dot"></div>
+    <div class="loading-dot"></div>
+    <div class="loading-dot"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<aside class="sidebar">
+  <a class="sidebar-brand" href="dashboard.html">
+    <img class="sidebar-logo" src="data:image/png;base64,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Rppoj1IPln293sX2jT3Lk5/LBreINs2y32aaomY6U04/XKPq9fKb82lY+jo361B5PeP9n/n7lhB5nUoeZ1KK1s2abVOIco3jeL+63+9u8ojpHhEe/nIiIsqpEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEX1Gx8jwyNjnuPINaNSV7VHh2XVjQ6jxa+VDT0MVvleD9DUHhosklwLOoW8UuF5HG30utcwH9VeNcLZcreeGvt9XSH0TwuZ7wg6iIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiDmdAgL0cesd5yG6R2uxWusudbJ5kFLC6R58dB3eKn3YNut5DmDYb3mrqnHrI7R8dPwAVdU3wB/a2+Lhqe4ac1dLAsGxPBbULbitkpbbDoON0bdZJSO97zq559ZKCnWzbc+y67sirMzu1Nj1O4cRpoQKip9R0IY36XepWAwzdi2R46yN01ilvlSzTWa5zmQE/8ALbws/NU0LxMry7F8UpfhOSZBbLTHpqPhVS1jnfNaTq72AoOxZMesFjibFZbJbbaxvINpKVkQH8UBemoFybey2S2lz46Cou17e3kDR0Zawn50pZ9OhWD12+tZWOIosCuEze4zXBkZ+gMcgtkvioghqIjFUQxzRu6se0OB9hVR6ffYpi7/AFjZ3M0ell2BP1xBZFZN8rAamQMuuO3+36/u42xzNH5wP1IJeynY7swyZr/vvhFmfI/zpoKcQSn8uPhd9ahnOtzfEq9kk+IX+4Wac82wVQFTB6geTx6yXKVsP287JspdHFb8yoKeof0gryaV+vo+MABPqJUkwyRzRNlhkZJG8atc06gj0goNa20rd72n4MJamqsbrrbo9Sa22EzsDfS5uge31lunionW4NRPtb3f9nm0QS1dVbfvReHg6XC3gRvcfTIzzZPEkcXiEGtRFLG2nYJnGzEvraunbdrHxaNudG0ljR3dq3rGfXq30EqJ0BERAREQEREBERAREQEREBERAREQEREBERARF9wRSzzMggjfLLI4MYxjSXOcToAAOpKDlttFV3K4U9vt9NLVVdTK2GCGJpc+R7jo1oA6kkgK9G7Nu10GHx02U51T09wyLyZaakOj4aA9QT3PlHp6NI5anyl6O6fsGpMAtEGVZRRsly2qj1ax+jhbmHXyG93aEacT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" alt="Espritum">
+    <span class="sidebar-name">Espritum</span>
+  </a>
+  <nav class="sidebar-nav">
+
+    <div class="nav-section-label">Principal</div>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon"><img src="icons/dashboard.png" alt="Dashboard"></span data-i18n="nav_dashboard"> Dashboard</a>
+    <a class="nav-item nav-freemium" href="nutrition.html" data-feature="Nutrition"><span class="nav-icon"><img src="icons/nutrition.png" alt="Nutrition"></span data-i18n="nav_nutrition"> Nutrition<span class="nav-lock" id="lock-nutrition"></span></a>
+    <a class="nav-item nav-freemium" href="entrainement.html" data-feature="Entraînement"><span class="nav-icon"><img src="icons/entrainement.png" alt="Entraînement"></span data-i18n="nav_training"> Training<span class="nav-lock" id="lock-entrainement"></span></a>
+    <a class="nav-item  active nav-freemium" href="progression.html" data-feature="Progression"><span class="nav-icon"><img src="icons/progression.png" alt="Progression"></span data-i18n="nav_progression"> Progression<span class="nav-lock" id="lock-progression"></span></a>
+    <div class="nav-section-label">IA & Motivation</div>
+    <a class="nav-item" href="bodyfat.html"><span class="nav-icon"><img src="icons/estimation.png" alt="Estimation"></span data-i18n="nav_bodyfat"> Estimation</a>
+    <a class="nav-item nav-freemium" href="classement.html" data-feature="Classement"><span class="nav-icon"><img src="icons/classement.png" alt="Classement"></span data-i18n="nav_classement"> Classement<span class="nav-lock" id="lock-classement"></span></a>
+    <div class="nav-section-label">Compte</div>
+    <a class="nav-item" href="profil.html"><span class="nav-icon"><img src="icons/profil.png" alt="Profil"></span data-i18n="nav_profil"> Profil</a>
+    <a class="nav-item" href="abonnement.html"><span class="nav-icon"><img src="icons/abonnement.png" alt="Abonnement"></span data-i18n="nav_abonnement"> Abonnement</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="lang-selector" style="display:flex;gap:4px;align-items:center;">
+      <button class="lang-btn" data-lang="fr" onclick="setLang('fr')" title="Français">🇫🇷</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')" title="English">🇬🇧</button>
+      <button class="lang-btn" data-lang="bg" onclick="setLang('bg')" title="Български">🇧🇬</button>
+    </div>
+
+    <div class="user-card">
+      <div class="user-avatar" id="sidebar-avatar">?</div>
+      <div>
+        <div class="user-name" id="sidebar-name">Chargement...</div>
+        <div class="user-plan" id="sidebar-plan">—</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+  <div class="topbar" style="justify-content:space-between;">
+    <div class="topbar-left">
+      
+      <div class="topbar-title" data-i18n="nav_progression">Ma Progression</div>
+    </div>
+    <button class="btn-add" onclick="openModal()">+ Mesure du jour</button>
+  </div>
+
+  <div class="content">
+
+    <!-- Stats hero -->
+    <div class="stats-hero">
+      <div class="stat-hero-card highlight">
+        <div class="stat-hero-label">⚖️ Poids actuel</div>
+        <div class="stat-hero-val"><span id="hero-poids">—</span> <span class="stat-hero-unit">kg</span></div>
+        <div class="stat-hero-sub">Objectif : <span id="hero-poids-cible">—</span> kg</div>
+        <div class="stat-delta delta-good" id="hero-poids-delta">—</div>
+      </div>
+      <div class="stat-hero-card">
+        <div class="stat-hero-label">📸 Masse grasse</div>
+        <div class="stat-hero-val"><span id="hero-mg">—</span> <span class="stat-hero-unit">%</span></div>
+        <div class="stat-hero-sub">Dernière mesure</div>
+        <div class="stat-delta delta-good" id="hero-mg-delta">—</div>
+      </div>
+      <div class="stat-hero-card">
+        <div class="stat-hero-label">💪 Séances totales</div>
+        <div class="stat-hero-val"><span id="hero-seances">0</span></div>
+        <div class="stat-hero-sub">toutes séances confondues</div>
+      </div>
+      <div class="stat-hero-card">
+        <div class="stat-hero-label">📅 Mesures enregistrées</div>
+        <div class="stat-hero-val"><span id="hero-mesures">0</span></div>
+        <div class="stat-hero-sub">depuis le début</div>
+      </div>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="charts-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Évolution du poids</div>
+        </div>
+        <canvas id="weightChart" height="130"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Masse grasse</div>
+        </div>
+        <canvas id="fatChart" height="130"></canvas>
+      </div>
+    </div>
+
+    <!-- Mensurations dernière mesure -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Dernières mensurations</div>
+        <span class="card-action" onclick="openModal()">+ Nouvelle mesure</span>
+      </div>
+      <div class="mensuration-grid" id="mens-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--muted);font-size:14px;">Aucune mesure enregistrée</div>
+      </div>
+    </div>
+
+    <!-- Historique mesures -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Historique des mesures</div>
+      </div>
+      <div id="history-container">
+        <div class="empty-state">
+          <div class="empty-icon">📊</div>
+          Aucune mesure pour l'instant.<br>Ajoute ta première mesure du jour !
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-title">Nouvelle mesure</div>
+
+    <div class="modal-row">
+      <div class="modal-field">
+        <label class="modal-label">Poids (kg)</label>
+        <input class="modal-input" type="number" id="m-poids" placeholder="78.4" step="0.1">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Masse grasse (%)</label>
+        <input class="modal-input" type="number" id="m-mg" placeholder="18.2" step="0.1">
+      </div>
+    </div>
+
+    <div class="modal-row3">
+      <div class="modal-field">
+        <label class="modal-label">Taille (cm)</label>
+        <input class="modal-input" type="number" id="m-taille" placeholder="178">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Tour taille (cm)</label>
+        <input class="modal-input" type="number" id="m-taille-cm" placeholder="84">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Tour bras (cm)</label>
+        <input class="modal-input" type="number" id="m-bras" placeholder="38">
+      </div>
+    </div>
+
+    <div class="modal-row3">
+      <div class="modal-field">
+        <label class="modal-label">Cuisses (cm)</label>
+        <input class="modal-input" type="number" id="m-cuisses" placeholder="58">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Poitrine (cm)</label>
+        <input class="modal-input" type="number" id="m-poitrine" placeholder="102">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Hanches (cm)</label>
+        <input class="modal-input" type="number" id="m-hanches" placeholder="96">
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-confirm" id="btn-confirm" onclick="addMeasurement()">Enregistrer →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const sb = window.sb;
+
+  let userId = null;
+  let weightChart = null;
+  let fatChart = null;
+  const planLabel = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
+
+  function hideLoading() {
+    const el = document.getElementById('loading');
+    if (el) el.style.display = 'none';
+  }
+
+  async function init() {
+    const safetyTimeout = setTimeout(hideLoading, 1000);
+    try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { window.location.href = 'inscription.html'; return; }
+    userId = session.user.id;
+
+    const { data: profile } = await sb.from('users').select('*').eq('id', userId).single();
+    const prenom = profile?.prenom || 'Guerrier';
+
+    document.getElementById('sidebar-avatar').textContent = prenom[0].toUpperCase();
+    document.getElementById('sidebar-name').textContent = prenom;
+    document.getElementById('sidebar-plan').textContent = planLabel[profile?.plan || 'gratuit'];
+    initFreemium(profile?.plan || 'gratuit');
+
+    if (profile?.poids_cible) document.getElementById('hero-poids-cible').textContent = profile.poids_cible;
+
+    initCharts();
+    await loadData(profile);
+    } catch(err) {
+      console.error('Init error:', err);
+    } finally {
+      clearTimeout(safetyTimeout);
+      hideLoading();
+    }
+  }
+
+  function initCharts() {
+    weightChart = new Chart(document.getElementById('weightChart').getContext('2d'), {
+      type: 'line',
+      data: { labels: [], datasets: [{ data: [], borderColor: '#c82828', backgroundColor: 'rgba(200,40,40,0.06)', borderWidth: 2.5, pointRadius: 5, pointBackgroundColor: '#c82828', fill: true, tension: 0.4 }] },
+      options: { plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#1a1a1a' }, ticks: { color: '#555', font: { size: 11 } } }, y: { grid: { color: '#1a1a1a' }, ticks: { color: '#555', font: { size: 11 } } } } }
+    });
+
+    fatChart = new Chart(document.getElementById('fatChart').getContext('2d'), {
+      type: 'line',
+      data: { labels: [], datasets: [{ data: [], borderColor: '#1565c0', backgroundColor: 'rgba(21,101,192,0.06)', borderWidth: 2.5, pointRadius: 5, pointBackgroundColor: '#1565c0', fill: true, tension: 0.4 }] },
+      options: { plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#1a1a1a' }, ticks: { color: '#555', font: { size: 11 } } }, y: { grid: { color: '#1a1a1a' }, ticks: { color: '#555', font: { size: 11 }, callback: v => v + '%' } } } }
+    });
+  }
+
+  async function loadData(profile) {
+    // Mesures
+    const { data: measurements } = await sb.from('measurements').select('*').eq('user_id', userId).order('date', { ascending: true });
+
+    // Séances
+    const { data: workouts } = await sb.from('workouts').select('id').eq('user_id', userId);
+
+    document.getElementById('hero-seances').textContent = workouts?.length || 0;
+    document.getElementById('hero-mesures').textContent = measurements?.length || 0;
+
+    if (!measurements || measurements.length === 0) return;
+
+    // Dernière mesure
+    const last = measurements[measurements.length - 1];
+    const first = measurements[0];
+
+    if (last.poids) {
+      document.getElementById('hero-poids').textContent = last.poids;
+      if (first.poids && first.poids !== last.poids) {
+        const diff = (last.poids - first.poids).toFixed(1);
+        document.getElementById('hero-poids-delta').textContent = `${diff > 0 ? '+' : ''}${diff} kg depuis le début`;
+      }
+      // Aussi mettre à jour le profil
+      await sb.from('users').update({ poids: last.poids }).eq('id', userId);
+    }
+
+    if (last.masse_grasse) {
+      document.getElementById('hero-mg').textContent = last.masse_grasse;
+      if (first.masse_grasse && first.masse_grasse !== last.masse_grasse) {
+        const diff = (last.masse_grasse - first.masse_grasse).toFixed(1);
+        document.getElementById('hero-mg-delta').textContent = `${diff > 0 ? '+' : ''}${diff}% depuis le début`;
+      }
+    }
+
+    // Graphiques
+    const labels = measurements.map(m => new Date(m.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }));
+    const poidsData = measurements.map(m => m.poids || null);
+    const mgData = measurements.map(m => m.masse_grasse || null);
+
+    weightChart.data.labels = labels;
+    weightChart.data.datasets[0].data = poidsData;
+    weightChart.update();
+
+    fatChart.data.labels = labels;
+    fatChart.data.datasets[0].data = mgData;
+    fatChart.update();
+
+    // Mensurations
+    renderMensurations(last);
+
+    // Historique
+    renderHistory(measurements.reverse());
+  }
+
+  function renderMensurations(m) {
+    const fields = [
+      { icon: '⚖️', label: 'Poids', val: m.poids, unit: 'kg' },
+      { icon: '📸', label: 'Masse grasse', val: m.masse_grasse, unit: '%' },
+      { icon: '🎯', label: 'Tour taille', val: m.tour_taille, unit: 'cm' },
+      { icon: '💪', label: 'Bras', val: m.tour_bras, unit: 'cm' },
+      { icon: '🦵', label: 'Cuisses', val: m.tour_cuisses, unit: 'cm' },
+      { icon: '🫁', label: 'Poitrine', val: m.tour_poitrine, unit: 'cm' },
+    ];
+
+    document.getElementById('mens-grid').innerHTML = fields.map(f => `
+      <div class="mens-card">
+        <div class="mens-icon">${f.icon}</div>
+        <div class="mens-label">${f.label}</div>
+        <div class="mens-val">${f.val || '—'} <span class="mens-unit">${f.val ? f.unit : ''}</span></div>
+      </div>
+    `).join('');
+  }
+
+  function renderHistory(measurements) {
+    const container = document.getElementById('history-container');
+    if (!measurements.length) {
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">📊</div>Aucune mesure pour l'instant.<br>Ajoute ta première mesure !</div>`;
+      return;
+    }
+
+    container.innerHTML = `<div class="history-list">` +
+      measurements.map(m => `
+        <div class="history-item">
+          <div class="history-date">${new Date(m.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+          <div class="history-vals">
+            ${m.poids ? `<div class="history-val"><div class="history-num">${m.poids}kg</div><div class="history-lbl">Poids</div></div>` : ''}
+            ${m.masse_grasse ? `<div class="history-val"><div class="history-num">${m.masse_grasse}%</div><div class="history-lbl">MG</div></div>` : ''}
+            ${m.tour_taille ? `<div class="history-val"><div class="history-num">${m.tour_taille}cm</div><div class="history-lbl">Taille</div></div>` : ''}
+          </div>
+          <span class="history-delete" onclick="deleteMeasurement('${m.id}')">✕</span>
+        </div>
+      `).join('') +
+    `</div>`;
+  }
+
+  // "YYYY-MM-DD" en heure locale (pas UTC)
+  function localDate(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  async function addMeasurement() {
+    const poids = parseFloat(document.getElementById('m-poids').value) || null;
+    const mg = parseFloat(document.getElementById('m-mg').value) || null;
+    const taille = parseFloat(document.getElementById('m-taille').value) || null;
+    const tailleCm = parseFloat(document.getElementById('m-taille-cm').value) || null;
+    const bras = parseFloat(document.getElementById('m-bras').value) || null;
+    const cuisses = parseFloat(document.getElementById('m-cuisses').value) || null;
+    const poitrine = parseFloat(document.getElementById('m-poitrine').value) || null;
+    const hanches = parseFloat(document.getElementById('m-hanches').value) || null;
+
+    if (!poids && !mg) { showToast('error', 'Entre au moins le poids ou la masse grasse.'); return; }
+
+    const btn = document.getElementById('btn-confirm');
+    btn.disabled = true;
+    btn.textContent = 'Enregistrement...';
+
+    const { error } = await sb.from('measurements').insert({
+      user_id: userId,
+      poids,
+      masse_grasse: mg,
+      taille,
+      tour_taille: tailleCm,
+      tour_bras: bras,
+      tour_cuisses: cuisses,
+      tour_poitrine: poitrine,
+      tour_hanches: hanches,
+      date: localDate(new Date())
+    });
+
+    // Mettre à jour le profil avec le dernier poids / MG
+    if (poids || mg) {
+      const updates = {};
+      if (poids) updates.poids = poids;
+      if (mg) updates.masse_grasse = mg;
+      if (taille) updates.taille = taille;
+      await sb.from('users').update(updates).eq('id', userId);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Enregistrer →';
+
+    if (error) { showToast('error', 'Erreur lors de l\'enregistrement.'); return; }
+
+    showToast('success', '✓ Mesure enregistrée !');
+    closeModal();
+    clearModal();
+    await loadData({});
+  }
+
+  async function deleteMeasurement(id) {
+    if (!confirm('Supprimer cette mesure définitivement ?')) return;
+    await sb.from('measurements').delete().eq('id', id);
+    showToast('success', '✓ Mesure supprimée');
+    await loadData({});
+  }
+
+  function openModal() { document.getElementById('modal').classList.add('open'); }
+  function closeModal() { document.getElementById('modal').classList.remove('open'); }
+  function closeModalOutside(e) { if (e.target === document.getElementById('modal')) closeModal(); }
+
+  function clearModal() {
+    ['m-poids','m-mg','m-taille','m-taille-cm','m-bras','m-cuisses','m-poitrine','m-hanches'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+  }
+
+  function showToast(type, msg) {
+    const toast = document.getElementById('toast');
+    toast.className = `toast ${type}`;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  init();
+</script>
+
+<script>
+  // Freemium sidebar logic — verrouillé par défaut, déverrouillé si payant
+  function initFreemium(plan) {
+    const isPaid = ['guerrier', 'champion', 'elite'].includes(plan);
+
+    document.querySelectorAll('.nav-freemium').forEach(el => {
+      if (!isPaid) {
+        // Verrouiller
+        el.classList.add('locked');
+        const lock = el.querySelector('.nav-lock');
+        if (lock) lock.textContent = '🔒';
+
+        // Intercepter le clic
+        el.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const feature = this.getAttribute('data-feature');
+          openUpgrade(feature);
+          return false;
+        };
+
+        // Bloquer aussi le href
+        el.removeAttribute('href');
+        el.style.pointerEvents = 'auto';
+      } else {
+        // Déverrouiller
+        el.classList.remove('locked');
+        const lock = el.querySelector('.nav-lock');
+        if (lock) lock.textContent = '';
+        el.onclick = null;
+      }
+    });
+  }
+
+  function openUpgrade(feature) {
+    document.getElementById('upgrade-feature').textContent = feature || 'Cette fonctionnalité';
+    document.getElementById('upgrade-modal').classList.add('open');
+  }
+
+  function closeUpgrade() {
+    document.getElementById('upgrade-modal').classList.remove('open');
+  }
+
+  // Le plan est lu depuis Supabase dans init() — pas de verrouillage par défaut
+</script>
+
+<!-- BARRE NAVIGATION MOBILE -->
+<nav class="mobile-nav">
+  <a class="mobile-nav-item " href="dashboard.html">
+    <span class="mobile-nav-icon"><img src="icons/dashboard.png" alt="Home"></span>
+    <span class="mobile-nav-label" data-i18n="nav_dashboard">Home</span>
+  </a>
+  <a class="mobile-nav-item " href="nutrition.html">
+    <span class="mobile-nav-icon"><img src="icons/nutrition.png" alt="Nutrition"></span>
+    <span class="mobile-nav-label" data-i18n="nav_nutrition">Nutrition</span>
+  </a>
+  <a class="mobile-nav-item " href="entrainement.html">
+    <span class="mobile-nav-icon"><img src="icons/entrainement.png" alt="Training"></span>
+    <span class="mobile-nav-label" data-i18n="nav_training">Training</span>
+  </a>
+  <a class="mobile-nav-item " href="bodyfat.html">
+    <span class="mobile-nav-icon"><img src="icons/estimation.png" alt="Analyse"></span>
+    <span class="mobile-nav-label" data-i18n="nav_bodyfat">Analyse</span>
+  </a>
+  <a class="mobile-nav-item " href="profil.html">
+    <span class="mobile-nav-icon"><img src="icons/profil.png" alt="Profil"></span>
+    <span class="mobile-nav-label" data-i18n="nav_profil">Profil</span>
+  </a>
+</nav>
+
+  <!-- i18n -->
+  <script src="i18n.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', initI18n);</script>
+</body>
+</html>

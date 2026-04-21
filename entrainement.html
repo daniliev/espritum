@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
 <style>
   :root {
     --red: #c82828;
@@ -555,11 +556,7 @@
 </main>
 
 <script>
-  const { createClient } = supabase;
-  const sb = createClient(
-    'https://lbxlvrtujzwlcnloheyh.supabase.co',
-    'sb_publishable_40dpIdYthKMZkJImacoKoQ_ftEeaPeg'
-  );
+  const sb = window.sb;
 
   const PLAN_LABEL = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
 
@@ -612,7 +609,7 @@
     'Traction pronation':             'exercices/Traction pronation.png',
     'Rowing barre':                   'exercices/Rowing barre.png',
     'Tirage poulie haute':            'exercices/Tirage poulie haute.png',
-    'Rowing haltère unilatéral':      'exercices/Rowing haltère unilatéra.png',
+    'Rowing haltère unilatéral':      'exercices/Rowing haltère unilatéral.png',
     'Tirage poulie basse':            'exercices/Tirage poulie basse.png',
     'Shrugs haltères':                'exercices/Shrugs haltères.png',
     'Curl barre droite':              'exercices/Curl barre droite.png',
@@ -795,13 +792,21 @@
   ];
 
   let userId = null;
-  let currentDate = new Date().toISOString().split('T')[0];
+  let currentDate = localDate(new Date());
   let dayOffset = 0;
   let currentProgram = null;
   let seriesState = {}; // { exIndex: { serieIndex: { reps, poids, done } } }
   let timerInterval = null;
   let timerSeconds = 0;
   let timerRunning = false;
+
+  // Retourne "YYYY-MM-DD" en heure LOCALE (pas UTC). Évite le bug "hier à 23h → UTC demain".
+  function localDate(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
 
   function hideLoading() {
     const el = document.getElementById('loading');
@@ -810,8 +815,6 @@
 
   async function init() {
     const safetyTimeout = setTimeout(hideLoading, 1000);
-    try {
-    setTimeout(hideLoading, 1000);
     try {
       const { data: { session } } = await sb.auth.getSession();
       if (!session) { window.location.href = 'inscription.html'; return; }
@@ -831,7 +834,10 @@
       initFreemium(profile?.plan || 'gratuit');
 
     } catch(e) { console.error(e); }
-    finally { document.getElementById('loading').style.display = 'none'; }
+    finally {
+      clearTimeout(safetyTimeout);
+      document.getElementById('loading').style.display = 'none';
+    }
   }
 
   function startSession(key) {
@@ -942,7 +948,7 @@
         nom: ex.name + ` (série ${serieIdx + 1})`,
         muscle_cible: ex.muscle,
         series: 1,
-        reps: state.reps,
+        repetitions: state.reps,
         poids: state.poids,
         termine: true,
         date: currentDate
@@ -973,7 +979,7 @@
           nom: ex.name + ` (série ${s + 1})`,
           muscle_cible: ex.muscle,
           series: 1,
-          reps: seriesState[exIdx][s].reps,
+          repetitions: seriesState[exIdx][s].reps,
           poids: seriesState[exIdx][s].poids,
           termine: true,
           date: currentDate
@@ -1068,11 +1074,13 @@
     if (dayOffset > 0) { dayOffset = 0; return; }
     const d = new Date();
     d.setDate(d.getDate() + dayOffset);
-    currentDate = d.toISOString().split('T')[0];
+    currentDate = localDate(d);
     const label = document.getElementById('date-label');
     if (dayOffset === 0) label.textContent = "Aujourd'hui";
     else if (dayOffset === -1) label.textContent = "Hier";
     else label.textContent = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+    // Recharge la vue semaine pour refléter le nouveau jour sélectionné
+    renderWeek();
   }
 
   function renderWeek() {

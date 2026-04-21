@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
 <style>
   :root {
     --red: #c82828;
@@ -711,11 +712,7 @@
 </main>
 
 <script>
-  const { createClient } = supabase;
-  const sb = createClient(
-    'https://lbxlvrtujzwlcnloheyh.supabase.co',
-    'sb_publishable_40dpIdYthKMZkJImacoKoQ_ftEeaPeg'
-  );
+  const sb = window.sb;
 
   let userId = null;
   let userProfile = null;
@@ -778,6 +775,8 @@
     selectObj(selectedObjectif);
 
     // Corps
+    if (p?.genre) document.getElementById('f-genre').value = p.genre;
+    if (p?.age) document.getElementById('f-age').value = p.age;
     if (p?.poids) document.getElementById('f-poids').value = p.poids;
     if (p?.poids_cible) document.getElementById('f-poids-cible').value = p.poids_cible;
     if (p?.taille) document.getElementById('f-taille').value = p.taille;
@@ -802,6 +801,8 @@
       prenom: document.getElementById('f-prenom').value.trim(),
       nom: document.getElementById('f-nom').value.trim(),
       objectif: selectedObjectif,
+      genre: document.getElementById('f-genre').value || null,
+      age: parseInt(document.getElementById('f-age').value) || null,
       poids: parseFloat(document.getElementById('f-poids').value) || null,
       poids_cible: parseFloat(document.getElementById('f-poids-cible').value) || null,
       taille: parseFloat(document.getElementById('f-taille').value) || null,
@@ -843,11 +844,13 @@
     const taille = parseFloat(document.getElementById('f-taille').value);
     const age = parseFloat(document.getElementById('f-age').value);
     const activite = document.getElementById('f-activite').value;
+    const genre = document.getElementById('f-genre').value;
 
     if (!poids || !taille || !age) { showToast('error', 'Remplis poids, taille et âge d\'abord.'); return; }
 
-    // Formule Mifflin-St Jeor (homme par défaut)
-    const bmr = Math.round(10 * poids + 6.25 * taille - 5 * age + 5);
+    // Formule Mifflin-St Jeor : +5 pour homme, -161 pour femme
+    const sexOffset = genre === 'femme' ? -161 : 5;
+    const bmr = Math.round(10 * poids + 6.25 * taille - 5 * age + sexOffset);
     const facteurs = { sedentaire: 1.2, leger: 1.375, modere: 1.55, actif: 1.725, intense: 1.9 };
     const tdee = Math.round(bmr * (facteurs[activite] || 1.55));
 
@@ -868,6 +871,7 @@
     const taille = parseFloat(document.getElementById('f-taille').value);
     const age = parseFloat(document.getElementById('f-age').value);
     const activite = document.getElementById('f-activite').value;
+    const genre = document.getElementById('f-genre').value;
 
     if (poids && taille) {
       const imc = (poids / ((taille / 100) ** 2)).toFixed(1);
@@ -882,7 +886,8 @@
     }
 
     if (poids && taille && age) {
-      const bmr = Math.round(10 * poids + 6.25 * taille - 5 * age + 5);
+      const sexOffset = genre === 'femme' ? -161 : 5;
+      const bmr = Math.round(10 * poids + 6.25 * taille - 5 * age + sexOffset);
       const facteurs = { sedentaire: 1.2, leger: 1.375, modere: 1.55, actif: 1.725, intense: 1.9 };
       const tdee = Math.round(bmr * (facteurs[activite] || 1.55));
       document.getElementById('bmr-val').innerHTML = `${tdee} <span class="body-stat-unit">kcal</span>`;
@@ -907,10 +912,40 @@
   }
 
   async function deleteAccount() {
-    if (!confirm('⚠️ Supprimer définitivement ton compte et toutes tes données ?')) return;
-    await sb.from('users').delete().eq('id', userId);
-    await sb.auth.signOut();
-    window.location.href = 'inscription.html';
+    if (!confirm('⚠️ Supprimer définitivement ton compte et toutes tes données ?\n\nCette action est irréversible. Si tu as un abonnement actif, il sera annulé.')) return;
+
+    const btn = document.querySelector('button[onclick="deleteAccount()"]');
+    if (btn) { btn.disabled = true; btn.textContent = 'Suppression...'; }
+
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { window.location.href = 'inscription.html'; return; }
+
+      // Edge Function : supprime auth.users + annule l'abo Stripe + cascade sur public.users
+      const res = await fetch(
+        `${window.SUPABASE_URL}/functions/v1/delete-account`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+            'apikey': window.SUPABASE_ANON_KEY,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `HTTP ${res.status}`);
+      }
+
+      await sb.auth.signOut();
+      window.location.href = 'inscription.html';
+    } catch (err) {
+      console.error('Delete account error:', err);
+      showToast('error', 'Suppression impossible : ' + (err.message || 'réessaie plus tard.'));
+      if (btn) { btn.disabled = false; btn.textContent = 'Supprimer mon compte'; }
+    }
   }
 
   function switchTab(tab, panel) {
@@ -928,9 +963,10 @@
     setTimeout(() => toast.classList.remove('show'), 3000);
   }
 
-  // Recalcul auto quand on change poids/taille/âge
-  ['f-poids','f-taille','f-age','f-activite'].forEach(id => {
+  // Recalcul auto quand on change poids/taille/âge/activité/genre
+  ['f-poids','f-taille','f-age','f-activite','f-genre'].forEach(id => {
     document.getElementById(id)?.addEventListener('input', calcIndicateurs);
+    document.getElementById(id)?.addEventListener('change', calcIndicateurs);
   });
 
   init();
