@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+<title>Espritum — Dashboard</title>
+<link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<style>
+  :root {
+    --red: #c82828;
+    --bg: #080808;
+    --bg2: #0d0d0d;
+    --bg3: #111111;
+    --border: #1e1e1e;
+    --muted: #555;
+    --muted2: #333;
+    --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
+    --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
+    --sidebar: 80px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: #fff; font-family: var(--font-body); display: flex; }
+
+  /* SIDEBAR — icons only, no red active state */
+  .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 50; align-items: center; }
+  .sidebar-brand { display: flex; align-items: center; justify-content: center; padding: 22px 0 26px; text-decoration: none; }
+  .sidebar-logo { width: 38px; height: 38px; object-fit: contain; border-radius: 8px; }
+  .sidebar-name { display: none; }
+  .sidebar-nav { flex: 1; padding: 8px 0; display: flex; flex-direction: column; gap: 6px; align-items: center; width: 100%; }
+  .nav-section-label { display: none; }
+  .nav-item { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 10px; text-decoration: none; transition: background 0.2s; color: transparent; font-size: 0; flex-shrink: 0; }
+  .nav-item span:not(.nav-icon):not(.nav-lock) { display: none; }
+  .nav-item:hover { background: rgba(255,255,255,0.04); }
+  .nav-item.active { background: rgba(255,255,255,0.06); }
+  .nav-icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .sidebar-bottom { padding: 12px 0 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .user-card { display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; cursor: pointer; transition: opacity 0.2s; }
+  .user-card > div:not(.user-avatar) { display: none; }
+  .user-card:hover { opacity: 0.8; }
+  .user-avatar { width: 38px; height: 38px; border-radius: 50%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; color: #ddd; flex-shrink: 0; }
+  .user-name, .user-plan { display: none; }
+  .lang-selector { flex-direction: column !important; gap: 2px !important; }
+
+  /* MAIN */
+  .main { margin-left: var(--sidebar); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+  .topbar { padding: 28px 40px; display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 40; }
+  .topbar-left { display: flex; flex-direction: column; gap: 2px; }
+  .topbar-tag { font-size: 10px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; font-weight: 600; }
+  .topbar-title { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .streak-pill { display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(200,40,40,0.08); border-radius: 20px; font-size: 12px; color: var(--red); font-weight: 600; letter-spacing: 1px; }
+  .logout-btn { padding: 8px 16px; background: transparent; border: none; color: var(--muted); font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: color 0.2s; }
+  .logout-btn:hover { color: var(--red); }
+
+  .content { padding: 12px 40px 48px; display: flex; flex-direction: column; gap: 36px; }
+
+  /* Hero banner photo */
+  .hero-banner {
+    position: relative;
+    height: 220px;
+    border-radius: 18px;
+    overflow: hidden;
+    background:
+      linear-gradient(135deg, rgba(8,8,8,0.55) 0%, rgba(8,8,8,0.85) 100%),
+      url('https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=1600&auto=format&fit=crop&q=80') center/cover;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+  }
+  .hero-banner-inner { max-width: 480px; }
+  .hero-banner-tag { font-size: 10px; letter-spacing: 4px; color: var(--red); font-weight: 600; margin-bottom: 10px; }
+  .hero-banner-title {
+    font-family: var(--font-display);
+    font-size: 32px;
+    letter-spacing: 2px;
+    line-height: 1;
+    text-transform: uppercase;
+    color: #fff;
+  }
+  .hero-banner-title span { color: var(--red); }
+
+  /* Verset */
+  .verse-banner {
+    background:
+      linear-gradient(135deg, rgba(15,4,4,0.92), rgba(26,8,8,0.95)),
+      url('https://images.unsplash.com/photo-1519003300449-424ad0405076?w=1200&auto=format&fit=crop&q=80') center/cover;
+    border-radius: 14px;
+    padding: 22px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .verse-left { display: flex; align-items: center; gap: 14px; }
+  .verse-emoji { font-size: 22px; }
+  .verse-quote { font-size: 14px; color: #bbb; font-style: italic; font-weight: 300; line-height: 1.5; }
+  .verse-ref { font-size: 11px; color: var(--red); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; font-weight: 600; }
+  .verse-label { font-size: 10px; color: var(--muted2); letter-spacing: 1px; white-space: nowrap; }
+
+  /* Stats */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .stat-card { background: #131313; border-radius: 14px; padding: 24px; transition: background 0.2s; }
+  .stat-card:hover { background: #161616; }
+  .stat-label { font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; font-weight: 600; margin-bottom: 10px; }
+  .stat-value { font-family: var(--font-display); font-size: 42px; font-weight: 400; line-height: 1; color: #fff; }
+  .stat-unit { font-size: 15px; color: var(--muted); }
+  .stat-sub { font-size: 12px; color: var(--muted2); margin-top: 8px; }
+
+  /* Grid principale */
+  .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+  .card { background: #131313; border-radius: 14px; padding: 26px; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+  .card-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; }
+  .card-action { font-size: 11px; color: var(--red); letter-spacing: 1px; cursor: pointer; text-transform: uppercase; font-weight: 600; text-decoration: none; }
+
+  /* Calories */
+  .cal-main { display: flex; align-items: flex-end; gap: 18px; margin-bottom: 14px; }
+  .cal-big { font-family: var(--font-display); font-size: 68px; line-height: 1; color: #fff; }
+  .cal-meta { padding-bottom: 6px; }
+  .cal-goal { font-size: 13px; color: var(--muted); }
+  .cal-remain { font-family: var(--font-display); font-size: 20px; color: var(--red); }
+  .progress-bar { height: 6px; background: #1a1a1a; border-radius: 3px; overflow: hidden; margin-bottom: 16px; }
+  .progress-fill { height: 100%; background: var(--red); border-radius: 3px; transition: width 0.8s ease; }
+  .macros-row { display: flex; gap: 8px; }
+  .macro-item { flex: 1; text-align: center; padding: 14px 0; background: #1a1a1a; border-radius: 10px; }
+  .macro-val { font-family: var(--font-display); font-size: 24px; color: #fff; }
+  .macro-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+
+  /* Corps 3D */
+  .body3d-wrap { width: 100%; height: 320px; border-radius: 12px; overflow: hidden; background: #0a0a0a; }
+  .body3d-wrap iframe { width: 100%; height: 100%; border: none; }
+  .body3d-legend { display: flex; justify-content: center; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #888; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .muscle-tags { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .muscle-tag { padding: 4px 11px; background: rgba(200,40,40,0.1); border-radius: 20px; font-size: 11px; color: var(--red); }
+
+  /* Repas */
+  .repas-list { display: flex; flex-direction: column; gap: 8px; }
+  .repas-item { display: flex; align-items: center; justify-content: space-between; background: #1a1a1a; border-radius: 10px; padding: 13px 16px; }
+  .repas-left { display: flex; align-items: center; gap: 10px; }
+  .repas-icon { font-size: 18px; }
+  .repas-name { font-size: 13px; color: #ccc; font-weight: 500; }
+  .repas-type { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .repas-cal { font-family: var(--font-display); font-size: 18px; color: #fff; }
+  .empty-state { text-align: center; padding: 28px 16px; color: var(--muted); font-size: 14px; line-height: 1.7; }
+  .empty-icon { font-size: 28px; margin-bottom: 8px; }
+  .add-btn { width: 100%; background: #1a1a1a; border: none; border-radius: 10px; padding: 13px; color: var(--muted); font-family: var(--font-body); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; margin-top: 8px; }
+  .add-btn:hover { background: #222; color: #ccc; }
+
+  /* Bottom grid */
+  .bottom-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 24px; }
+
+  /* Semaine */
+  .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .week-day { text-align: center; }
+  .week-label { font-size: 9px; color: var(--muted2); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .week-dot { width: 28px; height: 28px; border-radius: 50%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-size: 12px; margin: 0 auto; color: var(--muted2); }
+  .week-dot.done { background: rgba(200,40,40,0.18); color: var(--red); }
+  .week-dot.today { background: var(--red); color: #fff; }
+/* Loading */
+  .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
+  .loading-logo { font-family: var(--font-display); font-size: 48px; letter-spacing: 8px; color: var(--red); text-transform: uppercase; }
+  .loading-dots { display: flex; gap: 6px; }
+  .loading-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: blink 1.2s infinite; }
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100%{opacity:0.2;} 40%{opacity:1;} }
+
+  @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2,1fr); } .main-grid { grid-template-columns: 1fr; } .bottom-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } }
+
+  .nav-item.locked { opacity: 0.4; cursor: not-allowed; }
+  .nav-item.locked:hover { background: transparent; color: var(--muted); }
+  .nav-lock { font-size: 11px; margin-left: auto; opacity: 0.6; }
+
+  .upgrade-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center; }
+  .upgrade-modal.open { display: flex; }
+  .upgrade-box { background: #0d0d0d; border: 1px solid #1e1e1e; border-radius: 10px; padding: 36px; width: 420px; max-width: 95vw; text-align: center; }
+  .upgrade-icon { font-size: 48px; margin-bottom: 16px; }
+  .upgrade-title { font-family: var(--font-display); font-size: 32px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .upgrade-desc { font-size: 14px; color: #666; line-height: 1.7; font-weight: 300; margin-bottom: 24px; }
+  .upgrade-btn { width: 100%; padding: 15px; background: #c82828; border: none; border-radius: 4px; color: #fff; font-family: var(--font-body, sans-serif); font-size: 13px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; margin-bottom: 10px; }
+  .upgrade-btn:hover { background: #d93030; }
+  .upgrade-cancel { font-size: 12px; color: #555; cursor: pointer; letter-spacing: 1px; }
+  .upgrade-cancel:hover { color: #888; }
+
+  /* ── BOTTOM NAV MOBILE ── */
+  .mobile-nav {
+    display: none; position: fixed; bottom: 0; left: 0; right: 0;
+    background: #0a0a0a;
+    padding: 12px 0 max(12px, env(safe-area-inset-bottom));
+    z-index: 100; grid-template-columns: repeat(5, 1fr);
+  }
+  .mobile-nav-item { display: flex; align-items: center; justify-content: center; padding: 6px 4px; text-decoration: none; transition: opacity 0.2s; cursor: pointer; opacity: 0.5; }
+  .mobile-nav-item.active { opacity: 1; }
+  .mobile-nav-item:hover { opacity: 0.85; }
+  .mobile-nav-icon { display: flex; }
+  .mobile-nav-label { display: none; }
+  @media (max-width: 768px) {
+    .mobile-nav { display: grid; }
+    .main { padding-bottom: 72px; }
+    .sidebar { display: none !important; }
+  }
+
+  /* ── MOBILE TOPBAR COMPACT ── */
+  @media (max-width: 768px) {
+    .topbar { padding: 14px 16px; }
+    .topbar-title { font-size: 22px; }
+    .content { padding: 16px; gap: 16px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .main-grid { grid-template-columns: 1fr; gap: 14px; }
+    .bottom-grid { grid-template-columns: 1fr; gap: 14px; }
+    .card { padding: 16px; }
+
+    /* Hero banner mobile : plus compact, texte centré */
+    .hero-banner {
+      height: 160px;
+      padding: 0 22px;
+      border-radius: 10px;
+    }
+    .hero-banner-title { font-size: 24px; letter-spacing: 1px; }
+    .hero-banner-tag { font-size: 9px; letter-spacing: 3px; margin-bottom: 8px; }
+  }
+
+  /* ── ANTI-ZOOM GLOBAL ── */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    touch-action: pan-x pan-y;
+  }
+  input, select, textarea {
+    font-size: 16px !important; /* empêche le zoom auto sur iOS */
+  }
+  * {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  /* MOBILE : topbar ultra simplifié */
+  @media (max-width: 768px) {
+    .topbar-right { display: none !important; }
+    .topbar { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .topbar-title { font-size: 24px; }
+    .streak-pill { display: none !important; }
+    .logout-btn { display: none !important; }
+    .free-badge { display: none !important; }
+    .period-tabs { display: none !important; }
+.date-nav .date-label { font-size: 12px; min-width: 80px; }
+  }
+
+  /* ── OVERFLOW FIX GLOBAL ── */
+  @media (max-width: 768px) {
+    body { overflow-x: hidden; }
+    .main { overflow-x: hidden; width: 100%; }
+    .content { overflow-x: hidden; }
+    * { max-width: 100%; }
+    img { max-width: 100%; }
+  }
+
+  /* ── LANGUAGE SELECTOR ── */
+  .lang-selector {
+    display: flex; gap: 4px; align-items: center;
+  }
+  .lang-btn {
+    width: 28px; height: 28px; border-radius: 4px;
+    background: transparent; border: 1px solid transparent;
+    cursor: pointer; font-size: 16px; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.2s; padding: 0;
+    opacity: 0.45;
+  }
+  .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
+  .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
+
+  /* ── LANG BAR MOBILE IN APP ── */
+  .mobile-lang-bar {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #080808;
+    border-bottom: 1px solid #1e1e1e;
+    padding: 8px 16px;
+    z-index: 101;
+    justify-content: flex-end;
+    gap: 6px;
+    align-items: center;
+  }
+  .mobile-lang-bar .lang-btn { width: 28px; height: 28px; font-size: 16px; }
+
+  @media (max-width: 768px) {
+    .mobile-lang-bar { display: flex; }
+    .topbar { margin-top: 44px; }
+    .main { padding-top: 0; }
+  }
+
+  /* ── BULGARIAN FONT ── */
+  html[lang="bg"] * {
+    font-family: 'Sofia Sans Condensed', var(--font-body, sans-serif) !important;
+  }
+  html[lang="bg"] .topbar-title,
+  html[lang="bg"] .sidebar-name,
+  html[lang="bg"] .card-title,
+  html[lang="bg"] .stat-val,
+  html[lang="bg"] .nav-item {
+    font-family: 'Sofia Sans Condensed', var(--font-display, sans-serif) !important;
+  }
+
+  /* ── CUSTOM NAV ICONS ── */
+  .nav-icon img { width: 24px; height: 24px; object-fit: contain; opacity: 1; }
+  .mobile-nav-icon img { width: 24px; height: 24px; object-fit: contain; opacity: 1; }
+
+  /* Calendrier mensuel */
+  .cal-nav { display: flex; align-items: center; gap: 14px; }
+  .cal-arrow { width: 28px; height: 28px; border-radius: 50%; background: #1a1a1a; border: none; color: #aaa; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+  .cal-arrow:hover { background: #222; color: #fff; }
+  .cal-month-label { font-family: var(--font-display); font-size: 16px; letter-spacing: 3px; text-transform: uppercase; color: #fff; min-width: 130px; text-align: center; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .cal-weekday { font-size: 10px; color: #666; letter-spacing: 1.5px; text-transform: uppercase; text-align: center; padding: 6px 0 12px; font-weight: 700; }
+  .cal-day { aspect-ratio: 1; min-height: 36px; border-radius: 8px; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 12px; color: #666; transition: background 0.2s; cursor: pointer; }
+  .cal-day:hover { background: #181818; }
+  .cal-day.empty { visibility: hidden; }
+  .cal-day.has-data { color: #ccc; }
+  .cal-day.today { background: rgba(200,40,40,0.12); color: var(--red); font-weight: 700; }
+  .cal-day-num { font-family: var(--font-body); font-size: 12px; line-height: 1; }
+  .cal-dots { display: flex; gap: 3px; height: 4px; align-items: center; }
+  .cal-dot { width: 4px; height: 4px; border-radius: 50%; }
+  .cal-dot.workout { background: var(--red); }
+  .cal-dot.meal { background: #888; }
+  .cal-legend { display: flex; gap: 16px; margin-top: 16px; padding-top: 16px; border-top: 1px solid #1a1a1a; justify-content: center; }
+  .cal-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #888; letter-spacing: 0.5px; }
+
+  /* Coach IA Floating Button */
+  .coach-fab { position: fixed; bottom: 28px; right: 28px; width: 56px; height: 56px; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 6px 24px rgba(200,40,40,0.4), 0 2px 8px rgba(0,0,0,0.3); z-index: 90; transition: transform 0.2s, box-shadow 0.2s; }
+  .coach-fab:hover { transform: scale(1.06); box-shadow: 0 8px 30px rgba(200,40,40,0.55), 0 4px 12px rgba(0,0,0,0.4); }
+  .coach-fab:active { transform: scale(0.96); }
+  @media (max-width: 768px) { .coach-fab { bottom: 80px; right: 18px; width: 50px; height: 50px; } }
+
+  /* Action cards */
+  .actions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .action-card { background: #131313; border-radius: 14px; padding: 22px 24px; display: flex; align-items: center; gap: 16px; text-decoration: none; color: inherit; cursor: pointer; transition: background 0.2s, transform 0.15s; }
+  .action-card:hover { background: #181818; transform: translateY(-2px); }
+  .action-icon { width: 48px; height: 48px; border-radius: 12px; background: rgba(200,40,40,0.12); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .action-text { flex: 1; min-width: 0; }
+  .action-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 1.5px; text-transform: uppercase; color: #fff; line-height: 1.1; margin-bottom: 4px; }
+  .action-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+  .action-arrow { color: var(--muted); font-size: 18px; flex-shrink: 0; }
+  @media (max-width: 700px) { .actions-grid { grid-template-columns: 1fr; gap: 12px; } }
+</style>
+<script src="site-config.js"></script>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading" style="display:flex;">
+  <div class="loading-logo">Espritum</div>
+  <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+</div>
+
+<aside class="sidebar">
+  <a class="sidebar-brand" href="dashboard.html">
+    <img class="sidebar-logo" src="data:image/png;base64,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Rppoj1IPln293sX2jT3Lk5/LBreINs2y32aaomY6U04/XKPq9fKb82lY+jo361B5PeP9n/n7lhB5nUoeZ1KK1s2abVOIco3jeL+63+9u8ojpHhEe/nIiIsqpEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEX1Gx8jwyNjnuPINaNSV7VHh2XVjQ6jxa+VDT0MVvleD9DUHhosklwLOoW8UuF5HG30utcwH9VeNcLZcreeGvt9XSH0TwuZ7wg6iIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiDmdAgL0cesd5yG6R2uxWusudbJ5kFLC6R58dB3eKn3YNut5DmDYb3mrqnHrI7R8dPwAVdU3wB/a2+Lhqe4ac1dLAsGxPBbULbitkpbbDoON0bdZJSO97zq559ZKCnWzbc+y67sirMzu1Nj1O4cRpoQKip9R0IY36XepWAwzdi2R46yN01ilvlSzTWa5zmQE/8ALbws/NU0LxMry7F8UpfhOSZBbLTHpqPhVS1jnfNaTq72AoOxZMesFjibFZbJbbaxvINpKVkQH8UBemoFybey2S2lz46Cou17e3kDR0Zawn50pZ9OhWD12+tZWOIosCuEze4zXBkZ+gMcgtkvioghqIjFUQxzRu6se0OB9hVR6ffYpi7/AFjZ3M0ell2BP1xBZFZN8rAamQMuuO3+36/u42xzNH5wP1IJeynY7swyZr/vvhFmfI/zpoKcQSn8uPhd9ahnOtzfEq9kk+IX+4Wac82wVQFTB6geTx6yXKVsP287JspdHFb8yoKeof0gryaV+vo+MABPqJUkwyRzRNlhkZJG8atc06gj0goNa20rd72n4MJamqsbrrbo9Sa22EzsDfS5uge31lunionW4NRPtb3f9nm0QS1dVbfvReHg6XC3gRvcfTIzzZPEkcXiEGtRFLG2nYJnGzEvraunbdrHxaNudG0ljR3dq3rGfXq30EqJ0BERAREQEREBERAREQEREBERAREQEREBERARF9wRSzzMggjfLLI4MYxjSXOcToAAOpKDlttFV3K4U9vt9NLVVdTK2GCGJpc+R7jo1oA6kkgK9G7Nu10GHx02U51T09wyLyZaakOj4aA9QT3PlHp6NI5anyl6O6fsGpMAtEGVZRRsly2qj1ax+jhbmHXyG93aEacT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" alt="Espritum">
+    <span class="sidebar-name">Espritum</span>
+  </a>
+  <nav class="sidebar-nav">
+    <a class="nav-item active" href="dashboard.html" title="Dashboard"><span class="nav-icon"><img src="icons/dashboard.svg" alt="Dashboard"></span></a>
+    <a class="nav-item nav-freemium" href="nutrition.html" data-feature="Nutrition" title="Nutrition"><span class="nav-icon"><img src="icons/nutrition.svg" alt="Nutrition"></span><span class="nav-lock" id="lock-nutrition"></span></a>
+    <a class="nav-item nav-freemium" href="entrainement.html" data-feature="Entraînement" title="Training"><span class="nav-icon"><img src="icons/entrainement.svg" alt="Entraînement"></span><span class="nav-lock" id="lock-entrainement"></span></a>
+    <a class="nav-item nav-freemium" href="classement.html" data-feature="Classement" title="Classement"><span class="nav-icon"><img src="icons/classement.svg" alt="Classement"></span><span class="nav-lock" id="lock-classement"></span></a>
+    <a class="nav-item" href="profil.html" title="Profil"><span class="nav-icon"><img src="icons/profil.svg" alt="Profil"></span></a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="lang-selector" style="display:flex;gap:4px;align-items:center;">
+      <button class="lang-btn" data-lang="fr" onclick="setLang('fr')" title="Français">🇫🇷</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')" title="English">🇬🇧</button>
+      <button class="lang-btn" data-lang="bg" onclick="setLang('bg')" title="Български">🇧🇬</button>
+    </div>
+
+    <div class="user-card" onclick="window.location.href='profil.html'">
+      <div class="user-avatar" id="sidebar-avatar">?</div>
+      <div>
+        <div class="user-name" id="sidebar-name">—</div>
+        <div class="user-plan" id="sidebar-plan">—</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar" style="justify-content:space-between;">
+    <div class="topbar-left">
+      
+      <div class="topbar-title" id="topbar-greeting">Bonjour, Guerrier</div>
+    </div>
+    
+  </div>
+
+  <div class="content">
+
+    <!-- Hero banner photo motivation -->
+    <div class="hero-banner">
+      <div class="hero-banner-inner">
+        <div class="hero-banner-tag">— AUJOURD'HUI</div>
+        <div class="hero-banner-title">FORGE TON CORPS.<br><span>MAÎTRISE TON ESPRIT.</span></div>
+      </div>
+    </div>
+
+    <!-- Verset -->
+    <div class="verse-banner">
+      <div class="verse-left">
+        <span class="verse-emoji">✝️</span>
+        <div>
+          <div class="verse-quote" id="verse-text">"Je puis tout par celui qui me fortifie."</div>
+          <div class="verse-ref" id="verse-ref">Philippiens 4:13</div>
+        </div>
+      </div>
+      <div class="verse-label" data-i18n="dash_verse">Verset du jour</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Calories</div>
+        <div class="stat-value"><span id="s-cal">0</span> <span class="stat-unit">kcal</span></div>
+        <div class="stat-sub">Objectif : <span id="s-cal-obj">2 400</span> kcal</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Poids</div>
+        <div class="stat-value"><span id="s-poids">—</span> <span class="stat-unit">kg</span></div>
+        <div class="stat-sub">Objectif : <span id="s-poids-obj">—</span> kg</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Masse grasse</div>
+        <div class="stat-value"><span id="s-mg">—</span> <span class="stat-unit">%</span></div>
+        <div class="stat-sub">Dernière mesure</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Repas</div>
+        <div class="stat-value"><span id="s-repas">0</span></div>
+        <div class="stat-sub">aujourd'hui</div>
+      </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="actions-grid">
+      <a class="action-card" href="bodyfat.html">
+        <div class="action-icon">📸</div>
+        <div class="action-text">
+          <div class="action-title">Scanner ma silhouette</div>
+          <div class="action-desc">Estimation IA de ta masse grasse en quelques secondes</div>
+        </div>
+        <span class="action-arrow">›</span>
+      </a>
+      <a class="action-card" href="coach.html">
+        <div class="action-icon">⚔️</div>
+        <div class="action-text">
+          <div class="action-title">Coach Sensei</div>
+          <div class="action-desc">Pose une question à ton mentor IA</div>
+        </div>
+        <span class="action-arrow">›</span>
+      </a>
+    </div>
+
+    <!-- Grid principale -->
+    <div class="main-grid" style="grid-template-columns:1fr;">
+
+      <!-- Calories + Repas -->
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title" data-i18n="dash_calories_day">Calories du jour</div>
+            <a class="card-action" href="nutrition.html">+ Ajouter</a>
+          </div>
+          <div class="cal-main">
+            <div class="cal-big" id="cal-big">0</div>
+            <div class="cal-meta">
+              <div class="cal-goal">sur <span id="cal-obj">2 400</span> kcal</div>
+              <div class="cal-remain" id="cal-remain">2 400 restantes</div>
+            </div>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="cal-bar" style="width:0%"></div></div>
+          <div class="macros-row">
+            <div class="macro-item"><div class="macro-val" id="m-prot">0g</div><div class="macro-label" data-i18n="dash_proteins">Protéines</div></div>
+            <div class="macro-item"><div class="macro-val" id="m-carb">0g</div><div class="macro-label" data-i18n="dash_carbs">Glucides</div></div>
+            <div class="macro-item"><div class="macro-val" id="m-fat">0g</div><div class="macro-label" data-i18n="dash_fats">Lipides</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Repas du jour</div>
+            <a class="card-action" href="nutrition.html">Voir tout</a>
+          </div>
+          <div id="repas-list">
+            <div class="empty-state"><div class="empty-icon">🍽️</div>Aucun repas enregistré.</div>
+          </div>
+          <button class="add-btn" onclick="window.location.href='nutrition.html'">+ Ajouter un repas</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom grid -->
+    <div class="bottom-grid">
+
+      <!-- Semaine -->
+      <div class="card">
+        <div class="card-header"><div class="card-title">Cette semaine</div></div>
+        <div class="week-grid" id="week-grid"></div>
+      </div>
+
+      <!-- Calendrier mensuel -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Calendrier</div>
+          <div class="cal-nav">
+            <button class="cal-arrow" onclick="changeMonth(-1)" aria-label="Mois précédent">‹</button>
+            <div class="cal-month-label" id="cal-month-label">—</div>
+            <button class="cal-arrow" onclick="changeMonth(1)" aria-label="Mois suivant">›</button>
+          </div>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="cal-legend">
+          <div class="cal-legend-item"><div class="cal-dot workout"></div> Entraînement</div>
+          <div class="cal-legend-item"><div class="cal-dot meal"></div> Repas</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  // ── INIT SUPABASE ──
+  // Masquer loading dès que possible
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      const el = document.getElementById('loading');
+      if (el) el.style.display = 'none';
+    }, 1500);
+  });
+
+  const sb = window.sb;
+
+  const VERSETS = [
+    { text: '"Je puis tout par celui qui me fortifie."', ref: 'Philippiens 4:13' },
+    { text: '"Il donne de la force à celui qui est fatigué."', ref: 'Ésaïe 40:29' },
+    { text: '"Sois fort et courageux ! L\'Éternel est avec toi."', ref: 'Josué 1:9' },
+    { text: '"L\'Éternel est ma force et mon bouclier."', ref: 'Psaumes 28:7' },
+    { text: '"Commets ton sort à l\'Éternel, mets en lui ta confiance."', ref: 'Psaumes 37:5' },
+    { text: '"Je connais les projets que j\'ai formés sur vous."', ref: 'Jérémie 29:11' },
+    { text: '"Ne tremble pas, ne t\'effraie pas."', ref: 'Josué 1:9' },
+  ];
+
+  const PLAN_LABEL = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
+
+  // ── INIT ──
+  function setEl(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  async function init() {
+    // Timeout de sécurité — masque le loading après 1s quoi qu'il arrive
+    const safetyTimeout = setTimeout(hideLoading, 1000);
+
+    try {
+      const { data: { session }, error: sessErr } = await sb.auth.getSession();
+
+      if (sessErr || !session) {
+        window.location.href = 'inscription.html';
+        return;
+      }
+
+      const userId = session.user.id;
+
+      // Profil
+      const { data: profile } = await sb.from('users').select('*').eq('id', userId).single();
+
+      // Remplir le header
+      const prenom = profile?.prenom || session.user.user_metadata?.prenom || 'Guerrier';
+      const nom = profile?.nom || '';
+      const initiale = prenom[0]?.toUpperCase() || '?';
+
+      setEl('sidebar-avatar', initiale);
+      setEl('sidebar-name', `${prenom} ${nom}`.trim());
+      setEl('sidebar-plan', PLAN_LABEL[profile?.plan || 'gratuit']);
+      initFreemium(profile?.plan || 'gratuit');
+      setEl('topbar-greeting', `Bonjour, ${prenom}`);
+      setEl('streak-pill', `🔥 ${profile?.streak || 0} jour`);
+
+      // Date
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+      setEl('topbar-date', `— ${dateStr.charAt(0).toUpperCase() + dateStr.slice(1)}`);
+
+      // Stats corps
+      if (profile?.poids) setEl('s-poids', profile.poids);
+      if (profile?.poids_cible) setEl('s-poids-obj', profile.poids_cible);
+      if (profile?.masse_grasse) setEl('s-mg', profile.masse_grasse);
+
+      const calObj = profile?.calories_objectif || 2400;
+      setEl('s-cal-obj', calObj.toLocaleString('fr-FR'));
+      setEl('cal-obj', calObj.toLocaleString('fr-FR'));
+
+      // Verset du jour
+      const v = VERSETS[now.getDay()];
+      setEl('verse-text', v.text);
+      setEl('verse-ref', v.ref);
+
+      // Repas du jour
+      const today = now.toISOString().split('T')[0];
+      const { data: meals } = await sb.from('meals').select('*').eq('user_id', userId).eq('date', today).order('created_at');
+      updateMeals(meals || [], profile);
+
+      // Semaine
+      renderWeek();
+
+      // Calendrier mensuel
+      window._uid = userId;
+      renderCalendar();
+      loadCalendarData(userId);
+
+} catch (err) {
+      console.error('Dashboard error:', err);
+    } finally {
+      clearTimeout(safetyTimeout);
+      hideLoading();
+    }
+  }
+
+  function hideLoading() {
+    const el = document.getElementById('loading');
+    if (el) el.style.display = 'none';
+  }
+
+  function updateMeals(meals, profile) {
+    const cal = meals.reduce((s, m) => s + (m.calories || 0), 0);
+    const prot = meals.reduce((s, m) => s + (m.proteines || 0), 0);
+    const carb = meals.reduce((s, m) => s + (m.glucides || 0), 0);
+    const fat = meals.reduce((s, m) => s + (m.lipides || 0), 0);
+    const obj = profile?.calories_objectif || 2400;
+    const reste = Math.max(0, obj - cal);
+    const pct = Math.min(100, Math.round((cal / obj) * 100));
+
+    document.getElementById('s-cal').textContent = cal.toLocaleString('fr-FR');
+    document.getElementById('cal-big').textContent = cal.toLocaleString('fr-FR');
+    document.getElementById('cal-remain').textContent = `${reste.toLocaleString('fr-FR')} restantes`;
+    document.getElementById('cal-bar').style.width = pct + '%';
+    document.getElementById('m-prot').textContent = Math.round(prot) + 'g';
+    document.getElementById('m-carb').textContent = Math.round(carb) + 'g';
+    document.getElementById('m-fat').textContent = Math.round(fat) + 'g';
+    document.getElementById('s-repas').textContent = meals.length;
+
+    const icons = { 'petit-dejeuner': '🌅', 'dejeuner': '☀️', 'collation': '🌤️', 'diner': '🌙' };
+    const container = document.getElementById('repas-list');
+
+    if (meals.length === 0) {
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">🍽️</div>Aucun repas enregistré aujourd'hui.</div>`;
+    } else {
+      container.innerHTML = `<div class="repas-list">` +
+        meals.slice(0, 4).map(m => `
+          <div class="repas-item">
+            <div class="repas-left">
+              <span class="repas-icon">${icons[m.type_repas] || '🍴'}</span>
+              <div>
+                <div class="repas-name">${m.nom}</div>
+                <div class="repas-type">${m.type_repas || ''}</div>
+              </div>
+            </div>
+            <div class="repas-cal">${m.calories} kcal</div>
+          </div>
+        `).join('') +
+      `</div>`;
+    }
+  }
+
+  function renderWeek() {
+    const days = ['L','M','M','J','V','S','D'];
+    const today = new Date().getDay();
+    const todayIdx = today === 0 ? 6 : today - 1;
+    document.getElementById('week-grid').innerHTML = days.map((d, i) => `
+      <div class="week-day">
+        <div class="week-label">${d}</div>
+        <div class="week-dot ${i === todayIdx ? 'today' : i < todayIdx ? 'done' : 'empty'}">
+          ${i === todayIdx ? '●' : i < todayIdx ? '✓' : '—'}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function logout() {
+    await sb.auth.signOut();
+    window.location.href = 'inscription.html';
+  }
+
+  // ── CALENDRIER MENSUEL ──
+  let calCurrentDate = new Date();
+  let calData = { workouts: new Set(), meals: new Set() };
+
+  async function loadCalendarData(userId) {
+    if (!userId || !sb) return;
+    const start = new Date(calCurrentDate.getFullYear(), calCurrentDate.getMonth() - 2, 1);
+    const end = new Date(calCurrentDate.getFullYear(), calCurrentDate.getMonth() + 2, 0);
+    const startStr = start.toISOString().split('T')[0];
+    const endStr = end.toISOString().split('T')[0];
+    try {
+      const [{ data: w }, { data: m }] = await Promise.all([
+        sb.from('workouts').select('date').eq('user_id', userId).eq('termine', true).gte('date', startStr).lte('date', endStr),
+        sb.from('meals').select('date').eq('user_id', userId).gte('date', startStr).lte('date', endStr),
+      ]);
+      calData.workouts = new Set((w || []).map(r => r.date));
+      calData.meals = new Set((m || []).map(r => r.date));
+    } catch (e) {}
+    renderCalendar();
+  }
+
+  function renderCalendar() {
+    const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+    const weekdays = ['L','M','M','J','V','S','D'];
+    const y = calCurrentDate.getFullYear();
+    const m = calCurrentDate.getMonth();
+    const label = document.getElementById('cal-month-label');
+    if (label) label.textContent = `${months[m]} ${y}`;
+    const firstDay = new Date(y, m, 1).getDay();
+    const offset = firstDay === 0 ? 6 : firstDay - 1;
+    const daysInMonth = new Date(y, m + 1, 0).getDate();
+    const today = new Date();
+    const isCurrentMonth = today.getFullYear() === y && today.getMonth() === m;
+    const grid = document.getElementById('cal-grid');
+    if (!grid) return;
+    let html = weekdays.map(d => `<div class="cal-weekday">${d}</div>`).join('');
+    for (let i = 0; i < offset; i++) html += `<div class="cal-day empty"></div>`;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const hasW = calData.workouts.has(dateStr);
+      const hasM = calData.meals.has(dateStr);
+      const isToday = isCurrentMonth && today.getDate() === d;
+      const cls = ['cal-day'];
+      if (isToday) cls.push('today');
+      if (hasW || hasM) cls.push('has-data');
+      html += `<div class="${cls.join(' ')}"><div class="cal-day-num">${d}</div><div class="cal-dots">${hasW ? '<div class="cal-dot workout"></div>' : ''}${hasM ? '<div class="cal-dot meal"></div>' : ''}</div></div>`;
+    }
+    grid.innerHTML = html;
+  }
+
+  function changeMonth(delta) {
+    calCurrentDate = new Date(calCurrentDate.getFullYear(), calCurrentDate.getMonth() + delta, 1);
+    renderCalendar();
+    if (window._uid) loadCalendarData(window._uid);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderCalendar();
+    renderWeek();
+  });
+
+  // Lancer
+  init();
+</script>
+
+<script>
+  // Freemium sidebar logic — verrouillé par défaut, déverrouillé si payant
+  function initFreemium(plan) {
+    const isPaid = ['guerrier', 'champion', 'elite'].includes(plan);
+
+    document.querySelectorAll('.nav-freemium').forEach(el => {
+      if (!isPaid) {
+        // Verrouiller
+        el.classList.add('locked');
+        const lock = el.querySelector('.nav-lock');
+        if (lock) lock.textContent = '🔒';
+
+        // Intercepter le clic
+        el.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const feature = this.getAttribute('data-feature');
+          openUpgrade(feature);
+          return false;
+        };
+
+        // Bloquer aussi le href
+        el.removeAttribute('href');
+        el.style.pointerEvents = 'auto';
+      } else {
+        // Déverrouiller
+        el.classList.remove('locked');
+        const lock = el.querySelector('.nav-lock');
+        if (lock) lock.textContent = '';
+        el.onclick = null;
+      }
+    });
+  }
+
+  function openUpgrade(feature) {
+    document.getElementById('upgrade-feature').textContent = feature || 'Cette fonctionnalité';
+    document.getElementById('upgrade-modal').classList.add('open');
+  }
+
+  function closeUpgrade() {
+    document.getElementById('upgrade-modal').classList.remove('open');
+  }
+
+  // Le plan est lu depuis Supabase dans init() — pas de verrouillage par défaut
+</script>
+
+<!-- BARRE NAVIGATION MOBILE -->
+<nav class="mobile-nav">
+  <a class="mobile-nav-item active" href="dashboard.html"><span class="mobile-nav-icon"><img src="icons/dashboard.svg" alt="Home"></span></a>
+  <a class="mobile-nav-item" href="nutrition.html"><span class="mobile-nav-icon"><img src="icons/nutrition.svg" alt="Nutrition"></span></a>
+  <a class="mobile-nav-item" href="entrainement.html"><span class="mobile-nav-icon"><img src="icons/entrainement.svg" alt="Training"></span></a>
+  <a class="mobile-nav-item" href="classement.html"><span class="mobile-nav-icon"><img src="icons/classement.svg" alt="Classement"></span></a>
+  <a class="mobile-nav-item" href="profil.html"><span class="mobile-nav-icon"><img src="icons/profil.svg" alt="Profil"></span></a>
+</nav>
+
+<a href="coach.html" class="coach-fab" title="Coach IA Sensei" aria-label="Coach IA">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</a>
+
+  <!-- i18n -->
+  <script src="i18n.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', initI18n);</script>
+</body>
+</html>
