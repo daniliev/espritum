@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+<title>Espritum — Tarifs</title>
+<link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #c82828;
+    --red-dark: #8a1a1a;
+    --bg: #080808;
+    --bg2: #0d0d0d;
+    --bg3: #111111;
+    --border: #1e1e1e;
+    --muted: #555555;
+    --muted2: #333333;
+    --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
+    --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: #fff;
+    font-family: var(--font-body);
+    font-weight: 400;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 48px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(8,8,8,0.96);
+    backdrop-filter: blur(14px);
+    z-index: 100;
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+
+  .nav-logo {
+    width: 38px; height: 38px;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+
+  .nav-name {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: 6px;
+    color: #fff;
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--font-body);
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: #fff; }
+
+  .nav-btn {
+    padding: 11px 28px;
+    background: var(--red);
+    border: none;
+    border-radius: 3px;
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .nav-btn:hover { background: #d93030; }
+
+  /* ── HERO ── */
+  #hero {
+    text-align: center;
+    padding: 140px 24px 100px;
+    position: relative;
+    overflow: hidden;
+    background-image:
+      linear-gradient(180deg, rgba(8,8,8,0.55) 0%, rgba(8,8,8,0.78) 70%, rgba(8,8,8,1) 100%),
+      url('https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=1920&auto=format&fit=crop&q=80');
+    background-size: cover;
+    background-position: center 30%;
+    background-repeat: no-repeat;
+  }
+
+  #hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 700px; height: 400px;
+    background: radial-gradient(ellipse at top, rgba(200,40,40,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-tag {
+    font-family: var(--font-body);
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: var(--red);
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 22px;
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(72px, 11vw, 120px);
+    font-weight: 400;
+    line-height: 0.88;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  .hero-title .accent { color: var(--red); }
+
+  .hero-sub {
+    font-family: var(--font-body);
+    font-size: 17px;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* ── SECTION BASE ── */
+  .section-wrap {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0 24px 90px;
+  }
+
+  .section-heading {
+    font-family: var(--font-display);
+    font-size: clamp(44px, 6vw, 64px);
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-align: center;
+    margin-bottom: 56px;
+    text-transform: uppercase;
+  }
+
+  /* ── À PROPOS / VERSET ── */
+  #a-propos .section-wrap { max-width: 720px; }
+
+  .verse-card {
+    position: relative;
+    background:
+      linear-gradient(135deg, rgba(13,13,13,0.92) 0%, rgba(13,13,13,0.98) 100%),
+      url('https://images.unsplash.com/photo-1519003300449-424ad0405076?w=1200&auto=format&fit=crop&q=80') center/cover;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--red);
+    border-radius: 10px;
+    padding: 44px 44px;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .verse-tag {
+    font-family: var(--font-body);
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--red);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 22px;
+  }
+
+  .verse-text {
+    font-family: var(--font-body);
+    font-size: 19px;
+    font-style: italic;
+    color: #ccc;
+    line-height: 1.75;
+    margin-bottom: 18px;
+    font-weight: 300;
+  }
+
+  .verse-ref {
+    font-family: var(--font-body);
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  /* ── FONCTIONNALITÉS ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .feat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.25s, transform 0.25s;
+  }
+
+  .feat-card:hover {
+    border-color: #3a1a1a;
+    transform: translateY(-2px);
+  }
+
+  .feat-image {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(35%) brightness(0.85);
+    transition: filter 0.25s;
+  }
+
+  .feat-card:hover .feat-image {
+    filter: grayscale(0%) brightness(1);
+  }
+
+  .feat-body {
+    padding: 24px 26px 28px;
+  }
+
+  .feat-icon { font-size: 24px; margin-bottom: 10px; display: block; }
+
+  .feat-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: #fff;
+  }
+
+  .feat-desc {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ── TOGGLE ── */
+  .toggle-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 56px;
+  }
+
+  .toggle-label {
+    font-family: var(--font-body);
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .toggle-label.on { color: #fff; }
+
+  .toggle {
+    width: 52px; height: 28px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.3s, border-color 0.3s;
+  }
+
+  .toggle.yearly { background: var(--red-dark); border-color: var(--red); }
+
+  .toggle-knob {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--muted);
+    transition: transform 0.3s, background 0.3s;
+  }
+
+  .toggle.yearly .toggle-knob { transform: translateX(24px); background: #fff; }
+
+  .save-badge {
+    padding: 4px 12px;
+    background: rgba(200,40,40,0.12);
+    border: 1px solid rgba(200,40,40,0.3);
+    border-radius: 20px;
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--red);
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+
+  /* ── GRATUIT ── */
+  .free-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 36px 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+
+  .free-left { max-width: 540px; }
+
+  .free-tag {
+    font-family: var(--font-body);
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--red);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .free-title {
+    font-family: var(--font-display);
+    font-size: 44px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    line-height: 1;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .free-title span { color: var(--red); }
+
+  .free-price {
+    font-family: var(--font-display);
+    font-size: 72px;
+    font-weight: 400;
+    color: var(--red);
+    line-height: 1;
+    margin-bottom: 14px;
+  }
+
+  .free-desc {
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .free-features {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 220px;
+  }
+
+  .free-feature {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: #aaa;
+    font-weight: 400;
+  }
+
+  .free-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+
+  .free-cta {
+    display: inline-block;
+    margin-top: 22px;
+    padding: 13px 30px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .free-cta:hover { border-color: #444; color: #aaa; }
+
+  /* ── PLANS ── */
+  .plans-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .plan-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 34px 30px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .plan-card:hover { border-color: #2a2a2a; transform: translateY(-4px); }
+
+  .plan-card.featured {
+    border-color: var(--red);
+    background: linear-gradient(160deg, #130505 0%, var(--bg2) 55%);
+  }
+
+  .plan-card.featured:hover { border-color: #e03030; }
+
+  .featured-badge {
+    position: absolute;
+    top: -13px; left: 50%;
+    transform: translateX(-50%);
+    padding: 5px 22px;
+    background: var(--red);
+    border-radius: 20px;
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .plan-tier { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .plan-icon { font-size: 20px; }
+
+  .plan-name {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 4px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .plan-card.featured .plan-name { color: var(--red); }
+
+  .plan-price { margin: 20px 0; }
+
+  .price-amount {
+    font-family: var(--font-display);
+    font-size: 68px;
+    font-weight: 400;
+    line-height: 1;
+    color: #fff;
+  }
+
+  .price-amount .euro {
+    font-size: 32px;
+    vertical-align: top;
+    margin-top: 12px;
+    display: inline-block;
+    color: var(--muted);
+  }
+
+  .price-period {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .price-yearly-note {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--muted2);
+    margin-top: 4px;
+    display: none;
+  }
+
+  .plan-desc {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 22px;
+    font-weight: 300;
+  }
+
+  .divider { height: 1px; background: var(--border); margin-bottom: 20px; }
+
+  .features-label {
+    font-family: var(--font-body);
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--muted2);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+
+  .features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    margin-bottom: 28px;
+  }
+
+  .feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: #aaa;
+    line-height: 1.4;
+    font-weight: 400;
+  }
+
+  .check {
+    width: 17px; height: 17px;
+    border-radius: 50%;
+    background: rgba(200,40,40,0.12);
+    border: 1px solid rgba(200,40,40,0.3);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+
+  .check::after { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--red); }
+
+  .feature.locked { opacity: 0.3; }
+  .feature.locked .check { background: rgba(255,255,255,0.03); border-color: var(--border); }
+  .feature.locked .check::after { background: var(--muted2); }
+
+  .plan-cta {
+    width: 100%;
+    padding: 15px;
+    border-radius: 4px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: auto;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+  }
+
+  .cta-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .cta-ghost:hover { border-color: #333; color: #888; }
+  .cta-red { background: var(--red); border: none; color: #fff; }
+  .cta-red:hover { background: #d93030; }
+  .cta-outline { background: transparent; border: 1px solid var(--red); color: var(--red); }
+  .cta-outline:hover { background: rgba(200,40,40,0.08); }
+
+  /* ── FAQ ── */
+  .faq-list { display: flex; flex-direction: column; }
+  .faq-item { border-bottom: 1px solid var(--border); }
+
+  .faq-q {
+    padding: 22px 0;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #ccc;
+    transition: color 0.2s;
+    gap: 16px;
+  }
+
+  .faq-q:hover { color: #fff; }
+
+  .faq-arrow {
+    font-size: 22px;
+    color: var(--red);
+    transition: transform 0.35s;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .faq-item.open .faq-arrow { transform: rotate(45deg); }
+
+  .faq-a {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.8;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding-bottom 0.3s ease;
+    font-weight: 300;
+  }
+
+  .faq-item.open .faq-a { max-height: 240px; padding-bottom: 22px; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 36px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .footer-brand { display: flex; align-items: center; gap: 10px; }
+  .footer-logo { width: 30px; height: 30px; object-fit: contain; border-radius: 6px; }
+
+  .footer-name {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 5px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .footer-copy {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--muted2);
+    letter-spacing: 1px;
+  }
+
+  @media (max-width: 960px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .plans-grid { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .free-card { flex-direction: column; }
+    footer { padding: 28px 20px; flex-direction: column; align-items: flex-start; }
+  }
+
+  @media (max-width: 560px) {
+    .features-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── LANDING MOBILE ── */
+  @media (max-width: 768px) {
+    body { overflow-x: hidden; }
+    nav { padding: 16px 20px !important; }
+    .nav-name { font-size: 18px !important; letter-spacing: 4px !important; }
+    .nav-logo { width: 40px !important; height: 40px !important; }
+    .hero-title { font-size: clamp(48px, 14vw, 80px) !important; }
+    section { padding: 40px 16px !important; }
+
+    /* Hero mobile : garde l'image bien visible et aérée, cadrage portrait */
+    #hero {
+      padding: 90px 20px 70px !important;
+      background-image:
+        linear-gradient(180deg, rgba(8,8,8,0.45) 0%, rgba(8,8,8,0.75) 70%, rgba(8,8,8,1) 100%),
+        url('https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=900&auto=format&fit=crop&q=80') !important;
+      background-position: center center !important;
+    }
+    #hero::before {
+      width: 100% !important;
+      height: 280px !important;
+    }
+
+    .pricing-grid { grid-template-columns: 1fr !important; }
+    .features-grid { grid-template-columns: 1fr !important; }
+    .faq-grid { grid-template-columns: 1fr !important; }
+
+    /* Feat-cards mobile : image un peu plus compacte */
+    .feat-image { height: 180px !important; }
+    .feat-body { padding: 20px 22px 24px !important; }
+
+    /* Verse-card mobile : padding réduit */
+    .verse-card { padding: 32px 24px !important; }
+  }
+
+  /* ── LANGUAGE SELECTOR ── */
+  .lang-selector {
+    display: flex; gap: 4px; align-items: center;
+  }
+  .lang-btn {
+    width: 28px; height: 28px; border-radius: 4px;
+    background: transparent; border: 1px solid transparent;
+    cursor: pointer; font-size: 16px; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.2s; padding: 0;
+    opacity: 0.45;
+  }
+  .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
+  .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
+
+  /* ── LANDING NAVBAR MOBILE FIX ── */
+  .lang-bar {
+    display: flex; justify-content: center; gap: 8px;
+    padding: 8px 16px; border-bottom: 1px solid #1a1a1a;
+    background: #060606;
+  }
+  .lang-bar .lang-btn { width: 32px; height: 32px; font-size: 18px; }
+
+  @media (max-width: 600px) {
+    nav { padding: 14px 16px !important; gap: 10px !important; }
+    .nav-name { display: none !important; }
+    .nav-logo { width: 42px !important; height: 42px !important; }
+    nav button { padding: 10px 14px !important; font-size: 12px !important; letter-spacing: 1.5px !important; }
+    .lang-trigger { padding: 9px 14px !important; font-size: 20px !important; }
+    .lang-arrow { font-size: 13px !important; }
+  }
+
+  /* ── BULGARIAN FONT ── */
+  html[lang="bg"] body,
+  html[lang="bg"] p,
+  html[lang="bg"] li,
+  html[lang="bg"] span,
+  html[lang="bg"] div,
+  html[lang="bg"] a,
+  html[lang="bg"] button {
+    font-family: 'Sofia Sans Condensed', sans-serif !important;
+    font-weight: 500;
+  }
+  html[lang="bg"] .hero-title {
+    font-family: 'Sofia Sans Condensed', sans-serif !important;
+    font-weight: 900 !important;
+    letter-spacing: 2px;
+  }
+  html[lang="bg"] .section-heading {
+    font-family: 'Sofia Sans Condensed', sans-serif !important;
+    font-weight: 900 !important;
+    letter-spacing: 3px;
+  }
+  html[lang="bg"] .plan-name,
+  html[lang="bg"] .free-title,
+  html[lang="bg"] .feat-title,
+  html[lang="bg"] .nav-name,
+  html[lang="bg"] .plan-tier .plan-name {
+    font-family: 'Sofia Sans Condensed', sans-serif !important;
+    font-weight: 800 !important;
+    letter-spacing: 2px;
+  }
+  html[lang="bg"] .feat-desc,
+  html[lang="bg"] .plan-desc,
+  html[lang="bg"] .free-desc,
+  html[lang="bg"] .faq-q span,
+  html[lang="bg"] .faq-a {
+    font-family: 'Sofia Sans Condensed', sans-serif !important;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* ── LANG DROPDOWN ── */
+  .lang-dropdown {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .lang-trigger {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 12px; background: transparent;
+    border: 1px solid #333; border-radius: 6px;
+    cursor: pointer; transition: all 0.2s;
+    font-size: 18px; color: #aaa;
+  }
+
+  .lang-trigger:hover { border-color: #555; }
+  .lang-trigger.open { border-color: var(--red); }
+
+  .lang-arrow {
+    font-size: 11px; color: #666;
+    transition: transform 0.2s;
+    line-height: 1;
+  }
+  .lang-trigger.open .lang-arrow { transform: rotate(180deg); }
+
+  .lang-menu {
+    display: none;
+    position: absolute; top: calc(100% + 8px); right: 0;
+    background: #0d0d0d; border: 1px solid #2a2a2a;
+    border-radius: 8px; overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    z-index: 100; min-width: 140px;
+    animation: fadeDown 0.15s ease;
+  }
+
+  .lang-menu.open { display: block; }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .lang-option {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; padding: 11px 16px;
+    background: transparent; border: none;
+    color: #aaa; font-family: inherit; font-size: 13px;
+    font-weight: 500; cursor: pointer; transition: all 0.15s;
+    text-align: left; letter-spacing: 0.5px;
+  }
+
+  .lang-option:hover { background: rgba(255,255,255,0.05); color: #fff; }
+  .lang-option.active { color: var(--red); background: rgba(200,40,40,0.06); }
+  .lang-option span { font-size: 18px; }
+
+  /* Supprimer l'ancienne lang-bar */
+  .lang-bar { display: none !important; }
+</style>
+<script src="site-config.js"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#">
+    <img class="nav-logo" src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAEsASwDASIAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAcIBgkDBAUCAf/EAFQQAAEDAwEFAwYHCA4JBQAAAAEAAgMEBQYRBwgSITETQWEiMlFxgbEUI2JykaHRCRUYUoKiwcMWM0JTVZKTlJWywtLT4RckQ0ZXc4WjxCY0VmPj/8QAGwEBAAIDAQEAAAAAAAAAAAAAAAQFAwYHAgH/xAAtEQEAAQMCAwYGAwEAAAAAAAAAAQIDEQQFBiExEhNBUWHRFCKBkbHBMnGhUv/aAAwDAQACEQMRAD8ApkiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiy/D7fb621OfUUsckjZS0l3XoCPevYlsVrdE9rKKJri0gHToVEr1lNFU0zDb9HwdqtXpqdRRcpxVGfHP4Rwi+pGPjkdHI0te0lrgeoIXypbUZiYnEiIiPgiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICL9HIgqSILXaZYI5WUNM5r2hwIYOYIWC9fi1jMdV7smxXN3muLdcU9nHX1z7I2RZtllopm2h0tHSRRvieHuLGAHh5g+/X2LCV6s3Yu05hH3jabu1X+5uTnMZzHRkWDV7aevfSSEBtQBwn5Q6D2/Ys4UTNc5rg5pLXA6gjqCs4x3IoauNtPWyNiqRyDjya/7CoessTM9ulufBu/WqLfwN+rGP4zPTn4f3no+sgxyO4SmppnthnPngjyX+PgViNztdbbnaVMJa0nQPHNp9qk1fEsccsbo5WNexw0LXDUFYbWrro5TzhdbvwjpNfNV238lc+MdJn1j2wihFkWUY+aLirKME0+vlM6mP/JY6rS3cpuU9qlyvcNvv7ffmzfjEx9pjzgREXtBEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBZ3hVwbU274I93xtPyHi3u+z6Fgi56GqnoqltRTv4JG/QR6D4LDftd7RhdbDu07Xq4vdaZ5THp7x1SkQCCCNQeoWNXPEoZpHS0U3YE8+zcNW+w931rvWW/0dwY1j3tgqNObHHQE+B717CqYquWKvJ1y7Y27fLEVVYrp8J8Y/cf0jK52uttz9KmIhp6PbzafaukpXnijnhdFMwPY4aOaehUfZLaTa6wBnE6nk5xuPd6QrHT6rvPlq6uc8R8LTttPf2J7Vvxz1j3j1cVrvNfb3jspi+Pvjfzafs9izmy3amukBfEeGRvnxk82/aFGq7VrrZrfWsqYTzafKHc4d4K9X9NTcjMdUfYOJb+3XIouVTVanrHXHrHt0lJ7mtc0tcA5pGhBHIhR3k1s+9txLWA9hJ5UX6R7PsUg0s0dTTxzxHVkjQ5p8CvIzOlFRZXyBnE+Ah4IHMDofZpz9igaa5Nu5ifFv3FG3W9w2+btHOqiO1E+njH1j/cMAREVw4yIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICLN8QpKKosjHy0sEj2vc0udGCeuv6V6Vda6F1FO2Ohpw8xuDSIhqDpyUOrWU01TTMNz03Bl/UaWnU03YxVGcYny6I2Xo2u811vlaWTPfEDziedWkfoXnIpVVMVRiYanp9Te01cXLNU0zHjCU6GpirKSOphJ4JBqNeo8F0sopG1llnby4429ow6d45/WNQsVs+Rz26hbStp2SNaSQXOI6rszZbUSwvjNHEA9pafKPeq34W5TXml0+rirbdVoe61FXzVU4mMT1mOf8AvRjSIitHKWfYRP2tjaw/7KRzP0/pXr1kYlpJoj0fG5p9oXi4JG5llc93SSZzm+rQD3gr26hwZBI49A0k/QqS9yuzjzd02SZr2m13n/EfbHsilERXbhYiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgy/Z9UAx1NIXcwRI0fUf0LK1GNnrX2+4xVTeYadHj0tPVSXDIyaJssTg5jxq0jvCqdZbmmvtebrvBe406jQ/DzPzW/xPOJ/SO8loHUF1lYGBsTzxx6dND3ezovMUl3u2Q3Sj7GQ8L2nWN4HNp+xR/c7dVW6cxVMZH4rx5rvUVM01+LlOJ6tM4m2C7t9+q7bjNqqcxPlnwn9OoiIpTVRfcEUk8zIYmlz3kNaB3lIIZZ5WxQxuke7o1o1JWcYxYfvf/rVVo6pcNABzDB9qw3r1NqnM9V1suyX90vxTTGKI6z4RHv5Q9W1UgobfDSg69m3Qn0nvP0rq5RU/BbHUOBHE9vZj8rl7tV6iwbNrl8KrRRxO1igPlaHk5/+XT6VV2KJu3Of9upb/rLe17ZVTRyzHZpj6Y/yObHkRFdOJiIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAsgxW+/AHfBKpxNM4+S7r2Z+xY+i8XLdNyns1Ju36+9oL8X7M4mPtMeU+iWGPa9gexwc1w1BB1BC/Joop4zHNG2Rh6tcNQVHdmvdbbDwxu7SHvif09noWV0GT22pAEr3Uz+8PHL6R/kqq5pblucxzh1nbOKtBr6OzdmKKvGKun0npP59H7UYvaZXFzY5ISfxH8vr1XHHidradXGok8C/l9QXsxVVLKNYqiF4+S8FfT5oWDV8sbR4uAXjvrscsynTs201z3ndUfaMezioqGkomltLTsiB6kDmfWeq7K8usv8AaqUHiqmyO/Fi8o/VyWM3jKKqraYqRppoj1IPln293sX2jT3Lk5/LBreINs2y32aaomY6U04/XKPq9fKb82lY+jo361B5PeP9n/n7lhB5nUoeZ1KK1s2abVOIco3jeL+63+9u8ojpHhEe/nIiIsqpEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEX1Gx8jwyNjnuPINaNSV7VHh2XVjQ6jxa+VDT0MVvleD9DUHhosklwLOoW8UuF5HG30utcwH9VeNcLZcreeGvt9XSH0TwuZ7wg6iIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiDmdAgL0cesd5yG6R2uxWusudbJ5kFLC6R58dB3eKn3YNut5DmDYb3mrqnHrI7R8dPwAVdU3wB/a2+Lhqe4ac1dLAsGxPBbULbitkpbbDoON0bdZJSO97zq559ZKCnWzbc+y67sirMzu1Nj1O4cRpoQKip9R0IY36XepWAwzdi2R46yN01ilvlSzTWa5zmQE/8ALbws/NU0LxMry7F8UpfhOSZBbLTHpqPhVS1jnfNaTq72AoOxZMesFjibFZbJbbaxvINpKVkQH8UBemoFybey2S2lz46Cou17e3kDR0Zawn50pZ9OhWD12+tZWOIosCuEze4zXBkZ+gMcgtkvioghqIjFUQxzRu6se0OB9hVR6ffYpi7/AFjZ3M0ell2BP1xBZFZN8rAamQMuuO3+36/u42xzNH5wP1IJeynY7swyZr/vvhFmfI/zpoKcQSn8uPhd9ahnOtzfEq9kk+IX+4Wac82wVQFTB6geTx6yXKVsP287JspdHFb8yoKeof0gryaV+vo+MABPqJUkwyRzRNlhkZJG8atc06gj0goNa20rd72n4MJamqsbrrbo9Sa22EzsDfS5uge31lunionW4NRPtb3f9nm0QS1dVbfvReHg6XC3gRvcfTIzzZPEkcXiEGtRFLG2nYJnGzEvraunbdrHxaNudG0ljR3dq3rGfXq30EqJ0BERAREQEREBERAREQEREBERAREQEREBERARF9wRSzzMggjfLLI4MYxjSXOcToAAOpKDlttFV3K4U9vt9NLVVdTK2GCGJpc+R7jo1oA6kkgK9G7Nu10GHx02U51T09wyLyZaakOj4aA9QT3PlHp6NI5anyl6O6fsGpMAtEGVZRRsly2qj1ax+jhbmHXyG93aEacT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" alt="Espritum">
+    <span class="nav-name">Espritum</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#a-propos" data-i18n="landing_about">À propos</a></li>
+    <li><a href="#fonctionnalites" data-i18n="landing_features">Fonctionnalités</a></li>
+    <li><a href="#tarifs" data-i18n="landing_pricing">Tarifs</a></li>
+    <li><a href="#faq" data-i18n="landing_faq">FAQ</a></li>
+  </ul>
+  <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+    <button onclick="window.location.href='inscription.html?tab=connexion'" style="padding:8px 14px;background:transparent;border:1px solid #333;border-radius:4px;color:#aaa;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;" data-i18n="landing_connect">Connexion</button>
+    <button class="nav-btn" onclick="window.location.href='inscription.html'" style="padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" data-i18n="landing_signup">S'inscrire</button>
+  </div>
+  <!-- Dropdown langue -->
+  <div class="lang-dropdown" id="lang-dropdown">
+    <button class="lang-trigger" onclick="toggleLangMenu(event)" id="lang-trigger">
+      <span id="lang-current-flag">🇫🇷</span>
+      <span class="lang-arrow" id="lang-arrow">▾</span>
+    </button>
+    <div class="lang-menu" id="lang-menu">
+      <button class="lang-option" onclick="selectLang('fr')"><span>🇫🇷</span> Français</button>
+      <button class="lang-option" onclick="selectLang('en')"><span>🇬🇧</span> English</button>
+      <button class="lang-option" onclick="selectLang('bg')"><span>🇧🇬</span> Български</button>
+    </div>
+  </div>
+  </nav>
+
+<!-- HERO -->
+<section id="hero">
+  <h1 class="hero-title" data-i18n="landing_hero">CHOISIS TON ARMURE.</h1>
+  <p class="hero-sub" data-i18n="landing_sub">Chaque plan est une étape vers une meilleure version de toi-même. Commence gratuitement, monte en puissance quand tu es prêt.</p>
+  <p style="font-size:12px;letter-spacing:5px;color:var(--red);text-align:center;margin-top:16px;font-weight:600;text-transform:uppercase;">NOT JUST FLESH, BUT SPIRIT.</p>
+</section>
+
+<!-- À PROPOS -->
+<section id="a-propos">
+  <div class="section-wrap">
+    <h2 class="section-heading" data-i18n="landing_about">À propos</h2>
+    <div class="verse-card">
+      <div class="verse-tag" data-i18n="landing_verse_tag">— Verset du jour</div>
+      <p class="verse-text" data-i18n="landing_verse">"Ne sais-tu pas ? L'Éternel donne de la force à celui qui est fatigué."</p>
+      <div class="verse-ref" data-i18n="landing_verse_ref">Ésaïe 40 : 28-29</div>
+    </div>
+  </div>
+</section>
+
+<!-- FONCTIONNALITÉS -->
+<section id="fonctionnalites">
+  <div class="section-wrap">
+    <h2 class="section-heading" data-i18n="landing_features">Fonctionnalités</h2>
+    <div class="features-grid">
+      <div class="feat-card">
+        <img class="feat-image" src="https://images.unsplash.com/photo-1550345332-09e3ac987658?w=600&auto=format&fit=crop&q=80" alt="Silhouette athlétique" loading="lazy">
+        <div class="feat-body">
+          <span class="feat-icon">📸</span>
+          <div class="feat-title" data-i18n="feat_bodyfat_title">Masse grasse par caméra</div>
+          <p class="feat-desc" data-i18n="feat_bodyfat_desc">L'IA analyse ta silhouette et estime ton taux de masse grasse en quelques secondes. Disponible gratuitement.</p>
+        </div>
+      </div>
+      <div class="feat-card">
+        <img class="feat-image" src="https://images.unsplash.com/photo-1545389336-cf090694435e?w=600&auto=format&fit=crop&q=80" alt="Méditation / sagesse" loading="lazy">
+        <div class="feat-body">
+          <span class="feat-icon">🤖</span>
+          <div class="feat-title" data-i18n="feat_coach_title">Coach IA Sensei</div>
+          <p class="feat-desc" data-i18n="feat_coach_desc">Un mentor alimenté par l'IA, disponible 24h/24. Conseils nutrition, entraînement et motivation dans le style anime.</p>
+        </div>
+      </div>
+      <div class="feat-card">
+        <img class="feat-image" src="https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?w=600&auto=format&fit=crop&q=80" alt="Nutrition saine" loading="lazy">
+        <div class="feat-body">
+          <span class="feat-icon">🍎</span>
+          <div class="feat-title" data-i18n="feat_nutrition_title">Suivi nutrition</div>
+          <p class="feat-desc" data-i18n="feat_nutrition_desc">Calories, macros, scan de code-barre et repas favoris. Tout pour maîtriser ton alimentation au quotidien.</p>
+        </div>
+      </div>
+      <div class="feat-card">
+        <img class="feat-image" src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&auto=format&fit=crop&q=80" alt="Haltères noirs" loading="lazy">
+        <div class="feat-body">
+          <span class="feat-icon">💪</span>
+          <div class="feat-title" data-i18n="feat_training_title">Plans d'entraînement</div>
+          <p class="feat-desc" data-i18n="feat_training_desc">Des programmes générés selon ton profil, ton objectif et ton niveau. Mis à jour automatiquement chaque semaine.</p>
+        </div>
+      </div>
+      <div class="feat-card">
+        <img class="feat-image" src="https://images.unsplash.com/photo-1606902965551-dce093cda6e7?w=600&auto=format&fit=crop&q=80" alt="Mesure progression" loading="lazy">
+        <div class="feat-body">
+          <span class="feat-icon">📊</span>
+          <div class="feat-title" data-i18n="feat_progress_title">Progression corporelle</div>
+          <p class="feat-desc" data-i18n="feat_progress_desc">Photos avant/après, mensurations, poids — tout est tracé avec des graphiques clairs semaine après semaine.</p>
+        </div>
+      </div>
+      <div class="feat-card">
+        <img class="feat-image" src="https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=600&auto=format&fit=crop&q=80" alt="Bible ouverte avec lumière" loading="lazy">
+        <div class="feat-body">
+          <span class="feat-icon">📖</span>
+          <div class="feat-title" data-i18n="feat_faith_title">Motivation chrétienne</div>
+          <p class="feat-desc" data-i18n="feat_faith_desc">Un verset biblique chaque matin, des prières avant l'entraînement et des citations de figures bibliques pour tenir le cap.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TARIFS -->
+<section id="tarifs">
+  <div class="section-wrap">
+    <h2 class="section-heading" data-i18n="landing_pricing">Tarifs</h2>
+
+    <!-- Toggle -->
+    <div class="toggle-wrap">
+      <span class="toggle-label on" id="lbl-monthly" data-i18n="landing_monthly">Mensuel</span>
+      <div class="toggle" id="toggle" onclick="switchBilling()">
+        <div class="toggle-knob"></div>
+      </div>
+      <span class="toggle-label" id="lbl-yearly" data-i18n="landing_yearly">Annuel</span>
+      <span class="save-badge" data-i18n="landing_save">-20%</span>
+    </div>
+
+    <!-- Gratuit -->
+    <div class="free-card">
+      <div class="free-left">
+        <div class="free-tag" data-i18n="free_tag">— Toujours gratuit</div>
+        <h2 class="free-title" data-i18n="free_title">COMMENCE SANS PAYER.</h2>
+        <div class="free-price">0€</div>
+        <p class="free-desc" data-i18n="free_desc">Découvre Espritum gratuitement avec la fonctionnalité phare : l'estimation de ta masse grasse par caméra. Pas de carte bancaire requise.</p>
+        <a class="free-cta" href="inscription.html" data-i18n="plan_start">Commencer gratuitement →</a>
+      </div>
+      <div class="free-features">
+        <div class="free-feature"><div class="free-dot"></div><span data-i18n="free_f1">Estimation masse grasse (caméra)</span></div>
+        <div class="free-feature"><div class="free-dot"></div><span data-i18n="free_f2">Verset biblique du jour</span></div>
+        <div class="free-feature"><div class="free-dot"></div><span data-i18n="free_f3">Dashboard basique</span></div>
+        <div class="free-feature"><div class="free-dot"></div><span data-i18n="free_f4">1 plan d'entraînement fixe</span></div>
+        <div class="free-feature"><div class="free-dot"></div><span data-i18n="free_f5">Suivi poids simple</span></div>
+      </div>
+    </div>
+
+    <!-- Plans -->
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-tier">
+          <span class="plan-icon">⚔️</span>
+          <span class="plan-name">Guerrier</span>
+        </div>
+        <div class="plan-price">
+          <div class="price-amount"><span class="euro">€</span><span class="price-val" data-m="5" data-y="4">5</span></div>
+          <div class="price-period" data-i18n="price_period">par mois</div>
+          <div class="price-yearly-note">soit €48/an — économise €12</div>
+        </div>
+        <p class="plan-desc" data-i18n="warrior_desc">Pour celui qui fait ses premiers pas dans la discipline. Les fondations sont posées.</p>
+        <div class="divider"></div>
+        <div class="features-label" data-i18n="plan_included">Inclus dans ce plan</div>
+        <ul class="features">
+          <li class="feature"><span class="check"></span><span data-i18n="wf1">Tout du plan gratuit</span></li>
+          <li class="feature"><span class="check"></span><span data-i18n="wf2">Suivi nutrition complet (calories + macros)</span></li>
+          <li class="feature"><span class="check"></span><span data-i18n="wf3">3 plans d'entraînement personnalisés</span></li>
+          <li class="feature"><span class="check"></span><span data-i18n="wf4">Historique 30 jours</span></li>
+          <li class="feature"><span class="check"></span><span data-i18n="wf5">Badges & système de niveaux</span></li>
+          <li class="feature locked"><span class="check"></span><span data-i18n="wf6">Coach IA Sensei</span></li>
+          <li class="feature locked"><span class="check"></span><span data-i18n="wf7">Scan repas caméra</span></li>
+        </ul>
+        <a class="plan-cta cta-ghost" href="inscription.html?plan=guerrier" data-i18n="warrior_cta">Rejoindre Guerrier →</a>
+      </div>
+
+      <div class="plan-card featured">
+        <div class="featured-badge" data-i18n="plan_popular">Le plus populaire</div>
+        <div class="plan-tier">
+          <span class="plan-icon">🛡️</span>
+          <span class="plan-name">Champion</span>
+        </div>
+        <div class="plan-price">
+          <div class="price-amount"><span class="euro">€</span><span class="price-val" data-m="15" data-y="12">15</span></div>
+          <div class="price-period" data-i18n="price_period">par mois</div>
+          <div class="price-yearly-note">soit €144/an — économise €36</div>
+        </div>
+        <p class="plan-desc" data-i18n="champion_desc">Pour le guerrier sérieux. L'IA devient ton mentor personnel, disponible 24h/24.</p>
+        <div class="divider"></div>
+        <div class="features-label" data-i18n="plan_included">Inclus dans ce plan</div>
+        <ul class="features">
+          <li class="feature"><span class="check"></span><span data-i18n="cf1">Tout du plan Guerrier</span></li>
+          <li class="feature"><span class="check"></span><span data-i18n="cf2">Coach IA Sensei (illimité)</span></li>
+          <li class="feature"><span class="check"></span><span data-i18n="cf3">Scan de repas par caméra</span></li>
+          <li class="feature"><span class="check"></span><span data-i18n="cf4">Suivi mensurations complet</span></li>
+          <li class="feature"><span class="check"></span><span data-i18n="cf5">Photos progression avant/après</span></li>
+          <li class="feature"><span class="check"></span><span data-i18n="cf6">Classement communautaire</span></li>
+          <li class="feature"><span class="check"></span><span data-i18n="cf7">Prières & citations bibliques premium</span></li>
+        </ul>
+        <a class="plan-cta cta-red" href="inscription.html?plan=champion" data-i18n="champion_cta">Rejoindre Champion →</a>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-tier">
+          <span class="plan-icon">👑</span>
+          <span class="plan-name">Élite</span>
+        </div>
+        <div class="plan-price">
+          <div class="price-amount"><span class="euro">€</span><span class="price-val" data-m="30" data-y="24">30</span></div>
+          <div class="price-period" data-i18n="price_period">par mois</div>
+          <div class="price-yearly-note">soit €288/an — économise €72</div>
+        </div>
+        <p class="plan-desc" data-i18n="elite_desc">Pour ceux qui refusent la médiocrité. Une expérience entièrement sur-mesure.</p>
+        <div class="divider"></div>
+        <div class="features-label" data-i18n="plan_included">Inclus dans ce plan</div>
+        <ul class="features">
+          <li class="feature"><span class="check"></span><span data-i18n="ef1">Tout du plan Champion</span></li>
+          <li class="feature"><span class="check"></span><span data-i18n="ef2">Plan nutrition 100% IA personnalisé</span></li>
+          <li class="feature"><span class="check"></span><span data-i18n="ef3">Analyse morphologique avancée</span></li>
+          <li class="feature"><span class="check"></span><span data-i18n="ef4">Accès prioritaire nouvelles fonctionnalités</span></li>
+          <li class="feature"><span class="check"></span><span data-i18n="ef5">Badge Élite exclusif</span></li>
+          <li class="feature"><span class="check"></span><span data-i18n="ef6">Support direct prioritaire</span></li>
+        </ul>
+        <a class="plan-cta cta-outline" href="inscription.html?plan=elite" data-i18n="elite_cta">Rejoindre Élite →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="section-wrap">
+    <h2 class="section-heading" data-i18n="faq_title">Questions fréquentes</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q1b">Comment fonctionne l'estimation de masse grasse par caméra ?</span><span class="faq-arrow">+</span></div>
+        <div class="faq-a" data-i18n="faq_a1b">L'IA analyse ta silhouette via la caméra de ton téléphone et estime ton taux de masse grasse grâce à des algorithmes de vision par ordinateur. Ce n'est pas une mesure médicale, mais une estimation fiable pour suivre ta progression dans le temps. Cette fonctionnalité est disponible gratuitement.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q2">Puis-je changer de plan à tout moment ?</span><span class="faq-arrow">+</span></div>
+        <div class="faq-a" data-i18n="faq_a2">Oui, tu peux upgrader ou downgrader ton plan à n'importe quel moment depuis ton profil. Le changement prend effet immédiatement et la facturation est ajustée au prorata du mois en cours.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q3b">Le contenu chrétien est-il obligatoire ?</span><span class="faq-arrow">+</span></div>
+        <div class="faq-a" data-i18n="faq_a3b">Non. Le verset du jour, les prières et les citations bibliques sont des fonctionnalités que tu peux activer ou désactiver librement dans les paramètres. Espritum accueille tout le monde, quelle que soit ta foi.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q4">Comment fonctionne le Coach IA Sensei ?</span><span class="faq-arrow">+</span></div>
+        <div class="faq-a" data-i18n="faq_a4">Sensei est alimenté par l'IA Claude d'Anthropic. Il analyse tes données nutritionnelles, tes performances et te donne des conseils personnalisés dans un style inspiré de l'univers anime — direct, profond et motivant. Disponible sur les plans Champion et Élite.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q5">L'application est-elle disponible sur iPhone ?</span><span class="faq-arrow">+</span></div>
+        <div class="faq-a" data-i18n="faq_a5">Espritum est une PWA (Progressive Web App), accessible via le navigateur sur iOS et Android. Sur Android, tu peux l'installer depuis le Play Store. Sur iPhone, tu peux l'ajouter à ton écran d'accueil depuis Safari.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q6">Mes données sont-elles sécurisées ?</span><span class="faq-arrow">+</span></div>
+        <div class="faq-a" data-i18n="faq_a6">Oui. Toutes tes données corporelles, nutritionnelles et personnelles sont chiffrées et stockées de manière sécurisée. Nous ne partageons jamais tes informations avec des tiers. Tu peux demander la suppression de ton compte à tout moment.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q7">Y a-t-il une période d'essai ?</span><span class="faq-arrow">+</span></div>
+        <div class="faq-a" data-i18n="faq_a7">Le plan gratuit est permanent — pas de limite de temps. Pour les plans payants, nous offrons une garantie satisfait ou remboursé de 7 jours. Si tu n'es pas satisfait, contacte-nous et nous te remboursons intégralement.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <img class="footer-logo" src="data:image/png;base64,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Rppoj1IPln293sX2jT3Lk5/LBreINs2y32aaomY6U04/XKPq9fKb82lY+jo361B5PeP9n/n7lhB5nUoeZ1KK1s2abVOIco3jeL+63+9u8ojpHhEe/nIiIsqpEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEX1Gx8jwyNjnuPINaNSV7VHh2XVjQ6jxa+VDT0MVvleD9DUHhosklwLOoW8UuF5HG30utcwH9VeNcLZcreeGvt9XSH0TwuZ7wg6iIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiDmdAgL0cesd5yG6R2uxWusudbJ5kFLC6R58dB3eKn3YNut5DmDYb3mrqnHrI7R8dPwAVdU3wB/a2+Lhqe4ac1dLAsGxPBbULbitkpbbDoON0bdZJSO97zq559ZKCnWzbc+y67sirMzu1Nj1O4cRpoQKip9R0IY36XepWAwzdi2R46yN01ilvlSzTWa5zmQE/8ALbws/NU0LxMry7F8UpfhOSZBbLTHpqPhVS1jnfNaTq72AoOxZMesFjibFZbJbbaxvINpKVkQH8UBemoFybey2S2lz46Cou17e3kDR0Zawn50pZ9OhWD12+tZWOIosCuEze4zXBkZ+gMcgtkvioghqIjFUQxzRu6se0OB9hVR6ffYpi7/AFjZ3M0ell2BP1xBZFZN8rAamQMuuO3+36/u42xzNH5wP1IJeynY7swyZr/vvhFmfI/zpoKcQSn8uPhd9ahnOtzfEq9kk+IX+4Wac82wVQFTB6geTx6yXKVsP287JspdHFb8yoKeof0gryaV+vo+MABPqJUkwyRzRNlhkZJG8atc06gj0goNa20rd72n4MJamqsbrrbo9Sa22EzsDfS5uge31lunionW4NRPtb3f9nm0QS1dVbfvReHg6XC3gRvcfTIzzZPEkcXiEGtRFLG2nYJnGzEvraunbdrHxaNudG0ljR3dq3rGfXq30EqJ0BERAREQEREBERAREQEREBERAREQEREBERARF9wRSzzMggjfLLI4MYxjSXOcToAAOpKDlttFV3K4U9vt9NLVVdTK2GCGJpc+R7jo1oA6kkgK9G7Nu10GHx02U51T09wyLyZaakOj4aA9QT3PlHp6NI5anyl6O6fsGpMAtEGVZRRsly2qj1ax+jhbmHXyG93aEacT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" alt="Espritum">
+    <span class="footer-name">Espritum</span>
+  </div>
+  <div class="footer-copy"><span data-i18n="footer_rights">© 2025 Espritum — Tous droits réservés</span></div>
+</footer>
+
+<script>
+  let yearly = false;
+
+  function switchBilling() {
+    yearly = !yearly;
+    document.getElementById('toggle').classList.toggle('yearly', yearly);
+    document.getElementById('lbl-monthly').classList.toggle('on', !yearly);
+    document.getElementById('lbl-yearly').classList.toggle('on', yearly);
+    document.querySelectorAll('.price-val').forEach(el => {
+      el.textContent = yearly ? el.dataset.y : el.dataset.m;
+    });
+    document.querySelectorAll('.price-yearly-note').forEach(el => {
+      el.style.display = yearly ? 'block' : 'none';
+    });
+  }
+
+  function toggleFaq(el) {
+    const item = el.parentElement;
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!wasOpen) item.classList.add('open');
+  }
+</script>
+
+  <!-- i18n -->
+  <script src="i18n.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', initI18n);
+
+    const FLAGS = { fr: '🇫🇷', en: '🇬🇧', bg: '🇧🇬' };
+
+    function toggleLangMenu(e) {
+      e.stopPropagation();
+      const menu = document.getElementById('lang-menu');
+      const trigger = document.getElementById('lang-trigger');
+      const isOpen = menu.classList.contains('open');
+      menu.classList.toggle('open', !isOpen);
+      trigger.classList.toggle('open', !isOpen);
+    }
+
+    function selectLang(lang) {
+      // setLang recharge la page automatiquement
+      setLang(lang);
+    }
+
+    // Fermer si on clique ailleurs
+    document.addEventListener('click', () => {
+      document.getElementById('lang-menu')?.classList.remove('open');
+      document.getElementById('lang-trigger')?.classList.remove('open');
+    });
+
+    // Initialiser le drapeau selon la langue sauvegardée
+    document.addEventListener('DOMContentLoaded', () => {
+      const lang = localStorage.getItem('espritum_lang') || 'fr';
+      document.getElementById('lang-current-flag').textContent = FLAGS[lang];
+      document.querySelectorAll('.lang-option').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('onclick').includes(lang));
+      });
+    });
+  </script>
+</body>
+</html>

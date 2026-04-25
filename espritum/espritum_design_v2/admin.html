@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espritum — Admin</title>
+<link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --red: #c82828; --bg: #060606; --bg2: #0a0a0a; --bg3: #0f0f0f;
+    --border: #181818; --muted: #555; --muted2: #2e2e2e;
+    --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
+    --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
+    --sidebar: 220px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: #fff; font-family: var(--font-body); display: flex; }
+
+  .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 50; }
+  .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 22px 18px; border-bottom: 1px solid var(--border); text-decoration: none; }
+  .sidebar-logo { width: 32px; height: 32px; object-fit: contain; border-radius: 6px; }
+  .sidebar-name { font-family: var(--font-display); font-size: 16px; letter-spacing: 4px; color: #fff; text-transform: uppercase; }
+  .admin-tag { font-size: 8px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; font-weight: 700; padding: 2px 8px; background: rgba(200,40,40,0.1); border: 1px solid rgba(200,40,40,0.2); border-radius: 3px; margin-left: auto; }
+  .sidebar-nav { flex: 1; padding: 16px 10px; display: flex; flex-direction: column; gap: 3px; }
+  .nav-section-label { font-size: 9px; letter-spacing: 3px; color: var(--muted2); text-transform: uppercase; font-weight: 700; padding: 12px 10px 5px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 5px; cursor: pointer; text-decoration: none; transition: all 0.2s; color: var(--muted); font-size: 13px; font-weight: 500; }
+  .nav-item:hover { background: var(--bg3); color: #ccc; }
+  .nav-item.active { background: rgba(200,40,40,0.1); color: #fff; border-left: 2px solid var(--red); }
+  .nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+  .sidebar-bottom { padding: 14px 10px; border-top: 1px solid var(--border); }
+
+  .main { margin-left: var(--sidebar); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+  .topbar { padding: 18px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 40; }
+  .topbar-title { font-family: var(--font-display); font-size: 26px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; }
+  .topbar-right { font-size: 12px; color: var(--muted); }
+
+  /* TABS */
+  .tab-bar { display: flex; gap: 0; border-bottom: 1px solid var(--border); background: var(--bg2); padding: 0 28px; }
+  .tab { padding: 14px 20px; font-size: 12px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; margin-bottom: -1px; }
+  .tab:hover { color: #ccc; }
+  .tab.active { color: #fff; border-bottom-color: var(--red); }
+
+  /* PANELS */
+  .panel { display: none; padding: 28px; }
+  .panel.active { display: block; }
+
+  /* ── DASHBOARD PANEL ── */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .kpi-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 7px; padding: 18px; }
+  .kpi-card.highlight { border-color: rgba(200,40,40,0.25); background: linear-gradient(135deg, #0c0303, var(--bg2)); }
+  .kpi-label { font-size: 9px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; font-weight: 600; margin-bottom: 10px; }
+  .kpi-val { font-family: var(--font-display); font-size: 40px; line-height: 1; color: #fff; margin-bottom: 6px; }
+  .kpi-sub { font-size: 11px; color: var(--muted2); margin-top: 5px; }
+
+  .plans-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .plan-stat { background: var(--bg2); border: 1px solid var(--border); border-radius: 7px; padding: 16px; text-align: center; }
+  .plan-stat-icon { font-size: 28px; margin-bottom: 8px; }
+  .plan-stat-name { font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+  .plan-stat-count { font-family: var(--font-display); font-size: 36px; color: #fff; }
+  .plan-stat-revenue { font-size: 12px; color: var(--red); margin-top: 4px; }
+
+  .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .card-title { font-family: var(--font-display); font-size: 16px; letter-spacing: 2px; text-transform: uppercase; }
+
+  /* ── USERS PANEL ── */
+  .filters-bar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .search-input { flex: 1; min-width: 200px; padding: 10px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 5px; color: #fff; font-family: var(--font-body); font-size: 13px; outline: none; }
+  .search-input:focus { border-color: rgba(200,40,40,0.3); }
+  .search-input::placeholder { color: var(--muted2); }
+  .filter-select { padding: 10px 12px; background: var(--bg3); border: 1px solid var(--border); border-radius: 5px; color: #ccc; font-family: var(--font-body); font-size: 13px; outline: none; cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { padding: 10px 14px; font-size: 9px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; font-weight: 700; border-bottom: 1px solid var(--border); text-align: left; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:hover { background: var(--bg3); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody td { padding: 12px 14px; font-size: 13px; color: #888; }
+  .user-cell { display: flex; align-items: center; gap: 10px; }
+  .u-avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 13px; flex-shrink: 0; }
+  .u-name { font-size: 13px; color: #ddd; font-weight: 500; }
+  .u-email { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .plan-pill { padding: 3px 10px; border-radius: 10px; font-size: 10px; font-weight: 600; letter-spacing: 1px; }
+  .pill-gratuit { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid var(--border); }
+  .pill-guerrier { background: rgba(21,101,192,0.1); color: #64b5f6; border: 1px solid rgba(21,101,192,0.2); }
+  .pill-champion { background: rgba(200,40,40,0.1); color: #ef9a9a; border: 1px solid rgba(200,40,40,0.2); }
+  .pill-elite { background: rgba(232,160,0,0.1); color: #ffd54f; border: 1px solid rgba(232,160,0,0.2); }
+  .action-btns { display: flex; gap: 6px; }
+  .action-btn { padding: 5px 12px; background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); font-family: var(--font-body); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .action-btn.danger { border-color: rgba(200,40,40,0.3); color: var(--red); }
+  .action-btn.danger:hover { background: rgba(200,40,40,0.08); }
+  .action-btn.success { border-color: rgba(46,125,50,0.3); color: #4caf50; }
+
+  /* ── THEME EDITOR PANEL ── */
+  .editor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .editor-section { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 22px; }
+  .editor-section-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .editor-section-icon { font-size: 20px; }
+
+  .config-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); gap: 14px; }
+  .config-item:last-child { border-bottom: none; }
+  .config-label { font-size: 13px; color: #ccc; flex: 1; }
+  .config-sublabel { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .config-control { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+  /* Color picker */
+  .color-preview { width: 32px; height: 32px; border-radius: 6px; border: 2px solid rgba(255,255,255,0.1); cursor: pointer; transition: transform 0.2s; flex-shrink: 0; }
+  .color-preview:hover { transform: scale(1.1); }
+  input[type="color"] { width: 0; height: 0; padding: 0; border: none; opacity: 0; position: absolute; }
+
+  /* Text input */
+  .config-text-input { padding: 8px 12px; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; color: #fff; font-family: var(--font-body); font-size: 13px; outline: none; transition: border-color 0.2s; width: 220px; }
+  .config-text-input:focus { border-color: rgba(200,40,40,0.4); }
+
+  /* Size input */
+  .config-size-input { padding: 8px 10px; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; color: #fff; font-family: var(--font-body); font-size: 13px; outline: none; width: 90px; text-align: center; }
+  .config-size-input:focus { border-color: rgba(200,40,40,0.4); }
+
+  /* Range */
+  .config-range { width: 120px; accent-color: var(--red); }
+
+  /* Save button */
+  .save-section { position: sticky; bottom: 0; background: var(--bg); border-top: 1px solid var(--border); padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; z-index: 30; }
+  .btn-save-all { padding: 13px 36px; background: var(--red); border: none; border-radius: 5px; color: #fff; font-family: var(--font-body); font-size: 13px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+  .btn-save-all:hover { background: #d93030; }
+  .btn-save-all:disabled { background: var(--muted2); cursor: not-allowed; }
+  .save-status { font-size: 13px; color: var(--muted); }
+  .save-status.saved { color: #4caf50; }
+  .save-status.saving { color: #e8a000; }
+
+  /* Preview badge */
+  .preview-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(200,40,40,0.1); border: 1px solid rgba(200,40,40,0.3); border-radius: 10px; font-size: 11px; color: var(--red); font-weight: 600; letter-spacing: 1px; }
+  .preview-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); animation: blink 1.5s infinite; }
+  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+  /* Modal */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 28px; width: 440px; max-width: 95vw; }
+  .modal-title { font-family: var(--font-display); font-size: 24px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+  .modal-info { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 14px; margin-bottom: 18px; }
+  .modal-info-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .modal-info-row:last-child { margin-bottom: 0; }
+  .modal-info-label { font-size: 12px; color: var(--muted); }
+  .modal-info-val { font-size: 13px; color: #ddd; font-weight: 500; }
+  .modal-label { font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 8px; }
+  .modal-select { width: 100%; padding: 12px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; color: #fff; font-family: var(--font-body); font-size: 14px; outline: none; margin-bottom: 18px; }
+  .modal-actions { display: flex; gap: 10px; }
+  .btn-cancel { flex: 1; padding: 12px; background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
+  .btn-confirm { flex: 2; padding: 12px; background: var(--red); border: none; border-radius: 4px; color: #fff; font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
+
+  /* Pagination */
+  .pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 0 0; border-top: 1px solid var(--border); margin-top: 14px; }
+  .page-info { font-size: 12px; color: var(--muted); }
+  .page-btns { display: flex; gap: 6px; }
+  .page-btn { width: 32px; height: 32px; background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .page-btn.active { background: var(--red); border-color: var(--red); color: #fff; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 18px; border-radius: 6px; font-size: 13px; font-weight: 500; z-index: 300; transform: translateY(60px); opacity: 0; transition: all 0.3s ease; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: rgba(46,125,50,0.9); color: #a5d6a7; }
+  .toast.error { background: rgba(200,40,40,0.9); color: #ef9a9a; }
+
+  /* Loading */
+  .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
+  .loading-logo { font-family: var(--font-display); font-size: 48px; letter-spacing: 8px; color: var(--red); text-transform: uppercase; }
+  .loading-dots { display: flex; gap: 6px; }
+  .loading-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: blink2 1.2s infinite; }
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink2 { 0%,80%,100%{opacity:0.2;} 40%{opacity:1;} }
+
+  @media (max-width: 1100px) { .editor-grid { grid-template-columns: 1fr; } .charts-grid { grid-template-columns: 1fr; } .kpi-grid { grid-template-columns: repeat(2,1fr); } }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="loading-logo">Admin</div>
+  <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Modal changement de plan -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-title">Gérer l'abonnement</div>
+    <div class="modal-info" id="modal-info"></div>
+    <label class="modal-label">Changer le plan</label>
+    <select class="modal-select" id="modal-plan">
+      <option value="gratuit">🛡️ Soldat — Gratuit</option>
+      <option value="guerrier">⚔️ Guerrier — 5€/mois</option>
+      <option value="champion">🛡️ Champion — 15€/mois</option>
+      <option value="elite">👑 Élite — 30€/mois</option>
+    </select>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-confirm" onclick="savePlan()">Sauvegarder →</button>
+    </div>
+  </div>
+</div>
+
+<aside class="sidebar">
+  <a class="sidebar-brand" href="#">
+    <img class="sidebar-logo" src="data:image/png;base64,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Rppoj1IPln293sX2jT3Lk5/LBreINs2y32aaomY6U04/XKPq9fKb82lY+jo361B5PeP9n/n7lhB5nUoeZ1KK1s2abVOIco3jeL+63+9u8ojpHhEe/nIiIsqpEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEX1Gx8jwyNjnuPINaNSV7VHh2XVjQ6jxa+VDT0MVvleD9DUHhosklwLOoW8UuF5HG30utcwH9VeNcLZcreeGvt9XSH0TwuZ7wg6iIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiDmdAgL0cesd5yG6R2uxWusudbJ5kFLC6R58dB3eKn3YNut5DmDYb3mrqnHrI7R8dPwAVdU3wB/a2+Lhqe4ac1dLAsGxPBbULbitkpbbDoON0bdZJSO97zq559ZKCnWzbc+y67sirMzu1Nj1O4cRpoQKip9R0IY36XepWAwzdi2R46yN01ilvlSzTWa5zmQE/8ALbws/NU0LxMry7F8UpfhOSZBbLTHpqPhVS1jnfNaTq72AoOxZMesFjibFZbJbbaxvINpKVkQH8UBemoFybey2S2lz46Cou17e3kDR0Zawn50pZ9OhWD12+tZWOIosCuEze4zXBkZ+gMcgtkvioghqIjFUQxzRu6se0OB9hVR6ffYpi7/AFjZ3M0ell2BP1xBZFZN8rAamQMuuO3+36/u42xzNH5wP1IJeynY7swyZr/vvhFmfI/zpoKcQSn8uPhd9ahnOtzfEq9kk+IX+4Wac82wVQFTB6geTx6yXKVsP287JspdHFb8yoKeof0gryaV+vo+MABPqJUkwyRzRNlhkZJG8atc06gj0goNa20rd72n4MJamqsbrrbo9Sa22EzsDfS5uge31lunionW4NRPtb3f9nm0QS1dVbfvReHg6XC3gRvcfTIzzZPEkcXiEGtRFLG2nYJnGzEvraunbdrHxaNudG0ljR3dq3rGfXq30EqJ0BERAREQEREBERAREQEREBERAREQEREBERARF9wRSzzMggjfLLI4MYxjSXOcToAAOpKDlttFV3K4U9vt9NLVVdTK2GCGJpc+R7jo1oA6kkgK9G7Nu10GHx02U51T09wyLyZaakOj4aA9QT3PlHp6NI5anyl6O6fsGpMAtEGVZRRsly2qj1ax+jhbmHXyG93aEacT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" alt="Espritum">
+    <span class="sidebar-name">Espritum</span>
+    <span class="admin-tag">Admin</span>
+  </a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Navigation</div>
+    <a class="nav-item" href="#" onclick="showTab('dashboard')"><span class="nav-icon">📊</span> Dashboard</a>
+    <a class="nav-item" href="#" onclick="showTab('users')"><span class="nav-icon">👥</span> Utilisateurs</a>
+    <a class="nav-item" href="#" onclick="showTab('theme')"><span class="nav-icon">🎨</span> Thème & Textes</a>
+    <div class="nav-section-label">Liens</div>
+    <a class="nav-item" href="dashboard.html" target="_blank"><span class="nav-icon">↗️</span> Voir le site</a>
+  </nav>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard Admin</div>
+    <div class="topbar-right" id="last-update">Chargement...</div>
+  </div>
+
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <div class="tab active" id="tab-dashboard" onclick="showTab('dashboard')">📊 Vue d'ensemble</div>
+    <div class="tab" id="tab-users" onclick="showTab('users')">👥 Utilisateurs</div>
+    <div class="tab" id="tab-theme" onclick="showTab('theme')">🎨 Thème & Textes</div>
+  </div>
+
+  <!-- PANEL DASHBOARD -->
+  <div class="panel active" id="panel-dashboard">
+    <div class="kpi-grid">
+      <div class="kpi-card highlight">
+        <div class="kpi-label">💰 MRR Estimé</div>
+        <div class="kpi-val" id="kpi-mrr">—</div>
+        <div class="kpi-sub" id="kpi-mrr-sub">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">👥 Utilisateurs</div>
+        <div class="kpi-val" id="kpi-users">—</div>
+        <div class="kpi-sub" id="kpi-users-sub">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">💳 Abonnés payants</div>
+        <div class="kpi-val" id="kpi-paid">—</div>
+        <div class="kpi-sub" id="kpi-paid-sub">—</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">🍎 Repas enregistrés</div>
+        <div class="kpi-val" id="kpi-meals">—</div>
+        <div class="kpi-sub">total base de données</div>
+      </div>
+    </div>
+
+    <div class="plans-row">
+      <div class="plan-stat"><div class="plan-stat-icon">🛡️</div><div class="plan-stat-name">Soldat</div><div class="plan-stat-count" id="count-gratuit">—</div><div class="plan-stat-revenue">Gratuit</div></div>
+      <div class="plan-stat"><div class="plan-stat-icon">⚔️</div><div class="plan-stat-name">Guerrier</div><div class="plan-stat-count" id="count-guerrier">—</div><div class="plan-stat-revenue" id="rev-guerrier">—</div></div>
+      <div class="plan-stat"><div class="plan-stat-icon">🛡️</div><div class="plan-stat-name">Champion</div><div class="plan-stat-count" id="count-champion">—</div><div class="plan-stat-revenue" id="rev-champion">—</div></div>
+      <div class="plan-stat"><div class="plan-stat-icon">👑</div><div class="plan-stat-name">Élite</div><div class="plan-stat-count" id="count-elite">—</div><div class="plan-stat-revenue" id="rev-elite">—</div></div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Répartition des plans</div></div>
+        <canvas id="plansChart" height="100"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Activité</div></div>
+        <div style="display:flex;flex-direction:column;gap:12px;" id="activity-stats">
+          <div style="color:var(--muted);font-size:13px;">Chargement...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL USERS -->
+  <div class="panel" id="panel-users">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Gestion des utilisateurs</div>
+        <span style="font-size:12px;color:var(--muted);" id="users-count">—</span>
+      </div>
+      <div class="filters-bar">
+        <input class="search-input" type="text" placeholder="🔍 Rechercher..." oninput="filterUsers(this.value)" id="search-input">
+        <select class="filter-select" onchange="filterByPlan(this.value)">
+          <option value="">Tous les plans</option>
+          <option value="gratuit">Soldat</option>
+          <option value="guerrier">Guerrier</option>
+          <option value="champion">Champion</option>
+          <option value="elite">Élite</option>
+        </select>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Utilisateur</th><th>Plan</th><th>Objectif</th><th>Inscription</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-table"></tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span class="page-info" id="page-info">—</span>
+        <div class="page-btns" id="page-btns"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL THEME -->
+  <div class="panel" id="panel-theme">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div>
+        <div style="font-family:var(--font-display);font-size:22px;letter-spacing:2px;text-transform:uppercase;">Éditeur de thème</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px;">Les changements s'appliquent en temps réel sur tout le site</div>
+      </div>
+      <div class="preview-badge"><div class="preview-dot"></div>Live</div>
+    </div>
+
+    <div class="editor-grid">
+
+      <!-- Couleurs -->
+      <div class="editor-section">
+        <div class="editor-section-title"><span class="editor-section-icon">🎨</span> Couleurs</div>
+
+        <div class="config-item">
+          <div><div class="config-label">Couleur principale</div><div class="config-sublabel">Rouge des boutons, accents, actifs</div></div>
+          <div class="config-control">
+            <div class="color-preview" id="prev-color_primary" onclick="document.getElementById('inp-color_primary').click()"></div>
+            <input type="color" id="inp-color_primary" data-key="color_primary" oninput="onColorChange(this)">
+            <span style="font-size:12px;color:var(--muted);font-family:monospace;" id="hex-color_primary">#c82828</span>
+          </div>
+        </div>
+
+        <div class="config-item">
+          <div><div class="config-label">Arrière-plan principal</div><div class="config-sublabel">Fond de toutes les pages</div></div>
+          <div class="config-control">
+            <div class="color-preview" id="prev-color_bg" onclick="document.getElementById('inp-color_bg').click()"></div>
+            <input type="color" id="inp-color_bg" data-key="color_bg" oninput="onColorChange(this)">
+            <span style="font-size:12px;color:var(--muted);font-family:monospace;" id="hex-color_bg">#080808</span>
+          </div>
+        </div>
+
+        <div class="config-item">
+          <div><div class="config-label">Arrière-plan cartes</div><div class="config-sublabel">Fond des cartes et panels</div></div>
+          <div class="config-control">
+            <div class="color-preview" id="prev-color_bg2" onclick="document.getElementById('inp-color_bg2').click()"></div>
+            <input type="color" id="inp-color_bg2" data-key="color_bg2" oninput="onColorChange(this)">
+            <span style="font-size:12px;color:var(--muted);font-family:monospace;" id="hex-color_bg2">#0d0d0d</span>
+          </div>
+        </div>
+
+        <div class="config-item">
+          <div><div class="config-label">Couleur des bordures</div><div class="config-sublabel">Contours des cartes</div></div>
+          <div class="config-control">
+            <div class="color-preview" id="prev-color_border" onclick="document.getElementById('inp-color_border').click()"></div>
+            <input type="color" id="inp-color_border" data-key="color_border" oninput="onColorChange(this)">
+            <span style="font-size:12px;color:var(--muted);font-family:monospace;" id="hex-color_border">#1e1e1e</span>
+          </div>
+        </div>
+
+        <div class="config-item">
+          <div><div class="config-label">Texte principal</div><div class="config-sublabel">Couleur du texte par défaut</div></div>
+          <div class="config-control">
+            <div class="color-preview" id="prev-color_text" onclick="document.getElementById('inp-color_text').click()"></div>
+            <input type="color" id="inp-color_text" data-key="color_text" oninput="onColorChange(this)">
+            <span style="font-size:12px;color:var(--muted);font-family:monospace;" id="hex-color_text">#ffffff</span>
+          </div>
+        </div>
+
+        <div class="config-item">
+          <div><div class="config-label">Texte secondaire</div><div class="config-sublabel">Labels, sous-titres, hints</div></div>
+          <div class="config-control">
+            <div class="color-preview" id="prev-color_muted" onclick="document.getElementById('inp-color_muted').click()"></div>
+            <input type="color" id="inp-color_muted" data-key="color_muted" oninput="onColorChange(this)">
+            <span style="font-size:12px;color:var(--muted);font-family:monospace;" id="hex-color_muted">#555555</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Typographie -->
+      <div class="editor-section">
+        <div class="editor-section-title"><span class="editor-section-icon">✏️</span> Typographie</div>
+
+        <div class="config-item">
+          <div><div class="config-label">Taille texte base</div><div class="config-sublabel">Texte courant dans l'app</div></div>
+          <div class="config-control">
+            <input class="config-size-input" type="text" id="inp-font_size_base" data-key="font_size_base" value="15px" oninput="onTextChange(this)">
+          </div>
+        </div>
+
+        <div class="config-item">
+          <div><div class="config-label">Taille des titres</div><div class="config-sublabel">Titres topbar et cartes</div></div>
+          <div class="config-control">
+            <input class="config-size-input" type="text" id="inp-font_size_title" data-key="font_size_title" value="28px" oninput="onTextChange(this)">
+          </div>
+        </div>
+
+        <div class="config-item">
+          <div><div class="config-label">Espacement lettres titres</div><div class="config-sublabel">Letter-spacing des grandes typos</div></div>
+          <div class="config-control">
+            <input class="config-size-input" type="text" id="inp-letter_spacing" data-key="letter_spacing" value="2px" oninput="onTextChange(this)">
+          </div>
+        </div>
+
+        <div class="config-item">
+          <div><div class="config-label">Arrondi des cartes</div><div class="config-sublabel">Border-radius général</div></div>
+          <div class="config-control">
+            <input class="config-size-input" type="text" id="inp-border_radius" data-key="border_radius" value="8px" oninput="onTextChange(this)">
+          </div>
+        </div>
+      </div>
+
+      <!-- Textes landing -->
+      <div class="editor-section" style="grid-column: 1 / -1;">
+        <div class="editor-section-title"><span class="editor-section-icon">📝</span> Textes du site</div>
+
+        <div class="config-item">
+          <div style="flex:1;"><div class="config-label">Titre hero (landing)</div><div class="config-sublabel">Grand titre de la page d'accueil</div></div>
+          <input class="config-text-input" type="text" id="inp-text_hero" data-key="text_hero" value="CHOISIS TON ARMURE." oninput="onTextChange(this)" style="width:340px;">
+        </div>
+
+        <div class="config-item">
+          <div style="flex:1;"><div class="config-label">Slogan principal</div><div class="config-sublabel">Affiché sous le titre hero</div></div>
+          <input class="config-text-input" type="text" id="inp-text_slogan" data-key="text_slogan" value="NOT JUST FLESH, BUT SPIRIT." oninput="onTextChange(this)" style="width:340px;">
+        </div>
+
+        <div class="config-item">
+          <div style="flex:1;"><div class="config-label">Sous-titre hero</div><div class="config-sublabel">Description sous le slogan</div></div>
+          <input class="config-text-input" type="text" id="inp-text_hero_sub" data-key="text_hero_sub" value="Commence gratuitement, monte en puissance quand tu es prêt." oninput="onTextChange(this)" style="width:340px;">
+        </div>
+
+        <div class="config-item">
+          <div style="flex:1;"><div class="config-label">Nom de l'application</div><div class="config-sublabel">Affiché dans la navbar et sidebar</div></div>
+          <input class="config-text-input" type="text" id="inp-text_app_name" data-key="text_app_name" value="Espritum" oninput="onTextChange(this)" style="width:340px;">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Barre de sauvegarde sticky -->
+    <div class="save-section">
+      <div>
+        <div style="font-size:13px;color:#ccc;margin-bottom:3px;">💡 Les modifications sont appliquées immédiatement sur le site</div>
+        <div class="save-status" id="save-status">Aucune modification en cours</div>
+      </div>
+      <button class="btn-save-all" id="btn-save" onclick="saveAllConfig()" disabled>
+        Sauvegarder tout →
+      </button>
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+  const sb = window.sb;
+
+  const PLAN_LABEL = { gratuit: '🛡️ Soldat', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
+  const OBJ_LABEL = { perte_gras: '🔥 Perte de gras', prise_masse: '💪 Prise de masse', endurance: '⚡ Endurance', reequilibrage: '⚖️ Rééquilibrage' };
+
+  let allUsers = [], filteredUsers = [], currentPage = 1, plansChart = null;
+  const PER_PAGE = 10;
+  let currentUserId = null;
+  let pendingChanges = {};
+  let hasChanges = false;
+
+  // ── INIT ──
+  async function init() {
+    try {
+      await Promise.all([loadUsers(), loadStats(), loadConfig()]);
+    } catch(e) {
+      console.error(e);
+    } finally {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('last-update').textContent = `Mis à jour : ${new Date().toLocaleTimeString('fr-FR')}`;
+    }
+  }
+
+  // ── TABS ──
+  function showTab(tab) {
+    ['dashboard','users','theme'].forEach(t => {
+      document.getElementById(`panel-${t}`).classList.toggle('active', t === tab);
+      document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+    });
+    const titles = { dashboard: 'Dashboard Admin', users: 'Gestion Utilisateurs', theme: 'Éditeur de Thème' };
+    document.getElementById('topbar-title').textContent = titles[tab];
+  }
+
+  // ── STATS ──
+  async function loadStats() {
+    const [mealsRes, workoutsRes, measurementsRes] = await Promise.all([
+      sb.from('meals').select('id', { count: 'exact', head: true }),
+      sb.from('workouts').select('id', { count: 'exact', head: true }),
+      sb.from('measurements').select('id', { count: 'exact', head: true }),
+    ]);
+    document.getElementById('kpi-meals').textContent = (mealsRes.count || 0).toLocaleString('fr-FR');
+    document.getElementById('activity-stats').innerHTML = `
+      <div style="display:flex;justify-content:space-between;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;">
+        <span style="font-size:13px;color:#ccc;">🍎 Repas total</span>
+        <span style="font-family:var(--font-display);font-size:20px;color:#fff;">${(mealsRes.count||0).toLocaleString('fr-FR')}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;">
+        <span style="font-size:13px;color:#ccc;">💪 Séances total</span>
+        <span style="font-family:var(--font-display);font-size:20px;color:#fff;">${(workoutsRes.count||0).toLocaleString('fr-FR')}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;">
+        <span style="font-size:13px;color:#ccc;">📊 Mesures corpo.</span>
+        <span style="font-family:var(--font-display);font-size:20px;color:#fff;">${(measurementsRes.count||0).toLocaleString('fr-FR')}</span>
+      </div>`;
+  }
+
+  // ── USERS ──
+  async function loadUsers() {
+    const { data: users, error } = await sb.from('users').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    allUsers = users || [];
+    filteredUsers = [...allUsers];
+
+    const total = allUsers.length;
+    const paid = allUsers.filter(u => ['guerrier','champion','elite'].includes(u.plan)).length;
+    const gratuit = allUsers.filter(u => !u.plan || u.plan === 'gratuit').length;
+    const guerrier = allUsers.filter(u => u.plan === 'guerrier').length;
+    const champion = allUsers.filter(u => u.plan === 'champion').length;
+    const elite = allUsers.filter(u => u.plan === 'elite').length;
+    const mrr = guerrier * 5 + champion * 15 + elite * 30;
+
+    document.getElementById('kpi-users').textContent = total;
+    document.getElementById('kpi-users-sub').textContent = `${gratuit} gratuits · ${paid} payants`;
+    document.getElementById('kpi-paid').textContent = paid;
+    document.getElementById('kpi-paid-sub').textContent = `${total > 0 ? Math.round((paid/total)*100) : 0}% conversion`;
+    document.getElementById('kpi-mrr').textContent = mrr + '€';
+    document.getElementById('kpi-mrr-sub').textContent = `ARR estimé : ${mrr * 12}€`;
+    document.getElementById('count-gratuit').textContent = gratuit;
+    document.getElementById('count-guerrier').textContent = guerrier;
+    document.getElementById('count-champion').textContent = champion;
+    document.getElementById('count-elite').textContent = elite;
+    document.getElementById('rev-guerrier').textContent = guerrier * 5 + '€/mois';
+    document.getElementById('rev-champion').textContent = champion * 15 + '€/mois';
+    document.getElementById('rev-elite').textContent = elite * 30 + '€/mois';
+
+    if (plansChart) plansChart.destroy();
+    plansChart = new Chart(document.getElementById('plansChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: ['Soldat', 'Guerrier', 'Champion', 'Élite'],
+        datasets: [{ data: [gratuit, guerrier, champion, elite], backgroundColor: ['#2a2a2a','#1565c0','#c82828','#e8a000'], borderRadius: 5 }]
+      },
+      options: { plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#555' } }, y: { grid: { color: '#141414' }, ticks: { color: '#555' }, min: 0 } } }
+    });
+
+    renderTable();
+  }
+
+  function renderTable() {
+    const start = (currentPage - 1) * PER_PAGE;
+    const page = filteredUsers.slice(start, start + PER_PAGE);
+    const total = filteredUsers.length;
+    const colors = { gratuit: '#555', guerrier: '#1565c0', champion: '#c82828', elite: '#e8a000' };
+    const pillClass = { gratuit: 'pill-gratuit', guerrier: 'pill-guerrier', champion: 'pill-champion', elite: 'pill-elite' };
+
+    document.getElementById('users-count').textContent = `${total} utilisateur${total > 1 ? 's' : ''}`;
+    document.getElementById('page-info').textContent = `Page ${currentPage} sur ${Math.ceil(total / PER_PAGE) || 1}`;
+
+    const tbody = document.getElementById('users-table');
+    tbody.innerHTML = page.length === 0
+      ? `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Aucun utilisateur trouvé</td></tr>`
+      : page.map(u => {
+          const plan = u.plan || 'gratuit';
+          const color = colors[plan] || '#555';
+          const initiale = (u.prenom || u.email || '?')[0].toUpperCase();
+          const date = new Date(u.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+          return `<tr>
+            <td><div class="user-cell">
+              <div class="u-avatar" style="background:${color}18;border:1px solid ${color}33;color:${color};">${initiale}</div>
+              <div><div class="u-name">${u.prenom || '—'} ${u.nom || ''}</div><div class="u-email">${u.email || '—'}</div></div>
+            </div></td>
+            <td><span class="plan-pill ${pillClass[plan]}">${PLAN_LABEL[plan]}</span></td>
+            <td style="font-size:12px;">${OBJ_LABEL[u.objectif] || '—'}</td>
+            <td style="font-size:12px;color:#666;">${date}</td>
+            <td><div class="action-btns">
+              <button class="action-btn success" onclick="openModal('${u.id}','${u.prenom||''}','${u.email||''}','${plan}')">✏️ Gérer</button>
+              ${plan !== 'gratuit' ? `<button class="action-btn danger" onclick="cancelSub('${u.id}','${u.prenom||u.email}')">✕ Annuler</button>` : ''}
+            </div></td>
+          </tr>`;
+        }).join('');
+
+    const totalPages = Math.ceil(total / PER_PAGE);
+    const pageBtns = document.getElementById('page-btns');
+    pageBtns.innerHTML = '';
+    for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+      const btn = document.createElement('button');
+      btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+      btn.textContent = i;
+      btn.onclick = () => { currentPage = i; renderTable(); };
+      pageBtns.appendChild(btn);
+    }
+  }
+
+  function filterUsers(val) {
+    currentPage = 1;
+    const q = val.toLowerCase();
+    const planFilter = document.querySelector('.filter-select')?.value || '';
+    filteredUsers = allUsers.filter(u => {
+      const matchSearch = !q || (u.prenom||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q);
+      const matchPlan = !planFilter || u.plan === planFilter;
+      return matchSearch && matchPlan;
+    });
+    renderTable();
+  }
+
+  function filterByPlan(plan) {
+    currentPage = 1;
+    const q = document.getElementById('search-input')?.value.toLowerCase() || '';
+    filteredUsers = allUsers.filter(u => {
+      const matchSearch = !q || (u.prenom||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q);
+      const matchPlan = !plan || u.plan === plan;
+      return matchSearch && matchPlan;
+    });
+    renderTable();
+  }
+
+  function openModal(userId, prenom, email, plan) {
+    currentUserId = userId;
+    document.getElementById('modal-info').innerHTML = `
+      <div class="modal-info-row"><span class="modal-info-label">Utilisateur</span><span class="modal-info-val">${prenom || email}</span></div>
+      <div class="modal-info-row"><span class="modal-info-label">Email</span><span class="modal-info-val">${email}</span></div>
+      <div class="modal-info-row"><span class="modal-info-label">Plan actuel</span><span class="modal-info-val">${PLAN_LABEL[plan]}</span></div>`;
+    document.getElementById('modal-plan').value = plan;
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    currentUserId = null;
+  }
+
+  async function savePlan() {
+    const newPlan = document.getElementById('modal-plan').value;
+    if (!currentUserId) return;
+    const { error } = await sb.from('users').update({ plan: newPlan }).eq('id', currentUserId);
+    if (error) { showToast('error', 'Erreur lors de la mise à jour.'); return; }
+    showToast('success', `✓ Plan mis à jour → ${PLAN_LABEL[newPlan]}`);
+    closeModal();
+    await loadUsers();
+  }
+
+  async function cancelSub(userId, name) {
+    if (!confirm(`Annuler l'abonnement de ${name} ?`)) return;
+    const { error } = await sb.from('users').update({ plan: 'gratuit' }).eq('id', userId);
+    if (error) { showToast('error', 'Erreur.'); return; }
+    showToast('success', `✓ Abonnement de ${name} annulé`);
+    await loadUsers();
+  }
+
+  // ── CONFIG / THEME ──
+  async function loadConfig() {
+    const { data, error } = await sb.from('site_config').select('*');
+    if (error || !data) return;
+
+    data.forEach(row => {
+      // Remplir les inputs
+      const inp = document.getElementById(`inp-${row.id}`);
+      if (inp) {
+        inp.value = row.value;
+        if (inp.type === 'color') {
+          document.getElementById(`prev-${row.id}`).style.background = row.value;
+          document.getElementById(`hex-${row.id}`).textContent = row.value;
+        }
+      }
+      // Appliquer les CSS vars
+      applyCSSVar(row.id, row.value);
+    });
+  }
+
+  function applyCSSVar(key, value) {
+    const cssMap = {
+      color_primary: '--red',
+      color_bg: '--bg',
+      color_bg2: '--bg2',
+      color_border: '--border',
+      color_text: '--color-text',
+      color_muted: '--muted',
+      font_size_base: '--font-size-base',
+      font_size_title: '--font-size-title',
+      letter_spacing: '--letter-spacing',
+      border_radius: '--border-radius',
+    };
+    if (cssMap[key]) {
+      document.documentElement.style.setProperty(cssMap[key], value);
+    }
+  }
+
+  function onColorChange(input) {
+    const key = input.dataset.key;
+    const val = input.value;
+    document.getElementById(`prev-${key}`).style.background = val;
+    document.getElementById(`hex-${key}`).textContent = val;
+    pendingChanges[key] = val;
+    applyCSSVar(key, val);
+    markDirty();
+  }
+
+  function onTextChange(input) {
+    const key = input.dataset.key;
+    pendingChanges[key] = input.value;
+    applyCSSVar(key, input.value);
+    markDirty();
+  }
+
+  function markDirty() {
+    hasChanges = true;
+    document.getElementById('save-status').textContent = `${Object.keys(pendingChanges).length} modification(s) en attente`;
+    document.getElementById('save-status').className = 'save-status saving';
+    document.getElementById('btn-save').disabled = false;
+  }
+
+  async function saveAllConfig() {
+    if (!hasChanges) return;
+    const btn = document.getElementById('btn-save');
+    btn.disabled = true;
+    btn.textContent = 'Sauvegarde...';
+
+    try {
+      const updates = Object.entries(pendingChanges).map(([id, value]) =>
+        sb.from('site_config').upsert({ id, value, category: getCat(id), label: id, updated_at: new Date().toISOString() })
+      );
+      await Promise.all(updates);
+
+      pendingChanges = {};
+      hasChanges = false;
+      document.getElementById('save-status').textContent = '✓ Sauvegardé avec succès !';
+      document.getElementById('save-status').className = 'save-status saved';
+      showToast('success', '✓ Thème sauvegardé ! Les changements sont en ligne.');
+
+    } catch(e) {
+      showToast('error', 'Erreur lors de la sauvegarde.');
+      btn.disabled = false;
+    }
+
+    btn.textContent = 'Sauvegarder tout →';
+    setTimeout(() => {
+      document.getElementById('save-status').textContent = 'Aucune modification en cours';
+      document.getElementById('save-status').className = 'save-status';
+    }, 3000);
+  }
+
+  function getCat(key) {
+    if (key.startsWith('color_')) return 'colors';
+    if (key.startsWith('text_')) return 'texts';
+    return 'typography';
+  }
+
+  function showToast(type, msg) {
+    const t = document.getElementById('toast');
+    t.className = `toast ${type}`;
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  init();
+</script>
+</body>
+</html>
