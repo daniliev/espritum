@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<script src="page-loader.js"></script>
 <meta charset="UTF-8">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
@@ -44,7 +45,7 @@
   .nav-item span:not(.nav-icon):not(.nav-lock) { display: none; }
   .nav-item:hover { background: rgba(255,255,255,0.04); }
   .nav-item.active { background: rgba(255,255,255,0.06); }
-  .nav-icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .nav-icon { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex-shrink: 0; }
   .nav-lock { font-size: 11px; margin-left: auto; opacity: 0.6; }
   .sidebar-bottom { padding: 12px 0 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
   .user-card { display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; cursor: pointer; transition: opacity 0.2s; }
@@ -192,13 +193,7 @@
   .toast.success { background: rgba(46,125,50,0.9); border: 1px solid rgba(46,125,50,0.5); color: #a5d6a7; }
 
   /* Loading */
-  .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
-  .loading-logo { font-family: var(--font-display); font-size: 48px; letter-spacing: 8px; color: var(--red); text-transform: uppercase; }
-  .loading-dots { display: flex; gap: 6px; }
-  .loading-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: blink 1.2s infinite; }
-  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
-  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes blink { 0%,80%,100%{opacity:0.2;} 40%{opacity:1;} }
+40%{opacity:1;} }
 
   @media (max-width: 1000px) { .plans-grid { grid-template-columns: 1fr 1fr; } .features-grid { grid-template-columns: 1fr; } }
   @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } .plans-grid { grid-template-columns: 1fr; } .field-row { grid-template-columns: 1fr 1fr; } }
@@ -206,17 +201,16 @@
   /* ── BOTTOM NAV MOBILE ── */
   .mobile-nav {
     display: none; position: fixed; bottom: 0; left: 0; right: 0;
-    background: #0a0a0a;
+    background: #111111;
     padding: 12px 0 max(12px, env(safe-area-inset-bottom));
-    z-index: 100; grid-template-columns: repeat(5, 1fr);
-  }
+    z-index: 100; grid-template-columns: repeat(5, 1fr);  border-radius: 20px 20px 0 0; box-shadow: 0 -6px 24px rgba(0,0,0,0.7); }
   .mobile-nav-item { display: flex; align-items: center; justify-content: center; padding: 6px 4px; text-decoration: none; transition: opacity 0.2s; cursor: pointer; opacity: 0.5; }
   .mobile-nav-item.active { opacity: 1; }
   .mobile-nav-item:hover { opacity: 0.85; }
   .mobile-nav-icon { display: flex; }
   .mobile-nav-label { display: none; }
   @media (max-width: 768px) {
-    .mobile-nav { display: grid; }
+    .mobile-nav { display: grid;  border-radius: 20px 20px 0 0; box-shadow: 0 -6px 24px rgba(0,0,0,0.7); }
     .main { padding-bottom: 72px; }
     .sidebar { display: none !important; }
   }
@@ -267,38 +261,7 @@
     img { max-width: 100%; }
   }
 
-  /* ── LANGUAGE SELECTOR ── */
-  .lang-selector {
-    display: flex; gap: 4px; align-items: center;
-  }
-  .lang-btn {
-    width: 28px; height: 28px; border-radius: 4px;
-    background: transparent; border: 1px solid transparent;
-    cursor: pointer; font-size: 16px; display: flex;
-    align-items: center; justify-content: center;
-    transition: all 0.2s; padding: 0;
-    opacity: 0.45;
-  }
-  .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
-  .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
-
-  /* ── LANG BAR MOBILE IN APP ── */
-  .mobile-lang-bar {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    background: #080808;
-    border-bottom: 1px solid #1e1e1e;
-    padding: 8px 16px;
-    z-index: 101;
-    justify-content: flex-end;
-    gap: 6px;
-    align-items: center;
-  }
-  .mobile-lang-bar .lang-btn { width: 28px; height: 28px; font-size: 16px; }
-
   @media (max-width: 768px) {
-    .mobile-lang-bar { display: flex; }
     .topbar { margin-top: 44px; }
     .main { padding-top: 0; }
   }
@@ -319,8 +282,6 @@
   .nav-icon img { width: 24px; height: 24px; object-fit: contain; opacity: 1; }
   .mobile-nav-icon img { width: 24px; height: 24px; object-fit: contain; opacity: 1; }
 
-  .lang-selector { flex-direction: column !important; gap: 2px !important; }
-
   /* Coach IA Floating Button */
   .coach-fab { position: fixed; bottom: 28px; right: 28px; width: 56px; height: 56px; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 6px 24px rgba(200,40,40,0.4), 0 2px 8px rgba(0,0,0,0.3); z-index: 90; transition: transform 0.2s, box-shadow 0.2s; }
   .coach-fab:hover { transform: scale(1.06); box-shadow: 0 8px 30px rgba(200,40,40,0.55), 0 4px 12px rgba(0,0,0,0.4); }
@@ -330,12 +291,6 @@
 <script src="site-config.js"></script>
 </head>
 <body>
-
-<div class="loading-overlay" id="loading">
-  <div class="loading-logo">Espritum</div>
-  <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <aside class="sidebar">
@@ -351,11 +306,6 @@
     <a class="nav-item" href="profil.html" title="Profil"><span class="nav-icon"><img src="icons/profil.svg" alt="Profil"></span></a>
   </nav>
   <div class="sidebar-bottom">
-    <div class="lang-selector" style="display:flex;gap:4px;align-items:center;">
-      <button class="lang-btn" data-lang="fr" onclick="setLang('fr')" title="Français">🇫🇷</button>
-      <button class="lang-btn" data-lang="en" onclick="setLang('en')" title="English">🇬🇧</button>
-      <button class="lang-btn" data-lang="bg" onclick="setLang('bg')" title="Български">🇧🇬</button>
-    </div>
 
     <div class="user-card">
       <div class="user-avatar" id="sidebar-avatar">?</div>
@@ -534,15 +484,9 @@
   let currentPlan = 'gratuit';
   let selectedPlan = null;
   let userPrenom = 'Guerrier';
-
-  function hideLoading() {
-    const el = document.getElementById('loading');
-    if (el) el.style.display = 'none';
-  }
-
+var safetyTimeout = 0;
   async function init() {
-    const safetyTimeout = setTimeout(hideLoading, 1000);
-    try {
+        try {
       const { data: { session } } = await sb.auth.getSession();
       if (!session) { window.location.href = 'inscription.html'; return; }
 
@@ -576,8 +520,6 @@
     } catch(e) {
       console.error(e);
     } finally {
-      clearTimeout(safetyTimeout);
-      document.getElementById('loading').style.display = 'none';
     }
   }
 
@@ -709,17 +651,7 @@
     setTimeout(() => t.classList.remove('show'), 3500);
   }
 
-  function initFreemium(plan) {
-    const isPaid = ['guerrier', 'champion', 'elite'].includes(plan);
-    if (!isPaid) {
-      document.querySelectorAll('.nav-freemium').forEach(el => {
-        el.classList.add('locked');
-        const lock = el.querySelector('.nav-lock');
-        if (lock) lock.textContent = '🔒';
-        el.onclick = e => { e.preventDefault(); };
-      });
-    }
-  }
+  function initFreemium(plan) { /* désactivé temporairement */ }
 
   init();
 </script>
@@ -733,12 +665,6 @@
   <a class="mobile-nav-item" href="profil.html"><span class="mobile-nav-icon"><img src="icons/profil.svg" alt="Profil"></span></a>
 </nav>
 
-<a href="coach.html" class="coach-fab" title="Coach IA Sensei" aria-label="Coach IA">
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-</a>
-
-  <!-- i18n -->
-  <script src="i18n.js"></script>
-  <script>document.addEventListener('DOMContentLoaded', initI18n);</script>
+<script src="topbar-avatar.js"></script>
 </body>
 </html>

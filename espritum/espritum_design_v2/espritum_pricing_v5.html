@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<script src="page-loader.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
 <title>Espritum — Tarifs</title>
@@ -722,37 +723,11 @@
     /* Verse-card mobile : padding réduit */
     .verse-card { padding: 32px 24px !important; }
   }
-
-  /* ── LANGUAGE SELECTOR ── */
-  .lang-selector {
-    display: flex; gap: 4px; align-items: center;
-  }
-  .lang-btn {
-    width: 28px; height: 28px; border-radius: 4px;
-    background: transparent; border: 1px solid transparent;
-    cursor: pointer; font-size: 16px; display: flex;
-    align-items: center; justify-content: center;
-    transition: all 0.2s; padding: 0;
-    opacity: 0.45;
-  }
-  .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
-  .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
-
-  /* ── LANDING NAVBAR MOBILE FIX ── */
-  .lang-bar {
-    display: flex; justify-content: center; gap: 8px;
-    padding: 8px 16px; border-bottom: 1px solid #1a1a1a;
-    background: #060606;
-  }
-  .lang-bar .lang-btn { width: 32px; height: 32px; font-size: 18px; }
-
   @media (max-width: 600px) {
     nav { padding: 14px 16px !important; gap: 10px !important; }
     .nav-name { display: none !important; }
     .nav-logo { width: 42px !important; height: 42px !important; }
     nav button { padding: 10px 14px !important; font-size: 12px !important; letter-spacing: 1.5px !important; }
-    .lang-trigger { padding: 9px 14px !important; font-size: 20px !important; }
-    .lang-arrow { font-size: 13px !important; }
   }
 
   /* ── BULGARIAN FONT ── */
@@ -796,62 +771,6 @@
     line-height: 1.6;
   }
 
-  /* ── LANG DROPDOWN ── */
-  .lang-dropdown {
-    position: relative;
-    flex-shrink: 0;
-  }
-
-  .lang-trigger {
-    display: flex; align-items: center; gap: 6px;
-    padding: 7px 12px; background: transparent;
-    border: 1px solid #333; border-radius: 6px;
-    cursor: pointer; transition: all 0.2s;
-    font-size: 18px; color: #aaa;
-  }
-
-  .lang-trigger:hover { border-color: #555; }
-  .lang-trigger.open { border-color: var(--red); }
-
-  .lang-arrow {
-    font-size: 11px; color: #666;
-    transition: transform 0.2s;
-    line-height: 1;
-  }
-  .lang-trigger.open .lang-arrow { transform: rotate(180deg); }
-
-  .lang-menu {
-    display: none;
-    position: absolute; top: calc(100% + 8px); right: 0;
-    background: #0d0d0d; border: 1px solid #2a2a2a;
-    border-radius: 8px; overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-    z-index: 100; min-width: 140px;
-    animation: fadeDown 0.15s ease;
-  }
-
-  .lang-menu.open { display: block; }
-
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .lang-option {
-    display: flex; align-items: center; gap: 10px;
-    width: 100%; padding: 11px 16px;
-    background: transparent; border: none;
-    color: #aaa; font-family: inherit; font-size: 13px;
-    font-weight: 500; cursor: pointer; transition: all 0.15s;
-    text-align: left; letter-spacing: 0.5px;
-  }
-
-  .lang-option:hover { background: rgba(255,255,255,0.05); color: #fff; }
-  .lang-option.active { color: var(--red); background: rgba(200,40,40,0.06); }
-  .lang-option span { font-size: 18px; }
-
-  /* Supprimer l'ancienne lang-bar */
-  .lang-bar { display: none !important; }
 </style>
 <script src="site-config.js"></script>
 </head>
@@ -872,18 +791,6 @@
   <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
     <button onclick="window.location.href='inscription.html?tab=connexion'" style="padding:8px 14px;background:transparent;border:1px solid #333;border-radius:4px;color:#aaa;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;" data-i18n="landing_connect">Connexion</button>
     <button class="nav-btn" onclick="window.location.href='inscription.html'" style="padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" data-i18n="landing_signup">S'inscrire</button>
-  </div>
-  <!-- Dropdown langue -->
-  <div class="lang-dropdown" id="lang-dropdown">
-    <button class="lang-trigger" onclick="toggleLangMenu(event)" id="lang-trigger">
-      <span id="lang-current-flag">🇫🇷</span>
-      <span class="lang-arrow" id="lang-arrow">▾</span>
-    </button>
-    <div class="lang-menu" id="lang-menu">
-      <button class="lang-option" onclick="selectLang('fr')"><span>🇫🇷</span> Français</button>
-      <button class="lang-option" onclick="selectLang('en')"><span>🇬🇧</span> English</button>
-      <button class="lang-option" onclick="selectLang('bg')"><span>🇧🇬</span> Български</button>
-    </div>
   </div>
   </nav>
 
@@ -1145,42 +1052,5 @@
     if (!wasOpen) item.classList.add('open');
   }
 </script>
-
-  <!-- i18n -->
-  <script src="i18n.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', initI18n);
-
-    const FLAGS = { fr: '🇫🇷', en: '🇬🇧', bg: '🇧🇬' };
-
-    function toggleLangMenu(e) {
-      e.stopPropagation();
-      const menu = document.getElementById('lang-menu');
-      const trigger = document.getElementById('lang-trigger');
-      const isOpen = menu.classList.contains('open');
-      menu.classList.toggle('open', !isOpen);
-      trigger.classList.toggle('open', !isOpen);
-    }
-
-    function selectLang(lang) {
-      // setLang recharge la page automatiquement
-      setLang(lang);
-    }
-
-    // Fermer si on clique ailleurs
-    document.addEventListener('click', () => {
-      document.getElementById('lang-menu')?.classList.remove('open');
-      document.getElementById('lang-trigger')?.classList.remove('open');
-    });
-
-    // Initialiser le drapeau selon la langue sauvegardée
-    document.addEventListener('DOMContentLoaded', () => {
-      const lang = localStorage.getItem('espritum_lang') || 'fr';
-      document.getElementById('lang-current-flag').textContent = FLAGS[lang];
-      document.querySelectorAll('.lang-option').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('onclick').includes(lang));
-      });
-    });
-  </script>
 </body>
 </html>
