@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<script src="page-loader.js"></script>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
 <title>Espritum — Estimation Corporelle</title>
 <link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
@@ -22,38 +26,40 @@
     --muted2: #333;
     --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
     --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
-    --sidebar: 240px;
+    --sidebar: 80px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; }
   body { background: var(--bg); color: #fff; font-family: var(--font-body); display: flex; }
 
-  .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 50; }
-  .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 24px 20px; border-bottom: 1px solid var(--border); text-decoration: none; }
-  .sidebar-logo { width: 34px; height: 34px; object-fit: contain; border-radius: 6px; }
-  .sidebar-name { font-family: var(--font-display); font-size: 18px; letter-spacing: 5px; color: #fff; text-transform: uppercase; }
-  .sidebar-nav { flex: 1; padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; }
-  .nav-section-label { font-size: 9px; letter-spacing: 3px; color: var(--muted2); text-transform: uppercase; font-weight: 700; padding: 14px 10px 6px; }
-  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 6px; cursor: pointer; text-decoration: none; transition: background 0.2s, color 0.2s; color: var(--muted); font-size: 14px; font-weight: 500; }
-  .nav-item:hover { background: var(--bg3); color: #ccc; }
-  .nav-item.active { background: rgba(200,40,40,0.1); color: #fff; border-left: 2px solid var(--red); }
-  .nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
-  .sidebar-bottom { padding: 16px 12px; border-top: 1px solid var(--border); }
-  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 6px; }
-  .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(200,40,40,0.15); border: 1px solid rgba(200,40,40,0.3); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; color: var(--red); flex-shrink: 0; }
-  .user-name { font-size: 13px; font-weight: 600; color: #ddd; }
-  .user-plan { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+  .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 50; align-items: center; }
+  .sidebar-brand { display: flex; align-items: center; justify-content: center; padding: 22px 0 26px; text-decoration: none; }
+  .sidebar-logo { width: 38px; height: 38px; object-fit: contain; border-radius: 8px; }
+  .sidebar-name { display: none; }
+  .sidebar-nav { flex: 1; padding: 8px 0; display: flex; flex-direction: column; gap: 6px; align-items: center; width: 100%; }
+  .nav-section-label { display: none; }
+  .nav-item { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 10px; text-decoration: none; transition: background 0.2s; color: transparent; font-size: 0; flex-shrink: 0; }
+  .nav-item span:not(.nav-icon):not(.nav-lock) { display: none; }
+  .nav-item:hover { background: rgba(255,255,255,0.04); }
+  .nav-item.active { background: rgba(255,255,255,0.06); }
+    .nav-icon { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; flex-shrink: 0; }
+  .sidebar-bottom { padding: 12px 0 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .user-card { display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; cursor: pointer; transition: opacity 0.2s; }
+  .user-card > div:not(.user-avatar) { display: none; }
+  .user-card:hover { opacity: 0.8; }
+  .user-avatar { width: 38px; height: 38px; border-radius: 50%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; color: #ddd; flex-shrink: 0; }
+  .user-name, .user-plan { display: none; }
 
   .main { margin-left: var(--sidebar); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
-  .topbar { padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 40; }
+  .topbar { padding: 28px 40px; display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 40; }
   .topbar-left { display: flex; flex-direction: column; gap: 2px; }
   .topbar-tag { font-size: 10px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; font-weight: 600; }
   .topbar-title { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; }
   .free-badge { padding: 6px 16px; background: rgba(46,125,50,0.1); border: 1px solid rgba(46,125,50,0.3); border-radius: 20px; font-size: 11px; color: #4caf50; font-weight: 600; letter-spacing: 2px; }
 
-  .content { padding: 28px 32px; display: flex; flex-direction: column; gap: 22px; max-width: 860px; margin: 0 auto; width: 100%; }
+  .content { padding: 12px 40px 48px; display: flex; flex-direction: column; gap: 32px; max-width: 860px; margin: 0 auto; width: 100%; }
 
-  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 24px; }
+  .card { background: #131313; border-radius: 14px; padding: 26px; }
   .card-title { font-family: var(--font-display); font-size: 20px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 18px; }
 
   /* UPLOAD */
@@ -71,7 +77,7 @@
   .preview-img { width: 100%; max-height: 380px; object-fit: contain; display: block; background: var(--bg3); }
 
   .upload-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
-  .upload-btn-opt { padding: 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; color: #aaa; font-family: var(--font-body); font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+  .upload-btn-opt { padding: 14px; background: #1a1a1a; border-radius: 10px; color: #aaa; font-family: var(--font-body); font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
   .upload-btn-opt:hover { border-color: var(--red); color: #fff; }
 
   /* Infos */
@@ -95,7 +101,7 @@
   .analyzing-title { font-family: var(--font-display); font-size: 32px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
   .analyzing-sub { font-size: 14px; color: var(--muted); font-weight: 300; margin-bottom: 28px; }
   .steps { display: flex; flex-direction: column; gap: 8px; max-width: 300px; margin: 0 auto; }
-  .step { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 5px; font-size: 13px; color: var(--muted); transition: all 0.3s; }
+  .step { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #1a1a1a; border-radius: 10px; font-size: 13px; color: var(--muted); transition: all 0.3s; }
   .step.active { color: #fff; border-color: rgba(200,40,40,0.3); }
   .step.done { color: #4caf50; border-color: rgba(46,125,50,0.3); }
 
@@ -122,12 +128,12 @@
 
   /* Stats */
   .result-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-  .res-stat { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 18px; text-align: center; }
+  .res-stat { background: #1a1a1a; border-radius: 10px; padding: 18px; text-align: center; }
   .res-stat-val { font-family: var(--font-display); font-size: 36px; color: #fff; line-height: 1; margin-bottom: 4px; }
   .res-stat-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
 
   /* Sensei */
-  .sensei-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 22px; }
+  .sensei-card { background: #131313; border-radius: 14px; padding: 26px; }
   .sensei-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
   .sensei-avatar { width: 42px; height: 42px; border-radius: 50%; background: rgba(200,40,40,0.12); border: 1px solid rgba(200,40,40,0.3); display: flex; align-items: center; justify-content: center; font-size: 20px; }
   .sensei-name { font-family: var(--font-display); font-size: 20px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); }
@@ -152,16 +158,10 @@
 
   /* Tips */
   .tips-row { display: flex; gap: 8px; flex-wrap: wrap; }
-  .tip-pill { display: flex; align-items: center; gap: 5px; padding: 5px 12px; background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; font-size: 11px; color: #888; }
+  .tip-pill { display: flex; align-items: center; gap: 5px; padding: 5px 12px; background: #1a1a1a; border-radius: 20px; font-size: 11px; color: #888; }
 
   /* Loading overlay */
-  .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
-  .loading-logo { font-family: var(--font-display); font-size: 48px; letter-spacing: 8px; color: var(--red); text-transform: uppercase; }
-  .loading-dots { display: flex; gap: 6px; }
-  .loading-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: blink 1.2s infinite; }
-  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
-  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes blink { 0%,80%,100%{opacity:0.2;} 40%{opacity:1;} }
+40%{opacity:1;} }
 
   /* Toast */
   .toast { position: fixed; bottom: 28px; right: 28px; padding: 14px 20px; border-radius: 6px; font-size: 13px; font-weight: 500; z-index: 300; transform: translateY(80px); opacity: 0; transition: all 0.3s ease; }
@@ -194,31 +194,26 @@
 
   /* ── BOTTOM NAV MOBILE ── */
   .mobile-nav {
-    display: none;
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: #0a0a0a;
-    border-top: 1px solid #1e1e1e;
-    padding: 8px 0 max(8px, env(safe-area-inset-bottom));
-    z-index: 100;
-    grid-template-columns: repeat(5, 1fr);
-  }
-  .mobile-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 4px; text-decoration: none; transition: all 0.2s; color: #555; cursor: pointer; }
-  .mobile-nav-item.active { color: #c82828; }
-  .mobile-nav-item:hover { color: #aaa; }
-  .mobile-nav-icon { font-size: 20px; }
-  .mobile-nav-label { font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 600; }
+    display: none; position: fixed; bottom: 0; left: 0; right: 0;
+    background: #111111;
+    padding: 12px 0 max(12px, env(safe-area-inset-bottom));
+    z-index: 100; grid-template-columns: repeat(5, 1fr);  border-radius: 20px 20px 0 0; box-shadow: 0 -6px 24px rgba(0,0,0,0.7); }
+  .mobile-nav-item { display: flex; align-items: center; justify-content: center; padding: 6px 4px; text-decoration: none; transition: opacity 0.2s; cursor: pointer; opacity: 0.5; }
+  .mobile-nav-item.active { opacity: 1; }
+  .mobile-nav-item:hover { opacity: 0.85; }
+  .mobile-nav-icon { display: flex; }
+  .mobile-nav-label { display: none; }
   @media (max-width: 768px) {
-    .mobile-nav { display: grid; }
+    .mobile-nav { display: grid;  border-radius: 20px 20px 0 0; box-shadow: 0 -6px 24px rgba(0,0,0,0.7); }
     .main { padding-bottom: 72px; }
     .sidebar { display: none !important; }
   }
 
   /* ── MOBILE TOPBAR COMPACT ── */
   @media (max-width: 768px) {
-    .topbar { padding: 14px 16px; }
+    .topbar { padding: 14px 20px; }
     .topbar-title { font-size: 22px; }
-    .content { padding: 16px; }
+    .content { padding: 16px 16px 80px; }
     .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .main-grid { grid-template-columns: 1fr; gap: 14px; }
     .bottom-grid { grid-template-columns: 1fr; gap: 14px; }
@@ -241,7 +236,7 @@
   /* MOBILE : topbar ultra simplifié */
   @media (max-width: 768px) {
     .topbar-right { display: none !important; }
-    .topbar { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .topbar { padding: 14px 20px; }
     .topbar-title { font-size: 24px; }
     .streak-pill { display: none !important; }
     .logout-btn { display: none !important; }
@@ -259,39 +254,7 @@
     * { max-width: 100%; }
     img { max-width: 100%; }
   }
-
-  /* ── LANGUAGE SELECTOR ── */
-  .lang-selector {
-    display: flex; gap: 4px; align-items: center;
-  }
-  .lang-btn {
-    width: 28px; height: 28px; border-radius: 4px;
-    background: transparent; border: 1px solid transparent;
-    cursor: pointer; font-size: 16px; display: flex;
-    align-items: center; justify-content: center;
-    transition: all 0.2s; padding: 0;
-    opacity: 0.45;
-  }
-  .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
-  .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
-
-  /* ── LANG BAR MOBILE IN APP ── */
-  .mobile-lang-bar {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    background: #080808;
-    border-bottom: 1px solid #1e1e1e;
-    padding: 8px 16px;
-    z-index: 101;
-    justify-content: flex-end;
-    gap: 6px;
-    align-items: center;
-  }
-  .mobile-lang-bar .lang-btn { width: 28px; height: 28px; font-size: 16px; }
-
   @media (max-width: 768px) {
-    .mobile-lang-bar { display: flex; }
     .topbar { margin-top: 44px; }
     .main { padding-top: 0; }
   }
@@ -309,32 +272,18 @@
   }
 
   /* ── CUSTOM NAV ICONS ── */
-  .nav-icon img {
-    width: 18px; height: 18px;
-    object-fit: contain;
-    opacity: 0.5;
-    transition: opacity 0.2s;
-  }
-  .nav-item:hover .nav-icon img { opacity: 0.85; }
-  .nav-item.active .nav-icon img { opacity: 1; }
-  .mobile-nav-icon img {
-    width: 22px; height: 22px;
-    object-fit: contain;
-    opacity: 0.45;
-    transition: opacity 0.2s;
-  }
-  .mobile-nav-item.active .mobile-nav-icon img { opacity: 1; }
-  .mobile-nav-item:hover .mobile-nav-icon img { opacity: 0.8; }
+    .nav-icon img { width: 26px; height: 26px; object-fit: contain; display: block; }
+    .mobile-nav-icon img { width: 26px; height: 26px; object-fit: contain; display: block; }
+
+  /* Coach IA Floating Button */
+  .coach-fab { position: fixed; bottom: 28px; right: 28px; width: 56px; height: 56px; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 6px 24px rgba(200,40,40,0.4), 0 2px 8px rgba(0,0,0,0.3); z-index: 90; transition: transform 0.2s, box-shadow 0.2s; }
+  .coach-fab:hover { transform: scale(1.06); box-shadow: 0 8px 30px rgba(200,40,40,0.55), 0 4px 12px rgba(0,0,0,0.4); }
+  .coach-fab:active { transform: scale(0.96); }
+  @media (max-width: 768px) { .coach-fab { bottom: 80px; right: 18px; width: 50px; height: 50px; } }
 </style>
 <script src="site-config.js"></script>
 </head>
 <body>
-
-<div class="loading-overlay" id="loading">
-  <div class="loading-logo">Espritum</div>
-  <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
-</div>
-
 <div class="toast" id="toast"></div>
 <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleFile(event)">
 <canvas id="cam-canvas" style="display:none"></canvas>
@@ -345,25 +294,13 @@
     <span class="sidebar-name">Espritum</span>
   </a>
   <nav class="sidebar-nav">
-
-    <div class="nav-section-label">Principal</div>
-    <a class="nav-item" href="dashboard.html"><span class="nav-icon"><img src="icons/dashboard.png" alt="Dashboard"></span data-i18n="nav_dashboard"> Dashboard</a>
-    <a class="nav-item nav-freemium" href="nutrition.html" data-feature="Nutrition"><span class="nav-icon"><img src="icons/nutrition.png" alt="Nutrition"></span data-i18n="nav_nutrition"> Nutrition<span class="nav-lock" id="lock-nutrition"></span></a>
-    <a class="nav-item nav-freemium" href="entrainement.html" data-feature="Entraînement"><span class="nav-icon"><img src="icons/entrainement.png" alt="Entraînement"></span data-i18n="nav_training"> Training<span class="nav-lock" id="lock-entrainement"></span></a>
-    <a class="nav-item nav-freemium" href="progression.html" data-feature="Progression"><span class="nav-icon"><img src="icons/progression.png" alt="Progression"></span data-i18n="nav_progression"> Progression<span class="nav-lock" id="lock-progression"></span></a>
-    <div class="nav-section-label">IA & Motivation</div>
-    <a class="nav-item  active" href="bodyfat.html"><span class="nav-icon"><img src="icons/estimation.png" alt="Estimation"></span data-i18n="nav_bodyfat"> Estimation</a>
-    <a class="nav-item nav-freemium" href="classement.html" data-feature="Classement"><span class="nav-icon"><img src="icons/classement.png" alt="Classement"></span data-i18n="nav_classement"> Classement<span class="nav-lock" id="lock-classement"></span></a>
-    <div class="nav-section-label">Compte</div>
-    <a class="nav-item" href="profil.html"><span class="nav-icon"><img src="icons/profil.png" alt="Profil"></span data-i18n="nav_profil"> Profil</a>
-    <a class="nav-item" href="abonnement.html"><span class="nav-icon"><img src="icons/abonnement.png" alt="Abonnement"></span data-i18n="nav_abonnement"> Abonnement</a>
+    <a class="nav-item" href="dashboard.html" title="Dashboard"><span class="nav-icon"><img src="icons/dashboard.svg" alt="Dashboard"></span></a>
+    <a class="nav-item nav-freemium" href="nutrition.html" data-feature="Nutrition" title="Nutrition"><span class="nav-icon"><img src="icons/nutrition.svg" alt="Nutrition"></span><span class="nav-lock" id="lock-nutrition"></span></a>
+    <a class="nav-item nav-freemium" href="entrainement.html" data-feature="Entraînement" title="Training"><span class="nav-icon"><img src="icons/entrainement.svg" alt="Entraînement"></span><span class="nav-lock" id="lock-entrainement"></span></a>
+    <a class="nav-item nav-freemium" href="classement.html" data-feature="Classement" title="Classement"><span class="nav-icon"><img src="icons/classement.svg" alt="Classement"></span><span class="nav-lock" id="lock-classement"></span></a>
+    <a class="nav-item" href="profil.html" title="Profil"><span class="nav-icon"><img src="icons/profil.svg" alt="Profil"></span></a>
   </nav>
   <div class="sidebar-bottom">
-    <div class="lang-selector" style="display:flex;gap:4px;align-items:center;">
-      <button class="lang-btn" data-lang="fr" onclick="setLang('fr')" title="Français">🇫🇷</button>
-      <button class="lang-btn" data-lang="en" onclick="setLang('en')" title="English">🇬🇧</button>
-      <button class="lang-btn" data-lang="bg" onclick="setLang('bg')" title="Български">🇧🇬</button>
-    </div>
 
     <div class="user-card">
       <div class="user-avatar" id="sidebar-avatar">?</div>
@@ -546,15 +483,9 @@
   let userId = null;
   let hasImage = false;
   let camStream = null;
-
-  function hideLoading() {
-    const el = document.getElementById('loading');
-    if (el) el.style.display = 'none';
-  }
-
+var safetyTimeout = 0;
   async function init() {
-    const safetyTimeout = setTimeout(hideLoading, 1000);
-    try {
+        try {
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
       userId = session.user.id;
@@ -574,8 +505,6 @@
     } catch(err) {
       console.error('Init error:', err);
     } finally {
-      clearTimeout(safetyTimeout);
-      hideLoading();
     }
   }
 
@@ -638,29 +567,64 @@
     document.getElementById('section-upload').style.display = 'none';
     document.getElementById('section-analyzing').classList.add('visible');
 
-    await sleep(1000);
+    await sleep(600);
     setStep(2, 'active');
-    await sleep(1400);
+
+    // ── ANALYSE VISION IA (Gemini) ──
+    let mgPct = null;
+    let usedVision = false;
+
+    const geminiKey = EspritumAPI.getKey('gemini');
+    if (geminiKey) {
+      try {
+        const imgEl = document.querySelector('#upload-zone .preview-img');
+        if (imgEl && imgEl.src && imgEl.src.startsWith('data:')) {
+          const [meta, b64] = imgEl.src.split(',');
+          const mimeType = meta.replace('data:', '').replace(';base64', '');
+          const prompt = `Analyse cette photo de corps humain pour estimer le taux de masse grasse.
+Données : poids ${poids}kg, taille ${taille}cm, genre: ${genre}.
+Observe la silhouette, la définition musculaire, la distribution des graisses visible.
+Réponds UNIQUEMENT avec un JSON valide, sans texte supplémentaire :
+{"bodyFat": 15.5, "category": "${genre === 'homme' ? 'athletique(<10%)/normal(10-17%)/eleve(18-24%)/tres-eleve(>25%)' : 'athletique(<18%)/normal(18-24%)/eleve(25-31%)/tres-eleve(>32%)'}"}
+Utilise exactement une de ces valeurs pour category: athletique, normal, eleve, tres-eleve`;
+
+          const rawJson = await EspritumAPI.geminiVision(b64, mimeType, prompt, 100);
+          const jsonMatch = rawJson.match(/\{[\s\S]*?\}/);
+          if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            if (parsed.bodyFat && !isNaN(parsed.bodyFat)) {
+              mgPct = parseFloat(parsed.bodyFat);
+              usedVision = true;
+            }
+          }
+        }
+      } catch(e) {
+        if (e.message === 'NO_KEY' || e.message === 'INVALID_KEY') {
+          EspritumAPI.clearKey('gemini');
+        }
+        // Fallback sur formule si vision échoue
+      }
+    }
+
     setStep(2, 'done');
     setStep(3, 'active');
-    await sleep(1200);
+    await sleep(800);
     setStep(3, 'done');
     setStep(4, 'active');
-    await sleep(900);
+    await sleep(600);
     setStep(4, 'done');
-    await sleep(500);
+    await sleep(400);
 
-    // ── CALCUL ESTIMATION ──
+    // ── CALCUL FALLBACK (formule Deurenberg si vision non disponible) ──
     const imc = parseFloat((poids / ((taille / 100) ** 2)).toFixed(1));
 
-    // Formule Deurenberg adaptée : MG% = 1.20×IMC + 0.23×âge - 10.8×sexe - 5.4
-    // (sexe : 1=homme, 0=femme, âge estimé à 30)
-    const sexe = genre === 'homme' ? 1 : 0;
-    let mgBase = (1.20 * imc) + (0.23 * 28) - (10.8 * sexe) - 5.4;
+    if (mgPct === null) {
+      const sexe = genre === 'homme' ? 1 : 0;
+      let mgBase = (1.20 * imc) + (0.23 * 28) - (10.8 * sexe) - 5.4;
+      const variation = (Math.random() * 6) - 3;
+      mgPct = Math.round((mgBase + variation) * 10) / 10;
+    }
 
-    // Variation aléatoire réaliste ±4% pour simuler l'analyse visuelle
-    const variation = (Math.random() * 8) - 4;
-    let mgPct = Math.round((mgBase + variation) * 10) / 10;
     mgPct = Math.max(genre === 'homme' ? 5 : 12, Math.min(genre === 'homme' ? 40 : 48, mgPct));
 
     const mgKg = parseFloat((poids * mgPct / 100).toFixed(1));
@@ -696,6 +660,16 @@
     // Afficher résultats
     document.getElementById('section-analyzing').classList.remove('visible');
     document.getElementById('section-results').classList.add('visible');
+
+    // Badge Vision IA / formule
+    const disclaimerEl = document.querySelector('.disclaimer');
+    if (disclaimerEl) {
+      if (usedVision) {
+        disclaimerEl.innerHTML = '🤖 <span style="color:#4caf50;font-weight:600;">Analysé par Gemini Vision IA</span> · Estimation ±3-5% — non médicale';
+      } else {
+        disclaimerEl.innerHTML = '📐 Estimation par formule (Deurenberg) ±3-5% — <span style="color:#555;cursor:pointer;text-decoration:underline;" onclick="EspritumAPI.showSetup(\'gemini\', function(){ showToast(\'success\',\'Vision IA activée ! Relance une analyse.\'); })">Activer Vision IA (Gemini, gratuit)</span>';
+      }
+    }
 
     document.getElementById('r-pct').textContent = mgPct + '%';
     document.getElementById('r-mg-pct').textContent = mgPct + '%';
@@ -770,37 +744,7 @@
 
 <script>
   // Freemium sidebar logic — verrouillé par défaut, déverrouillé si payant
-  function initFreemium(plan) {
-    const isPaid = ['guerrier', 'champion', 'elite'].includes(plan);
-
-    document.querySelectorAll('.nav-freemium').forEach(el => {
-      if (!isPaid) {
-        // Verrouiller
-        el.classList.add('locked');
-        const lock = el.querySelector('.nav-lock');
-        if (lock) lock.textContent = '🔒';
-
-        // Intercepter le clic
-        el.onclick = function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          const feature = this.getAttribute('data-feature');
-          openUpgrade(feature);
-          return false;
-        };
-
-        // Bloquer aussi le href
-        el.removeAttribute('href');
-        el.style.pointerEvents = 'auto';
-      } else {
-        // Déverrouiller
-        el.classList.remove('locked');
-        const lock = el.querySelector('.nav-lock');
-        if (lock) lock.textContent = '';
-        el.onclick = null;
-      }
-    });
-  }
+  function initFreemium(plan) { /* désactivé temporairement */ }
 
   function openUpgrade(feature) {
     document.getElementById('upgrade-feature').textContent = feature || 'Cette fonctionnalité';
@@ -816,30 +760,13 @@
 
 <!-- BARRE NAVIGATION MOBILE -->
 <nav class="mobile-nav">
-  <a class="mobile-nav-item " href="dashboard.html">
-    <span class="mobile-nav-icon"><img src="icons/dashboard.png" alt="Home"></span>
-    <span class="mobile-nav-label" data-i18n="nav_dashboard">Home</span>
-  </a>
-  <a class="mobile-nav-item " href="nutrition.html">
-    <span class="mobile-nav-icon"><img src="icons/nutrition.png" alt="Nutrition"></span>
-    <span class="mobile-nav-label" data-i18n="nav_nutrition">Nutrition</span>
-  </a>
-  <a class="mobile-nav-item " href="entrainement.html">
-    <span class="mobile-nav-icon"><img src="icons/entrainement.png" alt="Training"></span>
-    <span class="mobile-nav-label" data-i18n="nav_training">Training</span>
-  </a>
-  <a class="mobile-nav-item active" href="bodyfat.html">
-    <span class="mobile-nav-icon"><img src="icons/estimation.png" alt="Analyse"></span>
-    <span class="mobile-nav-label" data-i18n="nav_bodyfat">Analyse</span>
-  </a>
-  <a class="mobile-nav-item " href="profil.html">
-    <span class="mobile-nav-icon"><img src="icons/profil.png" alt="Profil"></span>
-    <span class="mobile-nav-label" data-i18n="nav_profil">Profil</span>
-  </a>
+  <a class="mobile-nav-item" href="dashboard.html"><span class="mobile-nav-icon"><img src="icons/dashboard.svg" alt="Home"></span></a>
+  <a class="mobile-nav-item" href="nutrition.html"><span class="mobile-nav-icon"><img src="icons/nutrition.svg" alt="Nutrition"></span></a>
+  <a class="mobile-nav-item" href="entrainement.html"><span class="mobile-nav-icon"><img src="icons/entrainement.svg" alt="Training"></span></a>
+  <a class="mobile-nav-item" href="classement.html"><span class="mobile-nav-icon"><img src="icons/classement.svg" alt="Classement"></span></a>
+  <a class="mobile-nav-item" href="profil.html"><span class="mobile-nav-icon"><img src="icons/profil.svg" alt="Profil"></span></a>
 </nav>
-
-  <!-- i18n -->
-  <script src="i18n.js"></script>
-  <script>document.addEventListener('DOMContentLoaded', initI18n);</script>
+<script src="api-config.js"></script>
+<script src="topbar-avatar.js"></script>
 </body>
 </html>
