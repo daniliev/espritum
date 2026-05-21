@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<script src="page-loader.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Espritum — Inscription</title>
@@ -10,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
 <style>
   :root {
     --red: #c82828;
@@ -91,23 +93,7 @@
   .msg.success { background: rgba(46,125,50,0.1); border: 1px solid rgba(46,125,50,0.3); color: #a5d6a7; display: block; }
 
   @media (max-width: 900px) { body { grid-template-columns: 1fr; } .left { display: none; } .right { padding: 32px 24px; } }
-
-  /* ── LANGUAGE SELECTOR ── */
-  .lang-selector {
-    display: flex; gap: 4px; align-items: center;
-  }
-  .lang-btn {
-    width: 28px; height: 28px; border-radius: 4px;
-    background: transparent; border: 1px solid transparent;
-    cursor: pointer; font-size: 16px; display: flex;
-    align-items: center; justify-content: center;
-    transition: all 0.2s; padding: 0;
-    opacity: 0.45;
-  }
-  .lang-btn:hover { opacity: 0.85; border-color: var(--border, #1e1e1e); }
-  .lang-btn.active { opacity: 1; border-color: var(--red, #c82828); background: rgba(200,40,40,0.08); }
-
-  /* ── BULGARIAN FONT ── */
+/* ── BULGARIAN FONT ── */
   html[lang="bg"] * {
     font-family: 'Sofia Sans Condensed', var(--font-body, sans-serif) !important;
   }
@@ -217,11 +203,7 @@
 </div>
 
 <script>
-  const { createClient } = supabase;
-  const sb = createClient(
-    'https://lbxlvrtujzwlcnloheyh.supabase.co',
-    'sb_publishable_40dpIdYthKMZkJImacoKoQ_ftEeaPeg'
-  );
+  const sb = window.sb;
 
   // Vérifier si déjà connecté
   sb.auth.getSession().then(({ data: { session } }) => {
@@ -263,14 +245,19 @@
         return;
       }
 
-      // Créer profil
+      // Créer profil (filet de sécurité côté client — en prod c'est un trigger Postgres qui fait ça)
       if (data.user) {
-        await sb.from('users').insert({
+        const { error: insertErr } = await sb.from('users').upsert({
           id: data.user.id,
           email,
           prenom,
           plan: 'gratuit'
-        });
+        }, { onConflict: 'id' });
+
+        if (insertErr) {
+          console.error('Profile insert error:', insertErr);
+          // On ne bloque pas — l'user existe côté auth, le profil sera créé lors de l'onboarding
+        }
       }
 
       showMsg('inscription', 'success', '✓ Compte créé ! Redirection...');
@@ -367,9 +354,5 @@
     label.style.color = cls === 'strong' ? '#2e7d32' : cls === 'medium' ? '#e8a000' : '#c82828';
   }
 </script>
-
-  <!-- i18n -->
-  <script src="i18n.js"></script>
-  <script>document.addEventListener('DOMContentLoaded', initI18n);</script>
 </body>
 </html>
