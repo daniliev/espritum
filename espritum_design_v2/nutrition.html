@@ -188,8 +188,10 @@ body { background: var(--bg); color: #fff; font-family: var(--font-body); displa
 .sheet-meal-btn.active { background: rgba(200,40,40,0.1); border-color: var(--red); color: #fff; }
 .sheet-actions { padding: 0 24px; margin-bottom: 16px; }
 .sheet-estimate-btn { width: 100%; padding: 16px; background: var(--red); border: none; border-radius: 12px; color: #fff; font-family: var(--font-display); font-size: 18px; letter-spacing: 3px; cursor: pointer; transition: all 0.15s; }
-.sheet-estimate-btn:hover { background: #d93030; }
-.sheet-estimate-btn:disabled { background: var(--muted2); cursor: not-allowed; }
+.sheet-estimate-btn:hover:not(:disabled) { background: #d93030; }
+.sheet-estimate-btn:disabled { background: #1e1e1e; border: 1px solid #2a2a2a; color: #444; cursor: not-allowed; font-size: 13px; letter-spacing: 1px; font-family: var(--font-body); }
+.sheet-photo-notice { margin: -8px 24px 12px; display: none; font-size: 12px; color: #ff6b35; text-align: center; letter-spacing: 0.5px; }
+.sheet-photo-notice.show { display: block; }
 .sheet-results { margin: 0 24px 16px; padding: 20px; background: #0a0a0a; border: 1px solid #1e1e1e; border-radius: 14px; }
 .sheet-results-title { font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; font-weight: 600; margin-bottom: 16px; }
 .sheet-results-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 14px; }
@@ -407,13 +409,15 @@ html[lang="bg"] .topbar-title { font-family: 'Sofia Sans Condensed', var(--font-
           <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
           <circle cx="12" cy="13" r="4"/>
         </svg>
-        <span>Prendre une photo</span>
+        <span>Prendre une photo (optionnel)</span>
       </div>
     </div>
 
+    <div class="sheet-photo-notice" id="sheet-photo-notice">📸 Photo prête — ajoute une description pour lancer l'analyse</div>
+
     <div class="sheet-field">
-      <div class="sheet-hint">💬 Plus ta description est précise + l'estimation sera précise !</div>
-      <textarea class="sheet-textarea" id="sheet-desc" rows="3" placeholder="Décris ce que tu as mangé... (ex: escalope de poulet grillé, riz 200g, salade verte)"></textarea>
+      <div class="sheet-hint">✍️ Description obligatoire — photo optionnelle pour plus de précision</div>
+      <textarea class="sheet-textarea" id="sheet-desc" rows="3" placeholder="Décris ce que tu as mangé... (ex: escalope de poulet grillé, riz 200g, salade verte)" oninput="checkDescReady()"></textarea>
     </div>
 
     <div class="sheet-field">
@@ -426,8 +430,8 @@ html[lang="bg"] .topbar-title { font-family: 'Sofia Sans Condensed', var(--font-
     </div>
 
     <div class="sheet-actions">
-      <button class="sheet-estimate-btn" id="sheet-estimate-btn" onclick="estimateWithAI()">
-        <span id="sheet-btn-text">Estimer</span>
+      <button class="sheet-estimate-btn" id="sheet-estimate-btn" onclick="estimateWithAI()" disabled>
+        <span id="sheet-btn-text">Décris ton repas pour analyser</span>
       </button>
     </div>
 
@@ -622,6 +626,24 @@ async function init() {
   let photoMime = null;
   let estimatedMeal = null;
 
+  function checkDescReady() {
+    const desc = document.getElementById('sheet-desc').value.trim();
+    const btn = document.getElementById('sheet-estimate-btn');
+    const btnTxt = document.getElementById('sheet-btn-text');
+    const notice = document.getElementById('sheet-photo-notice');
+    if (desc.length > 0) {
+      btn.disabled = false;
+      if (!estimatedMeal) {
+        btnTxt.textContent = photoBase64 ? '📸 Analyser photo + description' : 'Analyser';
+      }
+      if (notice) notice.classList.remove('show');
+    } else {
+      btn.disabled = true;
+      btnTxt.textContent = 'Décris ton repas pour analyser';
+      if (photoBase64 && notice) notice.classList.add('show');
+    }
+  }
+
   function openSheet(repas, triggerCam) {
     sheetMealType = repas || 'petit-dejeuner';
     selectMeal(sheetMealType);
@@ -630,8 +652,9 @@ async function init() {
     document.getElementById('sheet-desc').value = '';
     document.getElementById('sheet-photo-area').classList.remove('has-photo');
     document.getElementById('sheet-photo-preview').src = '';
-    document.getElementById('sheet-btn-text').textContent = 'Estimer';
-    document.getElementById('sheet-estimate-btn').disabled = false;
+    document.getElementById('sheet-btn-text').textContent = 'Décris ton repas pour analyser';
+    document.getElementById('sheet-estimate-btn').disabled = true;
+    document.getElementById('sheet-photo-notice').classList.remove('show');
     document.getElementById('camera-input').value = '';
     photoBase64 = null; photoMime = null; estimatedMeal = null;
     if (triggerCam) setTimeout(triggerCamera, 350);
@@ -660,14 +683,16 @@ async function init() {
       photoBase64 = data;
       document.getElementById('sheet-photo-preview').src = dataUrl;
       document.getElementById('sheet-photo-area').classList.add('has-photo');
+      // Met à jour l'état du bouton après ajout de la photo
+      checkDescReady();
     };
     reader.readAsDataURL(file);
   }
 
   async function estimateWithAI() {
     const desc = document.getElementById('sheet-desc').value.trim();
-    if (!desc && !photoBase64) {
-      showToast('error', 'Prends une photo ou décris ton repas !');
+    if (!desc) {
+      showToast('error', 'Décris ton repas avant de lancer l\'analyse !');
       return;
     }
     const btn = document.getElementById('sheet-estimate-btn');
@@ -676,13 +701,21 @@ async function init() {
     btnTxt.textContent = 'Analyse en cours...';
 
     try {
-      const basePrompt = `Tu es un expert en nutrition. Analyse ${photoBase64 ? "cette photo d'un repas" : 'cette description de repas'}${desc ? ' et la description : "' + desc + '"' : ''}.\nEstime les valeurs nutritionnelles pour la TOTALITÉ du repas.\nRéponds UNIQUEMENT avec un JSON valide, sans texte autour :\n{"calories": 450, "proteines": 35, "glucides": 40, "lipides": 12, "nom": "Nom court du plat"}\nLes valeurs sont en kcal pour calories, en grammes pour les macros.`;
-
       let raw;
+      const jsonFormat = '{"calories":450,"proteines":35,"glucides":40,"lipides":12,"nom":"Nom du plat"}';
+
       if (photoBase64) {
-        raw = await EspritumAPI.geminiVision(photoBase64, photoMime, basePrompt, 300);
+        // Photo + description → Gemini Vision
+        const visionPrompt = `Expert nutrition. Repas décrit : "${desc}". Analyse la photo ET la description. Réponds UNIQUEMENT ce JSON (remplace les valeurs) : ${jsonFormat}`;
+        raw = await EspritumAPI.geminiVision(photoBase64, photoMime, visionPrompt, 200);
       } else {
-        raw = await EspritumAPI.groq('Tu es un expert en nutrition. Réponds TOUJOURS en JSON valide uniquement, sans aucun texte autour.', [{ role: 'user', content: basePrompt }], 300);
+        // Description seule → Groq
+        const textPrompt = `Repas : "${desc}". Estime les valeurs nutritionnelles totales. Réponds UNIQUEMENT ce JSON (remplace les valeurs) : ${jsonFormat}`;
+        raw = await EspritumAPI.groq(
+          'Tu es un expert en nutrition. Réponds TOUJOURS en JSON valide uniquement, sans aucun texte autour.',
+          [{ role: 'user', content: textPrompt }],
+          200
+        );
       }
 
       const match = raw.match(/\{[\s\S]*?\}/);
@@ -696,12 +729,12 @@ async function init() {
       document.getElementById('res-name').textContent = estimatedMeal.nom || desc;
       document.getElementById('sheet-results').style.display = 'block';
       btn.disabled = false;
-      btnTxt.textContent = 'Re-estimer →';
+      btnTxt.textContent = photoBase64 ? '📸 Re-analyser' : 'Re-analyser →';
 
     } catch(err) {
       console.error('AI error:', err);
       btn.disabled = false;
-      btnTxt.textContent = 'Estimer';
+      btnTxt.textContent = photoBase64 ? '📸 Analyser photo + description' : 'Analyser';
       if (err.message === 'NO_KEY' || err.message === 'INVALID_KEY') {
         EspritumAPI.showSetup(err.service, () => estimateWithAI());
       } else {

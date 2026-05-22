@@ -135,6 +135,8 @@
     gap: 14px;
   }
   .body-stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+  .body-stats-row2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+  .body-stats-grid4 { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
   .body-stat-box { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 14px 10px 10px; text-align: center; }
   .body-stat-val { font-family: var(--font-display); font-size: 34px; line-height: 1; color: #fff; }
   .body-stat-val sup { font-size: 14px; color: var(--muted); font-family: var(--font-body); font-weight: 400; vertical-align: super; line-height: 0; }
@@ -148,24 +150,6 @@
   .scan-btn:hover { background: #d93030; }
 
   /* ── CALENDAR ── */
-  .calendar-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 22px 20px;
-  }
-  .cal-title { font-family: var(--font-display); font-size: 22px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 16px; }
-  .cal-dow-row { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; margin-bottom: 6px; }
-  .cal-dow { text-align: center; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; padding: 4px 0; color: var(--muted); }
-  .cal-dow.weekend { color: var(--red); }
-  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
-  .cal-cell { text-align: center; font-size: 13px; padding: 4px 2px; border-radius: 6px; color: var(--muted); min-height: 34px; display: flex; align-items: center; justify-content: center; cursor: default; }
-  .cal-cell.cal-empty { }
-  .cal-cell.cal-workout { background: rgba(20,50,20,0.75); color: #fff; font-size: 16px; }
-  .cal-cell.cal-today { background: var(--red) !important; color: #fff !important; font-weight: 700; }
-  .cal-cell.cal-weekend:not(.cal-workout):not(.cal-today) { color: var(--red); }
-  .cal-cell.cal-weekend.cal-workout:not(.cal-today) { background: rgba(20,50,20,0.75); }
-
   /* ── PROGRESSION CHARTS ── */
   .progression-card { background: #0d0d0d; border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px 16px; }
   .progression-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
@@ -452,6 +436,12 @@
   /* Retry */
   .ss-btn-retry { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
   .ss-btn-retry:hover { border-color: #2a2a2a; color: #777; }
+  .ss-btn-validate { width: 100%; padding: 16px; background: var(--red); border: none; border-radius: 8px; color: #fff; font-family: var(--font-body); font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .ss-btn-validate:hover { background: #d93030; }
+  .ss-btn-validate:disabled { background: var(--muted2); cursor: not-allowed; }
+  .ss-btn-validate.saved { background: #2e7d32; }
+  .ss-btn-voir-progres { width: 100%; padding: 12px; background: transparent; border: 1px solid rgba(46,125,50,0.4); border-radius: 8px; color: #4caf50; font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; text-decoration: none; display: none; align-items: center; justify-content: center; gap: 6px; }
+  .ss-btn-voir-progres:hover { background: rgba(46,125,50,0.1); }
 
 </style>
 <script src="site-config.js"></script>
@@ -516,7 +506,7 @@
         </div>
       </div>
       <div class="ring-week-row">
-        <div class="ring-week-text">WEEK <span class="ring-week-num" id="ring-week">1</span> / 12</div>
+        <div class="ring-week-text">WEEK <span class="ring-week-num" id="ring-week">1</span> / <span id="ring-total">12</span></div>
       </div>
       <div class="ring-remaining" id="ring-remaining"><span>11 weeks</span> remaining — keep going.</div>
     </div>
@@ -553,12 +543,15 @@
       <div>
         <div class="time-goal-lbl">Objectif en combien de temps ?</div>
         <div class="slider-wrap">
-          <input type="range" id="goal-slider" class="goal-slider" min="0" max="3" step="1" value="1" oninput="onSliderChange(this.value)">
+          <input type="range" id="goal-slider" class="goal-slider" min="0" max="6" step="1" value="2" oninput="onSliderChange(this.value)">
           <div class="slider-ticks">
+            <span>2 sem</span>
             <span>1 mois</span>
             <span>3 mois</span>
             <span>6 mois</span>
             <span>1 an</span>
+            <span>2 ans</span>
+            <span>3 ans</span>
           </div>
         </div>
       </div>
@@ -570,45 +563,25 @@
 
     <!-- BODY STATS -->
     <div class="body-stats-card">
-      <div class="body-stats-row">
+      <div class="body-stats-grid4">
         <div class="body-stat-box">
           <div class="body-stat-val"><span id="bstat-poids">—</span><sup>kg</sup></div>
-          <div class="body-stat-label">Weight</div>
+          <div class="body-stat-label">Poids</div>
         </div>
         <div class="body-stat-box">
           <div class="body-stat-val"><span id="bstat-mg">—</span><sup>%</sup></div>
-          <div class="body-stat-label">Body Fat</div>
+          <div class="body-stat-label">Masse grasse</div>
         </div>
         <div class="body-stat-box">
-          <div class="body-stat-val"><span id="bstat-tour">—</span><sup>cm</sup></div>
-          <div class="body-stat-label">Waist</div>
+          <div class="body-stat-val"><span id="bstat-mg-kg">—</span><sup>kg</sup></div>
+          <div class="body-stat-label">Graisse (kg)</div>
         </div>
-      </div>
-      <div class="body-comp-wrap">
-        <div class="body-comp-bar-outer">
-          <div class="body-comp-bar-fill" id="body-comp-bar" style="width:18%"></div>
-        </div>
-        <div class="body-comp-labels">
-          <span>Masse grasse</span>
-          <strong id="body-comp-pct">—%</strong>
+        <div class="body-stat-box">
+          <div class="body-stat-val"><span id="bstat-mm-kg">—</span><sup>kg</sup></div>
+          <div class="body-stat-label">Muscle (kg)</div>
         </div>
       </div>
       <button class="scan-btn" onclick="openScanSheet()">Scan My Body</button>
-    </div>
-
-    <!-- CALENDAR -->
-    <div class="calendar-card">
-      <div class="cal-title" id="cal-month-title">Mai 2026</div>
-      <div class="cal-dow-row">
-        <div class="cal-dow">M</div>
-        <div class="cal-dow">T</div>
-        <div class="cal-dow">W</div>
-        <div class="cal-dow">T</div>
-        <div class="cal-dow">F</div>
-        <div class="cal-dow weekend">S</div>
-        <div class="cal-dow weekend">S</div>
-      </div>
-      <div class="cal-grid" id="cal-grid"></div>
     </div>
 
     <!-- CALORIES CONSOMMÉES -->
@@ -702,7 +675,7 @@
       setEl('sidebar-name', `${prenom} ${nom}`.trim());
       setEl('sidebar-plan', PLAN_LABEL[profile?.plan || 'gratuit']);
       initFreemium(profile?.plan || 'gratuit');
-      window._espritumUser = { id: userId, plan: profile?.plan || 'gratuit' };
+      window._espritumUser = { id: userId, plan: profile?.plan || 'gratuit', semaine_programme: profile?.semaine_programme || 1, poids: profile?.poids, masse_grasse: profile?.masse_grasse, genre: profile?.genre || 'homme' };
 
       setEl('topbar-streak', '🔥 ' + (profile?.streak || 0));
       setEl('topbar-avatar', initiale);
@@ -719,9 +692,6 @@
       // Body stats
       renderBodyStats(profile);
 
-      // Calendar
-      await renderCalendar(userId, now);
-
       // Body photos + goal
       loadBodyPhotos();
 
@@ -735,13 +705,21 @@
     }
   }
 
+  function getSliderTotal() {
+    const sliderEl = document.getElementById('goal-slider');
+    const idx = sliderEl ? parseInt(sliderEl.value) : 2;
+    const key = SLIDER_KEYS[idx] || '3m';
+    return SLIDER_WEEKS[key] || 13;
+  }
+
   function renderProgressRing(profile) {
-    const week = Math.min(12, Math.max(1, profile?.semaine_programme || 1));
-    const total = 12;
+    const total = getSliderTotal();
+    const week = Math.min(total, Math.max(1, profile?.semaine_programme || 1));
     const pct = Math.round((week / total) * 100);
     const remaining = total - week;
 
     setEl('ring-week', week);
+    setEl('ring-total', total);
     setEl('ring-pct', pct + '%');
     document.getElementById('ring-remaining').innerHTML =
       `<span>${remaining} week${remaining !== 1 ? 's' : ''}</span> remaining — keep going.`;
@@ -779,60 +757,24 @@
     setEl('bstat-mg', mg !== undefined && mg !== null ? mg : '—');
     setEl('bstat-tour', tour !== undefined && tour !== null ? tour : '—');
 
+    // Masse grasse kg + Masse musculaire kg
+    const mgKgVal = profile?.mg_kg;
+    const mmKgVal = profile?.mm_kg;
+    if (mgKgVal !== undefined && mgKgVal !== null) setEl('bstat-mg-kg', mgKgVal);
+    else if (poids && mg) setEl('bstat-mg-kg', parseFloat((poids * mg / 100).toFixed(1)));
+    else setEl('bstat-mg-kg', '—');
+
+    if (mmKgVal !== undefined && mmKgVal !== null) setEl('bstat-mm-kg', mmKgVal);
+    else if (poids && mg) setEl('bstat-mm-kg', parseFloat(((poids - poids * mg / 100) * 0.55).toFixed(1)));
+    else setEl('bstat-mm-kg', '—');
+
     if (mg) {
-      document.getElementById('body-comp-bar').style.width = Math.min(100, mg) + '%';
+      const bar = document.getElementById('body-comp-bar');
+      if (bar) bar.style.width = Math.min(100, mg) + '%';
       setEl('body-comp-pct', mg + '%');
     } else {
       setEl('body-comp-pct', '—%');
     }
-  }
-
-  async function renderCalendar(userId, now) {
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const firstIso = localDate(firstDay);
-    const lastIso = localDate(lastDay);
-
-    const { data: workouts } = await sb.from('workouts')
-      .select('date')
-      .eq('user_id', userId)
-      .eq('termine', true)
-      .gte('date', firstIso)
-      .lte('date', lastIso);
-
-    const workoutDays = new Set((workouts || []).map(w => w.date));
-
-    setEl('cal-month-title', MONTH_NAMES[month] + ' ' + year);
-
-    // Offset: Mon=0 … Sun=6
-    let startDow = firstDay.getDay();
-    startDow = startDow === 0 ? 6 : startDow - 1;
-
-    const todayNum = now.getDate();
-    let html = '';
-
-    for (let i = 0; i < startDow; i++) {
-      html += `<div class="cal-cell cal-empty"></div>`;
-    }
-
-    for (let d = 1; d <= lastDay.getDate(); d++) {
-      const dateStr = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
-      const dow = new Date(year, month, d).getDay(); // 0=Sun, 6=Sat
-      const isToday = d === todayNum;
-      const isWorkout = workoutDays.has(dateStr);
-      const isWeekend = dow === 0 || dow === 6;
-
-      let cls = 'cal-cell';
-      if (isWorkout) cls += ' cal-workout';
-      if (isToday) cls += ' cal-today';
-      if (isWeekend) cls += ' cal-weekend';
-
-      html += `<div class="${cls}">${isWorkout ? '🔥' : d}</div>`;
-    }
-
-    document.getElementById('cal-grid').innerHTML = html;
   }
 
   async function loadWeekProgressConsumed(userId, calObj) {
@@ -910,19 +852,7 @@
             titleColor: '#888',
             bodyColor: '#fff',
             callbacks: { label: ctx => ctx.parsed.y + ' kcal' }
-          },
-          annotation: calObj ? {
-            annotations: {
-              goal: {
-                type: 'line',
-                yMin: calObj,
-                yMax: calObj,
-                borderColor: 'rgba(200,40,40,0.3)',
-                borderWidth: 1,
-                borderDash: [4,4],
-              }
-            }
-          } : {}
+          }
         }
       }
     });
@@ -1027,13 +957,19 @@
       document.getElementById('dream-body-empty').style.display = 'none';
     }
     const savedTime = localStorage.getItem('espritum_goal_time');
-    const keyMap = { '1m': 0, '3m': 1, '6m': 2, '12m': 3 };
+    const keyMap = { '2sem': 0, '1m': 1, '3m': 2, '6m': 3, '12m': 4, '24m': 5, '36m': 6 };
     if (savedTime && keyMap[savedTime] !== undefined) {
       document.getElementById('goal-slider').value = keyMap[savedTime];
-      onSliderChange(keyMap[savedTime]);
     } else {
-      onSliderChange(1);
+      document.getElementById('goal-slider').value = 2;
     }
+    // Afficher message photos manquantes OU générer le plan IA
+    const sliderIdx = parseInt(document.getElementById('goal-slider').value);
+    const sliderKey = SLIDER_KEYS[sliderIdx];
+    const pct2 = (sliderIdx / 6) * 100;
+    document.getElementById('goal-slider').style.background = `linear-gradient(to right, var(--red) ${pct2}%, #2a2a2a ${pct2}%)`;
+    document.querySelectorAll('.slider-ticks span').forEach((s, i) => s.classList.toggle('active', i === sliderIdx));
+    if (!checkPhotosAndShowMessage()) { /* message affiché */ } else { generateAIPlan(sliderKey); }
   }
 
   function handleDreamUpload(input) {
@@ -1047,29 +983,18 @@
       img.src = src;
       img.style.display = 'block';
       document.getElementById('dream-body-empty').style.display = 'none';
+      // Re-déclencher le plan IA maintenant que les 2 photos sont peut-être là
+      const idx = parseInt(document.getElementById('goal-slider').value);
+      generateAIPlan(SLIDER_KEYS[idx]);
     };
     reader.readAsDataURL(file);
   }
 
-  const SLIDER_KEYS = ['1m', '3m', '6m', '12m'];
-  const PLANNINGS = {
-    '1m': {
-      title: 'Programme intensif — 1 mois',
-      items: ['6 séances d\'entraînement par semaine', 'Déficit calorique de 700 kcal/jour', 'Cardio HIIT 20 min après chaque séance', 'Repos absolu 1 jour/semaine']
-    },
-    '3m': {
-      title: 'Programme soutenu — 3 mois',
-      items: ['5 séances d\'entraînement par semaine', 'Déficit calorique de 500 kcal/jour', 'Cardio modéré 3×/semaine', '2 jours de récupération active']
-    },
-    '6m': {
-      title: 'Programme équilibré — 6 mois',
-      items: ['4 séances d\'entraînement par semaine', 'Déficit calorique de 350 kcal/jour', 'Cardio léger 2×/semaine', 'Réévaluation mensuelle des stats']
-    },
-    '12m': {
-      title: 'Programme durable — 1 an',
-      items: ['3 à 4 séances d\'entraînement par semaine', 'Déficit calorique de 200 kcal/jour', 'Focus sur la qualité des mouvements', 'Progression progressive des charges']
-    }
-  };
+  const SLIDER_KEYS  = ['2sem', '1m', '3m', '6m', '12m', '24m', '36m'];
+  const SLIDER_LABELS = { '2sem': '2 semaines', '1m': '1 mois', '3m': '3 mois', '6m': '6 mois', '12m': '1 an', '24m': '2 ans', '36m': '3 ans' };
+  const SLIDER_WEEKS  = { '2sem': 2, '1m': 4, '3m': 13, '6m': 26, '12m': 52, '24m': 104, '36m': 156 };
+
+  var _aiPlanTimeout = null;
 
   function onSliderChange(idx) {
     idx = parseInt(idx);
@@ -1081,19 +1006,189 @@
       s.classList.toggle('active', i === idx);
     });
 
-    // Update slider fill (gradient trick)
-    const pct = (idx / 3) * 100;
+    // Update slider fill
+    const pct = (idx / 6) * 100;
     const slider = document.getElementById('goal-slider');
     if (slider) slider.style.background = `linear-gradient(to right, var(--red) ${pct}%, #2a2a2a ${pct}%)`;
 
-    const p = PLANNINGS[key];
-    if (!p) return;
+    // Mettre à jour le ring immédiatement avec le nouveau total
+    renderProgressRing(window._espritumUser || {});
+
+    // Debounce AI call — attend 600ms après que l'user arrête de bouger le slider
+    clearTimeout(_aiPlanTimeout);
+    _aiPlanTimeout = setTimeout(() => generateAIPlan(key), 600);
+  }
+
+  function checkPhotosAndShowMessage() {
+    const hasCurrentPhoto = !!localStorage.getItem('espritum_last_scan_photo');
+    const hasDreamPhoto   = !!localStorage.getItem('espritum_dream_body');
     const box = document.getElementById('planning-box');
-    document.getElementById('planning-title').textContent = p.title;
-    document.getElementById('planning-items').innerHTML = p.items.map(item =>
-      `<div class="planning-item"><div class="planning-dot"></div>${item}</div>`
-    ).join('');
+    const titleEl = document.getElementById('planning-title');
+    const itemsEl = document.getElementById('planning-items');
+
+    if (!hasCurrentPhoto || !hasDreamPhoto) {
+      titleEl.innerHTML = '';
+      itemsEl.innerHTML = `
+        <div style="text-align:center;padding:16px 8px;">
+          <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:rgba(200,40,40,0.12);border:1px solid rgba(200,40,40,0.3);margin-bottom:12px;">
+            <svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#c82828;fill:none;stroke-width:2;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+          <div style="font-family:var(--font-display);font-size:16px;letter-spacing:2px;text-transform:uppercase;color:#fff;margin-bottom:8px;">2 photos requises</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px;">
+            ${!hasCurrentPhoto ? '→ <span style="color:#c82828;">Ta photo actuelle</span> (clique sur "Scanner mon corps")<br>' : ''}
+            ${!hasDreamPhoto   ? '→ <span style="color:#c82828;">Ton corps de rêve</span> (clique sur "Ajouter une photo")' : ''}
+          </div>
+          <div style="font-size:11px;color:#333;font-style:italic;">L\'IA a besoin de voir ton corps actuel et ta vision pour générer un programme vraiment personnalisé.</div>
+        </div>`;
+      box.classList.add('show');
+      return false;
+    }
+    return true;
+  }
+
+  async function generateAIPlan(key) {
+    // Vérifier que les 2 photos sont présentes
+    if (!checkPhotosAndShowMessage()) return;
+
+    const box = document.getElementById('planning-box');
+    const titleEl = document.getElementById('planning-title');
+    const itemsEl = document.getElementById('planning-items');
+    const label = SLIDER_LABELS[key] || key;
+
+    // Récupérer les données corporelles disponibles
+    const user = window._espritumUser || {};
+    const lastResult = window._ssLastResult || {};
+    const poids  = lastResult.poids  || user.poids  || null;
+    const mgPct  = lastResult.mgPct  || user.masse_grasse || null;
+    const mmKg   = lastResult.mmKg   || null;
+    const genre  = user.genre || 'homme';
+    const morph  = window._ssLastMorph || null;
+    const morphLabels = { endo: 'Endomorphe', meso: 'Mésomorphe', ecto: 'Ectomorphe' };
+    const morphLabel = morph ? (morphLabels[morph] || morph) : null;
+
+    // Afficher état chargement
+    titleEl.innerHTML = `<span style="color:var(--red);">⚡</span> Programme IA — ${label}`;
+    itemsEl.innerHTML = `<div class="planning-item"><div class="planning-dot" style="background:#444;"></div><span style="color:var(--muted);">Génération IA en cours...</span></div>`;
     box.classList.add('show');
+
+    // Si pas de données corporelles → inviter à scanner
+    if (!poids && !mgPct) {
+      itemsEl.innerHTML = `<div class="planning-item"><div class="planning-dot"></div>Lance ton analyse corporelle (SCAN MY BODY) pour recevoir un programme 100% personnalisé avec tes vraies données.</div>`;
+      return;
+    }
+
+    try {
+      // 1. Analyser la photo du corps de rêve avec Gemini Vision
+      let dreamBodyDescription = null;
+      const dreamPhotoData = localStorage.getItem('espritum_dream_body');
+      if (dreamPhotoData) {
+        try {
+          itemsEl.innerHTML = `<div class="planning-item"><div class="planning-dot" style="background:#444;"></div><span style="color:var(--muted);">Analyse de ton corps de rêve...</span></div>`;
+          const base64 = dreamPhotoData.split(',')[1];
+          const mime = (dreamPhotoData.split(';')[0].split(':')[1]) || 'image/jpeg';
+          dreamBodyDescription = await window.EspritumAPI.geminiVision(
+            base64, mime,
+            `Décris ce physique en 2-3 phrases courtes et factuelles : estime le pourcentage de masse grasse, le niveau de développement musculaire, et la morphologie générale.`,
+            120
+          );
+        } catch(e) { dreamBodyDescription = null; }
+      }
+
+      itemsEl.innerHTML = `<div class="planning-item"><div class="planning-dot" style="background:#444;"></div><span style="color:var(--muted);">Évaluation de la faisabilité...</span></div>`;
+
+      // 2. Groq évalue faisabilité + génère programme OU message impossible
+      const systemPrompt = `Tu es Coach Sensei, coach fitness chrétien expert. Tu génères des programmes personnalisés et réalistes. Par défaut, tu génères TOUJOURS un programme (feasible: true). Tu ne dis "impossible" QUE dans les cas extrêmes et évidents. Réponds UNIQUEMENT en JSON valide, sans texte supplémentaire.`;
+
+      const dreamCtx = dreamBodyDescription
+        ? `- Corps de rêve (photo analysée) : "${dreamBodyDescription}"`
+        : '';
+
+      // Calcul du delta MG estimé pour guider l'IA
+      const mgDelta = mgPct ? Math.round(mgPct - 12) : null; // delta vs physique athlétique standard
+      const weeksMap = { '2sem': 2, '1m': 4, '3m': 13, '6m': 26, '12m': 52, '24m': 104, '36m': 156 };
+      const weeks = weeksMap[key] || 13;
+      const maxFatLossKg = (weeks * 0.75).toFixed(1); // 0.75kg/semaine moyenne réaliste
+
+      const userMsg = `Génère un programme ou dis pourquoi c'est impossible.
+
+PROFIL ACTUEL :
+- Poids : ${poids || '?'} kg
+- Masse grasse : ${mgPct || '?'}%
+- Masse musculaire : ${mmKg || '?'} kg
+- Genre : ${genre}
+- Morphologie : ${morphLabel || 'non précisée'}
+${dreamCtx}
+- Durée souhaitée : ${label} (${weeks} semaines)
+- Perte de gras max réaliste sur cette durée : ~${maxFatLossKg} kg
+
+RÈGLE UNIQUE pour "impossible" — ne bloque QUE si toutes ces conditions sont vraies en même temps :
+• Durée ≤ 1 mois ET transformation demandée très importante (>8% MG à perdre ou physique de compétition)
+• OU durée = 2 semaines ET physique de rêve est celui d'un athlète élite (MG <10%, musculature très développée)
+
+Dans TOUS les autres cas (durée ≥ 3 mois, ou transformation modérée) → feasible: true obligatoirement.
+
+Si IMPOSSIBLE (cas extrêmes seulement) :
+{
+  "feasible": false,
+  "titre_impossible": "Titre court",
+  "message": "Explication honnête et bienveillante en 2 phrases",
+  "duree_realiste": "délai réaliste (ex: 6 mois)"
+}
+
+Si FAISABLE (par défaut) — programme ultra-personnalisé :
+{
+  "feasible": true,
+  "titre": "Titre du programme adapté à la durée et au profil",
+  "items": [
+    "conseil 1 très concret avec chiffres précis (calories, séances, kg)",
+    "conseil 2 très concret avec chiffres précis",
+    "conseil 3 très concret avec chiffres précis",
+    "conseil 4 très concret avec chiffres précis",
+    "conseil 5 verset biblique motivant court"
+  ]
+}`;
+
+      const resp = await window.EspritumAPI.groq(systemPrompt, [{ role: 'user', content: userMsg }], 500);
+      const jsonMatch = resp.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error('No JSON');
+      const parsed = JSON.parse(jsonMatch[0]);
+
+      if (parsed.feasible === false) {
+        // Transformation impossible → avertissement honnête
+        titleEl.innerHTML = `<span style="color:#ff6b35;">⚠</span> ${parsed.titre_impossible || 'Objectif irréaliste'}`;
+        itemsEl.innerHTML = `
+          <div style="text-align:center;padding:14px 8px 8px;">
+            <div style="font-size:13px;color:#ff9058;line-height:1.7;margin-bottom:14px;">${parsed.message || ''}</div>
+            <div style="background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);border-radius:8px;padding:12px 14px;margin-bottom:12px;">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;">Délai réaliste</div>
+              <div style="font-size:20px;font-family:var(--font-display);color:#fff;letter-spacing:2px;">${parsed.duree_realiste || '?'}</div>
+            </div>
+            <div style="font-size:11px;color:#333;font-style:italic;">"La persévérance forge les champions. Choisis un délai réaliste."</div>
+          </div>`;
+      } else {
+        titleEl.innerHTML = `<span style="color:var(--red);">🤖</span> ${parsed.titre}`;
+        itemsEl.innerHTML = parsed.items.map(item =>
+          `<div class="planning-item"><div class="planning-dot"></div>${item}</div>`
+        ).join('');
+      }
+
+    } catch(e) {
+      // Fallback statique si API indispo
+      const fallbacks = {
+        '2sem': { titre: 'Choc Métabolique — 2 semaines', items: ['7 séances intensives sur 14 jours', 'Déficit calorique 600 kcal/jour', 'Cardio HIIT 25 min × 5/semaine', 'Zéro sucre raffiné, zéro alcool', '"Tout ce que tu fais, fais-le de tout ton cœur" — Col 3:23'] },
+        '1m':   { titre: 'Décollage — 1 mois', items: ['6 séances/semaine : 4 muscu + 2 cardio', 'Déficit calorique 500 kcal/jour', 'Protéines : 2g × ' + (poids||'ton poids') + 'kg/jour', 'Hydratation : 3L d\'eau/jour', '"Sois fort et courageux" — Josué 1:9'] },
+        '3m':   { titre: 'Transformation — 3 mois', items: ['5 séances/semaine alternant force + cardio', 'Déficit calorique 400 kcal/jour', 'Réévaluation corporelle chaque mois', 'Sommeil 8h minimum — priorité récupération', '"Je puis tout par celui qui me fortifie" — Phil 4:13'] },
+        '6m':   { titre: 'Recomposition — 6 mois', items: ['4 séances/semaine progressives', 'Déficit modéré 250 kcal/jour', 'Focus qualité des mouvements', 'Bilan mensuel masse grasse/muscle', '"L\'espoir ne déçoit pas" — Rom 5:5'] },
+        '12m':  { titre: 'Style de Vie — 1 an', items: ['3-4 séances/semaine constantes', 'Alimentation intuitive + bilan hebdo', 'Progression des charges chaque mois', 'Objectifs mensuels écrits', '"Tout ce que l\'Éternel m\'a confié, je le ferai" — 1 Sam 3:18'] },
+        '24m':  { titre: 'Athlète — 2 ans', items: ['Périodisation : phases prise de masse / sèche', '3-5 séances/semaine selon la phase', 'Suivi biologique (prise de sang annuelle)', 'Compétition ou défi personnel annuel', '"Courons avec persévérance" — Hébreux 12:1'] },
+        '36m':  { titre: 'Transformation Totale — 3 ans', items: ['Programme par phases de 3 mois', 'Objectif -' + (mgPct ? Math.max(5, Math.round(mgPct * 0.4)) : 8) + '% de masse grasse sur 3 ans', 'Construction musculaire progressive', 'Mode de vie sain ancré dans la routine', '"Le chemin du juste est comme la lumière de l\'aurore" — Prov 4:18'] }
+      };
+      const fb = fallbacks[key] || fallbacks['3m'];
+      titleEl.innerHTML = fb.titre;
+      itemsEl.innerHTML = fb.items.map(item =>
+        `<div class="planning-item"><div class="planning-dot"></div>${item}</div>`
+      ).join('');
+    }
   }
 
   async function logout() {
@@ -1290,19 +1385,11 @@
         <div class="ss-rec-list" id="ss-rec-list"></div>
       </div>
 
-      <div class="ss-paywall-wrap" id="ss-paywall-wrap">
-        <div class="ss-paywall-blur">
-          <strong style="font-size:13px;color:#fff;">Plan personnalisé sur-mesure</strong>
-          <p style="margin-top:6px;">Déficit calorique recommandé : 400 kcal/jour. Répartition macros : 40% protéines, 35% glucides, 25% lipides. Programme d'entraînement 4x/semaine adapté à ton morphotype...</p>
-        </div>
-        <div class="ss-paywall-overlay">
-          <div class="ss-paywall-title">Plan personnalisé</div>
-          <div class="ss-paywall-desc">Accède à ton programme nutrition et entraînement sur-mesure basé sur ta composition corporelle réelle.</div>
-          <button class="ss-paywall-btn" onclick="closeScanSheet(); window.location.href='abonnement.html';">Voir les plans</button>
-        </div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:0;">
+        <button class="ss-btn-validate" id="ss-btn-validate" onclick="ssValidateResults()">✓ Valider &amp; Enregistrer dans mes progrès</button>
       </div>
 
-      <button class="ss-btn-retry" onclick="ssResetAll()">Nouvelle analyse</button>
+      <button class="ss-btn-retry" style="margin-top:16px;" onclick="ssResetAll()">↺ Nouvelle analyse</button>
 
     </div>
 
@@ -1360,6 +1447,9 @@ function ssShowPreview(dataUrl) {
   // Save as current body photo so dashboard updates
   localStorage.setItem('espritum_last_scan_photo', dataUrl);
   if (typeof loadBodyPhotos === 'function') loadBodyPhotos();
+  // Re-déclencher le plan IA si les 2 photos sont maintenant disponibles
+  const idx2 = parseInt(document.getElementById('goal-slider').value);
+  generateAIPlan(SLIDER_KEYS[idx2]);
 }
 
 function ssOpenCamera() {
@@ -1574,21 +1664,65 @@ async function ssStartAnalysis() {
     if (pw) pw.style.display = 'none';
   }
 
-  // Save to Supabase
-  var uid = window._espritumUser && window._espritumUser.id;
-  if (typeof sb !== 'undefined' && uid) {
-    sb.from('measurements').insert({ user_id: uid, masse_grasse: mgPct, poids: poids, date: new Date().toISOString().split('T')[0] }).catch(function(){});
-    sb.from('users').update({ masse_grasse: mgPct, poids: poids }).eq('id', uid).catch(function(){});
-  }
+  // Stocker résultats pour validation manuelle
+  window._ssLastResult = { mgPct: mgPct, poids: poids, mgKg: mgKg, mmKg: mmKg };
 
-  // Update dashboard stats
+  // Réinitialiser le bouton valider
+  var btnVal = document.getElementById('ss-btn-validate');
+  if (btnVal) { btnVal.classList.remove('saved'); btnVal.disabled = false; btnVal.innerHTML = '✓ Valider &amp; Enregistrer dans mes progrès'; }
+  var btnProg = document.getElementById('ss-btn-voir-progres');
+  if (btnProg) { btnProg.style.display = 'none'; }
+
+  // Update dashboard stats (live preview)
   if (typeof renderBodyStats === 'function') {
-    renderBodyStats({ poids: poids, masse_grasse: mgPct });
+    renderBodyStats({ poids: poids, masse_grasse: mgPct, mg_kg: mgKg, mm_kg: mmKg });
+  }
+}
+
+async function ssValidateResults() {
+  var btnVal = document.getElementById('ss-btn-validate');
+  if (!window._ssLastResult) return;
+  btnVal.disabled = true;
+  btnVal.innerHTML = '⏳ Enregistrement...';
+  var mgPct = window._ssLastResult.mgPct;
+  var poids = window._ssLastResult.poids;
+  var mgKg  = window._ssLastResult.mgKg;
+  var mmKg  = window._ssLastResult.mmKg;
+  var uid = window._espritumUser && window._espritumUser.id;
+  try {
+    if (typeof sb !== 'undefined' && uid) {
+      await sb.from('measurements').insert({ user_id: uid, masse_grasse: mgPct, poids: poids, date: new Date().toISOString().split('T')[0] });
+      await sb.from('users').update({ masse_grasse: mgPct, poids: poids }).eq('id', uid);
+      btnVal.classList.add('saved');
+      btnVal.innerHTML = '✓ Enregistré !';
+      // Mettre à jour les stats du dashboard immédiatement
+      if (typeof renderBodyStats === 'function') {
+        renderBodyStats({ poids: poids, masse_grasse: mgPct, mg_kg: mgKg, mm_kg: mmKg });
+      }
+      // Fermer le modal après 1.2s et revenir au dashboard
+      setTimeout(function() {
+        if (typeof closeScanSheet === 'function') closeScanSheet();
+        else {
+          var sheet = document.querySelector('.ss-sheet-overlay');
+          if (sheet) sheet.style.display = 'none';
+        }
+      }, 1200);
+    } else {
+      btnVal.disabled = false;
+      btnVal.innerHTML = '✓ Valider &amp; Enregistrer dans mes progrès';
+    }
+  } catch(e) {
+    btnVal.disabled = false;
+    btnVal.innerHTML = '✓ Valider &amp; Enregistrer dans mes progrès';
   }
 }
 
 function ssResetAll() {
-  ssHasImage = false; ssSelectedMorph = null;
+  ssHasImage = false; ssSelectedMorph = null; window._ssLastResult = null;
+  var btnVal = document.getElementById('ss-btn-validate');
+  if (btnVal) { btnVal.classList.remove('saved'); btnVal.disabled = false; btnVal.innerHTML = '✓ Valider &amp; Enregistrer dans mes progrès'; }
+  var btnProg = document.getElementById('ss-btn-voir-progres');
+  if (btnProg) { btnProg.style.display = 'none'; }
   document.getElementById('ss-section-results').style.display = 'none';
   document.getElementById('ss-section-analyzing').style.display = 'none';
   document.getElementById('ss-section-upload').style.display = 'block';

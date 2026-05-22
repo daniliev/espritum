@@ -156,6 +156,16 @@
   .btn-retry { width: 100%; padding: 14px; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
   .btn-retry:hover { border-color: #333; color: #888; }
 
+  /* Bouton valider */
+  .btn-validate { width: 100%; padding: 18px; background: var(--red); border: none; border-radius: 6px; color: #fff; font-family: var(--font-body); font-size: 15px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .btn-validate:hover { background: #d93030; }
+  .btn-validate:disabled { background: var(--muted2); cursor: not-allowed; }
+  .btn-validate.saved { background: #2e7d32; }
+
+  .validate-section { display: flex; flex-direction: column; gap: 10px; }
+  .btn-voir-progres { width: 100%; padding: 14px; background: transparent; border: 1px solid rgba(46,125,50,0.4); border-radius: 6px; color: #4caf50; font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-voir-progres:hover { background: rgba(46,125,50,0.1); }
+
   /* Tips */
   .tips-row { display: flex; gap: 8px; flex-wrap: wrap; }
   .tip-pill { display: flex; align-items: center; gap: 5px; padding: 5px 12px; background: #1a1a1a; border-radius: 20px; font-size: 11px; color: #888; }
@@ -468,6 +478,16 @@
         </div>
       </div>
 
+      <!-- Valider + voir progrès -->
+      <div class="validate-section" id="validate-section">
+        <button class="btn-validate" id="btn-validate" onclick="validateResults()">
+          ✓ Valider &amp; Enregistrer dans mes progrès
+        </button>
+        <a class="btn-voir-progres" id="btn-voir-progres" href="progression.html" style="display:none;">
+          📈 Voir mes chartes de progression →
+        </a>
+      </div>
+
       <button class="btn-retry" onclick="resetAll()">↺ Nouvelle analyse</button>
 
     </div>
@@ -692,19 +712,55 @@ Utilise exactement une de ces valeurs pour category: athletique, normal, eleve, 
       document.getElementById('paywall-overlay').style.display = 'none';
     }
 
-    // Sauvegarder dans Supabase
-    if (userId) {
-      await sb.from('measurements').insert({
-        user_id: userId,
-        masse_grasse: mgPct,
-        poids: poids,
-        date: new Date().toISOString().split('T')[0]
-      });
+    // Stocker les résultats pour la validation manuelle
+    window._lastResult = { mgPct, poids, imc };
+
+    // Réinitialiser le bouton valider
+    const btnVal = document.getElementById('btn-validate');
+    if (btnVal) {
+      btnVal.classList.remove('saved');
+      btnVal.disabled = false;
+      btnVal.innerHTML = '✓ Valider &amp; Enregistrer dans mes progrès';
+    }
+    document.getElementById('btn-voir-progres').style.display = 'none';
+  }
+
+  async function validateResults() {
+    const btnVal = document.getElementById('btn-validate');
+    if (!window._lastResult) return;
+
+    btnVal.disabled = true;
+    btnVal.innerHTML = '⏳ Enregistrement...';
+
+    const { mgPct, poids } = window._lastResult;
+
+    try {
+      if (userId) {
+        await sb.from('measurements').insert({
+          user_id: userId,
+          masse_grasse: mgPct,
+          poids: poids,
+          date: new Date().toISOString().split('T')[0]
+        });
+        btnVal.classList.add('saved');
+        btnVal.innerHTML = '✓ Enregistré avec succès !';
+        showToast('success', 'Résultats sauvegardés dans ta progression !');
+        document.getElementById('btn-voir-progres').style.display = 'flex';
+      } else {
+        showToast('error', 'Connecte-toi pour enregistrer tes résultats.');
+        btnVal.disabled = false;
+        btnVal.innerHTML = '✓ Valider &amp; Enregistrer dans mes progrès';
+      }
+    } catch(e) {
+      showToast('error', 'Erreur lors de l\'enregistrement.');
+      btnVal.disabled = false;
+      btnVal.innerHTML = '✓ Valider &amp; Enregistrer dans mes progrès';
     }
   }
 
   function resetAll() {
     hasImage = false;
+    window._lastResult = null;
     document.getElementById('section-results').classList.remove('visible');
     document.getElementById('section-analyzing').classList.remove('visible');
     document.getElementById('section-upload').style.display = 'block';
@@ -714,6 +770,9 @@ Utilise exactement une de ces valeurs pour category: athletique, normal, eleve, 
     zone.onclick = () => document.getElementById('file-input').click();
     document.getElementById('btn-analyze').disabled = true;
     document.getElementById('file-input').value = '';
+    const btnVal = document.getElementById('btn-validate');
+    if (btnVal) { btnVal.classList.remove('saved'); btnVal.disabled = false; btnVal.innerHTML = '✓ Valider &amp; Enregistrer dans mes progrès'; }
+    document.getElementById('btn-voir-progres').style.display = 'none';
     [1,2,3,4].forEach(i => {
       const el = document.getElementById('step' + i);
       el.className = 'step' + (i === 1 ? ' done' : '');
