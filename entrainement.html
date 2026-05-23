@@ -887,6 +887,7 @@
         termine: true, date: currentDate
       });
       showToast('success', `✓ Série ${serieIdx + 1} — ~${kcalSerie} kcal brûlées 🔥`);
+      loadWeekProgressTrain(); // refresh chart
     }
 
     // Update the serie row
@@ -943,6 +944,7 @@
     }
     const totalKcal = Object.values(seriesState[exIdx]).reduce((sum, s) => sum + calcSerieKcal(ex.name, s.reps, userWeightKg), 0);
     showToast('success', `✓ ${ex.name} — ~${totalKcal} kcal brûlées 🔥`);
+    loadWeekProgressTrain(); // refresh chart
     const wasOpen = openExercises.has(exIdx);
     renderExercises();
     if (wasOpen) {
