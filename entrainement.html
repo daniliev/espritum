@@ -516,14 +516,56 @@
     cardio: {
       name: 'Cardio',
       exercises: [
-        { name: 'Course à pied', series: 3, reps: 10, poids: 0, muscle: 'Endurance (min)' },
-        { name: 'Corde à sauter', series: 5, reps: 60, poids: 0, muscle: 'Coordination (s)' },
+        { name: 'Course à pied', series: 3, reps: 5, poids: 0, muscle: 'Endurance' },
+        { name: 'Corde à sauter', series: 5, reps: 60, poids: 0, muscle: 'Coordination' },
         { name: 'Burpees', series: 4, reps: 15, poids: 0, muscle: 'Full body' },
         { name: 'Fentes avant haltères', series: 3, reps: 20, poids: 0, muscle: 'Cardio / Jambes' },
         { name: 'Russian twist', series: 4, reps: 40, poids: 0, muscle: 'Core / Cardio' },
       ]
     }
   };
+
+  /* ── TYPE D'EXERCICE (contrôle d'affichage) ──────────────────────────
+     bodyweight   → Poids de corps + extra optionnel (dips, tractions…)
+     time_seconds → Durée en secondes (planche, corde…)
+     distance_km  → Distance en kilomètres (course à pied)
+     reps_only    → Reps seulement, pas de poids (burpees)
+     weighted     → kg standard (défaut)
+  ─────────────────────────────────────────────────────────────────────── */
+  const EXERCISE_TYPE = {
+    // poids de corps
+    'Traction pronation':        'bodyweight',
+    'Dips poitrine':             'bodyweight',
+    'Dips banc triceps':         'bodyweight',
+    'Relevé de jambes suspendu': 'bodyweight',
+    'Crunch classique':          'bodyweight',
+    'Crunch oblique':            'bodyweight',
+    'Pompes lestées':            'bodyweight',
+    // durée en secondes
+    'Planche':                   'time_seconds',
+    'Corde à sauter':            'time_seconds',
+    // distance en km
+    'Course à pied':             'distance_km',
+    // reps uniquement
+    'Burpees':                   'reps_only',
+  };
+  function getExType(name) {
+    return EXERCISE_TYPE[name] || 'weighted';
+  }
+  function formatWeight(ex) {
+    const t = getExType(ex.name);
+    if (t === 'bodyweight') return ex.poids > 0 ? `PC +${ex.poids} kg` : 'PC';
+    if (t === 'time_seconds') return ex.reps + ' s';
+    if (t === 'distance_km') return ex.reps + ' km';
+    if (t === 'reps_only') return '';
+    return ex.poids > 0 ? ex.poids + ' kg' : '0 kg';
+  }
+  function formatSerieLabel(ex, state) {
+    const t = getExType(ex.name);
+    if (t === 'time_seconds') return `Série — ${state.reps} s`;
+    if (t === 'distance_km')  return `Série — ${state.reps} km`;
+    return `Série — ${state.reps} reps`;
+  }
 
   /* ── STATE ── */
   let userId = null;
@@ -583,7 +625,7 @@
     'Relevé de jambes suspendu':       { met: 4.0, secs: 3 },
     'Russian twist':                   { met: 3.5, secs: 1.5 },
     // ── Cardio
-    'Course à pied':                   { met: 9.0, secs: 60, direct: true }, // reps = minutes
+    'Course à pied':                   { met: 9.0, secs: 360, direct: true }, // reps = km (≈6min/km)
     'Corde à sauter':                  { met: 11.0, secs: 1, direct: true }, // reps = secondes
     'Burpees':                         { met: 8.0, secs: 4 },
   };
@@ -800,14 +842,14 @@
       const seriesDone = Object.values(seriesState[i] || {}).filter(s => s.done).length;
       const allDone = seriesDone === ex.series;
       const isOpen = openExercises.has(i);
-      const poids = ex.poids > 0 ? ex.poids + ' kg' : 'BW';
+      const exType = getExType(ex.name);
 
       const seriesHTML = Array.from({ length: ex.series }, (_, s) => {
         const state = seriesState[i][s];
         return `
           <div class="serie-check-row ${state.done ? 'done' : ''}" id="serie-row-${i}-${s}"
                onclick="toggleSerie(${i}, ${s})">
-            <span class="serie-check-label">Série ${s + 1} · ${state.reps} reps</span>
+            <span class="serie-check-label">${formatSerieLabel(ex, state)}</span>
             <div class="serie-check-dot ${state.done ? 'done' : ''}" id="serie-dot-${i}-${s}">
               ${state.done ? '✓' : ''}
             </div>
@@ -815,6 +857,42 @@
       }).join('');
 
       const imgSrc = 'exercices/' + encodeURIComponent(ex.name) + '.png';
+
+      // Weight control — dépend du type d'exercice
+      let weightCtrl = '';
+      if (exType === 'bodyweight') {
+        const display = ex.poids > 0 ? `PC +${ex.poids} kg` : 'PC';
+        weightCtrl = `
+          <div class="weight-ctrl" onclick="event.stopPropagation()">
+            <button class="weight-btn" onclick="adjustWeight(${i}, -2.5)">−</button>
+            <span class="weight-val" id="weight-${i}" style="min-width:56px">${display}</span>
+            <button class="weight-btn" onclick="adjustWeight(${i}, +2.5)">+</button>
+          </div>`;
+      } else if (exType === 'time_seconds') {
+        weightCtrl = `
+          <div class="weight-ctrl" onclick="event.stopPropagation()">
+            <button class="weight-btn" onclick="adjustReps(${i}, -5)">−</button>
+            <span class="weight-val" id="weight-${i}">${ex.reps} s</span>
+            <button class="weight-btn" onclick="adjustReps(${i}, +5)">+</button>
+          </div>`;
+      } else if (exType === 'distance_km') {
+        weightCtrl = `
+          <div class="weight-ctrl" onclick="event.stopPropagation()">
+            <button class="weight-btn" onclick="adjustReps(${i}, -0.5)">−</button>
+            <span class="weight-val" id="weight-${i}">${ex.reps} km</span>
+            <button class="weight-btn" onclick="adjustReps(${i}, +0.5)">+</button>
+          </div>`;
+      } else if (exType === 'reps_only') {
+        weightCtrl = `<div style="width:36px"></div>`; // espace pour alignement
+      } else {
+        // weighted (défaut)
+        weightCtrl = `
+          <div class="weight-ctrl" onclick="event.stopPropagation()">
+            <button class="weight-btn" onclick="adjustWeight(${i}, -2.5)">−</button>
+            <span class="weight-val" id="weight-${i}">${ex.poids > 0 ? ex.poids + ' kg' : '0 kg'}</span>
+            <button class="weight-btn" onclick="adjustWeight(${i}, +2.5)">+</button>
+          </div>`;
+      }
 
       return `
         <div class="ex-row ${allDone ? 'done-ex' : ''} ${isOpen ? 'open' : ''}" id="ex-card-${i}">
@@ -827,11 +905,7 @@
               <div class="ex-row-name">${ex.name}</div>
               <div class="ex-row-sub" id="ex-sub-${i}">${seriesDone}/${ex.series} séries</div>
             </div>
-            <div class="weight-ctrl" onclick="event.stopPropagation()">
-              <button class="weight-btn" onclick="adjustWeight(${i}, -2.5)">−</button>
-              <span class="weight-val" id="weight-${i}">${poids}</span>
-              <button class="weight-btn" onclick="adjustWeight(${i}, +2.5)">+</button>
-            </div>
+            ${weightCtrl}
             <div class="ex-arrow">▾</div>
           </div>
           <div class="series-checklist">
@@ -861,14 +935,35 @@
   /* ── ADJUST WEIGHT (+/-) ── */
   function adjustWeight(exIdx, delta) {
     const ex = currentProgram.exercises[exIdx];
+    const exType = getExType(ex.name);
     const newPoids = Math.max(0, +(ex.poids + delta).toFixed(1));
     ex.poids = newPoids;
-    // Update undone series with new weight
     for (let s = 0; s < ex.series; s++) {
       if (!seriesState[exIdx][s].done) seriesState[exIdx][s].poids = newPoids;
     }
     const weightEl = document.getElementById(`weight-${exIdx}`);
-    if (weightEl) weightEl.textContent = newPoids > 0 ? newPoids + ' kg' : 'BW';
+    if (!weightEl) return;
+    if (exType === 'bodyweight') {
+      weightEl.textContent = newPoids > 0 ? `PC +${newPoids} kg` : 'PC';
+    } else {
+      weightEl.textContent = newPoids > 0 ? newPoids + ' kg' : '0 kg';
+    }
+  }
+
+  /* ── ADJUST REPS (pour exercices temps/distance) ── */
+  function adjustReps(exIdx, delta) {
+    const ex = currentProgram.exercises[exIdx];
+    const exType = getExType(ex.name);
+    let min = exType === 'distance_km' ? 0.5 : 5;
+    const newReps = Math.max(min, +(ex.reps + delta).toFixed(1));
+    ex.reps = newReps;
+    for (let s = 0; s < ex.series; s++) {
+      if (!seriesState[exIdx][s].done) seriesState[exIdx][s].reps = newReps;
+    }
+    const weightEl = document.getElementById(`weight-${exIdx}`);
+    if (!weightEl) return;
+    if (exType === 'distance_km') weightEl.textContent = newReps + ' km';
+    else weightEl.textContent = newReps + ' s';
   }
 
   /* ── TOGGLE INDIVIDUAL SERIE ── */
@@ -878,12 +973,19 @@
 
     if (state.done && userId) {
       const ex = currentProgram.exercises[exIdx];
-      const kcalSerie = calcSerieKcal(ex.name, state.reps, userWeightKg);
+      const exType = getExType(ex.name);
+      // Pour les exercices poids de corps, le poids effectif = PC + extra
+      const effectiveKg = exType === 'bodyweight' ? userWeightKg + ex.poids : userWeightKg;
+      // Poids sauvegardé en BDD
+      const savedPoids = exType === 'bodyweight' ? userWeightKg + ex.poids
+                       : (exType === 'time_seconds' || exType === 'distance_km' || exType === 'reps_only') ? 0
+                       : state.poids;
+      const kcalSerie = calcSerieKcal(ex.name, state.reps, effectiveKg);
       await sb.from('workouts').insert({
         user_id: userId,
         nom: ex.name + ` (série ${serieIdx + 1})`,
         muscle_cible: ex.muscle,
-        series: 1, reps: state.reps, poids: state.poids,
+        series: 1, reps: state.reps, poids: savedPoids,
         termine: true, date: currentDate
       });
       showToast('success', `✓ Série ${serieIdx + 1} — ~${kcalSerie} kcal brûlées 🔥`);
@@ -929,20 +1031,25 @@
       return;
     }
 
+    const exType = getExType(ex.name);
+    const effectiveKg = exType === 'bodyweight' ? userWeightKg + ex.poids : userWeightKg;
     for (let s = 0; s < ex.series; s++) {
       if (!seriesState[exIdx][s].done) {
         seriesState[exIdx][s].done = true;
         if (userId) {
+          const savedPoids = exType === 'bodyweight' ? userWeightKg + ex.poids
+                           : (exType === 'time_seconds' || exType === 'distance_km' || exType === 'reps_only') ? 0
+                           : seriesState[exIdx][s].poids;
           await sb.from('workouts').insert({
             user_id: userId, nom: ex.name + ` (série ${s + 1})`,
             muscle_cible: ex.muscle, series: 1,
-            reps: seriesState[exIdx][s].reps, poids: seriesState[exIdx][s].poids,
+            reps: seriesState[exIdx][s].reps, poids: savedPoids,
             termine: true, date: currentDate
           });
         }
       }
     }
-    const totalKcal = Object.values(seriesState[exIdx]).reduce((sum, s) => sum + calcSerieKcal(ex.name, s.reps, userWeightKg), 0);
+    const totalKcal = Object.values(seriesState[exIdx]).reduce((sum, s) => sum + calcSerieKcal(ex.name, s.reps, effectiveKg), 0);
     showToast('success', `✓ ${ex.name} — ~${totalKcal} kcal brûlées 🔥`);
     loadWeekProgressTrain(); // refresh chart
     const wasOpen = openExercises.has(exIdx);
