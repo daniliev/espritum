@@ -372,6 +372,16 @@
                onerror="this.outerHTML='<div class=muscle-icon-fallback>🎯</div>'">
           <div class="muscle-name">CORE</div>
         </div>
+        <div class="muscle-card" id="card-fullbody" onclick="selectSession('fullbody')">
+          <img src="body/full-body.png" class="muscle-img" alt="Full Body"
+               onerror="this.outerHTML='<div class=muscle-icon-fallback>🏆</div>'">
+          <div class="muscle-name">FULL BODY</div>
+        </div>
+        <div class="muscle-card" id="card-cardio" onclick="selectSession('cardio')">
+          <img src="body/cardio.png" class="muscle-img" alt="Cardio"
+               onerror="this.outerHTML='<div class=muscle-icon-fallback>🏃</div>'">
+          <div class="muscle-name">CARDIO</div>
+        </div>
       </div>
     </div>
 
@@ -488,6 +498,29 @@
         { name: 'Relevé de jambes suspendu', series: 3, reps: 15, poids: 0, muscle: 'Bas ventre' },
         { name: 'Crunch oblique', series: 3, reps: 20, poids: 0, muscle: 'Obliques' },
         { name: 'Russian twist', series: 3, reps: 30, poids: 10, muscle: 'Obliques' },
+      ]
+    },
+    fullbody: {
+      name: 'Full Body',
+      exercises: [
+        { name: 'Squat barre', series: 4, reps: 10, poids: 60, muscle: 'Quadriceps / Fessiers' },
+        { name: 'Soulevé de terre', series: 3, reps: 8, poids: 80, muscle: 'Dos / Ischios' },
+        { name: 'Développé couché', series: 4, reps: 10, poids: 70, muscle: 'Poitrine' },
+        { name: 'Traction pronation', series: 3, reps: 8, poids: 0, muscle: 'Dorsaux' },
+        { name: 'Développé militaire barre', series: 3, reps: 10, poids: 40, muscle: 'Épaules' },
+        { name: 'Curl haltères alterné', series: 3, reps: 12, poids: 12, muscle: 'Biceps' },
+        { name: 'Dips banc triceps', series: 3, reps: 15, poids: 0, muscle: 'Triceps' },
+        { name: 'Planche', series: 3, reps: 45, poids: 0, muscle: 'Core' },
+      ]
+    },
+    cardio: {
+      name: 'Cardio',
+      exercises: [
+        { name: 'Course à pied', series: 3, reps: 10, poids: 0, muscle: 'Endurance (min)' },
+        { name: 'Corde à sauter', series: 5, reps: 60, poids: 0, muscle: 'Coordination (s)' },
+        { name: 'Burpees', series: 4, reps: 15, poids: 0, muscle: 'Full body' },
+        { name: 'Fentes avant haltères', series: 3, reps: 20, poids: 0, muscle: 'Cardio / Jambes' },
+        { name: 'Russian twist', series: 4, reps: 40, poids: 0, muscle: 'Core / Cardio' },
       ]
     }
   };
