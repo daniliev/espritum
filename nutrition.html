@@ -417,6 +417,7 @@ html[lang="bg"] .topbar-title { font-family: 'Sofia Sans Condensed', var(--font-
 
     <div class="sheet-field">
       <div class="sheet-hint">✍️ Description obligatoire — photo optionnelle pour plus de précision</div>
+      <div style="font-size:10px;color:#444;text-align:center;margin:-4px 0 8px;font-style:italic;letter-spacing:0.3px;">Les valeurs nutritionnelles sont estimées par IA et sont approximatives.</div>
       <textarea class="sheet-textarea" id="sheet-desc" rows="3" placeholder="Décris ce que tu as mangé... (ex: escalope de poulet grillé, riz 200g, salade verte)" oninput="checkDescReady()"></textarea>
     </div>
 
@@ -436,7 +437,7 @@ html[lang="bg"] .topbar-title { font-family: 'Sofia Sans Condensed', var(--font-
     </div>
 
     <div class="sheet-results" id="sheet-results" style="display:none">
-      <div class="sheet-results-title">Estimation IA</div>
+      <div class="sheet-results-title">Estimation IA <span style="font-size:10px;color:#444;font-family:var(--font-body);font-weight:400;letter-spacing:0.5px;vertical-align:middle;">— approximative</span></div>
       <div class="sheet-results-grid">
         <div class="sheet-result-item">
           <div class="sheet-result-val" id="res-cal">0</div>
