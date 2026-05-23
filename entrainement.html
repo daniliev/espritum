@@ -578,6 +578,7 @@
   let currentProgramKey = null;
   let seriesState = {};         // { exIdx: { serieIdx: { reps, poids, done } } }
   let openExercises = new Set();// which exercise rows are expanded
+  let streakIncrementedToday = false; // évite le double-incrément dans la même session
 
   /* ── CALORIES PAR EXERCICE (MET × poids × durée) ──────────────────────
      Formule : kcal = MET × poids_kg × (durée_série_secondes / 3600)
@@ -986,6 +987,26 @@
                        : (exType === 'time_seconds' || exType === 'distance_km' || exType === 'reps_only') ? 0
                        : state.poids;
       const kcalSerie = calcSerieKcal(ex.name, state.reps, effectiveKg);
+      // Vérifier si c'est la 1ère série du jour (= passage en salle)
+      if (!streakIncrementedToday) {
+        const { count } = await sb.from('workouts')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', userId)
+          .eq('date', currentDate)
+          .eq('termine', true);
+        if (count === 0) {
+          // Première série du jour → incrémenter le streak
+          const { data: u } = await sb.from('users').select('streak').eq('id', userId).single();
+          const newStreak = (u?.streak || 0) + 1;
+          await sb.from('users').update({ streak: newStreak }).eq('id', userId);
+          // Mettre à jour l'affichage
+          const pillEl = document.getElementById('topbar-streak');
+          if (pillEl) pillEl.innerHTML = '<img class="si" src="icons/streak-icon.png"> ' + newStreak;
+          showToast('success', `🏆 Jour ${newStreak} — Streak en cours ! Continue comme ça.`);
+        }
+        streakIncrementedToday = true;
+      }
+
       await sb.from('workouts').insert({
         user_id: userId,
         nom: ex.name + ` (série ${serieIdx + 1})`,
