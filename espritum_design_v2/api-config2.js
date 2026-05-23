@@ -7,13 +7,15 @@
 
   var _preset = {
     groq:   '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',
-    gemini: ''
+    gemini: 'AIzaSyAwHfJdnKY3GVPbHRAqlyZACEsPdZsy_dk'
   };
 
-  // Auto-init : pose la clé Groq par défaut si pas encore configurée
+  // Auto-init : pose les clés par défaut si pas encore configurées
   if (!localStorage.getItem('espritum_api_groq')) {
     localStorage.setItem('espritum_api_groq', _preset.groq);
   }
+  // Toujours forcer la clé Gemini (écrase l'ancienne si expirée)
+  localStorage.setItem('espritum_api_gemini', _preset.gemini);
 
   window.EspritumAPI = {
 
@@ -98,7 +100,8 @@
       if (!resp.ok) {
         var errData = {};
         try { errData = await resp.json(); } catch(e) {}
-        if (resp.status === 401 || resp.status === 403) {
+        // Clé invalide ou quota épuisé → effacer et demander une nouvelle clé
+        if (resp.status === 401 || resp.status === 403 || resp.status === 429) {
           this.clearKey('gemini');
           var e401 = new Error('INVALID_KEY');
           e401.service = 'gemini';
@@ -158,7 +161,7 @@
             </div>\
           </div>\
           <input id="espritum-api-input" type="text" placeholder="' + ph + '" autocomplete="off" autocorrect="off" spellcheck="false"\
-            style="width:100%;padding:13px 16px;background:#111;border:1px solid #2a2a2a;border-radius:4px;color:#fff;font-family:monospace;font-size:13px;outline:none;margin-bottom:14px;box-sizing:border-box;">\
+            style="width:100%;padding:13px 16px;background:#111;border:1px solid #2a2a2a;border-radius:4px;color:#fff;font-family:monospace;font-size:16px;outline:none;margin-bottom:14px;box-sizing:border-box;">\
           <button id="espritum-api-save" style="width:100%;padding:15px;background:#c82828;border:none;border-radius:4px;color:#fff;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;margin-bottom:10px;">\
             ✓ Sauvegarder et continuer\
           </button>\

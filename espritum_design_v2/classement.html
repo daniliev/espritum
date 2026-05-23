@@ -67,7 +67,7 @@
   .topbar-title { font-family: var(--font-display); font-size: 32px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; }
   .topbar-right { display: flex; align-items: center; gap: 10px; }
   .topbar-streak-pill {
-    background: #111; border: 1px solid rgba(200,40,40,0.5); border-radius: 99px;
+    background: #111; border: 2px solid var(--red); border-radius: 99px;
     padding: 6px 14px; font-family: var(--font-display); font-size: 17px;
     letter-spacing: 1px; color: #fff;
   }
@@ -259,6 +259,9 @@
     .friends-grid-new { grid-template-columns: repeat(4, 1fr); gap: 6px; }
     .friend-avatar-new { width: 46px; height: 46px; font-size: 16px; }
   }
+
+  /* ── STREAK ICON ── */
+  .si { height: 0.8em; width: auto; vertical-align: -0.15em; display: inline-block; margin-right: 5px; }
 </style>
 <script src="site-config.js"></script>
 </head>
@@ -291,7 +294,7 @@
   <div class="topbar">
     <div class="topbar-title">WHO'S NUMBER ONE.</div>
     <div class="topbar-right">
-      <div class="topbar-streak-pill" id="topbar-streak">🔥 0</div>
+      <div class="topbar-streak-pill" id="topbar-streak"><img class="si" src="icons/streak-icon.png"> <span class="si-num">0</span></div>
       <div class="topbar-avatar-pill" id="topbar-avatar">?</div>
     </div>
   </div>
@@ -316,7 +319,7 @@
           <div class="my-pos-name" id="my-pos-name">—</div>
           <div class="my-pos-detail" id="my-pos-detail">— séances · —j</div>
         </div>
-        <div class="my-pos-streak-num" id="my-pos-streak-val">🔥 0</div>
+        <div class="my-pos-streak-num" id="my-pos-streak-val"><img class="si" src="icons/streak-icon.png"> <span class="si-num">0</span></div>
       </div>
 
       <!-- Podium dynamique -->
@@ -359,7 +362,7 @@
           <div class="my-pos-name" id="friends-my-name">Toi</div>
           <div class="my-pos-detail">Parmi tes amis</div>
         </div>
-        <div class="my-pos-streak-num" id="friends-my-streak">🔥 0</div>
+        <div class="my-pos-streak-num" id="friends-my-streak"><img class="si" src="icons/streak-icon.png"> <span class="si-num">0</span></div>
       </div>
 
       <div class="card">
@@ -375,7 +378,7 @@
               <div class="friend-rank-badge top">#1</div>
             </div>
             <div class="friend-name-new">Julie M.</div>
-            <div class="friend-streak-new">🔥 21j</div>
+            <div class="friend-streak-new"><img class="si" src="icons/streak-icon.png"> 21j</div>
           </div>
           <div class="friend-card-new">
             <div class="friend-avatar-wrap">
@@ -383,7 +386,7 @@
               <div class="friend-rank-badge">#2</div>
             </div>
             <div class="friend-name-new">Sarah D.</div>
-            <div class="friend-streak-new">🔥 12j</div>
+            <div class="friend-streak-new"><img class="si" src="icons/streak-icon.png"> 12j</div>
           </div>
           <div class="friend-card-new">
             <div class="friend-avatar-wrap">
@@ -391,7 +394,7 @@
               <div class="friend-rank-badge" style="color:var(--red);border-color:var(--red)">#3</div>
             </div>
             <div class="friend-name-new" id="friends-grid-name">Toi</div>
-            <div class="friend-streak-new" id="friends-grid-streak">🔥 0j</div>
+            <div class="friend-streak-new" id="friends-grid-streak"><img class="si" src="icons/streak-icon.png"> 0j</div>
           </div>
           <div class="friend-card-new">
             <div class="friend-avatar-wrap">
@@ -399,7 +402,7 @@
               <div class="friend-rank-badge">#4</div>
             </div>
             <div class="friend-name-new">Kevin R.</div>
-            <div class="friend-streak-new">🔥 8j</div>
+            <div class="friend-streak-new"><img class="si" src="icons/streak-icon.png"> 8j</div>
           </div>
           <div class="friend-card-new">
             <div class="friend-avatar-wrap">
@@ -407,7 +410,7 @@
               <div class="friend-rank-badge">#5</div>
             </div>
             <div class="friend-name-new">Marc T.</div>
-            <div class="friend-streak-new">🔥 6j</div>
+            <div class="friend-streak-new"><img class="si" src="icons/streak-icon.png"> 6j</div>
           </div>
           <div class="friend-card-new">
             <div class="friend-avatar-wrap">
@@ -415,7 +418,7 @@
               <div class="friend-rank-badge">#6</div>
             </div>
             <div class="friend-name-new">Léa B.</div>
-            <div class="friend-streak-new">🔥 5j</div>
+            <div class="friend-streak-new"><img class="si" src="icons/streak-icon.png"> 5j</div>
           </div>
           <div class="friend-card-new">
             <div class="friend-avatar-wrap">
@@ -423,7 +426,7 @@
               <div class="friend-rank-badge">#7</div>
             </div>
             <div class="friend-name-new">Tom V.</div>
-            <div class="friend-streak-new">🔥 4j</div>
+            <div class="friend-streak-new"><img class="si" src="icons/streak-icon.png"> 4j</div>
           </div>
           <div class="friend-card-new">
             <div class="friend-avatar-wrap">
@@ -431,7 +434,7 @@
               <div class="friend-rank-badge">#8</div>
             </div>
             <div class="friend-name-new">Aïsha K.</div>
-            <div class="friend-streak-new">🔥 3j</div>
+            <div class="friend-streak-new"><img class="si" src="icons/streak-icon.png"> 3j</div>
           </div>
         </div>
       </div>
@@ -478,21 +481,21 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
     document.getElementById('my-pos-avatar').textContent = initiale;
     document.getElementById('my-pos-name').textContent = prenom;
     document.getElementById('my-pos-detail').textContent = seances + ' séances · ' + streak + 'j';
-    document.getElementById('my-pos-streak-val').textContent = '🔥 ' + streak;
+    document.getElementById('my-pos-streak-val').innerHTML = '<img class="si" src="icons/streak-icon.png"> ' + streak;
   }
 
   function fillTopbar(initiale, streak) {
-    document.getElementById('topbar-streak').textContent = '🔥 ' + streak;
+    document.getElementById('topbar-streak').innerHTML = '<img class="si" src="icons/streak-icon.png"> ' + streak;
     document.getElementById('topbar-avatar').textContent = initiale;
   }
 
   function fillFriendsPanel(initiale, prenom, streak, plan) {
     document.getElementById('friends-my-avatar').textContent = initiale;
     document.getElementById('friends-my-name').textContent = prenom;
-    document.getElementById('friends-my-streak').textContent = '🔥 ' + streak;
+    document.getElementById('friends-my-streak').innerHTML = '<img class="si" src="icons/streak-icon.png"> ' + streak;
     document.getElementById('friends-grid-me').textContent = initiale;
     document.getElementById('friends-grid-name').textContent = prenom;
-    document.getElementById('friends-grid-streak').textContent = '🔥 ' + streak + 'j';
+    document.getElementById('friends-grid-streak').innerHTML = '<img class="si" src="icons/streak-icon.png"> ' + streak + 'j';
   }
 
   async function init() {
@@ -577,7 +580,7 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
           ${u.prenom[0]}
         </div>
         <div class="podium-name">${u.prenom} ${u.nom || ''}</div>
-        <div class="podium-score">🔥 ${u.streak}j streak</div>
+        <div class="podium-score"><img class="si" src="icons/streak-icon.png" alt="streak"> ${u.streak}j streak</div>
         <div class="podium-block"><div class="podium-rank">${rank}</div></div>
       </div>
     `).join('');
@@ -642,5 +645,7 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
     document.getElementById('upgrade-modal').classList.remove('open');
   }
 </script>
+<script src="topbar-avatar.js?v=2"></script>
+<script src="topbar-streak.js"></script>
 </body>
 </html>

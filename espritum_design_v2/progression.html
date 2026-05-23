@@ -60,7 +60,7 @@
   .topbar-title { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; }
   .topbar-right { display: flex; align-items: center; gap: 10px; }
   .topbar-streak-pill {
-    background: #111; border: 1px solid rgba(200,40,40,0.5); border-radius: 99px;
+    background: #111; border: 2px solid var(--red); border-radius: 99px;
     padding: 6px 14px; font-family: var(--font-display); font-size: 17px;
     letter-spacing: 1px; color: #fff;
   }
@@ -260,6 +260,9 @@
   .coach-fab:hover { transform: scale(1.06); box-shadow: 0 8px 30px rgba(200,40,40,0.55), 0 4px 12px rgba(0,0,0,0.4); }
   .coach-fab:active { transform: scale(0.96); }
   @media (max-width: 768px) { .coach-fab { bottom: 80px; right: 18px; width: 50px; height: 50px; } }
+
+  /* ── STREAK ICON ── */
+  .si { height: 0.8em; width: auto; vertical-align: -0.15em; display: inline-block; margin-right: 5px; }
 </style>
 <script src="site-config.js"></script>
 </head>
@@ -298,7 +301,7 @@
       <div class="topbar-title" data-i18n="nav_progression">Ma Progression</div>
     </div>
     <div class="topbar-right">
-      <div class="topbar-streak-pill" id="topbar-streak">🔥 0</div>
+      <div class="topbar-streak-pill" id="topbar-streak"><img class="si" src="icons/streak-icon.png"> 0</div>
       <div class="topbar-avatar-pill" id="topbar-avatar">?</div>
     </div>
   </div>
@@ -446,7 +449,7 @@ var safetyTimeout = 0;
 
     document.getElementById('sidebar-avatar').textContent = prenom[0].toUpperCase();
     document.getElementById('sidebar-name').textContent = prenom;
-    document.getElementById('topbar-streak').textContent = '🔥 ' + (profile?.streak || 0);
+    document.getElementById('topbar-streak').innerHTML = '<img class="si" src="icons/streak-icon.png"> ' + (profile?.streak || 0);
     document.getElementById('topbar-avatar').textContent = prenom ? prenom[0].toUpperCase() : '?';
     document.getElementById('sidebar-plan').textContent = planLabel[profile?.plan || 'gratuit'];
     initFreemium(profile?.plan || 'gratuit');
@@ -679,5 +682,7 @@ var safetyTimeout = 0;
   <a class="mobile-nav-item" href="classement.html"><span class="mobile-nav-icon"><img src="icons/classement.svg" alt="Classement"></span></a>
   <a class="mobile-nav-item" href="profil.html"><span class="mobile-nav-icon"><img src="icons/profil.svg" alt="Profil"></span></a>
 </nav>
+<script src="topbar-avatar.js?v=2"></script>
+<script src="topbar-streak.js"></script>
 </body>
 </html>

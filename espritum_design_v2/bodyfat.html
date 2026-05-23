@@ -687,7 +687,7 @@ Utilise exactement une de ces valeurs pour category: athletique, normal, eleve, 
       if (usedVision) {
         disclaimerEl.innerHTML = '🤖 <span style="color:#4caf50;font-weight:600;">Analysé par Gemini Vision IA</span> · Estimation ±3-5% — non médicale';
       } else {
-        disclaimerEl.innerHTML = '📐 Estimation par formule (Deurenberg) ±3-5% — <span style="color:#555;cursor:pointer;text-decoration:underline;" onclick="EspritumAPI.showSetup(\'gemini\', function(){ showToast(\'success\',\'Vision IA activée ! Relance une analyse.\'); })">Activer Vision IA (Gemini, gratuit)</span>';
+        disclaimerEl.innerHTML = '📐 Estimation par formule (Deurenberg) ±3-5% — non médicale';
       }
     }
 
@@ -825,7 +825,8 @@ Utilise exactement une de ces valeurs pour category: athletique, normal, eleve, 
   <a class="mobile-nav-item" href="classement.html"><span class="mobile-nav-icon"><img src="icons/classement.svg" alt="Classement"></span></a>
   <a class="mobile-nav-item" href="profil.html"><span class="mobile-nav-icon"><img src="icons/profil.svg" alt="Profil"></span></a>
 </nav>
-<script src="api-config.js"></script>
-<script src="topbar-avatar.js"></script>
+<script src="api-config2.js"></script>
+<script src="topbar-streak.js"></script>
+<script src="topbar-avatar.js?v=2"></script>
 </body>
 </html>

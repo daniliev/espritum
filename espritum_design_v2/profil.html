@@ -64,7 +64,7 @@
   .btn-save:disabled { background: var(--muted2); cursor: not-allowed; }
   .topbar-right { display: flex; align-items: center; gap: 10px; }
   .topbar-streak-pill {
-    background: #111; border: 1px solid rgba(200,40,40,0.5); border-radius: 99px;
+    background: #111; border: 2px solid var(--red); border-radius: 99px;
     padding: 6px 14px; font-family: var(--font-display); font-size: 17px;
     letter-spacing: 1px; color: #fff;
   }
@@ -474,6 +474,9 @@
   .viewer-input { flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 99px; padding: 12px 16px; font-size: 13px; color: white; outline: none; font-family: var(--font-body); }
   .viewer-input::placeholder { color: rgba(255,255,255,0.4); }
   .viewer-send-btn { width: 42px; height: 42px; background: var(--red); border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; flex-shrink: 0; }
+
+  /* ── STREAK ICON ── */
+  .si { height: 0.8em; width: auto; vertical-align: -0.15em; display: inline-block; margin-right: 5px; }
 </style>
 <script src="site-config.js"></script>
 </head>
@@ -513,7 +516,7 @@
       <div class="topbar-title">MON PROFIL.</div>
     </div>
     <div class="topbar-right">
-      <div class="topbar-streak-pill" id="topbar-streak">🔥 0</div>
+      <div class="topbar-streak-pill" id="topbar-streak"><img class="si" src="icons/streak-icon.png"> <span class="si-num">0</span></div>
       <div class="topbar-avatar-pill" id="topbar-avatar">?</div>
     </div>
   </div>
@@ -587,7 +590,7 @@
           <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">kg soulevés</div>
         </div>
         <div style="background:var(--bg3);border-radius:12px;padding:14px 10px;text-align:center;">
-          <div style="font-family:var(--font-display);font-size:24px;color:#fff;letter-spacing:1px;line-height:1;" id="stat-best-streak">🔥0</div>
+          <div style="font-family:var(--font-display);font-size:24px;color:#fff;letter-spacing:1px;line-height:1;" id="stat-best-streak"><img class="si" src="icons/streak-icon.png">0</div>
           <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Meilleur streak</div>
         </div>
       </div>
@@ -598,7 +601,7 @@
       <div class="badges-section-title">MES <span>BADGES</span></div>
       <div class="badges-grid-new">
         <div class="badge-item-new unlocked"><div class="badge-icon-new unlocked">🏆</div><div class="badge-name-new">Premier PR</div></div>
-        <div class="badge-item-new unlocked"><div class="badge-icon-new unlocked">🔥</div><div class="badge-name-new">7j streak</div></div>
+        <div class="badge-item-new unlocked"><div class="badge-icon-new unlocked"><img src="icons/streak-icon.png" style="width:28px;height:28px;object-fit:contain;"></div><div class="badge-name-new">7j streak</div></div>
         <div class="badge-item-new unlocked"><div class="badge-icon-new unlocked">💪</div><div class="badge-name-new">10 séances</div></div>
         <div class="badge-item-new unlocked"><div class="badge-icon-new unlocked">⚡</div><div class="badge-name-new">Lève-tôt</div></div>
         <div class="badge-item-new"><div class="badge-icon-new locked">👑</div><div class="badge-name-new">30j streak</div></div>
@@ -776,7 +779,7 @@ var safetyTimeout = 0;
       document.getElementById('sidebar-name').textContent = 'Kaito';
       document.getElementById('sidebar-plan').textContent = '⚔️ Guerrier';
       const streakEl = document.getElementById('topbar-streak');
-      if (streakEl) streakEl.textContent = '🔥 21';
+      if (streakEl) streakEl.textContent = '<img class="si" src="icons/streak-icon.png"> 21';
       const avatarPill = document.getElementById('topbar-avatar');
       if (avatarPill) avatarPill.textContent = initiale;
       const statSessions = document.getElementById('stat-total-sessions');
@@ -784,7 +787,7 @@ var safetyTimeout = 0;
       const statStreak = document.getElementById('stat-best-streak');
       if (statSessions) statSessions.textContent = '28';
       if (statVol) { statVol.innerHTML = '24<span style="font-size:14px;color:var(--red);">k</span>'; }
-      if (statStreak) statStreak.textContent = '🔥21';
+      if (statStreak) statStreak.textContent = '<img class="si" src="icons/streak-icon.png">21';
       if (MOMENTS_DATA && MOMENTS_DATA.you) MOMENTS_DATA.you.avatar = initiale;
       initFreemium('guerrier');
       return;
@@ -824,14 +827,14 @@ var safetyTimeout = 0;
     document.getElementById('hero-name').textContent = `${prenom} ${nom}`.trim() || 'Guerrier';
     // Streak topbar
     const streakTopEl = document.getElementById('topbar-streak');
-    if (streakTopEl) streakTopEl.textContent = '🔥 ' + (p?.streak || 0);
+    if (streakTopEl) streakTopEl.innerHTML = '<img class="si" src="icons/streak-icon.png"> ' + (p?.streak || 0);
     const avatarTopEl = document.getElementById('topbar-avatar');
     if (avatarTopEl) avatarTopEl.textContent = initiale;
     // Stats
     const statSessEl = document.getElementById('stat-total-sessions');
     const statVolEl = document.getElementById('stat-volume-total');
     const statStrEl = document.getElementById('stat-best-streak');
-    if (statStrEl) statStrEl.textContent = '🔥' + (p?.streak || 0);
+    if (statStrEl) statStrEl.innerHTML = '<img class="si" src="icons/streak-icon.png">' + (p?.streak || 0);
     document.getElementById('hero-email').textContent = user.email;
     document.getElementById('hero-plan').textContent = planLabel[p?.plan || 'gratuit'];
 
@@ -1191,5 +1194,7 @@ var safetyTimeout = 0;
   <a class="mobile-nav-item" href="classement.html"><span class="mobile-nav-icon"><img src="icons/classement.svg" alt="Classement"></span></a>
   <a class="mobile-nav-item active" href="profil.html"><span class="mobile-nav-icon"><img src="icons/profil.svg" alt="Profil"></span></a>
 </nav>
+<script src="topbar-avatar.js?v=2"></script>
+<script src="topbar-streak.js"></script>
 </body>
 </html>

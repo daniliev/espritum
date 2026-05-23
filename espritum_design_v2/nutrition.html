@@ -64,7 +64,7 @@ body { background: var(--bg); color: #fff; font-family: var(--font-body); displa
 .topbar { padding: 28px 32px; display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 40; }
 .topbar-title { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; }
 .topbar-right { display: flex; gap: 10px; align-items: center; }
-.topbar-streak-pill { background: #111; border: 1px solid rgba(200,40,40,0.5); border-radius: 99px; padding: 6px 14px; font-family: var(--font-display); font-size: 17px; letter-spacing: 1px; color: #fff; }
+.topbar-streak-pill { background: #111; border: 2px solid var(--red); border-radius: 99px; padding: 6px 14px; font-family: var(--font-display); font-size: 17px; letter-spacing: 1px; color: #fff; }
 .topbar-avatar-pill { width: 40px; height: 40px; border-radius: 50%; background: rgba(200,40,40,0.1); border: 2px solid var(--red); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 14px; color: var(--red); flex-shrink: 0; }
 
 /* CONTENT */
@@ -261,9 +261,12 @@ input, select, textarea { font-size: 16px !important; }
 /* BULGARIAN FONT */
 html[lang="bg"] * { font-family: 'Sofia Sans Condensed', var(--font-body, sans-serif) !important; }
 html[lang="bg"] .topbar-title { font-family: 'Sofia Sans Condensed', var(--font-display, sans-serif) !important; }
+
+  /* ── STREAK ICON ── */
+  .si { height: 0.8em; width: auto; vertical-align: -0.15em; display: inline-block; margin-right: 5px; }
 </style>
 <script src="site-config.js"></script>
-<script src="api-config.js"></script>
+<script src="api-config2.js"></script>
 </head>
 <body>
 
@@ -301,7 +304,7 @@ html[lang="bg"] .topbar-title { font-family: 'Sofia Sans Condensed', var(--font-
   <div class="topbar">
     <div class="topbar-title">FUEL YOUR <span style="color:var(--red)">MACHINE.</span></div>
     <div class="topbar-right">
-      <div class="topbar-streak-pill" id="topbar-streak">🔥 0</div>
+      <div class="topbar-streak-pill" id="topbar-streak"><img class="si" src="icons/streak-icon.png"> 0</div>
       <div class="topbar-avatar-pill" id="topbar-avatar">?</div>
     </div>
   </div>
@@ -417,6 +420,7 @@ html[lang="bg"] .topbar-title { font-family: 'Sofia Sans Condensed', var(--font-
 
     <div class="sheet-field">
       <div class="sheet-hint">✍️ Description obligatoire — photo optionnelle pour plus de précision</div>
+      <div style="font-size:10px;color:#444;text-align:center;margin:-4px 0 8px;font-style:italic;letter-spacing:0.3px;">Les valeurs nutritionnelles sont estimées par IA et sont approximatives.</div>
       <textarea class="sheet-textarea" id="sheet-desc" rows="3" placeholder="Décris ce que tu as mangé... (ex: escalope de poulet grillé, riz 200g, salade verte)" oninput="checkDescReady()"></textarea>
     </div>
 
@@ -436,7 +440,7 @@ html[lang="bg"] .topbar-title { font-family: 'Sofia Sans Condensed', var(--font-
     </div>
 
     <div class="sheet-results" id="sheet-results" style="display:none">
-      <div class="sheet-results-title">Estimation IA</div>
+      <div class="sheet-results-title">Estimation IA <span style="font-size:10px;color:#444;font-family:var(--font-body);font-weight:400;letter-spacing:0.5px;vertical-align:middle;">— approximative</span></div>
       <div class="sheet-results-grid">
         <div class="sheet-result-item">
           <div class="sheet-result-val" id="res-cal">0</div>
@@ -494,7 +498,7 @@ async function init() {
 
       setEl('sidebar-avatar', prenom[0].toUpperCase());
       setEl('sidebar-name', prenom);
-      document.getElementById('topbar-streak').textContent = '🔥 ' + (profile?.streak || 0);
+      document.getElementById('topbar-streak').innerHTML = '<img class="si" src="icons/streak-icon.png"> ' + (profile?.streak || 0);
       document.getElementById('topbar-avatar').textContent = prenom ? prenom[0].toUpperCase() : '?';
       setEl('sidebar-plan', { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' }[profile?.plan || 'gratuit']);
       initFreemium(profile?.plan || 'gratuit');
@@ -702,15 +706,27 @@ async function init() {
 
     try {
       let raw;
+      let usedVision = false;
       const jsonFormat = '{"calories":450,"proteines":35,"glucides":40,"lipides":12,"nom":"Nom du plat"}';
+      const textPrompt = `Repas : "${desc}". Estime les valeurs nutritionnelles totales. Réponds UNIQUEMENT ce JSON (remplace les valeurs) : ${jsonFormat}`;
 
       if (photoBase64) {
-        // Photo + description → Gemini Vision
-        const visionPrompt = `Expert nutrition. Repas décrit : "${desc}". Analyse la photo ET la description. Réponds UNIQUEMENT ce JSON (remplace les valeurs) : ${jsonFormat}`;
-        raw = await EspritumAPI.geminiVision(photoBase64, photoMime, visionPrompt, 200);
+        // Tente Gemini Vision (photo + description)
+        try {
+          const visionPrompt = `Expert nutrition. Repas : "${desc}". Analyse la photo. Réponds UNIQUEMENT ce JSON : ${jsonFormat}`;
+          raw = await EspritumAPI.geminiVision(photoBase64, photoMime, visionPrompt, 200);
+          usedVision = true;
+        } catch(visionErr) {
+          // Gemini indisponible → fallback silencieux vers Groq (description seule)
+          btnTxt.textContent = 'Analyse en cours...';
+          raw = await EspritumAPI.groq(
+            'Tu es un expert en nutrition. Réponds TOUJOURS en JSON valide uniquement, sans aucun texte autour.',
+            [{ role: 'user', content: textPrompt }],
+            200
+          );
+        }
       } else {
         // Description seule → Groq
-        const textPrompt = `Repas : "${desc}". Estime les valeurs nutritionnelles totales. Réponds UNIQUEMENT ce JSON (remplace les valeurs) : ${jsonFormat}`;
         raw = await EspritumAPI.groq(
           'Tu es un expert en nutrition. Réponds TOUJOURS en JSON valide uniquement, sans aucun texte autour.',
           [{ role: 'user', content: textPrompt }],
@@ -735,11 +751,7 @@ async function init() {
       console.error('AI error:', err);
       btn.disabled = false;
       btnTxt.textContent = photoBase64 ? '📸 Analyser photo + description' : 'Analyser';
-      if (err.message === 'NO_KEY' || err.message === 'INVALID_KEY') {
-        EspritumAPI.showSetup(err.service, () => estimateWithAI());
-      } else {
-        showToast('error', 'Erreur IA : ' + (err.message || 'inconnu'));
-      }
+      showToast('error', 'Erreur IA : ' + (err.message || 'inconnu'));
     }
   }
 
@@ -915,5 +927,7 @@ async function init() {
   <a class="mobile-nav-item" href="classement.html"><span class="mobile-nav-icon"><img src="icons/classement.svg" alt="Classement"></span></a>
   <a class="mobile-nav-item" href="profil.html"><span class="mobile-nav-icon"><img src="icons/profil.svg" alt="Profil"></span></a>
 </nav>
+<script src="topbar-avatar.js?v=2"></script>
+<script src="topbar-streak.js"></script>
 </body>
 </html>

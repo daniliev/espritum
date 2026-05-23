@@ -1,3 +1,15 @@
+// ── Espritum — Cache Buster ──
+// Incrémente APP_VERSION à chaque mise à jour pour forcer un rechargement propre.
+(function () {
+  var APP_VERSION = 4;
+  var key = 'esp_v_' + location.pathname; // clé par page — chaque page reload indépendamment
+  if (+sessionStorage.getItem(key) < APP_VERSION) {
+    sessionStorage.setItem(key, APP_VERSION);
+    location.reload(true); // hard reload → contourne le cache navigateur
+    return;
+  }
+})();
+
 // ── Espritum — Page Loader ──
 // Portail width:0/height:0 → position:fixed viewport → ZERO impact layout.
 (function () {
