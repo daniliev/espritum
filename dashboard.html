@@ -443,6 +443,9 @@
   .ss-btn-voir-progres { width: 100%; padding: 12px; background: transparent; border: 1px solid rgba(46,125,50,0.4); border-radius: 8px; color: #4caf50; font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; text-decoration: none; display: none; align-items: center; justify-content: center; gap: 6px; }
   .ss-btn-voir-progres:hover { background: rgba(46,125,50,0.1); }
 
+
+  /* ── STREAK ICON ── */
+  .si { height: 1.1em; width: auto; vertical-align: -0.2em; display: inline-block; }
 </style>
 <script src="site-config.js"></script>
 </head>
@@ -482,7 +485,7 @@
   <div class="topbar">
     <div class="topbar-title">NO DAYS <span>OFF.</span></div>
     <div class="topbar-right">
-      <div class="topbar-streak-pill" id="topbar-streak">🔥 0</div>
+      <div class="topbar-streak-pill" id="topbar-streak"><img class="si" src="icons/streak-icon.png"> <span class="si-num">0</span></div>
       <div class="topbar-avatar-pill" id="topbar-avatar">?</div>
     </div>
   </div>

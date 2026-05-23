@@ -264,6 +264,9 @@
   .progression-avg { font-family: var(--font-display); font-size: 22px; color: var(--red); }
   .progression-avg-label { font-size: 10px; color: var(--muted); text-align: right; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
   .chart-wrap { position: relative; height: 160px; }
+
+  /* ── STREAK ICON ── */
+  .si { height: 1.1em; width: auto; vertical-align: -0.2em; display: inline-block; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="site-config.js"></script>
@@ -302,7 +305,7 @@
       <div class="topbar-title">TIME TO <span style="color:var(--red)">SUFFER.</span></div>
     </div>
     <div class="topbar-right">
-      <div class="topbar-streak-pill" id="topbar-streak">🔥 0</div>
+      <div class="topbar-streak-pill" id="topbar-streak"><img class="si" src="icons/streak-icon.png"> <span class="si-num">0</span></div>
       <div class="topbar-avatar-pill" id="topbar-avatar">?</div>
     </div>
   </div>
@@ -750,7 +753,7 @@
       document.getElementById('sidebar-avatar').textContent = 'Y';
       document.getElementById('sidebar-name').textContent = 'Yoann';
       document.getElementById('sidebar-plan').textContent = '⚔️ Guerrier';
-      document.getElementById('topbar-streak').textContent = '🔥 12';
+      document.getElementById('topbar-streak').textContent = '<img class="si" src="icons/streak-icon.png"> 12';
       document.getElementById('topbar-avatar').textContent = 'Y';
       renderWeek(); renderTimerNum(90); initFreemium('guerrier');
       return;
@@ -767,7 +770,7 @@
       document.getElementById('sidebar-avatar').textContent = prenom[0].toUpperCase();
       document.getElementById('sidebar-name').textContent = prenom;
       document.getElementById('sidebar-plan').textContent = PLAN_LABEL[profile?.plan || 'gratuit'];
-      document.getElementById('topbar-streak').textContent = '🔥 ' + (profile?.streak || 0);
+      document.getElementById('topbar-streak').innerHTML = '<img class="si" src="icons/streak-icon.png"> ' + (profile?.streak || 0);
       document.getElementById('topbar-avatar').textContent = prenom[0].toUpperCase();
       renderWeek(); renderTimerNum(90); initFreemium(profile?.plan || 'gratuit');
       loadWeekProgressTrain();
@@ -792,7 +795,7 @@
       return `
         <div class="wsd ${state}">
           <div class="wsd-label">${d}</div>
-          <div class="wsd-dot">${state === 'done' ? '🔥' : dayNum}</div>
+          <div class="wsd-dot">${state === 'done' ? '<img class="si" src="icons/streak-icon.png">' : dayNum}</div>
         </div>`;
     }).join('');
   }
