@@ -554,7 +554,7 @@
   }
   function formatWeight(ex) {
     const t = getExType(ex.name);
-    if (t === 'bodyweight') return ex.poids > 0 ? `PC +${ex.poids} kg` : 'PC';
+    if (t === 'bodyweight') return ex.poids > 0 ? `poids corps +${ex.poids}kg` : 'poids corps';
     if (t === 'time_seconds') return ex.reps + ' s';
     if (t === 'distance_km') return ex.reps + ' km';
     if (t === 'reps_only') return '';
@@ -861,11 +861,11 @@
       // Weight control — dépend du type d'exercice
       let weightCtrl = '';
       if (exType === 'bodyweight') {
-        const display = ex.poids > 0 ? `PC +${ex.poids} kg` : 'PC';
+        const display = ex.poids > 0 ? `poids corps +${ex.poids}kg` : 'poids corps';
         weightCtrl = `
           <div class="weight-ctrl" onclick="event.stopPropagation()">
             <button class="weight-btn" onclick="adjustWeight(${i}, -2.5)">−</button>
-            <span class="weight-val" id="weight-${i}" style="min-width:56px">${display}</span>
+            <span class="weight-val" id="weight-${i}" style="min-width:72px;font-size:10px;letter-spacing:0.3px">${display}</span>
             <button class="weight-btn" onclick="adjustWeight(${i}, +2.5)">+</button>
           </div>`;
       } else if (exType === 'time_seconds') {
@@ -944,7 +944,9 @@
     const weightEl = document.getElementById(`weight-${exIdx}`);
     if (!weightEl) return;
     if (exType === 'bodyweight') {
-      weightEl.textContent = newPoids > 0 ? `PC +${newPoids} kg` : 'PC';
+      weightEl.style.fontSize = '10px';
+      weightEl.style.letterSpacing = '0.3px';
+      weightEl.textContent = newPoids > 0 ? `poids corps +${newPoids}kg` : 'poids corps';
     } else {
       weightEl.textContent = newPoids > 0 ? newPoids + ' kg' : '0 kg';
     }
