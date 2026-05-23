@@ -527,11 +527,75 @@
 
   /* ── STATE ── */
   let userId = null;
+  let userWeightKg = 70; // poids de l'utilisateur (mis à jour au login)
   let currentDate = localDate(new Date());
   let currentProgram = null;
   let currentProgramKey = null;
   let seriesState = {};         // { exIdx: { serieIdx: { reps, poids, done } } }
   let openExercises = new Set();// which exercise rows are expanded
+
+  /* ── CALORIES PAR EXERCICE (MET × poids × durée) ──────────────────────
+     Formule : kcal = MET × poids_kg × (durée_série_secondes / 3600)
+     secs = secondes par répétition (durée active)
+     direct: true → les reps sont déjà une durée (secondes ou minutes)
+  ─────────────────────────────────────────────────────────────────────── */
+  const EXERCISE_MET = {
+    // ── Jambes / Compound lourd
+    'Squat barre':                     { met: 5.0, secs: 4 },
+    'Soulevé de terre':                { met: 5.0, secs: 4 },
+    'Soulevé de terre jambes tendues': { met: 4.5, secs: 4 },
+    'Presse à cuisses':                { met: 4.0, secs: 4 },
+    'Fentes avant haltères':           { met: 4.5, secs: 3.5 },
+    'Leg curl allongé':                { met: 3.5, secs: 3.5 },
+    'Mollets debout':                  { met: 3.0, secs: 2 },
+    // ── Dos
+    'Traction pronation':              { met: 5.0, secs: 4 },
+    'Rowing barre':                    { met: 4.5, secs: 3.5 },
+    'Rowing haltère unilatéral':       { met: 4.0, secs: 3.5 },
+    'Rowing haltère unilatéra':        { met: 4.0, secs: 3.5 },
+    'Tirage poulie haute':             { met: 4.0, secs: 3.5 },
+    'Tirage poulie basse':             { met: 4.0, secs: 3.5 },
+    'Shrugs haltères':                 { met: 3.0, secs: 2 },
+    // ── Poitrine
+    'Développé couché':                { met: 4.5, secs: 3.5 },
+    'Développé incliné haltères':      { met: 4.5, secs: 3.5 },
+    'Écarté haltères plat':            { met: 3.5, secs: 3 },
+    'Dips poitrine':                   { met: 5.0, secs: 3.5 },
+    'Poulie croisée haute':            { met: 3.5, secs: 3 },
+    'Pompes lestées':                  { met: 4.0, secs: 3 },
+    // ── Épaules
+    'Développé militaire barre':       { met: 4.5, secs: 3.5 },
+    'Élévations latérales':            { met: 3.0, secs: 2.5 },
+    'Élévations frontales':            { met: 3.0, secs: 2.5 },
+    'Oiseau haltères (rear delt)':     { met: 3.0, secs: 2.5 },
+    'Upright row barre':               { met: 4.0, secs: 3 },
+    // ── Bras
+    'Curl barre droite':               { met: 3.5, secs: 3 },
+    'Curl haltères alterné':           { met: 3.5, secs: 3 },
+    'Curl marteau':                    { met: 3.5, secs: 3 },
+    'Extension triceps poulie':        { met: 3.5, secs: 3 },
+    'Barre au front (Skull crusher)':  { met: 3.5, secs: 3 },
+    'Dips banc triceps':               { met: 4.0, secs: 3 },
+    // ── Core
+    'Crunch classique':                { met: 3.0, secs: 2 },
+    'Crunch oblique':                  { met: 3.0, secs: 2 },
+    'Planche':                         { met: 3.5, secs: 1, direct: true }, // reps = secondes
+    'Relevé de jambes suspendu':       { met: 4.0, secs: 3 },
+    'Russian twist':                   { met: 3.5, secs: 1.5 },
+    // ── Cardio
+    'Course à pied':                   { met: 9.0, secs: 60, direct: true }, // reps = minutes
+    'Corde à sauter':                  { met: 11.0, secs: 1, direct: true }, // reps = secondes
+    'Burpees':                         { met: 8.0, secs: 4 },
+  };
+
+  function calcSerieKcal(nomExercice, reps, kg) {
+    // Extraire le nom propre si format "Nom (série X)"
+    const name = (nomExercice || '').replace(/ \(série \d+\)$/, '').trim();
+    const cfg  = EXERCISE_MET[name] || { met: 3.8, secs: 3 };
+    const w    = kg || 70;
+    const secs = cfg.direct ? reps * cfg.secs : reps * cfg.secs;
+    return Math.max(1, Math.round(cfg.met * w * secs / 3600));
+  }
 
   /* ── TIMER STATE ── */
   let currentTimerMode = 'rest';
@@ -567,7 +631,7 @@
     }
 
     const { data: rows } = await sb.from('workouts')
-      .select('date, repetitions, poids')
+      .select('date, nom, repetitions')
       .eq('user_id', userId)
       .eq('termine', true)
       .gte('date', days[0])
@@ -577,10 +641,8 @@
     days.forEach(d => calsByDay[d] = 0);
     (rows || []).forEach(r => {
       if (calsByDay[r.date] === undefined) return;
-      const reps = r.repetitions || 8;
-      const kg   = r.poids || 0;
-      // Estimation : chaque série brûle ~(reps × max(kg,5) × 0.04) + 4 kcal
-      calsByDay[r.date] += Math.round(reps * Math.max(kg, 5) * 0.04 + 4);
+      // Calcul MET : kcal = MET × poids_utilisateur × durée_série
+      calsByDay[r.date] += calcSerieKcal(r.nom, r.repetitions || 8, userWeightKg);
     });
 
     const data = days.map(d => calsByDay[d]);
@@ -658,6 +720,7 @@
       if (!session) { window.location.href = 'inscription.html'; return; }
       userId = session.user.id;
       const { data: profile } = await sb.from('users').select('*').eq('id', userId).single();
+      userWeightKg = profile?.poids || 70; // poids pour le calcul kcal
       const prenom = profile?.prenom || 'Guerrier';
       document.getElementById('sidebar-avatar').textContent = prenom[0].toUpperCase();
       document.getElementById('sidebar-name').textContent = prenom;
@@ -815,6 +878,7 @@
 
     if (state.done && userId) {
       const ex = currentProgram.exercises[exIdx];
+      const kcalSerie = calcSerieKcal(ex.name, state.reps, userWeightKg);
       await sb.from('workouts').insert({
         user_id: userId,
         nom: ex.name + ` (série ${serieIdx + 1})`,
@@ -822,7 +886,7 @@
         series: 1, repetitions: state.reps, poids: state.poids,
         termine: true, date: currentDate
       });
-      showToast('success', `✓ Série ${serieIdx + 1} validée !`);
+      showToast('success', `✓ Série ${serieIdx + 1} — ~${kcalSerie} kcal brûlées 🔥`);
     }
 
     // Update the serie row
@@ -877,7 +941,8 @@
         }
       }
     }
-    showToast('success', `✓ ${ex.name} — terminé !`);
+    const totalKcal = Object.values(seriesState[exIdx]).reduce((sum, s) => sum + calcSerieKcal(ex.name, s.reps, userWeightKg), 0);
+    showToast('success', `✓ ${ex.name} — ~${totalKcal} kcal brûlées 🔥`);
     const wasOpen = openExercises.has(exIdx);
     renderExercises();
     if (wasOpen) {
