@@ -647,8 +647,11 @@
   let chartConsumedInst = null;
   let chartBurnedInst = null;
 
-  /* ── CALORIES PAR EXERCICE (MET × poids × durée) ── */
-  const EXERCISE_MET_DB = {
+  /* ── CALORIES PAR EXERCICE — copie exacte de entrainement.html ── */
+  let userWeightKg = 70; // mis à jour depuis profil dans init()
+
+  const EXERCISE_MET = {
+    // ── Jambes / Compound lourd
     'Squat barre':                     { met: 5.0, secs: 4 },
     'Soulevé de terre':                { met: 5.0, secs: 4 },
     'Soulevé de terre jambes tendues': { met: 4.5, secs: 4 },
@@ -656,6 +659,7 @@
     'Fentes avant haltères':           { met: 4.5, secs: 3.5 },
     'Leg curl allongé':                { met: 3.5, secs: 3.5 },
     'Mollets debout':                  { met: 3.0, secs: 2 },
+    // ── Dos
     'Traction pronation':              { met: 5.0, secs: 4 },
     'Rowing barre':                    { met: 4.5, secs: 3.5 },
     'Rowing haltère unilatéral':       { met: 4.0, secs: 3.5 },
@@ -663,35 +667,41 @@
     'Tirage poulie haute':             { met: 4.0, secs: 3.5 },
     'Tirage poulie basse':             { met: 4.0, secs: 3.5 },
     'Shrugs haltères':                 { met: 3.0, secs: 2 },
+    // ── Poitrine
     'Développé couché':                { met: 4.5, secs: 3.5 },
     'Développé incliné haltères':      { met: 4.5, secs: 3.5 },
     'Écarté haltères plat':            { met: 3.5, secs: 3 },
     'Dips poitrine':                   { met: 5.0, secs: 3.5 },
     'Poulie croisée haute':            { met: 3.5, secs: 3 },
     'Pompes lestées':                  { met: 4.0, secs: 3 },
+    // ── Épaules
     'Développé militaire barre':       { met: 4.5, secs: 3.5 },
     'Élévations latérales':            { met: 3.0, secs: 2.5 },
     'Élévations frontales':            { met: 3.0, secs: 2.5 },
     'Oiseau haltères (rear delt)':     { met: 3.0, secs: 2.5 },
     'Upright row barre':               { met: 4.0, secs: 3 },
+    // ── Bras
     'Curl barre droite':               { met: 3.5, secs: 3 },
     'Curl haltères alterné':           { met: 3.5, secs: 3 },
     'Curl marteau':                    { met: 3.5, secs: 3 },
     'Extension triceps poulie':        { met: 3.5, secs: 3 },
     'Barre au front (Skull crusher)':  { met: 3.5, secs: 3 },
     'Dips banc triceps':               { met: 4.0, secs: 3 },
+    // ── Core
     'Crunch classique':                { met: 3.0, secs: 2 },
     'Crunch oblique':                  { met: 3.0, secs: 2 },
-    'Planche':                         { met: 3.5, secs: 1, direct: true },
+    'Planche':                         { met: 3.5, secs: 1, direct: true }, // reps = secondes
     'Relevé de jambes suspendu':       { met: 4.0, secs: 3 },
     'Russian twist':                   { met: 3.5, secs: 1.5 },
-    'Course à pied':                   { met: 9.0, secs: 60, direct: true },
-    'Corde à sauter':                  { met: 11.0, secs: 1, direct: true },
+    // ── Cardio
+    'Course à pied':                   { met: 9.0, secs: 60, direct: true }, // reps = minutes
+    'Corde à sauter':                  { met: 11.0, secs: 1, direct: true }, // reps = secondes
     'Burpees':                         { met: 8.0, secs: 4 },
   };
-  function calcKcalDB(nom, reps, kg) {
-    const name = (nom || '').replace(/ \(série \d+\)$/, '').trim();
-    const cfg  = EXERCISE_MET_DB[name] || { met: 3.8, secs: 3 };
+  function calcSerieKcal(nomExercice, reps, kg) {
+    // Extraire le nom propre si format "Nom (série X)"
+    const name = (nomExercice || '').replace(/ \(série \d+\)$/, '').trim();
+    const cfg  = EXERCISE_MET[name] || { met: 3.8, secs: 3 };
     const w    = kg || 70;
     const secs = cfg.direct ? reps * cfg.secs : reps * cfg.secs;
     return Math.max(1, Math.round(cfg.met * w * secs / 3600));
@@ -726,6 +736,7 @@
       setEl('sidebar-plan', PLAN_LABEL[profile?.plan || 'gratuit']);
       initFreemium(profile?.plan || 'gratuit');
       window._espritumUser = { id: userId, plan: profile?.plan || 'gratuit', semaine_programme: profile?.semaine_programme || 1, poids: profile?.poids, masse_grasse: profile?.masse_grasse, genre: profile?.genre || 'homme' };
+      userWeightKg = profile?.poids || 70; // identique à entrainement.html
 
       setEl('topbar-streak', '🔥 ' + (profile?.streak || 0));
       setEl('topbar-avatar', initiale);
@@ -909,35 +920,33 @@
   }
 
   async function loadWeekProgressBurned(userId) {
-    const now = new Date();
-    const days = [];
+    // Copie exacte de loadWeekProgressTrain (entrainement.html)
+    const days = [], labels = [];
+    const today = new Date();
     for (let i = 6; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(now.getDate() - i);
-      days.push(d);
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      days.push(localDate(d));
+      labels.push(DAY_SHORT[d.getDay()] + ' ' + d.getDate());
     }
-    const from = localDate(days[0]);
-    const to = localDate(days[6]);
 
-    const { data: workouts } = await sb.from('workouts')
+    const { data: rows } = await sb.from('workouts')
       .select('date, nom, reps')
       .eq('user_id', userId)
       .eq('termine', true)
-      .gte('date', from)
-      .lte('date', to);
+      .gte('date', days[0])
+      .lte('date', days[6]);
 
-    const userKg = window._espritumUser?.poids || 70;
-    const byDay = {};
-    (workouts || []).forEach(w => {
-      const kcal = calcKcalDB(w.nom, w.reps || 8, userKg);
-      byDay[w.date] = (byDay[w.date] || 0) + kcal;
+    const calsByDay = {};
+    days.forEach(d => calsByDay[d] = 0);
+    (rows || []).forEach(r => {
+      if (calsByDay[r.date] === undefined) return;
+      calsByDay[r.date] += calcSerieKcal(r.nom, r.reps || 8, userWeightKg);
     });
 
-    const labels = days.map(d => DAY_SHORT[d.getDay()]);
-    const data = days.map(d => byDay[localDate(d)] || 0);
-    const nonZero = data.filter(v => v > 0);
-    const avg = nonZero.length ? Math.round(nonZero.reduce((a,b)=>a+b,0) / nonZero.length) : 0;
-
+    const data = days.map(d => calsByDay[d]);
+    const active = data.filter(v => v > 0);
+    const avg = active.length ? Math.round(active.reduce((a,b) => a+b, 0) / active.length) : 0;
     setEl('prog-avg-burned', avg > 0 ? avg.toLocaleString('fr-FR') : '—');
     renderChartBurned(labels, data);
   }
