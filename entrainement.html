@@ -631,7 +631,7 @@
     }
 
     const { data: rows } = await sb.from('workouts')
-      .select('date, nom, repetitions')
+      .select('date, nom, reps')
       .eq('user_id', userId)
       .eq('termine', true)
       .gte('date', days[0])
@@ -642,7 +642,7 @@
     (rows || []).forEach(r => {
       if (calsByDay[r.date] === undefined) return;
       // Calcul MET : kcal = MET × poids_utilisateur × durée_série
-      calsByDay[r.date] += calcSerieKcal(r.nom, r.repetitions || 8, userWeightKg);
+      calsByDay[r.date] += calcSerieKcal(r.nom, r.reps || 8, userWeightKg);
     });
 
     const data = days.map(d => calsByDay[d]);
@@ -883,7 +883,7 @@
         user_id: userId,
         nom: ex.name + ` (série ${serieIdx + 1})`,
         muscle_cible: ex.muscle,
-        series: 1, repetitions: state.reps, poids: state.poids,
+        series: 1, reps: state.reps, poids: state.poids,
         termine: true, date: currentDate
       });
       showToast('success', `✓ Série ${serieIdx + 1} — ~${kcalSerie} kcal brûlées 🔥`);
@@ -936,7 +936,7 @@
           await sb.from('workouts').insert({
             user_id: userId, nom: ex.name + ` (série ${s + 1})`,
             muscle_cible: ex.muscle, series: 1,
-            repetitions: seriesState[exIdx][s].reps, poids: seriesState[exIdx][s].poids,
+            reps: seriesState[exIdx][s].reps, poids: seriesState[exIdx][s].poids,
             termine: true, date: currentDate
           });
         }
