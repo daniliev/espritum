@@ -647,6 +647,56 @@
   let chartConsumedInst = null;
   let chartBurnedInst = null;
 
+  /* ── CALORIES PAR EXERCICE (MET × poids × durée) ── */
+  const EXERCISE_MET_DB = {
+    'Squat barre':                     { met: 5.0, secs: 4 },
+    'Soulevé de terre':                { met: 5.0, secs: 4 },
+    'Soulevé de terre jambes tendues': { met: 4.5, secs: 4 },
+    'Presse à cuisses':                { met: 4.0, secs: 4 },
+    'Fentes avant haltères':           { met: 4.5, secs: 3.5 },
+    'Leg curl allongé':                { met: 3.5, secs: 3.5 },
+    'Mollets debout':                  { met: 3.0, secs: 2 },
+    'Traction pronation':              { met: 5.0, secs: 4 },
+    'Rowing barre':                    { met: 4.5, secs: 3.5 },
+    'Rowing haltère unilatéral':       { met: 4.0, secs: 3.5 },
+    'Rowing haltère unilatéra':        { met: 4.0, secs: 3.5 },
+    'Tirage poulie haute':             { met: 4.0, secs: 3.5 },
+    'Tirage poulie basse':             { met: 4.0, secs: 3.5 },
+    'Shrugs haltères':                 { met: 3.0, secs: 2 },
+    'Développé couché':                { met: 4.5, secs: 3.5 },
+    'Développé incliné haltères':      { met: 4.5, secs: 3.5 },
+    'Écarté haltères plat':            { met: 3.5, secs: 3 },
+    'Dips poitrine':                   { met: 5.0, secs: 3.5 },
+    'Poulie croisée haute':            { met: 3.5, secs: 3 },
+    'Pompes lestées':                  { met: 4.0, secs: 3 },
+    'Développé militaire barre':       { met: 4.5, secs: 3.5 },
+    'Élévations latérales':            { met: 3.0, secs: 2.5 },
+    'Élévations frontales':            { met: 3.0, secs: 2.5 },
+    'Oiseau haltères (rear delt)':     { met: 3.0, secs: 2.5 },
+    'Upright row barre':               { met: 4.0, secs: 3 },
+    'Curl barre droite':               { met: 3.5, secs: 3 },
+    'Curl haltères alterné':           { met: 3.5, secs: 3 },
+    'Curl marteau':                    { met: 3.5, secs: 3 },
+    'Extension triceps poulie':        { met: 3.5, secs: 3 },
+    'Barre au front (Skull crusher)':  { met: 3.5, secs: 3 },
+    'Dips banc triceps':               { met: 4.0, secs: 3 },
+    'Crunch classique':                { met: 3.0, secs: 2 },
+    'Crunch oblique':                  { met: 3.0, secs: 2 },
+    'Planche':                         { met: 3.5, secs: 1, direct: true },
+    'Relevé de jambes suspendu':       { met: 4.0, secs: 3 },
+    'Russian twist':                   { met: 3.5, secs: 1.5 },
+    'Course à pied':                   { met: 9.0, secs: 60, direct: true },
+    'Corde à sauter':                  { met: 11.0, secs: 1, direct: true },
+    'Burpees':                         { met: 8.0, secs: 4 },
+  };
+  function calcKcalDB(nom, reps, kg) {
+    const name = (nom || '').replace(/ \(série \d+\)$/, '').trim();
+    const cfg  = EXERCISE_MET_DB[name] || { met: 3.8, secs: 3 };
+    const w    = kg || 70;
+    const secs = cfg.direct ? reps * cfg.secs : reps * cfg.secs;
+    return Math.max(1, Math.round(cfg.met * w * secs / 3600));
+  }
+
   function setEl(id, val) {
     const el = document.getElementById(id);
     if (el) el.textContent = val;
@@ -870,15 +920,16 @@
     const to = localDate(days[6]);
 
     const { data: workouts } = await sb.from('workouts')
-      .select('date, reps, kg')
+      .select('date, nom, reps')
       .eq('user_id', userId)
       .eq('termine', true)
       .gte('date', from)
       .lte('date', to);
 
+    const userKg = window._espritumUser?.poids || 70;
     const byDay = {};
     (workouts || []).forEach(w => {
-      const kcal = Math.round((w.reps || 0) * Math.max(w.kg || 0, 5) * 0.04 + 4);
+      const kcal = calcKcalDB(w.nom, w.reps || 8, userKg);
       byDay[w.date] = (byDay[w.date] || 0) + kcal;
     });
 
