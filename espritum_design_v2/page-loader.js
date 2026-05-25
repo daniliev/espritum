@@ -1,12 +1,12 @@
 // ── Espritum — Cache Buster ──
-// Incrémente APP_VERSION à chaque mise à jour pour forcer un rechargement propre.
+// Ajoute ?v=VERSION dans l'URL pour forcer le navigateur à recharger les fichiers.
 (function () {
-  var APP_VERSION = 4;
-  var key = 'esp_v_' + location.pathname; // clé par page — chaque page reload indépendamment
-  if (+sessionStorage.getItem(key) < APP_VERSION) {
-    sessionStorage.setItem(key, APP_VERSION);
-    location.reload(true); // hard reload → contourne le cache navigateur
-    return;
+  var APP_VERSION = 58;
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('v') !== String(APP_VERSION)) {
+    params.set('v', APP_VERSION);
+    // Remplace l'URL avec la version — force un rechargement propre sans boucle
+    window.location.replace(window.location.pathname + '?' + params.toString() + (window.location.hash || ''));
   }
 })();
 

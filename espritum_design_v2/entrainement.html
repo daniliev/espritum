@@ -181,9 +181,9 @@
 
   /* Exercise image (shown when expanded) */
   .ex-exercise-img {
-    width: 100%; aspect-ratio: 1 / 1; object-fit: contain;
-    border-radius: 10px; margin-bottom: 14px;
-    background: #1a1a1a; display: block;
+    width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: center;
+    border-radius: 12px; margin-bottom: 14px;
+    display: block;
   }
   .series-checklist-rows { padding-left: 42px; }
 
@@ -466,7 +466,6 @@
       exercises: [
         { name: 'Curl barre droite', series: 4, reps: 12, poids: 30, muscle: 'Biceps' },
         { name: 'Curl haltères alterné', series: 3, reps: 12, poids: 14, muscle: 'Biceps' },
-        { name: 'Curl marteau', series: 3, reps: 12, poids: 16, muscle: 'Brachial' },
         { name: 'Extension triceps poulie', series: 4, reps: 15, poids: 30, muscle: 'Triceps' },
         { name: 'Barre au front (Skull crusher)', series: 3, reps: 12, poids: 25, muscle: 'Triceps' },
         { name: 'Dips banc triceps', series: 3, reps: 20, poids: 0, muscle: 'Triceps' },
@@ -619,7 +618,6 @@
     // ── Bras
     'Curl barre droite':               { met: 3.5, secs: 3 },
     'Curl haltères alterné':           { met: 3.5, secs: 3 },
-    'Curl marteau':                    { met: 3.5, secs: 3 },
     'Extension triceps poulie':        { met: 3.5, secs: 3 },
     'Barre au front (Skull crusher)':  { met: 3.5, secs: 3 },
     'Dips banc triceps':               { met: 4.0, secs: 3 },
@@ -703,20 +701,20 @@
     if (weekChartTrain) { weekChartTrain.destroy(); weekChartTrain = null; }
     const ctx = document.getElementById('weekChartTrain').getContext('2d');
     const grad = ctx.createLinearGradient(0, 0, 0, 160);
-    grad.addColorStop(0, 'rgba(200,40,40,0.32)');
-    grad.addColorStop(1, 'rgba(200,40,40,0)');
+    grad.addColorStop(0, 'rgba(255,255,255,0.18)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
     weekChartTrain = new Chart(ctx, {
       type: 'line',
       data: {
         labels,
         datasets: [{
           data,
-          borderColor: '#c82828',
+          borderColor: '#ffffff',
           backgroundColor: grad,
           borderWidth: 2,
           fill: true,
           tension: 0.42,
-          pointBackgroundColor: data.map(v => v > 0 ? '#c82828' : 'transparent'),
+          pointBackgroundColor: data.map(v => v > 0 ? '#ffffff' : 'transparent'),
           pointBorderColor:     data.map(v => v > 0 ? '#131313' : 'transparent'),
           pointBorderWidth: 2,
           pointRadius:      data.map(v => v > 0 ? 4 : 0),
@@ -866,7 +864,10 @@
           </div>`;
       }).join('');
 
-      const imgSrc = 'exercices/' + encodeURIComponent(ex.name) + '.png';
+      // Utilise .webp si disponible (nouvelles images), sinon .png (legacy)
+      const _webpSrc = 'exercices/' + encodeURIComponent(ex.name) + '.webp';
+      const _pngSrc  = 'exercices/' + encodeURIComponent(ex.name) + '.png';
+      const imgSrc   = _webpSrc; // le tag <img> a un onerror fallback vers .png
 
       // Weight control — dépend du type d'exercice
       let weightCtrl = '';
@@ -920,7 +921,7 @@
           </div>
           <div class="series-checklist">
             <img class="ex-exercise-img" src="${imgSrc}" alt="${ex.name}"
-                 onerror="this.style.display='none'">
+                 onerror="if(this.src.endsWith('.webp')){this.src=this.src.replace('.webp','.png')}else{this.style.display='none'}"
             <div class="series-checklist-rows">${seriesHTML}</div>
           </div>
         </div>`;

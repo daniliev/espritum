@@ -477,6 +477,33 @@
 
   /* ── STREAK ICON ── */
   .si { height: 0.8em; width: auto; vertical-align: -0.15em; display: inline-block; margin-right: 5px; }
+
+  /* ── MES POSTS (3 permanents) ── */
+  .my-posts-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 14px;
+  }
+  .my-post-slot {
+    aspect-ratio: 1; border-radius: 12px; overflow: hidden;
+    background: #1a1a1a; border: 1px dashed #2a2a2a;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative; transition: opacity 0.15s;
+  }
+  .my-post-slot:active { opacity: 0.75; }
+  .my-post-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .my-post-slot.filled { border: none; }
+  .my-post-slot.empty .post-add-icon {
+    width: 36px; height: 36px; border-radius: 50%; background: #222;
+    display: flex; align-items: center; justify-content: center;
+    color: #444; font-size: 20px; font-weight: 300;
+  }
+  .my-post-slot.filled .post-delete-btn {
+    position: absolute; top: 6px; right: 6px;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(0,0,0,0.65); border: none; color: #fff;
+    font-size: 12px; display: none; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 2;
+  }
+  .my-post-slot.filled:active .post-delete-btn { display: flex; }
 </style>
 <script src="site-config.js"></script>
 </head>
@@ -526,37 +553,17 @@
     <!-- Moments Strip -->
     <div class="moments-strip">
       <div class="moments-scroll">
-        <div class="moment-item mine" onclick="openViewer('you')">
+        <!-- Mon bouton upload -->
+        <div class="moment-item mine" onclick="triggerMomentUpload()">
           <div class="moment-ring mine">
             <div class="moment-ring-inner" id="my-moment-avatar">?</div>
-            <div class="moment-add">+</div>
+            <div class="moment-add" id="moment-add-btn">+</div>
           </div>
-          <div class="moment-name">Ton moment</div>
+          <div class="moment-name">Ajouter</div>
         </div>
-        <div class="moment-item" onclick="openViewer('julie')">
-          <div class="moment-ring"><div class="moment-ring-inner">J</div></div>
-          <div class="moment-name">Julie M.</div>
-        </div>
-        <div class="moment-item" onclick="openViewer('kevin')">
-          <div class="moment-ring"><div class="moment-ring-inner">K</div></div>
-          <div class="moment-name">Kevin R.</div>
-        </div>
-        <div class="moment-item" onclick="openViewer('sarah')">
-          <div class="moment-ring"><div class="moment-ring-inner">S</div></div>
-          <div class="moment-name">Sarah D.</div>
-        </div>
-        <div class="moment-item" onclick="openViewer('marc')">
-          <div class="moment-ring"><div class="moment-ring-inner">M</div></div>
-          <div class="moment-name">Marc T.</div>
-        </div>
-        <div class="moment-item">
-          <div class="moment-ring seen"><div class="moment-ring-inner">L</div></div>
-          <div class="moment-name">Léa B.</div>
-        </div>
-        <div class="moment-item">
-          <div class="moment-ring seen"><div class="moment-ring-inner">T</div></div>
-          <div class="moment-name">Tom V.</div>
-        </div>
+        <input type="file" id="moment-file" accept="image/*" style="display:none" onchange="handleMomentUpload(event)">
+        <!-- Moments des gens que je suis — rempli par JS -->
+        <div id="moments-friends-strip"></div>
       </div>
     </div>
 
@@ -596,6 +603,19 @@
       </div>
     </div>
 
+    <!-- ===== MES POSTS (3 permanents) ===== -->
+    <div class="card" style="border-radius:18px;padding:20px;">
+      <div class="badges-section-title">MES <span>POSTS</span></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:-10px;margin-bottom:12px;letter-spacing:0.5px;">Prenez des photos de vos résultats physiques !</div>
+      <div class="my-posts-grid" id="my-posts-grid">
+        <!-- filled by JS -->
+        <div class="my-post-slot empty" onclick="triggerPostUpload(0)"><div class="post-add-icon">+</div></div>
+        <div class="my-post-slot empty" onclick="triggerPostUpload(1)"><div class="post-add-icon">+</div></div>
+        <div class="my-post-slot empty" onclick="triggerPostUpload(2)"><div class="post-add-icon">+</div></div>
+      </div>
+      <input type="file" id="post-file-input" accept="image/*" style="display:none" onchange="handlePostUpload(event)">
+    </div>
+
     <!-- ===== MY BADGES ===== -->
     <div class="card" style="border-radius:18px;padding:20px;">
       <div class="badges-section-title">MES <span>BADGES</span></div>
@@ -611,16 +631,6 @@
       </div>
     </div>
 
-    <!-- ===== MON OBJECTIF ===== -->
-    <div class="card" style="border-radius:18px;padding:20px;">
-      <div class="badges-section-title">MON <span>OBJECTIF</span></div>
-      <div class="obj-grid">
-        <div class="obj-card" id="obj-perte_gras" onclick="selectObj('perte_gras')"><div class="obj-icon">🔥</div><div class="obj-name">Perte de gras</div></div>
-        <div class="obj-card" id="obj-prise_masse" onclick="selectObj('prise_masse')"><div class="obj-icon">💪</div><div class="obj-name">Prise de masse</div></div>
-        <div class="obj-card" id="obj-endurance" onclick="selectObj('endurance')"><div class="obj-icon">⚡</div><div class="obj-name">Endurance</div></div>
-        <div class="obj-card" id="obj-reequilibrage" onclick="selectObj('reequilibrage')"><div class="obj-icon">⚖️</div><div class="obj-name">Rééquilibrage</div></div>
-      </div>
-    </div>
 
     <!-- ===== SETTINGS (toggles) ===== -->
     <div class="card" style="border-radius:18px;padding:20px;">
@@ -869,6 +879,14 @@ var safetyTimeout = 0;
     if (p?.lipides_objectif) document.getElementById('f-fat').value = p.lipides_objectif;
 
     calcIndicateurs();
+
+    // Posts permanents
+    myPosts = [p?.post1_url || null, p?.post2_url || null, p?.post3_url || null];
+    _renderMyPosts();
+
+    // Moments
+    loadMyMoments();
+    loadFollowedMoments();
   }
 
   async function saveProfile() {
@@ -1135,38 +1153,225 @@ var safetyTimeout = 0;
     closeEditModal();
   }
 
-  /* ===== MOMENTS VIEWER ===== */
-  const MOMENTS_DATA = {
-    julie: { name: 'Julie M.', avatar: 'J', emoji: '💪', text: 'VIENT DE SOULEVER 100KG AU BENCH', badge: '🏆 NOUVEAU PR', sub: 'Ce moment disparaît après fermeture' },
-    kevin: { name: 'Kevin R.', avatar: 'K', emoji: '🔥', text: 'BRAS DAY TERMINÉ. SANS EXCUSES.', badge: '⚡ SÉANCE', sub: 'Ce moment disparaît après fermeture' },
-    sarah: { name: 'Sarah D.', avatar: 'S', emoji: '🏃', text: '5KM DE COURSE AVANT LA SALLE', badge: '🎯 CARDIO', sub: 'Ce moment disparaît après fermeture' },
-    marc:  { name: 'Marc T.',  avatar: 'M', emoji: '🏋️', text: '200KG DE DEADLIFT. ENFIN.', badge: '🏆 NOUVEAU PR', sub: 'Ce moment disparaît après fermeture' },
-    you:   { name: 'Ton moment', avatar: '?', emoji: '📸', text: 'PARTAGE TON MOMENT', badge: '+ NOUVEAU', sub: 'Tes amis le verront une seule fois' }
-  };
+  /* ===== MOMENTS — UPLOAD & LOAD ===== */
   let viewerTimeout = null;
 
-  function openViewer(id) {
-    const m = MOMENTS_DATA[id];
-    if (!m) return;
-    document.getElementById('viewerAvatar').textContent = m.avatar;
-    document.getElementById('viewerName').textContent = m.name;
-    document.getElementById('viewerEmoji').textContent = m.emoji;
-    document.getElementById('viewerText').textContent = m.text;
-    document.getElementById('viewerBadge').textContent = m.badge;
-    document.getElementById('viewerSub').textContent = m.sub;
-    // Reset animation
-    const fill = document.getElementById('viewerFill');
-    fill.style.animation = 'none';
-    fill.offsetHeight; // reflow
-    fill.style.animation = 'vprogress 5s linear forwards';
-    document.getElementById('momentViewer').classList.add('show');
-    clearTimeout(viewerTimeout);
-    viewerTimeout = setTimeout(closeViewer, 5000);
+  /* ===== MES POSTS — 3 permanents ===== */
+  let myPosts = [null, null, null]; // [post1_url, post2_url, post3_url]
+  let pendingPostIndex = null;
+
+  function _renderMyPosts() {
+    const grid = document.getElementById('my-posts-grid');
+    if (!grid) return;
+    grid.innerHTML = myPosts.map((url, i) => {
+      if (url) {
+        return `<div class="my-post-slot filled" onclick="confirmDeletePost(${i})">
+          <img src="${url}" alt="post ${i+1}" loading="lazy">
+          <button class="post-delete-btn" onclick="event.stopPropagation();confirmDeletePost(${i})">✕</button>
+        </div>`;
+      }
+      return `<div class="my-post-slot empty" onclick="triggerPostUpload(${i})">
+        <div class="post-add-icon">+</div>
+      </div>`;
+    }).join('');
   }
+
+  function triggerPostUpload(slotIndex) {
+    pendingPostIndex = slotIndex;
+    document.getElementById('post-file-input').click();
+  }
+
+  async function handlePostUpload(event) {
+    const file = event.target.files[0];
+    if (!file || !userId || pendingPostIndex === null) return;
+    event.target.value = '';
+    const slot = pendingPostIndex;
+    pendingPostIndex = null;
+
+    // Optimistic: show loading indicator on slot
+    const grid = document.getElementById('my-posts-grid');
+    const slots = grid.querySelectorAll('.my-post-slot');
+    if (slots[slot]) slots[slot].style.opacity = '0.4';
+
+    try {
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const path = `${userId}/post${slot + 1}-${Date.now()}.${ext}`;
+      const { error: upErr } = await sb.storage.from('instant-photos').upload(path, file, { upsert: true, contentType: file.type });
+      if (upErr) {
+        if (upErr.message && upErr.message.includes('Bucket not found')) showToast('Crée le bucket "instant-photos" dans Supabase Storage !', 'error');
+        else showToast('Erreur : ' + upErr.message, 'error');
+        throw upErr;
+      }
+      const { data: { publicUrl } } = sb.storage.from('instant-photos').getPublicUrl(path);
+
+      // Supprimer l'ancienne si elle existait (best-effort)
+      myPosts[slot] = publicUrl;
+      const col = `post${slot + 1}_url`;
+      await sb.from('users').update({ [col]: publicUrl }).eq('id', userId);
+
+      _renderMyPosts();
+      showToast('Post mis à jour ✓', 'success');
+    } catch(e) {
+      console.error(e);
+      showToast('Erreur upload', 'error');
+      _renderMyPosts();
+    }
+  }
+
+  async function confirmDeletePost(slotIndex) {
+    if (!myPosts[slotIndex]) return;
+    // Simple confirm via toast-style (no native confirm on mobile)
+    if (!window._postDeleteConfirm) {
+      window._postDeleteConfirm = slotIndex;
+      showToast('Appuie à nouveau pour supprimer', 'info');
+      setTimeout(() => { window._postDeleteConfirm = null; }, 3000);
+      return;
+    }
+    if (window._postDeleteConfirm !== slotIndex) {
+      window._postDeleteConfirm = slotIndex;
+      return;
+    }
+    window._postDeleteConfirm = null;
+    myPosts[slotIndex] = null;
+    const col = `post${slotIndex + 1}_url`;
+    try {
+      await sb.from('users').update({ [col]: null }).eq('id', userId);
+      _renderMyPosts();
+      showToast('Post supprimé', 'success');
+    } catch(e) { showToast('Erreur', 'error'); }
+  }
+
+  function triggerMomentUpload() {
+    document.getElementById('moment-file').click();
+  }
+
+  async function handleMomentUpload(event) {
+    const file = event.target.files[0];
+    if (!file || !userId) return;
+    const addBtn = document.getElementById('moment-add-btn');
+    const origText = addBtn.textContent;
+    addBtn.textContent = '…';
+    try {
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const path = `${userId}/moment-${Date.now()}.${ext}`;
+      const { error: upErr } = await sb.storage.from('instant-photos').upload(path, file, { upsert: true, contentType: file.type });
+      if (upErr) {
+        // Bucket not found → message clair
+        if (upErr.message && upErr.message.includes('Bucket not found')) {
+          showToast('Crée le bucket "instant-photos" dans Supabase Storage !', 'error');
+        } else {
+          showToast('Erreur upload : ' + upErr.message, 'error');
+        }
+        throw upErr;
+      }
+      const { data: { publicUrl } } = sb.storage.from('instant-photos').getPublicUrl(path);
+      // Table instant_photos peut ne pas exister encore
+      try {
+        await sb.from('instant_photos').insert({ user_id: userId, photo_url: publicUrl });
+      } catch(e2) {
+        showToast('Lance le SQL pour créer la table instant_photos', 'error');
+        throw e2;
+      }
+      showToast('Moment partagé ✓', 'success');
+      await loadMyMoments();
+    } catch(e) {
+      console.error('moment upload error:', e);
+    } finally {
+      addBtn.textContent = origText;
+      event.target.value = '';
+    }
+  }
+
+  async function loadMyMoments() {
+    const { data: photos } = await sb
+      .from('instant_photos').select('id, photo_url')
+      .eq('user_id', userId).order('created_at', { ascending: false }).limit(1);
+    const inner = document.getElementById('my-moment-avatar');
+    if (photos && photos.length && inner) {
+      inner.style.backgroundImage = `url('${photos[0].photo_url}')`;
+      inner.style.backgroundSize = 'cover';
+      inner.style.backgroundPosition = 'center';
+      inner.textContent = '';
+    }
+  }
+
+  async function loadFollowedMoments() {
+    // Qui je suis
+    const { data: followData } = await sb
+      .from('friendships').select('following_id').eq('follower_id', userId);
+    if (!followData || !followData.length) return;
+    const followIds = followData.map(f => f.following_id);
+
+    // Dernière photo de chaque suivi
+    const { data: usersData } = await sb
+      .from('users').select('id, prenom, avatar_url').in('id', followIds);
+    const { data: photos } = await sb
+      .from('instant_photos').select('id, user_id, photo_url')
+      .in('user_id', followIds).order('created_at', { ascending: false });
+
+    // Garder seulement la dernière photo par user
+    const latestByUser = {};
+    (photos || []).forEach(p => { if (!latestByUser[p.user_id]) latestByUser[p.user_id] = p; });
+
+    const strip = document.getElementById('moments-friends-strip');
+    if (!strip) return;
+
+    strip.innerHTML = (usersData || [])
+      .filter(u => latestByUser[u.id])
+      .map(u => {
+        const avatarStyle = u.avatar_url
+          ? `background-image:url('${u.avatar_url}');background-size:cover;background-position:center;`
+          : '';
+        const initial = u.avatar_url ? '' : (u.prenom || '?')[0];
+        const photoUrl = latestByUser[u.id].photo_url;
+        return `
+          <div class="moment-item" onclick="openPhotoMoment('${photoUrl}','${u.prenom}','${u.avatar_url || ''}')">
+            <div class="moment-ring">
+              <div class="moment-ring-inner" style="${avatarStyle}">${initial}</div>
+            </div>
+            <div class="moment-name">${u.prenom}</div>
+          </div>`;
+      }).join('');
+  }
+
+  function openPhotoMoment(photoUrl, name, avatarUrl) {
+    // Réutilise le viewer existant pour afficher une vraie photo
+    const viewer = document.getElementById('momentViewer');
+    document.getElementById('viewerName').textContent = name;
+    const avEl = document.getElementById('viewerAvatar');
+    if (avatarUrl) {
+      avEl.style.backgroundImage = `url('${avatarUrl}')`;
+      avEl.style.backgroundSize = 'cover';
+      avEl.style.backgroundPosition = 'center';
+      avEl.textContent = '';
+    } else {
+      avEl.style.backgroundImage = 'none';
+      avEl.textContent = name[0];
+    }
+    // Remplace le contenu par l'image
+    const content = viewer.querySelector('.viewer-content');
+    content.innerHTML = `<img src="${photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:18px;" alt="moment">`;
+    // Reset progress bar
+    const fill = document.getElementById('viewerFill');
+    if (fill) { fill.style.animation = 'none'; fill.offsetHeight; fill.style.animation = ''; }
+    viewer.classList.add('show');
+    clearTimeout(viewerTimeout);
+  }
+
+  function openViewer(id) { /* legacy — gardé pour compatibilité */ }
 
   function closeViewer() {
     clearTimeout(viewerTimeout);
     document.getElementById('momentViewer').classList.remove('show');
+    // Restore content if needed
+    const content = document.querySelector('#momentViewer .viewer-content');
+    if (content && content.querySelector('img')) {
+      content.innerHTML = `
+        <div class="viewer-emoji" id="viewerEmoji">💪</div>
+        <div class="viewer-vtext" id="viewerText">MOMENT</div>
+        <div class="viewer-vsub" id="viewerSub"></div>
+        <div class="viewer-vbadge" id="viewerBadge"></div>`;
+    }
   }
 </script>
 

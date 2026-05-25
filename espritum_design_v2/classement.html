@@ -262,6 +262,180 @@
 
   /* ── STREAK ICON ── */
   .si { height: 0.8em; width: auto; vertical-align: -0.15em; display: inline-block; margin-right: 5px; }
+
+  /* ── POSTS GRID (3 permanents) ── */
+  .ps-posts-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+    padding: 0 20px 24px;
+  }
+  .ps-post-slot {
+    aspect-ratio: 1; border-radius: 10px; overflow: hidden;
+    background: #1a1a1a; border: 1px solid #222;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative;
+  }
+  .ps-post-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ps-post-slot.empty { border: 1px dashed #2a2a2a; cursor: default; }
+  .ps-post-slot.empty::after {
+    content: ''; display: block; width: 20px; height: 20px;
+    border-radius: 50%; background: #222;
+  }
+  .ps-post-slot:not(.empty):active { opacity: 0.8; }
+
+  /* ── CLICKABLE RANK ITEMS ── */
+  .rank-item { cursor: pointer; }
+  .rank-item:active { opacity: 0.8; }
+  .friend-card-new { cursor: pointer; }
+  .friend-card-new:active { opacity: 0.75; }
+  .podium-item { cursor: pointer; }
+
+  /* ── PROFILE OVERLAY ── */
+  .profile-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.75); z-index: 300;
+    display: none; align-items: flex-end;
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  }
+  .profile-overlay.open { display: flex; }
+  .profile-sheet {
+    width: 100%; background: #0d0d0d; border-radius: 24px 24px 0 0;
+    border-top: 1px solid #1e1e1e; max-height: 88vh; overflow-y: auto;
+    padding-bottom: max(32px, env(safe-area-inset-bottom));
+    animation: slideUp 0.28s cubic-bezier(.32,1,.55,1);
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .ps-handle { width: 40px; height: 4px; background: #2a2a2a; border-radius: 99px; margin: 14px auto 0; }
+  .ps-close-btn {
+    position: absolute; top: 18px; right: 18px;
+    width: 32px; height: 32px; border-radius: 50%; border: none;
+    background: #1e1e1e; color: #888; font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ps-close-btn:active { opacity: 0.7; }
+  .ps-header {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 18px 24px 20px; gap: 8px; position: relative;
+  }
+  .ps-avatar {
+    width: 80px; height: 80px; border-radius: 50%;
+    border: 3px solid var(--red); background: rgba(200,40,40,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 32px; flex-shrink: 0;
+    background-size: cover; background-position: center;
+  }
+  .ps-name { font-family: var(--font-display); font-size: 26px; letter-spacing: 1px; color: #fff; text-transform: uppercase; }
+  .ps-plan { font-size: 11px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+  .ps-stats {
+    display: flex; gap: 20px; margin-top: 4px;
+    font-family: var(--font-display); font-size: 15px; color: #bbb; letter-spacing: 1px;
+  }
+  .ps-stats span { display: flex; align-items: center; gap: 3px; }
+  .ps-follow-btn {
+    margin-top: 10px; padding: 10px 28px; border-radius: 99px;
+    border: 2px solid var(--red); background: transparent;
+    color: var(--red); font-family: var(--font-display); font-size: 16px;
+    letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+    transition: all 0.22s; display: inline-flex; align-items: center; gap: 7px;
+    min-width: 140px; justify-content: center;
+  }
+  .ps-follow-btn.following {
+    background: #0d2b18; border-color: #2ecc71; color: #2ecc71;
+  }
+  .ps-follow-btn:active { transform: scale(0.95); }
+  .ps-divider { height: 1px; background: #1a1a1a; margin: 0 0 16px; }
+  .ps-section-label {
+    font-family: var(--font-display); font-size: 13px; letter-spacing: 3px;
+    color: var(--muted); text-transform: uppercase; padding: 0 20px 10px;
+  }
+  .ps-photos-scroll {
+    display: flex; overflow-x: auto; gap: 8px; padding: 0 20px 16px;
+    scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  }
+  .ps-photos-scroll::-webkit-scrollbar { display: none; }
+  .ps-photo-thumb-wrap {
+    position: relative; flex-shrink: 0; scroll-snap-align: start;
+    width: 130px; height: 175px; border-radius: 14px; overflow: hidden;
+    background: #1a1a1a; cursor: pointer; border: 1px solid #222;
+  }
+  .ps-photo-thumb-wrap:active { opacity: 0.8; }
+  .ps-photo-thumb { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ps-photo-likes {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.75));
+    padding: 20px 8px 8px; font-size: 11px; color: #fff; display: flex; align-items: center; gap: 4px;
+  }
+  .ps-no-photos {
+    padding: 20px 20px 30px; color: var(--muted); font-size: 13px;
+    text-align: center; letter-spacing: 1px;
+  }
+
+  /* ── PHOTO VIEWER ── */
+  .photo-viewer {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: #000; z-index: 400; display: none;
+    flex-direction: column; align-items: center; justify-content: center;
+  }
+  .photo-viewer.open { display: flex; }
+  .pv-img {
+    max-width: 100%; max-height: 100vh;
+    object-fit: contain; display: block; user-select: none; pointer-events: none;
+  }
+  /* Tap zones - overlay on the image */
+  .pv-taps {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    display: flex; z-index: 1;
+  }
+  .pv-tap-left, .pv-tap-right { flex: 1; }
+  /* Topbar */
+  .pv-topbar {
+    position: absolute; top: 0; left: 0; right: 0;
+    padding: max(16px, env(safe-area-inset-top)) 16px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(rgba(0,0,0,0.6), transparent);
+    z-index: 2;
+  }
+  .pv-user-info { display: flex; align-items: center; gap: 10px; }
+  .pv-user-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.4);
+    background: #222; display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 14px; color: #fff;
+    flex-shrink: 0; background-size: cover; background-position: center;
+  }
+  .pv-user-name { font-family: var(--font-display); font-size: 16px; letter-spacing: 1px; color: #fff; }
+  .pv-close-btn {
+    width: 34px; height: 34px; border-radius: 50%; border: none;
+    background: rgba(255,255,255,0.12); color: #fff; font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  /* Dots */
+  .pv-dots {
+    position: absolute; top: max(60px, calc(env(safe-area-inset-top) + 48px)); left: 0; right: 0;
+    display: flex; justify-content: center; gap: 5px; z-index: 2;
+  }
+  .pv-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(255,255,255,0.3); transition: background 0.2s;
+  }
+  .pv-dot.active { background: #fff; }
+  /* Bottom bar */
+  .pv-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 30px 24px max(24px, env(safe-area-inset-bottom));
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    display: flex; align-items: center; gap: 16px; z-index: 2;
+  }
+  .pv-like-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 99px; padding: 10px 18px; color: #fff; cursor: pointer;
+    font-size: 14px; font-family: var(--font-body); transition: all 0.15s;
+  }
+  .pv-like-btn.liked { background: rgba(200,40,40,0.25); border-color: var(--red); color: var(--red); }
+  .pv-like-btn svg { width: 20px; height: 20px; transition: all 0.15s; }
+  .pv-like-btn.liked svg { fill: var(--red); stroke: var(--red); }
+  .pv-like-btn:active { transform: scale(0.94); }
+  .pv-like-count { font-family: var(--font-display); font-size: 16px; letter-spacing: 1px; }
 </style>
 <script src="site-config.js"></script>
 </head>
@@ -340,14 +514,21 @@
 
     <!-- ═══ PANEL WEEKLY ═══ -->
     <div class="rank-panel" id="rank-panel-weekly">
+      <div class="my-position-card">
+        <div class="my-pos-rank-num" id="weekly-my-rank">#—</div>
+        <div class="my-pos-avatar" id="weekly-my-avatar">?</div>
+        <div class="my-pos-info">
+          <div class="my-pos-name" id="weekly-my-name">—</div>
+          <div class="my-pos-detail" id="weekly-my-detail">— séances cette semaine</div>
+        </div>
+        <div class="my-pos-streak-num" id="weekly-my-streak"><img class="si" src="icons/streak-icon.png"> 0</div>
+      </div>
       <div class="card">
         <div class="card-header">
-          <div class="card-title">⚡ Cette Semaine</div>
-          <span style="font-size:11px;color:var(--muted);">7 derniers jours</span>
+          <div class="card-title">CETTE SEMAINE</div>
+          <span style="font-size:11px;color:var(--muted);letter-spacing:1px;font-family:var(--font-display);">7 JOURS</span>
         </div>
-        <div style="text-align:center;padding:52px 20px;color:var(--muted);font-size:13px;letter-spacing:1px;">
-          Classement hebdomadaire bientôt disponible
-        </div>
+        <div class="rank-list" id="weekly-rank-list"><!-- filled by JS --></div>
       </div>
     </div>
 
@@ -371,72 +552,7 @@
           <input type="text" placeholder="Chercher un ami..." oninput="filterFriends(this.value)">
         </div>
         <div class="friends-section-label">TES <span>AMIS</span></div>
-        <div class="friends-grid-new" id="friends-grid">
-          <div class="friend-card-new">
-            <div class="friend-avatar-wrap">
-              <div class="friend-avatar-new" style="border-color:#f4c430;color:#f4c430">J</div>
-              <div class="friend-rank-badge top">#1</div>
-            </div>
-            <div class="friend-name-new">Julie M.</div>
-            <div class="friend-streak-new"><img class="si" src="icons/streak-icon.png"> 21j</div>
-          </div>
-          <div class="friend-card-new">
-            <div class="friend-avatar-wrap">
-              <div class="friend-avatar-new" style="border-color:#aaa;color:#aaa">S</div>
-              <div class="friend-rank-badge">#2</div>
-            </div>
-            <div class="friend-name-new">Sarah D.</div>
-            <div class="friend-streak-new"><img class="si" src="icons/streak-icon.png"> 12j</div>
-          </div>
-          <div class="friend-card-new">
-            <div class="friend-avatar-wrap">
-              <div class="friend-avatar-new" style="border-color:var(--red);color:var(--red)" id="friends-grid-me">?</div>
-              <div class="friend-rank-badge" style="color:var(--red);border-color:var(--red)">#3</div>
-            </div>
-            <div class="friend-name-new" id="friends-grid-name">Toi</div>
-            <div class="friend-streak-new" id="friends-grid-streak"><img class="si" src="icons/streak-icon.png"> 0j</div>
-          </div>
-          <div class="friend-card-new">
-            <div class="friend-avatar-wrap">
-              <div class="friend-avatar-new">K</div>
-              <div class="friend-rank-badge">#4</div>
-            </div>
-            <div class="friend-name-new">Kevin R.</div>
-            <div class="friend-streak-new"><img class="si" src="icons/streak-icon.png"> 8j</div>
-          </div>
-          <div class="friend-card-new">
-            <div class="friend-avatar-wrap">
-              <div class="friend-avatar-new">M</div>
-              <div class="friend-rank-badge">#5</div>
-            </div>
-            <div class="friend-name-new">Marc T.</div>
-            <div class="friend-streak-new"><img class="si" src="icons/streak-icon.png"> 6j</div>
-          </div>
-          <div class="friend-card-new">
-            <div class="friend-avatar-wrap">
-              <div class="friend-avatar-new">L</div>
-              <div class="friend-rank-badge">#6</div>
-            </div>
-            <div class="friend-name-new">Léa B.</div>
-            <div class="friend-streak-new"><img class="si" src="icons/streak-icon.png"> 5j</div>
-          </div>
-          <div class="friend-card-new">
-            <div class="friend-avatar-wrap">
-              <div class="friend-avatar-new">T</div>
-              <div class="friend-rank-badge">#7</div>
-            </div>
-            <div class="friend-name-new">Tom V.</div>
-            <div class="friend-streak-new"><img class="si" src="icons/streak-icon.png"> 4j</div>
-          </div>
-          <div class="friend-card-new">
-            <div class="friend-avatar-wrap">
-              <div class="friend-avatar-new">A</div>
-              <div class="friend-rank-badge">#8</div>
-            </div>
-            <div class="friend-name-new">Aïsha K.</div>
-            <div class="friend-streak-new"><img class="si" src="icons/streak-icon.png"> 3j</div>
-          </div>
-        </div>
+        <div class="friends-grid-new" id="friends-grid"><!-- filled by JS --></div>
       </div>
 
     </div><!-- /rank-panel-friends -->
@@ -453,6 +569,60 @@
   <a class="mobile-nav-item" href="profil.html"><span class="mobile-nav-icon"><img src="icons/profil.svg" alt="Profil"></span></a>
 </nav>
 
+<!-- ── PROFILE OVERLAY ── -->
+<div class="profile-overlay" id="profile-overlay" onclick="handleOverlayClick(event)">
+  <div class="profile-sheet" id="profile-sheet">
+    <div class="ps-handle"></div>
+    <div class="ps-header">
+      <button class="ps-close-btn" onclick="closeProfile()">✕</button>
+      <div class="ps-avatar" id="ps-avatar"></div>
+      <div class="ps-name" id="ps-name">—</div>
+      <div class="ps-plan" id="ps-plan">—</div>
+      <div class="ps-stats" id="ps-stats"></div>
+      <button class="ps-follow-btn" id="ps-follow-btn" onclick="toggleFollow()" style="display:none">+ Suivre</button>
+    </div>
+    <!-- Posts permanents -->
+    <div class="ps-divider"></div>
+    <div class="ps-section-label">POSTS</div>
+    <div class="ps-posts-grid" id="ps-posts-grid">
+      <div class="ps-post-slot empty"></div>
+      <div class="ps-post-slot empty"></div>
+      <div class="ps-post-slot empty"></div>
+    </div>
+
+    <!-- Moments -->
+    <div class="ps-divider"></div>
+    <div class="ps-section-label">MOMENTS</div>
+    <div class="ps-photos-scroll" id="ps-photos"></div>
+    <div class="ps-no-photos" id="ps-no-photos" style="display:none">Aucune photo partagée pour l'instant.</div>
+  </div>
+</div>
+
+<!-- ── PHOTO VIEWER ── -->
+<div class="photo-viewer" id="photo-viewer">
+  <img class="pv-img" id="pv-img" src="" alt="photo">
+  <div class="pv-taps">
+    <div class="pv-tap-left"  onclick="photoPrev()"></div>
+    <div class="pv-tap-right" onclick="photoNext()"></div>
+  </div>
+  <div class="pv-topbar">
+    <div class="pv-user-info">
+      <div class="pv-user-avatar" id="pv-avatar"></div>
+      <div class="pv-user-name"   id="pv-name"></div>
+    </div>
+    <button class="pv-close-btn" onclick="closePhotoViewer()">✕</button>
+  </div>
+  <div class="pv-dots" id="pv-dots"></div>
+  <div class="pv-bottom">
+    <button class="pv-like-btn" id="pv-like-btn" onclick="toggleLike()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+      <span class="pv-like-count" id="pv-like-count">0</span>
+    </button>
+  </div>
+</div>
+
 <!-- Coach FAB -->
 <script>
   const sb = window.sb;
@@ -460,22 +630,17 @@
   const planLabel = { gratuit: 'Gratuit', guerrier: '⚔ Guerrier', champion: '🛡 Champion', elite: '👑 Élite' };
   const planColor = { gratuit: '#555', guerrier: '#c82828', champion: '#3a86ff', elite: '#f4c430' };
 
-  // Mock competitors — ranked by calcPts() result
-  const mockUsers = [
-    { id:'m1', prenom:'Julie',  nom:'M.', plan:'elite',    streak:21, seances:78, color:'#f4c430' }, // 453 pts → #1
-    { id:'m2', prenom:'Sarah',  nom:'D.', plan:'champion', streak:12, seances:55, color:'#3a86ff' }, // 311 pts → #2
-    { id:'m3', prenom:'Aïsha',  nom:'K.', plan:'champion', streak:5,  seances:48, color:'#3a86ff' }, // 255 pts → #3
-    { id:'m4', prenom:'Lucas',  nom:'P.', plan:'elite',    streak:9,  seances:40, color:'#f4c430' }, // 227 pts → #4
-    { id:'m5', prenom:'Marie',  nom:'C.', plan:'elite',    streak:6,  seances:36, color:'#f4c430' }, // 198 pts → #5
-    { id:'m6', prenom:'Théo',   nom:'R.', plan:'guerrier', streak:15, seances:30, color:'#c82828' }, // 195 pts → #6
-    { id:'m7', prenom:'Nathan', nom:'K.', plan:'guerrier', streak:10, seances:30, color:'#c82828' }, // 180 pts → #7
-    { id:'m8', prenom:'Pierre', nom:'M.', plan:'gratuit',  streak:1,  seances:3,  color:'#555'    }, // 18 pts  → #9
-  ];
+  // Pas de mock — classement 100% depuis Supabase
 
   // Points formula: séances × 5 + streak × 3
   function calcPts(u) { return (u.seances || 0) * 5 + (u.streak || 0) * 3; }
 
   let myUserId = null;
+  let allUsersRef = []; // kept for profile lookups
+  let followingSet = new Set(); // IDs que je suis
+  let currentProfileUserId = null;
+  let currentProfilePhotos = [];
+  let currentPhotoIndex = 0;
 function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
     document.getElementById('my-pos-rank').textContent = '#' + rank;
     document.getElementById('my-pos-avatar').textContent = initiale;
@@ -489,13 +654,15 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
     document.getElementById('topbar-avatar').textContent = initiale;
   }
 
-  function fillFriendsPanel(initiale, prenom, streak, plan) {
-    document.getElementById('friends-my-avatar').textContent = initiale;
-    document.getElementById('friends-my-name').textContent = prenom;
-    document.getElementById('friends-my-streak').innerHTML = '<img class="si" src="icons/streak-icon.png"> ' + streak;
-    document.getElementById('friends-grid-me').textContent = initiale;
-    document.getElementById('friends-grid-name').textContent = prenom;
-    document.getElementById('friends-grid-streak').innerHTML = '<img class="si" src="icons/streak-icon.png"> ' + streak + 'j';
+  function fillFriendsPanel(initiale, prenom, streak, plan, myGlobalRank) {
+    const avatarEl = document.getElementById('friends-my-avatar');
+    if (avatarEl) avatarEl.textContent = initiale;
+    const nameEl = document.getElementById('friends-my-name');
+    if (nameEl) nameEl.textContent = prenom;
+    const streakEl = document.getElementById('friends-my-streak');
+    if (streakEl) streakEl.innerHTML = '<img class="si" src="icons/streak-icon.png"> ' + streak;
+    const rankEl = document.querySelector('#rank-panel-friends .my-pos-rank-num');
+    if (rankEl) rankEl.textContent = '#' + (myGlobalRank || '—');
   }
 
   async function init() {
@@ -513,57 +680,110 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
 
       fillTopbar(initiale, streak);
 
-      const myEntry = { id:'me', prenom, nom:'', plan, streak, seances, color:'#c82828', isMe: true };
-      const allUsers = [...mockUsers, myEntry].sort((a, b) => calcPts(b) - calcPts(a));
-      const myRank = allUsers.findIndex(u => u.isMe) + 1;
+      const myEntry = { id:'me', prenom, nom:'', plan, streak, seances, color:'#c82828', isMe: true, weeklySeances: 4 };
+      const previewUsers = [myEntry];
+      const myRank = 1;
 
       fillMyPosition(myRank, initiale, prenom, seances, streak, plan);
-      fillFriendsPanel(initiale, prenom, streak, plan);
-      renderPodium(allUsers.slice(0, 3));
-      renderRankList(allUsers);
+      fillFriendsPanel(initiale, prenom, streak, plan, myRank);
+      renderPodium(previewUsers.slice(0, 3));
+      renderRankList(previewUsers);
+      renderWeeklyList(previewUsers);
+      renderFriendsGrid(previewUsers);
       initFreemium(plan);
       return;
     }
     // ────────────────────────────────────────────────────────────
 
+    // ── Auth (bloquant — pas de classement sans session) ──
     try {
       const { data: { session } } = await sb.auth.getSession();
       if (!session) { window.location.href = 'inscription.html'; return; }
-
       myUserId = session.user.id;
-      const { data: profile } = await sb.from('users').select('*').eq('id', myUserId).single();
+    } catch(e) { console.error('Auth error', e); return; }
 
-      const prenom = profile?.prenom || 'Guerrier';
-      const initiale = prenom[0].toUpperCase();
-      const plan = profile?.plan || 'gratuit';
-      const streak = profile?.streak || 0;
-
-      document.getElementById('sidebar-avatar').textContent = initiale;
-      document.getElementById('sidebar-name').textContent = prenom;
-      document.getElementById('sidebar-plan').textContent = planLabel[plan];
-
-      fillTopbar(initiale, streak);
-      initFreemium(plan);
-
-      const { data: workouts } = await sb.from('workouts').select('id').eq('user_id', myUserId);
-      const seances = workouts?.length || 0;
-
-      const myEntry = {
-        id: myUserId, prenom, nom: profile?.nom || '',
-        plan, streak, seances, color: '#c82828', isMe: true
-      };
-      const allUsers = [...mockUsers, myEntry].sort((a, b) => calcPts(b) - calcPts(a));
-      const myRank = allUsers.findIndex(u => u.isMe) + 1;
-
-      fillMyPosition(myRank, initiale, prenom, seances, streak, plan);
-      fillFriendsPanel(initiale, prenom, streak, plan);
-      renderPodium(allUsers.slice(0, 3));
-      renderRankList(allUsers);
-
-    } catch(err) {
-      console.error('Init error:', err);
-    } finally {
+    // ── 1. Users — essai avec colonnes posts, fallback sans ──
+    let usersRaw = null;
+    try {
+      const r = await sb.from('users')
+        .select('id, prenom, nom, plan, streak, avatar_url, post1_url, post2_url, post3_url')
+        .order('streak', { ascending: false }).limit(100);
+      if (r.error) throw r.error;
+      usersRaw = r.data;
+    } catch(e) {
+      try {
+        const r = await sb.from('users')
+          .select('id, prenom, nom, plan, streak, avatar_url')
+          .order('streak', { ascending: false }).limit(100);
+        usersRaw = r.data;
+      } catch(e2) { console.error('Users error', e2); }
     }
+
+    // ── 2. Séances ─────────────────────────────────────────
+    let seancesMap = {};
+    try {
+      const { data: wkRows } = await sb.from('workouts').select('user_id').eq('termine', true);
+      (wkRows || []).forEach(w => { seancesMap[w.user_id] = (seancesMap[w.user_id] || 0) + 1; });
+    } catch(e) { /* workouts non dispo */ }
+
+    // ── 3. Follows (table peut ne pas exister encore) ─────
+    try {
+      const { data: followData } = await sb.from('friendships').select('following_id').eq('follower_id', myUserId);
+      (followData || []).forEach(f => followingSet.add(f.following_id));
+    } catch(e) { /* friendships pas encore créé */ }
+
+    // ── 4. Classement ──────────────────────────────────────
+    const allUsers = (usersRaw || []).map(u => ({
+      ...u,
+      nom: u.nom ? u.nom.charAt(0).toUpperCase() + '.' : '',
+      seances: seancesMap[u.id] || 0,
+      color: planColor[u.plan || 'gratuit'],
+      isMe: u.id === myUserId
+    })).sort((a, b) => calcPts(b) - calcPts(a));
+
+    const me = allUsers.find(u => u.isMe) || {};
+    const prenom = me.prenom || 'Guerrier';
+    const initiale = prenom[0].toUpperCase();
+    const plan = me.plan || 'gratuit';
+    const streak = me.streak || 0;
+    const seances = me.seances || 0;
+    const myRank = allUsers.findIndex(u => u.isMe) + 1;
+
+    document.getElementById('sidebar-avatar').textContent = initiale;
+    document.getElementById('sidebar-name').textContent = prenom;
+    document.getElementById('sidebar-plan').textContent = planLabel[plan];
+    fillTopbar(initiale, streak);
+    initFreemium(plan);
+    fillMyPosition(myRank, initiale, prenom, seances, streak, plan);
+    renderPodium(allUsers.slice(0, 3));
+    renderRankList(allUsers);
+    allUsersRef = allUsers;
+
+    // Friends tab
+    const followedUsers = allUsers.filter(u => followingSet.has(u.id));
+    renderFriendsGrid(followedUsers);
+    const friendsWithMe = [me, ...followedUsers].sort((a, b) => calcPts(b) - calcPts(a));
+    fillFriendsPanel(initiale, prenom, streak, plan, friendsWithMe.findIndex(u => u.isMe) + 1);
+
+    // ── 5. Weekly (optionnel, ne bloque pas le rendu) ─────
+    try {
+      const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
+      const weekAgoStr = weekAgo.toISOString().slice(0, 10);
+      const { data: wkWeekRows } = await sb.from('workouts').select('user_id').eq('termine', true).gte('date', weekAgoStr);
+      const weeklyMap = {};
+      (wkWeekRows || []).forEach(w => { weeklyMap[w.user_id] = (weeklyMap[w.user_id] || 0) + 1; });
+      const weeklyUsers = allUsers.map(u => ({ ...u, weeklySeances: weeklyMap[u.id] || 0 }))
+        .sort((a, b) => (b.weeklySeances - a.weeklySeances) || (b.streak - a.streak));
+      const meW = weeklyUsers.find(u => u.isMe) || {};
+      const myWRank = weeklyUsers.findIndex(u => u.isMe) + 1;
+      const wAv = document.getElementById('weekly-my-avatar');
+      if (wAv) { if (meW.avatar_url) { wAv.style.cssText=`background-image:url('${meW.avatar_url}');background-size:cover;background-position:center;`; wAv.textContent=''; } else wAv.textContent=initiale; }
+      const _s = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+      _s('weekly-my-rank','#'+(myWRank||'—')); _s('weekly-my-name',prenom);
+      _s('weekly-my-detail',(meW.weeklySeances||0)+' séances cette semaine');
+      const wSt=document.getElementById('weekly-my-streak'); if(wSt) wSt.innerHTML='<img class="si" src="icons/streak-icon.png"> '+streak;
+      renderWeeklyList(weeklyUsers);
+    } catch(e) { console.warn('Weekly error:', e); }
   }
 
   function renderPodium(top3) {
@@ -574,16 +794,18 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
       { user: top3[2], cls: 'bronze', rank: 3 },
     ].filter(s => s.user);
 
-    document.getElementById('podium').innerHTML = slots.map(({ user: u, cls, rank }) => `
+    document.getElementById('podium').innerHTML = slots.map(({ user: u, cls, rank }) => {
+      const avatarStyle = u.avatar_url
+        ? `style="background-image:url('${u.avatar_url}');background-size:cover;background-position:center;color:transparent;font-size:0;"`
+        : `style="color:${u.color || '#888'};"`;
+      return `
       <div class="podium-item ${cls}">
-        <div class="podium-avatar">
-          ${u.prenom[0]}
-        </div>
+        <div class="podium-avatar" ${avatarStyle}>${u.avatar_url ? '' : u.prenom[0]}</div>
         <div class="podium-name">${u.prenom} ${u.nom || ''}</div>
         <div class="podium-score"><img class="si" src="icons/streak-icon.png" alt="streak"> ${u.streak}j streak</div>
         <div class="podium-block"><div class="podium-rank">${rank}</div></div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
   }
 
   function renderRankList(users) {
@@ -593,17 +815,21 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
       'rgba(244,196,48,0.5)', 'rgba(170,170,170,0.4)', 'rgba(205,127,50,0.4)'
     ];
 
-    list.innerHTML = users.slice(0, 10).map((u, i) => {
+    list.innerHTML = users.slice(0, 20).map((u, i) => {
       const pts = calcPts(u);
       const rc = i < 3 ? rankCls[i] : 'normal';
-      const ab = i < 3 ? `border-color:${avatarBorders[i]};background:${u.color}18;color:${u.color};`
-                       : `border-color:#2a2a2a;background:#1f1f1f;color:#888;`;
+      const ab = i < 3
+        ? `border-color:${avatarBorders[i]};background:${u.color}18;`
+        : `border-color:#2a2a2a;background:#1f1f1f;`;
+      const avatarContent = u.avatar_url
+        ? `style="${ab}background-image:url('${u.avatar_url}');background-size:cover;background-position:center;" `
+        : `style="${ab}color:${i < 3 ? u.color : '#888'};"`;
       return `
-        <div class="rank-item ${u.isMe ? 'me' : ''}">
+        <div class="rank-item ${u.isMe ? 'me' : ''}" onclick="openProfile('${u.id}')">
           <div class="rank-num ${rc}">${i + 1}</div>
-          <div class="rank-avatar" style="${ab}">${u.prenom[0]}</div>
+          <div class="rank-avatar" ${avatarContent}>${u.avatar_url ? '' : u.prenom[0]}</div>
           <div class="rank-info">
-            <div class="rank-name">${u.prenom} ${u.nom || ''}</div>
+            <div class="rank-name">${u.prenom} ${u.nom || ''}${u.isMe ? ' <span style="color:var(--red);font-size:10px;letter-spacing:1px;">TOI</span>' : ''}</div>
             <div class="rank-detail">${u.seances} séances · ${planLabel[u.plan] || 'Gratuit'}</div>
           </div>
           <div class="rank-score">
@@ -613,6 +839,332 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
         </div>
       `;
     }).join('');
+  }
+
+  function renderWeeklyList(users) {
+    const list = document.getElementById('weekly-rank-list');
+    if (!list) return;
+    const rankCls = ['gold', 'silver', 'bronze'];
+    const avatarBorders = [
+      'rgba(244,196,48,0.5)', 'rgba(170,170,170,0.4)', 'rgba(205,127,50,0.4)'
+    ];
+
+    list.innerHTML = users.slice(0, 20).map((u, i) => {
+      const rc = i < 3 ? rankCls[i] : 'normal';
+      const ab = i < 3
+        ? `border-color:${avatarBorders[i]};background:${u.color}18;`
+        : `border-color:#2a2a2a;background:#1f1f1f;`;
+      const avatarContent = u.avatar_url
+        ? `style="${ab}background-image:url('${u.avatar_url}');background-size:cover;background-position:center;"`
+        : `style="${ab}color:${i < 3 ? u.color : '#888'};"`;
+      return `
+        <div class="rank-item ${u.isMe ? 'me' : ''}" onclick="openProfile('${u.id}')">
+          <div class="rank-num ${rc}">${i + 1}</div>
+          <div class="rank-avatar" ${avatarContent}>${u.avatar_url ? '' : u.prenom[0]}</div>
+          <div class="rank-info">
+            <div class="rank-name">${u.prenom} ${u.nom || ''}${u.isMe ? ' <span style="color:var(--red);font-size:10px;letter-spacing:1px;">TOI</span>' : ''}</div>
+            <div class="rank-detail">${u.weeklySeances || 0} séances · <img class="si" src="icons/streak-icon.png" alt="streak"> ${u.streak}j</div>
+          </div>
+          <div class="rank-score">
+            <div class="rank-score-val">${u.weeklySeances || 0}</div>
+            <div class="rank-score-label">SÉANCES</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderFriendsGrid(allUsers) {
+    const grid = document.getElementById('friends-grid');
+    if (!grid) return;
+
+    grid.innerHTML = allUsers.map((u, i) => {
+      const rank = i + 1;
+      const isTop = rank <= 3;
+      const avatarStyle = u.avatar_url
+        ? `background-image:url('${u.avatar_url}');background-size:cover;background-position:center;color:transparent;font-size:0;`
+        : `color:${u.color || '#888'};`;
+      const rankClass = isTop ? 'top' : '';
+      const meLabel = u.isMe ? ' ★' : '';
+      return `
+        <div class="friend-card-new" onclick="openProfile('${u.id}')">
+          <div class="friend-avatar-wrap">
+            <div class="friend-avatar-new" style="${avatarStyle}">${u.avatar_url ? '' : u.prenom[0]}</div>
+            <div class="friend-rank-badge ${rankClass}">#${rank}</div>
+          </div>
+          <div class="friend-name-new">${u.prenom}${meLabel}</div>
+          <div class="friend-streak-new"><img class="si" src="icons/streak-icon.png" alt="streak"> ${u.streak}j</div>
+        </div>
+      `;
+    }).join('');
+
+    if (!users.length) {
+      grid.innerHTML = '<div style="grid-column:1/-1;padding:24px;text-align:center;color:var(--muted);font-size:13px;letter-spacing:1px;">Suis des guerriers pour les voir ici.</div>';
+    }
+  }
+
+  // ══════════════════════════════════════════════
+  //  SOCIAL — Profile sheet + Photo viewer + Likes
+  // ══════════════════════════════════════════════
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('profile-overlay')) closeProfile();
+  }
+
+  function closeProfile() {
+    document.getElementById('profile-overlay').classList.remove('open');
+  }
+
+  async function openProfile(userId) {
+    currentProfileUserId = userId;
+    const user = allUsersRef.find(u => u.id === userId);
+    if (!user) return;
+
+    // Fill avatar
+    const psAv = document.getElementById('ps-avatar');
+    psAv.textContent = '';
+    psAv.style.backgroundImage = user.avatar_url ? `url('${user.avatar_url}')` : 'none';
+    psAv.style.color = user.avatar_url ? 'transparent' : (user.color || '#c82828');
+    if (!user.avatar_url) psAv.textContent = user.prenom[0];
+
+    document.getElementById('ps-name').textContent = `${user.prenom} ${user.nom || ''}`.trim();
+    document.getElementById('ps-plan').textContent = planLabel[user.plan] || 'Gratuit';
+    document.getElementById('ps-stats').innerHTML =
+      `<span><img class="si" src="icons/streak-icon.png"> ${user.streak}j</span>
+       <span>· ${user.seances} séances</span>
+       <span>· ${calcPts(user)} pts</span>`;
+
+    // Follow button
+    const followBtn = document.getElementById('ps-follow-btn');
+    if (userId === myUserId) {
+      followBtn.style.display = 'none';
+    } else {
+      followBtn.style.display = 'inline-flex';
+      _refreshFollowBtn(followBtn, followingSet.has(userId));
+    }
+
+    // Posts permanents (3 slots)
+    _renderPosts(user);
+
+    // Reset moments
+    document.getElementById('ps-photos').innerHTML =
+      '<div style="padding:0 20px;color:var(--muted);font-size:12px;">Chargement...</div>';
+    document.getElementById('ps-no-photos').style.display = 'none';
+
+    document.getElementById('profile-overlay').classList.add('open');
+    await _loadPhotos(userId);
+  }
+
+  function _renderPosts(user) {
+    const grid = document.getElementById('ps-posts-grid');
+    if (!grid) return;
+    const posts = [user.post1_url, user.post2_url, user.post3_url];
+    // Store posts for fullscreen viewer (reuse currentProfilePhotos slot)
+    const postObjs = posts.filter(Boolean).map(url => ({ photo_url: url, likesCount: 0, userLiked: false, isPost: true }));
+
+    grid.innerHTML = posts.map((url, i) => {
+      if (url) {
+        return `<div class="ps-post-slot" onclick="openPostViewer(${i}, ${JSON.stringify(posts)})">
+          <img src="${url}" alt="post ${i+1}" loading="lazy">
+        </div>`;
+      }
+      return `<div class="ps-post-slot empty"></div>`;
+    }).join('');
+  }
+
+  function openPostViewer(index, posts) {
+    // Charge les 3 posts dans le viewer plein écran
+    const validPosts = posts.map(url => url ? { photo_url: url, likesCount: 0, userLiked: false } : null).filter(Boolean);
+    const clickedUrl = posts[index];
+    const viewerIndex = validPosts.findIndex(p => p.photo_url === clickedUrl);
+    currentProfilePhotos = validPosts;
+    currentPhotoIndex = Math.max(0, viewerIndex);
+    _renderViewer();
+    document.getElementById('photo-viewer').classList.add('open');
+  }
+
+  async function _loadPhotos(userId) {
+    const container = document.getElementById('ps-photos');
+    const empty     = document.getElementById('ps-no-photos');
+    try {
+      const { data: photos } = await sb
+        .from('instant_photos').select('id, photo_url, created_at')
+        .eq('user_id', userId).order('created_at', { ascending: false });
+
+      if (!photos || !photos.length) {
+        container.innerHTML = '';
+        empty.style.display = 'block';
+        currentProfilePhotos = [];
+        return;
+      }
+
+      // Likes
+      const ids = photos.map(p => p.id);
+      const { data: likesData } = await sb
+        .from('photo_likes').select('photo_id, user_id').in('photo_id', ids);
+      const counts = {}; const userLiked = new Set();
+      (likesData || []).forEach(l => {
+        counts[l.photo_id] = (counts[l.photo_id] || 0) + 1;
+        if (l.user_id === myUserId) userLiked.add(l.photo_id);
+      });
+
+      currentProfilePhotos = photos.map(p => ({
+        ...p, likesCount: counts[p.id] || 0, userLiked: userLiked.has(p.id)
+      }));
+
+      container.innerHTML = currentProfilePhotos.map((p, i) => `
+        <div class="ps-photo-thumb-wrap" onclick="openPhotoViewer(${i})">
+          <img class="ps-photo-thumb" src="${p.photo_url}" alt="photo" loading="lazy">
+          <div class="ps-photo-likes">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="${p.userLiked ? '#c82828' : '#fff'}" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            ${p.likesCount}
+          </div>
+        </div>`).join('');
+    } catch(e) {
+      container.innerHTML = '<div style="padding:0 20px;color:var(--muted);font-size:12px;">Erreur.</div>';
+    }
+  }
+
+  function openPhotoViewer(index) {
+    currentPhotoIndex = index;
+    _renderViewer();
+    document.getElementById('photo-viewer').classList.add('open');
+  }
+
+  function closePhotoViewer() {
+    document.getElementById('photo-viewer').classList.remove('open');
+  }
+
+  function _renderViewer() {
+    const photo = currentProfilePhotos[currentPhotoIndex];
+    if (!photo) return;
+    document.getElementById('pv-img').src = photo.photo_url;
+
+    const likeBtn = document.getElementById('pv-like-btn');
+    likeBtn.classList.toggle('liked', photo.userLiked);
+    document.getElementById('pv-like-count').textContent = photo.likesCount;
+
+    // Dots
+    document.getElementById('pv-dots').innerHTML = currentProfilePhotos
+      .map((_, i) => `<div class="pv-dot${i === currentPhotoIndex ? ' active' : ''}"></div>`).join('');
+
+    // User info in topbar
+    const user = allUsersRef.find(u => u.id === currentProfileUserId);
+    if (user) {
+      const av = document.getElementById('pv-avatar');
+      av.textContent = '';
+      av.style.backgroundImage = user.avatar_url ? `url('${user.avatar_url}')` : 'none';
+      if (!user.avatar_url) av.textContent = user.prenom[0];
+      document.getElementById('pv-name').textContent = user.prenom;
+    }
+  }
+
+  function photoPrev() {
+    if (currentPhotoIndex > 0) { currentPhotoIndex--; _renderViewer(); }
+  }
+
+  function photoNext() {
+    if (currentPhotoIndex < currentProfilePhotos.length - 1) {
+      currentPhotoIndex++; _renderViewer();
+    } else {
+      closePhotoViewer();
+    }
+  }
+
+  async function toggleLike() {
+    const photo = currentProfilePhotos[currentPhotoIndex];
+    if (!photo || !myUserId) return;
+    const wasLiked = photo.userLiked;
+    // Optimistic
+    photo.userLiked = !wasLiked;
+    photo.likesCount += wasLiked ? -1 : 1;
+    _renderViewer();
+    // Update thumbnail
+    const thumbLike = document.querySelectorAll('.ps-photo-thumb-wrap')[currentPhotoIndex]?.querySelector('.ps-photo-likes');
+    if (thumbLike) thumbLike.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="${photo.userLiked ? '#c82828' : '#fff'}" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> ${photo.likesCount}`;
+    try {
+      if (wasLiked) {
+        await sb.from('photo_likes').delete().eq('photo_id', photo.id).eq('user_id', myUserId);
+      } else {
+        await sb.from('photo_likes').insert({ photo_id: photo.id, user_id: myUserId });
+      }
+    } catch(e) {
+      // Revert
+      photo.userLiked = wasLiked; photo.likesCount += wasLiked ? 1 : -1;
+      _renderViewer();
+    }
+  }
+
+  let _followInProgress = false; // anti double-clic
+
+  async function toggleFollow() {
+    if (!currentProfileUserId || !myUserId || currentProfileUserId === myUserId) return;
+    if (_followInProgress) return;
+    _followInProgress = true;
+
+    const btn = document.getElementById('ps-follow-btn');
+    const targetId = currentProfileUserId; // snapshot — ne change pas si l'user ouvre un autre profil
+    const wasFollowing = followingSet.has(targetId);
+
+    // ── Optimiste ─────────────────────────────────────────
+    wasFollowing ? followingSet.delete(targetId) : followingSet.add(targetId);
+    _refreshFollowBtn(btn, !wasFollowing);
+
+    try {
+      if (wasFollowing) {
+        const { error } = await sb.from('friendships').delete()
+          .eq('follower_id', myUserId).eq('following_id', targetId);
+        if (error) throw error;
+      } else {
+        // upsert → pas d'erreur si déjà suivi (contrainte UNIQUE)
+        const { error } = await sb.from('friendships')
+          .upsert({ follower_id: myUserId, following_id: targetId },
+                   { onConflict: 'follower_id,following_id', ignoreDuplicates: true });
+        if (error) throw error;
+      }
+      // Rafraîchir l'onglet Friends
+      const followedUsers = allUsersRef.filter(u => followingSet.has(u.id));
+      renderFriendsGrid(followedUsers);
+    } catch(e) {
+      // Revert + message d'erreur visible
+      wasFollowing ? followingSet.add(targetId) : followingSet.delete(targetId);
+      _refreshFollowBtn(btn, wasFollowing);
+      const msg = e?.message || '';
+      if (msg.includes('does not exist') || msg.includes('relation')) {
+        _showToast('Lance d\'abord le SQL pour créer la table friendships !', 'error');
+      } else {
+        _showToast('Erreur : ' + msg, 'error');
+      }
+      console.error('Follow error:', e);
+    } finally {
+      _followInProgress = false;
+    }
+  }
+
+  function _refreshFollowBtn(btn, isFollowing) {
+    if (!btn) return;
+    btn.innerHTML = isFollowing
+      ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Suivi'
+      : '+ Suivre';
+    btn.classList.toggle('following', isFollowing);
+  }
+
+  // Toast léger pour classement (sans dépendance externe)
+  function _showToast(msg, type) {
+    let t = document.getElementById('_cl-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = '_cl-toast';
+      t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);' +
+        'background:#1a1a1a;border:1px solid #333;color:#fff;padding:12px 20px;border-radius:99px;' +
+        'font-size:13px;z-index:999;white-space:nowrap;transition:opacity 0.3s;pointer-events:none;';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.borderColor = type === 'error' ? '#c82828' : '#2ecc71';
+    t.style.opacity = '1';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.style.opacity = '0'; }, 3000);
   }
 
   function switchMainTab(tab) {

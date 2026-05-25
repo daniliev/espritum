@@ -486,7 +486,7 @@
     <div class="topbar-title">NO DAYS <span>OFF.</span></div>
     <div class="topbar-right">
       <div class="topbar-streak-pill" id="topbar-streak"><img class="si" src="icons/streak-icon.png"> <span class="si-num">0</span></div>
-      <div class="topbar-avatar-pill" id="topbar-avatar">?</div>
+      <div class="topbar-avatar-pill" id="topbar-avatar" onclick="window.location.href='profil.html'" style="cursor:pointer;">?</div>
     </div>
   </div>
 
@@ -587,34 +587,25 @@
       <button class="scan-btn" onclick="openScanSheet()">Scan My Body</button>
     </div>
 
-    <!-- CALORIES CONSOMMÉES -->
+    <!-- CALORIES CONSOMMÉES vs BRÛLÉES -->
     <div class="progression-card">
       <div class="progression-header">
         <div>
-          <div class="progression-title">Calories consommées</div>
+          <div class="progression-title">Calories</div>
           <div class="progression-sub">7 derniers jours</div>
         </div>
-        <div style="text-align:right">
-          <div class="progression-avg" id="prog-avg-consumed">—</div>
-          <div class="progression-avg-label">moy. kcal/jour</div>
+        <div style="display:flex;gap:18px;align-items:flex-start">
+          <div style="text-align:right">
+            <div class="progression-avg" id="prog-avg-consumed" style="color:#c82828">—</div>
+            <div class="progression-avg-label"><span style="color:#c82828">●</span> consommées</div>
+          </div>
+          <div style="text-align:right">
+            <div class="progression-avg" id="prog-avg-burned" style="color:#fff">—</div>
+            <div class="progression-avg-label"><span style="color:#fff">●</span> brûlées</div>
+          </div>
         </div>
       </div>
-      <div class="chart-wrap"><canvas id="chartConsumed"></canvas></div>
-    </div>
-
-    <!-- CALORIES BRÛLÉES -->
-    <div class="progression-card">
-      <div class="progression-header">
-        <div>
-          <div class="progression-title">Calories brûlées</div>
-          <div class="progression-sub">7 derniers jours</div>
-        </div>
-        <div style="text-align:right">
-          <div class="progression-avg" id="prog-avg-burned">—</div>
-          <div class="progression-avg-label">moy. kcal/séance</div>
-        </div>
-      </div>
-      <div class="chart-wrap"><canvas id="chartBurned"></canvas></div>
+      <div class="chart-wrap" style="height:180px"><canvas id="chartCalories"></canvas></div>
     </div>
 
   </div>
@@ -647,8 +638,7 @@
   const MONTH_NAMES = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 
   let ringChartInst = null;
-  let chartConsumedInst = null;
-  let chartBurnedInst = null;
+  let chartCaloriesInst = null;
 
   /* ── CALORIES PAR EXERCICE — copie exacte de entrainement.html ── */
   let userWeightKg = 70; // mis à jour depuis profil dans init()
@@ -760,9 +750,8 @@
       // Body photos + goal
       loadBodyPhotos();
 
-      // Charts
-      await loadWeekProgressConsumed(userId, profile?.calories_objectif || 2400);
-      await loadWeekProgressBurned(userId);
+      // Charts fusionnés
+      await loadWeekProgressCalories(userId, profile?.calories_objectif || 2400);
 
     } catch (err) {
       console.error('Dashboard error:', err);
@@ -798,7 +787,7 @@
       data: {
         datasets: [{
           data: [pct, 100 - pct],
-          backgroundColor: ['#c82828', '#1a1a1a'],
+          backgroundColor: ['#ffffff', '#1a1a1a'],
           borderWidth: 0,
           borderRadius: pct > 0 && pct < 100 ? 4 : 0,
         }]
@@ -842,7 +831,7 @@
     }
   }
 
-  async function loadWeekProgressConsumed(userId, calObj) {
+  async function loadWeekProgressCalories(userId, calObj) {
     const now = new Date();
     const days = [];
     for (let i = 6; i >= 0; i--) {
@@ -851,146 +840,93 @@
       days.push(d);
     }
     const from = localDate(days[0]);
-    const to = localDate(days[6]);
+    const to   = localDate(days[6]);
+    const labels = days.map(d => DAY_SHORT[d.getDay()]);
 
+    // --- Calories consommées ---
     const { data: meals } = await sb.from('meals')
       .select('date, calories')
       .eq('user_id', userId)
-      .gte('date', from)
-      .lte('date', to);
+      .gte('date', from).lte('date', to);
 
     const byDay = {};
-    (meals || []).forEach(m => {
-      byDay[m.date] = (byDay[m.date] || 0) + (m.calories || 0);
-    });
+    (meals || []).forEach(m => { byDay[m.date] = (byDay[m.date] || 0) + (m.calories || 0); });
+    const consumedData = days.map(d => byDay[localDate(d)] || 0);
+    const avgC = consumedData.filter(v=>v>0).reduce((a,b)=>a+b,0) / (consumedData.filter(v=>v>0).length || 1);
+    setEl('prog-avg-consumed', consumedData.some(v=>v>0) ? Math.round(avgC).toLocaleString('fr-FR') : '—');
 
-    const labels = days.map(d => DAY_SHORT[d.getDay()]);
-    const data = days.map(d => byDay[localDate(d)] || 0);
-    const nonZero = data.filter(v => v > 0);
-    const avg = nonZero.length ? Math.round(nonZero.reduce((a,b)=>a+b,0) / nonZero.length) : 0;
-
-    setEl('prog-avg-consumed', avg > 0 ? avg.toLocaleString('fr-FR') : '—');
-    renderChartConsumed(labels, data, calObj);
-  }
-
-  function renderChartConsumed(labels, data, calObj) {
-    const canvas = document.getElementById('chartConsumed');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (chartConsumedInst) chartConsumedInst.destroy();
-
-    const grad = ctx.createLinearGradient(0, 0, 0, 160);
-    grad.addColorStop(0, 'rgba(200,40,40,0.25)');
-    grad.addColorStop(1, 'rgba(200,40,40,0)');
-
-    chartConsumedInst = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          data,
-          borderColor: '#c82828',
-          borderWidth: 2,
-          backgroundColor: grad,
-          fill: true,
-          tension: 0.4,
-          pointBackgroundColor: data.map(v => v > 0 ? '#c82828' : 'transparent'),
-          pointBorderColor: 'transparent',
-          pointRadius: data.map(v => v > 0 ? 4 : 0),
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: { grid: { color: '#151515' }, ticks: { color: '#555', font: { size: 11 } } },
-          y: {
-            grid: { color: '#151515' },
-            ticks: { color: '#555', font: { size: 11 } },
-            beginAtZero: true,
-          }
-        },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: '#111',
-            titleColor: '#888',
-            bodyColor: '#fff',
-            callbacks: { label: ctx => ctx.parsed.y + ' kcal' }
-          }
-        }
-      }
-    });
-  }
-
-  async function loadWeekProgressBurned(userId) {
-    // Copie exacte de loadWeekProgressTrain (entrainement.html)
-    const days = [], labels = [];
-    const today = new Date();
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      days.push(localDate(d));
-      labels.push(DAY_SHORT[d.getDay()] + ' ' + d.getDate());
-    }
-
+    // --- Calories brûlées ---
+    const dayStrs = days.map(d => localDate(d));
     const { data: rows } = await sb.from('workouts')
       .select('date, nom, reps')
-      .eq('user_id', userId)
-      .eq('termine', true)
-      .gte('date', days[0])
-      .lte('date', days[6]);
+      .eq('user_id', userId).eq('termine', true)
+      .gte('date', from).lte('date', to);
 
     const calsByDay = {};
-    days.forEach(d => calsByDay[d] = 0);
+    dayStrs.forEach(d => calsByDay[d] = 0);
     (rows || []).forEach(r => {
-      if (calsByDay[r.date] === undefined) return;
-      calsByDay[r.date] += calcSerieKcal(r.nom, r.reps || 8, userWeightKg);
+      if (calsByDay[r.date] !== undefined)
+        calsByDay[r.date] += calcSerieKcal(r.nom, r.reps || 8, userWeightKg);
     });
+    const burnedData = dayStrs.map(d => calsByDay[d]);
+    const avgB = burnedData.filter(v=>v>0).reduce((a,b)=>a+b,0) / (burnedData.filter(v=>v>0).length || 1);
+    setEl('prog-avg-burned', burnedData.some(v=>v>0) ? Math.round(avgB).toLocaleString('fr-FR') : '—');
 
-    const data = days.map(d => calsByDay[d]);
-    const active = data.filter(v => v > 0);
-    const avg = active.length ? Math.round(active.reduce((a,b) => a+b, 0) / active.length) : 0;
-    setEl('prog-avg-burned', avg > 0 ? avg.toLocaleString('fr-FR') : '—');
-    renderChartBurned(labels, data);
+    renderChartCalories(labels, consumedData, burnedData);
   }
 
-  function renderChartBurned(labels, data) {
-    const canvas = document.getElementById('chartBurned');
+  function renderChartCalories(labels, consumedData, burnedData) {
+    const canvas = document.getElementById('chartCalories');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    if (chartBurnedInst) chartBurnedInst.destroy();
+    if (chartCaloriesInst) chartCaloriesInst.destroy();
 
-    const grad = ctx.createLinearGradient(0, 0, 0, 160);
-    grad.addColorStop(0, 'rgba(200,40,40,0.25)');
-    grad.addColorStop(1, 'rgba(200,40,40,0)');
+    const gradRed = ctx.createLinearGradient(0, 0, 0, 180);
+    gradRed.addColorStop(0, 'rgba(200,40,40,0.22)');
+    gradRed.addColorStop(1, 'rgba(200,40,40,0)');
 
-    chartBurnedInst = new Chart(ctx, {
+    const gradWhite = ctx.createLinearGradient(0, 0, 0, 180);
+    gradWhite.addColorStop(0, 'rgba(255,255,255,0.10)');
+    gradWhite.addColorStop(1, 'rgba(255,255,255,0)');
+
+    chartCaloriesInst = new Chart(ctx, {
       type: 'line',
       data: {
         labels,
-        datasets: [{
-          data,
-          borderColor: '#c82828',
-          borderWidth: 2,
-          backgroundColor: grad,
-          fill: true,
-          tension: 0.4,
-          pointBackgroundColor: data.map(v => v > 0 ? '#c82828' : 'transparent'),
-          pointBorderColor: 'transparent',
-          pointRadius: data.map(v => v > 0 ? 4 : 0),
-        }]
+        datasets: [
+          {
+            label: 'Consommées',
+            data: consumedData,
+            borderColor: '#c82828',
+            borderWidth: 2,
+            backgroundColor: gradRed,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: consumedData.map(v => v > 0 ? '#c82828' : 'transparent'),
+            pointBorderColor: 'transparent',
+            pointRadius: consumedData.map(v => v > 0 ? 4 : 0),
+          },
+          {
+            label: 'Brûlées',
+            data: burnedData,
+            borderColor: '#ffffff',
+            borderWidth: 2,
+            backgroundColor: gradWhite,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: burnedData.map(v => v > 0 ? '#ffffff' : 'transparent'),
+            pointBorderColor: 'transparent',
+            pointRadius: burnedData.map(v => v > 0 ? 4 : 0),
+          }
+        ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
         scales: {
           x: { grid: { color: '#151515' }, ticks: { color: '#555', font: { size: 11 } } },
-          y: {
-            grid: { color: '#151515' },
-            ticks: { color: '#555', font: { size: 11 } },
-            beginAtZero: true,
-          }
+          y: { grid: { color: '#151515' }, ticks: { color: '#555', font: { size: 11 } }, beginAtZero: true }
         },
         plugins: {
           legend: { display: false },
@@ -998,7 +934,9 @@
             backgroundColor: '#111',
             titleColor: '#888',
             bodyColor: '#fff',
-            callbacks: { label: ctx => ctx.parsed.y + ' kcal' }
+            callbacks: {
+              label: ctx => (ctx.dataset.label === 'Consommées' ? '🔴 ' : '⚪ ') + ctx.parsed.y.toLocaleString('fr-FR') + ' kcal'
+            }
           }
         }
       }
