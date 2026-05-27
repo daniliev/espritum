@@ -6,28 +6,26 @@
   'use strict';
 
   var _preset = {
-    groq:   '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',
-    gemini: 'AIzaSyAwHfJdnKY3GVPbHRAqlyZACEsPdZsy_dk'
+    groq:   '',
+    gemini: ''
   };
-
-  // Auto-init : pose les clés par défaut si pas encore configurées
-  if (!localStorage.getItem('espritum_api_groq')) {
-    localStorage.setItem('espritum_api_groq', _preset.groq);
-  }
-  // Toujours forcer la clé Gemini (écrase l'ancienne si expirée)
-  localStorage.setItem('espritum_api_gemini', _preset.gemini);
 
   window.EspritumAPI = {
 
     // ── Gestion des clés ──────────────────────────────────────────
     getKey: function(service) {
-      return localStorage.getItem('espritum_api_' + service) || _preset[service] || '';
+      // null = jamais configuré → fallback preset
+      // '' = explicitement effacé (invalide) → retourne '' pour déclencher NO_KEY
+      var stored = localStorage.getItem('espritum_api_' + service);
+      if (stored === null) return _preset[service] || '';
+      return stored;
     },
     setKey: function(service, val) {
       localStorage.setItem('espritum_api_' + service, val.trim());
     },
     clearKey: function(service) {
-      localStorage.removeItem('espritum_api_' + service);
+      // Met à '' au lieu de supprimer → évite de réappliquer le preset invalide
+      localStorage.setItem('espritum_api_' + service, '');
     },
 
     // ── Groq API (LLM gratuit) ────────────────────────────────────

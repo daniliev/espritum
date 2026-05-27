@@ -48,7 +48,9 @@
   .nav-item:hover { background: rgba(255,255,255,0.04); }
   .nav-item.active { background: rgba(255,255,255,0.06); }
   .nav-icon { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; flex-shrink: 0; }
-  .nav-icon img { width: 26px; height: 26px; object-fit: contain; display: block; }
+  .nav-icon img { width: 26px; height: 26px; object-fit: contain; display: block; opacity: 0.45; transition: opacity 0.2s; }
+  .nav-item:hover .nav-icon img { opacity: 0.85; }
+  .nav-item.active .nav-icon img { opacity: 1; }
   .sidebar-bottom { padding: 12px 0 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
   .user-card { display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; cursor: pointer; transition: opacity 0.2s; }
   .user-card > div:not(.user-avatar) { display: none; }
@@ -57,7 +59,7 @@
   .user-name, .user-plan { display: none; }
   .nav-item.locked { opacity: 0.4; cursor: not-allowed; }
   .nav-item.locked:hover { background: transparent; }
-  .nav-lock { font-size: 11px; margin-left: auto; opacity: 0.6; }
+  .nav-lock { display: none; }
 
   /* ── MAIN ── */
   .main { margin-left: var(--sidebar); flex: 1; min-height: 100vh; display: flex; flex-direction: column; overflow-y: auto; }
@@ -138,8 +140,8 @@
   .podium-item.bronze .podium-avatar { border-color: var(--bronze); background: rgba(205,127,50,0.10);  color: var(--bronze); }
   .podium-name  { font-family: var(--font-display); font-size: 15px; letter-spacing: 1px; text-transform: uppercase; color: #fff; text-align: center; }
   .podium-score { font-size: 11px; color: var(--muted); text-align: center; }
-  .podium-block { display: flex; align-items: flex-end; justify-content: center; border-radius: 8px 8px 0 0; width: 90px; }
-  .podium-rank  { font-family: var(--font-display); font-size: 36px; padding: 14px 0; }
+  .podium-block { display: flex; align-items: center; justify-content: center; border-radius: 8px 8px 0 0; width: 90px; }
+  .podium-rank  { font-family: var(--font-display); font-size: 14px; padding: 14px 0; }
   .podium-item.gold   .podium-block { background: rgba(244,196,48,0.12);  border: 1px solid rgba(244,196,48,0.3);  border-bottom: none; height: 110px; }
   .podium-item.gold   .podium-rank  { color: var(--gold); }
   .podium-item.silver .podium-block { background: rgba(170,170,170,0.08); border: 1px solid rgba(170,170,170,0.2); border-bottom: none; height: 75px; }
@@ -442,7 +444,7 @@
 <body>
 <aside class="sidebar">
   <a class="sidebar-brand" href="dashboard.html">
-    <img class="sidebar-logo" src="data:image/png;base64,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" alt="Espritum">
+    <img class="sidebar-logo" src="fav-icon-003.png" alt="Espritum">
     <span class="sidebar-name">Espritum</span>
   </a>
   <nav class="sidebar-nav">
@@ -478,7 +480,6 @@
     <!-- Tab switcher card -->
     <div class="tab-card">
       <div class="main-tab active" onclick="switchMainTab('global')">GLOBAL</div>
-      <div class="main-tab" onclick="switchMainTab('weekly')">WEEKLY</div>
       <div class="main-tab" onclick="switchMainTab('friends')">FRIENDS</div>
     </div>
 
@@ -512,25 +513,7 @@
 
     </div><!-- /rank-panel-global -->
 
-    <!-- ═══ PANEL WEEKLY ═══ -->
-    <div class="rank-panel" id="rank-panel-weekly">
-      <div class="my-position-card">
-        <div class="my-pos-rank-num" id="weekly-my-rank">#—</div>
-        <div class="my-pos-avatar" id="weekly-my-avatar">?</div>
-        <div class="my-pos-info">
-          <div class="my-pos-name" id="weekly-my-name">—</div>
-          <div class="my-pos-detail" id="weekly-my-detail">— séances cette semaine</div>
-        </div>
-        <div class="my-pos-streak-num" id="weekly-my-streak"><img class="si" src="icons/streak-icon.png"> 0</div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">CETTE SEMAINE</div>
-          <span style="font-size:11px;color:var(--muted);letter-spacing:1px;font-family:var(--font-display);">7 JOURS</span>
-        </div>
-        <div class="rank-list" id="weekly-rank-list"><!-- filled by JS --></div>
-      </div>
-    </div>
+    <!-- PANEL WEEKLY supprimé -->
 
     <!-- ═══ PANEL FRIENDS ═══ -->
     <div class="rank-panel" id="rank-panel-friends">
@@ -898,7 +881,7 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
       `;
     }).join('');
 
-    if (!users.length) {
+    if (!allUsers.length) {
       grid.innerHTML = '<div style="grid-column:1/-1;padding:24px;text-align:center;color:var(--muted);font-size:13px;letter-spacing:1px;">Suis des guerriers pour les voir ici.</div>';
     }
   }
@@ -1122,9 +1105,19 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
                    { onConflict: 'follower_id,following_id', ignoreDuplicates: true });
         if (error) throw error;
       }
-      // Rafraîchir l'onglet Friends
+      // Rafraîchir l'onglet Friends — grille + panel MA POSITION
       const followedUsers = allUsersRef.filter(u => followingSet.has(u.id));
       renderFriendsGrid(followedUsers);
+      const me = allUsersRef.find(u => u.id === myUserId) || {};
+      const friendsWithMe = [me, ...followedUsers].sort((a, b) => calcPts(b) - calcPts(a));
+      const myFriendRank = friendsWithMe.findIndex(u => u.id === myUserId) + 1;
+      fillFriendsPanel(
+        (me.prenom || '?')[0].toUpperCase(),
+        me.prenom || 'Guerrier',
+        me.streak || 0,
+        me.plan || 'gratuit',
+        myFriendRank
+      );
     } catch(e) {
       // Revert + message d'erreur visible
       wasFollowing ? followingSet.add(targetId) : followingSet.delete(targetId);

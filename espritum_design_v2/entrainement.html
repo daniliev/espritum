@@ -42,14 +42,16 @@
   .nav-item:hover { background: rgba(255,255,255,0.04); }
   .nav-item.active { background: rgba(255,255,255,0.06); }
   .nav-icon { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; flex-shrink: 0; }
-  .nav-lock { font-size: 11px; margin-left: auto; opacity: 0.6; }
+  .nav-lock { display: none; }
   .sidebar-bottom { padding: 12px 0 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
   .user-card { display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; cursor: pointer; transition: opacity 0.2s; }
   .user-card > div:not(.user-avatar) { display: none; }
   .user-card:hover { opacity: 0.8; }
   .user-avatar { width: 38px; height: 38px; border-radius: 50%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; color: #ddd; flex-shrink: 0; }
   .user-name, .user-plan { display: none; }
-  .nav-icon img { width: 26px; height: 26px; object-fit: contain; display: block; }
+  .nav-icon img { width: 26px; height: 26px; object-fit: contain; display: block; opacity: 0.45; transition: opacity 0.2s; }
+  .nav-item:hover .nav-icon img { opacity: 0.85; }
+  .nav-item.active .nav-icon img { opacity: 1; }
   .mobile-nav-icon img { width: 26px; height: 26px; object-fit: contain; display: block; }
 
   /* ── MAIN ── */
@@ -276,7 +278,7 @@
 
 <aside class="sidebar">
   <a class="sidebar-brand" href="dashboard.html">
-    <img class="sidebar-logo" src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/wAARCAEsASwDASIAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAcIBgkDBAUCAf/EAFQQAAEDAwEFAwYHCA4JBQAAAAEAAgMEBQYRBwgSITETQWEiMlFxgbEUI2JykaHRCRUYUoKiwcMWM0JTVZKTlJWywtLT4RckQ0ZXc4WjxCY0VmPj/8QAGwEBAAIDAQEAAAAAAAAAAAAAAAQFAwYHAgH/xAAtEQEAAQMCAwYGAwEAAAAAAAAAAQIDEQQFBiExEhNBUWHRFCKBkbHBMnGhUv/aAAwDAQACEQMRAD8ApkiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiD/2Q==" alt="Espritum">
+    <img class="sidebar-logo" src="fav-icon-003.png" alt="Espritum">
     <span class="sidebar-name">Espritum</span>
   </a>
   <nav class="sidebar-nav">
@@ -1020,6 +1022,9 @@
         series: 1, reps: state.reps, poids: savedPoids,
         termine: true, date: currentDate
       });
+      // Signal dashboard pour rafraîchir la charte immédiatement
+      try { new BroadcastChannel('esp_refresh').postMessage('workouts'); } catch(e) {}
+      localStorage.setItem('esp_chart_refresh', Date.now());
       showToast('success', `✓ Série ${serieIdx + 1} — ~${kcalSerie} kcal brûlées 🔥`);
       loadWeekProgressTrain(); // refresh chart
     }
@@ -1086,6 +1091,9 @@
     todaySeriesTotal += newSeries;
     await checkStreakThreshold();
     const totalKcal = Object.values(seriesState[exIdx]).reduce((sum, s) => sum + calcSerieKcal(ex.name, s.reps, effectiveKg), 0);
+    // Signal dashboard pour rafraîchir la charte immédiatement
+    try { new BroadcastChannel('esp_refresh').postMessage('workouts'); } catch(e) {}
+    localStorage.setItem('esp_chart_refresh', Date.now());
     showToast('success', `✓ ${ex.name} — ~${totalKcal} kcal brûlées 🔥`);
     loadWeekProgressTrain(); // refresh chart
     const wasOpen = openExercises.has(exIdx);
