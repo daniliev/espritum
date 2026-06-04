@@ -48,8 +48,8 @@
       if (config.text_hero) {
         document.querySelectorAll('.hero-title').forEach(el => {
           const parts = config.text_hero.split(' ');
-          const last = parts.pop();
-          el.innerHTML = parts.join(' ') + '<br><span class="accent">' + last + '</span>';
+          const accent = parts.splice(-2).join(' ');
+          el.innerHTML = parts.join(' ') + '<br><span class="accent">' + accent + '</span>';
         });
       }
       if (config.text_slogan) {

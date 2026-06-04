@@ -1,3 +1,15 @@
+// ── Espritum — Cache Buster ──
+// Ajoute ?v=VERSION dans l'URL pour forcer le navigateur à recharger les fichiers.
+(function () {
+  var APP_VERSION = 99;
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('v') !== String(APP_VERSION)) {
+    params.set('v', APP_VERSION);
+    // Remplace l'URL avec la version — force un rechargement propre sans boucle
+    window.location.replace(window.location.pathname + '?' + params.toString() + (window.location.hash || ''));
+  }
+})();
+
 // ── Espritum — Page Loader ──
 // Portail width:0/height:0 → position:fixed viewport → ZERO impact layout.
 (function () {
@@ -22,7 +34,7 @@
     var ov = document.createElement('div');
     ov.style.cssText =
       'position:fixed;top:0;left:0;right:0;bottom:0;' +
-      'background:#212121;' +
+      'background:#202020;' +
       'display:flex;align-items:center;justify-content:center;' +
       'opacity:1;transition:opacity .4s ease;pointer-events:all;';
 

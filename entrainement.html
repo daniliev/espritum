@@ -42,14 +42,16 @@
   .nav-item:hover { background: rgba(255,255,255,0.04); }
   .nav-item.active { background: rgba(255,255,255,0.06); }
   .nav-icon { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; flex-shrink: 0; }
-  .nav-lock { font-size: 11px; margin-left: auto; opacity: 0.6; }
+  .nav-lock { display: none; }
   .sidebar-bottom { padding: 12px 0 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
   .user-card { display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; cursor: pointer; transition: opacity 0.2s; }
   .user-card > div:not(.user-avatar) { display: none; }
   .user-card:hover { opacity: 0.8; }
   .user-avatar { width: 38px; height: 38px; border-radius: 50%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; color: #ddd; flex-shrink: 0; }
   .user-name, .user-plan { display: none; }
-  .nav-icon img { width: 26px; height: 26px; object-fit: contain; display: block; }
+  .nav-icon img { width: 26px; height: 26px; object-fit: contain; display: block; opacity: 0.45; transition: opacity 0.2s; }
+  .nav-item:hover .nav-icon img { opacity: 0.85; }
+  .nav-item.active .nav-icon img { opacity: 1; }
   .mobile-nav-icon img { width: 26px; height: 26px; object-fit: contain; display: block; }
 
   /* ── MAIN ── */
@@ -61,7 +63,7 @@
   .topbar-title { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; }
   .topbar-right { display: flex; gap: 10px; align-items: center; }
   .topbar-streak-pill {
-    background: #111; border: 1px solid rgba(200,40,40,0.5); border-radius: 99px;
+    background: #111; border: 2px solid var(--red); border-radius: 99px;
     padding: 6px 14px; font-family: var(--font-display); font-size: 17px; letter-spacing: 1px; color: #fff;
   }
   .topbar-avatar-pill {
@@ -181,9 +183,9 @@
 
   /* Exercise image (shown when expanded) */
   .ex-exercise-img {
-    width: 100%; aspect-ratio: 1 / 1; object-fit: contain;
-    border-radius: 10px; margin-bottom: 14px;
-    background: #1a1a1a; display: block;
+    width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: center;
+    border-radius: 12px; margin-bottom: 14px;
+    display: block;
   }
   .series-checklist-rows { padding-left: 42px; }
 
@@ -264,6 +266,9 @@
   .progression-avg { font-family: var(--font-display); font-size: 22px; color: var(--red); }
   .progression-avg-label { font-size: 10px; color: var(--muted); text-align: right; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
   .chart-wrap { position: relative; height: 160px; }
+
+  /* ── STREAK ICON ── */
+  .si { height: 0.8em; width: auto; vertical-align: -0.15em; display: inline-block; margin-right: 5px; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="site-config.js"></script>
@@ -273,7 +278,7 @@
 
 <aside class="sidebar">
   <a class="sidebar-brand" href="dashboard.html">
-    <img class="sidebar-logo" src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/wAARCAEsASwDASIAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAcIBgkDBAUCAf/EAFQQAAEDAwEFAwYHCA4JBQAAAAEAAgMEBQYRBwgSITETQWEiMlFxgbEUI2JykaHRCRUYUoKiwcMWM0JTVZKTlJWywtLT4RckQ0ZXc4WjxCY0VmPj/8QAGwEBAAIDAQEAAAAAAAAAAAAAAAQFAwYHAgH/xAAtEQEAAQMCAwYGAwEAAAAAAAAAAQIDEQQFBiExEhNBUWHRFCKBkbHBMnGhUv/aAAwDAQACEQMRAD8ApkiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiD/2Q==" alt="Espritum">
+    <img class="sidebar-logo" src="fav-icon-003.png" alt="Espritum">
     <span class="sidebar-name">Espritum</span>
   </a>
   <nav class="sidebar-nav">
@@ -302,7 +307,7 @@
       <div class="topbar-title">TIME TO <span style="color:var(--red)">SUFFER.</span></div>
     </div>
     <div class="topbar-right">
-      <div class="topbar-streak-pill" id="topbar-streak">🔥 0</div>
+      <div class="topbar-streak-pill" id="topbar-streak"><img class="si" src="icons/streak-icon.png"> <span class="si-num">0</span></div>
       <div class="topbar-avatar-pill" id="topbar-avatar">?</div>
     </div>
   </div>
@@ -317,11 +322,11 @@
     <!-- ① TIMER (first thing you see) -->
     <div class="timer-card">
       <div class="timer-tabs">
-        <div class="timer-tab active" id="tab-rest" onclick="switchTimerTab('rest')">REST TIMER</div>
-        <div class="timer-tab" id="tab-exercise" onclick="switchTimerTab('exercise')">EXERCISE TIMER</div>
+        <div class="timer-tab active" id="tab-rest" onclick="switchTimerTab('rest')" data-i18n="train_rest_timer">REST TIMER</div>
+        <div class="timer-tab" id="tab-exercise" onclick="switchTimerTab('exercise')" data-i18n="train_exercise_timer">EXERCISE TIMER</div>
       </div>
       <div class="timer-display">
-        <div class="timer-label" id="timer-label-top">REST TIME</div>
+        <div class="timer-label" id="timer-label-top" data-i18n="train_rest_time">REST TIME</div>
         <div class="timer-num" id="timer-num">01:30</div>
         <div class="timer-btns">
           <button class="timer-btn" onclick="resetCurrentTimer()">RESET</button>
@@ -340,7 +345,7 @@
 
     <!-- ② CHOOSE YOUR SESSION -->
     <div id="programs-section">
-      <div class="section-header">CHOOSE YOUR SESSION.</div>
+      <div class="section-header" data-i18n="train_choose_session">CHOOSE YOUR SESSION.</div>
       <div class="muscle-grid">
         <div class="muscle-card" id="card-bras" onclick="selectSession('bras')">
           <img src="body/bras.png" class="muscle-img" alt="Arms"
@@ -372,6 +377,16 @@
                onerror="this.outerHTML='<div class=muscle-icon-fallback>🎯</div>'">
           <div class="muscle-name">CORE</div>
         </div>
+        <div class="muscle-card" id="card-fullbody" onclick="selectSession('fullbody')">
+          <img src="body/full-body.png" class="muscle-img" alt="Full Body"
+               onerror="this.outerHTML='<div class=muscle-icon-fallback>🏆</div>'">
+          <div class="muscle-name">FULL BODY</div>
+        </div>
+        <div class="muscle-card" id="card-cardio" onclick="selectSession('cardio')">
+          <img src="body/cardio.png" class="muscle-img" alt="Cardio"
+               onerror="this.outerHTML='<div class=muscle-icon-fallback>🏃</div>'">
+          <div class="muscle-name">CARDIO</div>
+        </div>
       </div>
     </div>
 
@@ -384,7 +399,7 @@
           <div class="session-day-title" id="session-day-title">—</div>
         </div>
         <div class="session-progress-row">
-          <span class="session-pct-label">Progression</span>
+          <span class="session-pct-label" data-i18n="train_progression">Progression</span>
           <span class="session-pct" id="session-pct">0%</span>
         </div>
         <div class="progress-bar">
@@ -394,7 +409,7 @@
 
       <!-- Exercise list: flat rows with weight +/- and expandable series checklist -->
       <div class="exercise-list-card">
-        <div class="ex-list-title">EXERCICES</div>
+        <div class="ex-list-title" data-i18n="train_exercices">EXERCICES</div>
         <div id="exercise-list"></div>
       </div>
 
@@ -404,12 +419,12 @@
     <div class="progression-card">
       <div class="progression-header">
         <div>
-          <div class="progression-title">Calories brûlées</div>
-          <div class="progression-sub">7 derniers jours</div>
+          <div class="progression-title" data-i18n="train_calories_brulees">Calories brûlées</div>
+          <div class="progression-sub" data-i18n="dash_7_jours">7 derniers jours</div>
         </div>
         <div style="text-align:right">
           <div class="progression-avg" id="prog-avg-train">—</div>
-          <div class="progression-avg-label">moy. kcal/séance</div>
+          <div class="progression-avg-label" data-i18n="train_moy_kcal">moy. kcal/séance</div>
         </div>
       </div>
       <div class="chart-wrap">
@@ -423,6 +438,56 @@
 <script>
   const sb = window.sb;
   const PLAN_LABEL = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
+
+  /* ── EXERCISE TRANSLATIONS ── */
+  const EXERCISE_NAMES_EN = {
+    'Développé couché': 'Bench Press',
+    'Développé incliné haltères': 'Incline Dumbbell Press',
+    'Écarté haltères plat': 'Flat Dumbbell Fly',
+    'Dips poitrine': 'Chest Dips',
+    'Poulie croisée haute': 'High Cable Crossover',
+    'Pompes lestées': 'Weighted Push-ups',
+    'Traction pronation': 'Pull-ups',
+    'Rowing barre': 'Barbell Row',
+    'Tirage poulie haute': 'Lat Pulldown',
+    'Rowing haltère unilatéral': 'Single-arm Dumbbell Row',
+    'Tirage poulie basse': 'Seated Cable Row',
+    'Shrugs haltères': 'Dumbbell Shrugs',
+    'Curl barre droite': 'Straight Bar Curl',
+    'Curl haltères alterné': 'Alternating Dumbbell Curl',
+    'Extension triceps poulie': 'Cable Tricep Extension',
+    'Barre au front (Skull crusher)': 'Skull Crusher',
+    'Dips banc triceps': 'Bench Dips',
+    'Développé militaire barre': 'Military Press',
+    'Élévations latérales': 'Lateral Raises',
+    'Élévations frontales': 'Front Raises',
+    'Oiseau haltères (rear delt)': 'Rear Delt Fly',
+    'Upright row barre': 'Barbell Upright Row',
+    'Squat barre': 'Barbell Squat',
+    'Presse à cuisses': 'Leg Press',
+    'Soulevé de terre jambes tendues': 'Romanian Deadlift',
+    'Soulevé de terre': 'Deadlift',
+    'Fentes avant haltères': 'Forward Lunges',
+    'Leg curl allongé': 'Lying Leg Curl',
+    'Mollets debout': 'Standing Calf Raises',
+    'Crunch classique': 'Classic Crunch',
+    'Planche': 'Plank',
+    'Relevé de jambes suspendu': 'Hanging Leg Raise',
+    'Crunch oblique': 'Oblique Crunch',
+    'Russian twist': 'Russian Twist',
+    'Course à pied': 'Running',
+    'Corde à sauter': 'Jump Rope',
+    'Burpees': 'Burpees',
+  };
+  function exName(name) {
+    if (typeof getLang === 'function' && getLang() === 'en') return EXERCISE_NAMES_EN[name] || name;
+    return name;
+  }
+  function _isEN() { return typeof getLang === 'function' && getLang() === 'en'; }
+
+  const DAY_SHORT_TRAIN_FR = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const DAY_SHORT_TRAIN_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  function getDayShortTrain(d) { return (_isEN() ? DAY_SHORT_TRAIN_EN : DAY_SHORT_TRAIN_FR)[d]; }
 
   /* ── PROGRAMS DATA ── */
   const PROGRAMS = {
@@ -453,7 +518,6 @@
       exercises: [
         { name: 'Curl barre droite', series: 4, reps: 12, poids: 30, muscle: 'Biceps' },
         { name: 'Curl haltères alterné', series: 3, reps: 12, poids: 14, muscle: 'Biceps' },
-        { name: 'Curl marteau', series: 3, reps: 12, poids: 16, muscle: 'Brachial' },
         { name: 'Extension triceps poulie', series: 4, reps: 15, poids: 30, muscle: 'Triceps' },
         { name: 'Barre au front (Skull crusher)', series: 3, reps: 12, poids: 25, muscle: 'Triceps' },
         { name: 'Dips banc triceps', series: 3, reps: 20, poids: 0, muscle: 'Triceps' },
@@ -489,16 +553,146 @@
         { name: 'Crunch oblique', series: 3, reps: 20, poids: 0, muscle: 'Obliques' },
         { name: 'Russian twist', series: 3, reps: 30, poids: 10, muscle: 'Obliques' },
       ]
+    },
+    fullbody: {
+      name: 'Full Body',
+      exercises: [
+        { name: 'Squat barre', series: 4, reps: 10, poids: 60, muscle: 'Quadriceps / Fessiers' },
+        { name: 'Soulevé de terre', series: 3, reps: 8, poids: 80, muscle: 'Dos / Ischios' },
+        { name: 'Développé couché', series: 4, reps: 10, poids: 70, muscle: 'Poitrine' },
+        { name: 'Traction pronation', series: 3, reps: 8, poids: 0, muscle: 'Dorsaux' },
+        { name: 'Développé militaire barre', series: 3, reps: 10, poids: 40, muscle: 'Épaules' },
+        { name: 'Curl haltères alterné', series: 3, reps: 12, poids: 12, muscle: 'Biceps' },
+        { name: 'Dips banc triceps', series: 3, reps: 15, poids: 0, muscle: 'Triceps' },
+        { name: 'Planche', series: 3, reps: 45, poids: 0, muscle: 'Core' },
+      ]
+    },
+    cardio: {
+      name: 'Cardio',
+      exercises: [
+        { name: 'Course à pied', series: 3, reps: 5, poids: 0, muscle: 'Endurance' },
+        { name: 'Corde à sauter', series: 5, reps: 60, poids: 0, muscle: 'Coordination' },
+        { name: 'Burpees', series: 4, reps: 15, poids: 0, muscle: 'Full body' },
+        { name: 'Fentes avant haltères', series: 3, reps: 20, poids: 0, muscle: 'Cardio / Jambes' },
+        { name: 'Russian twist', series: 4, reps: 40, poids: 0, muscle: 'Core / Cardio' },
+      ]
     }
   };
 
+  /* ── TYPE D'EXERCICE (contrôle d'affichage) ──────────────────────────
+     bodyweight   → Poids de corps + extra optionnel (dips, tractions…)
+     time_seconds → Durée en secondes (planche, corde…)
+     distance_km  → Distance en kilomètres (course à pied)
+     reps_only    → Reps seulement, pas de poids (burpees)
+     weighted     → kg standard (défaut)
+  ─────────────────────────────────────────────────────────────────────── */
+  const EXERCISE_TYPE = {
+    // poids de corps
+    'Traction pronation':        'bodyweight',
+    'Dips poitrine':             'bodyweight',
+    'Dips banc triceps':         'bodyweight',
+    'Relevé de jambes suspendu': 'bodyweight',
+    'Crunch classique':          'bodyweight',
+    'Crunch oblique':            'bodyweight',
+    'Pompes lestées':            'bodyweight',
+    // durée en secondes
+    'Planche':                   'time_seconds',
+    'Corde à sauter':            'time_seconds',
+    // distance en km
+    'Course à pied':             'distance_km',
+    // reps uniquement
+    'Burpees':                   'reps_only',
+  };
+  function getExType(name) {
+    return EXERCISE_TYPE[name] || 'weighted';
+  }
+  function formatWeight(ex) {
+    const t = getExType(ex.name);
+    if (t === 'bodyweight') { const _bw = _isEN() ? 'bodyweight' : 'poids corps'; return ex.poids > 0 ? `${_bw} +${ex.poids}kg` : _bw; }
+    if (t === 'time_seconds') return ex.reps + ' s';
+    if (t === 'distance_km') return ex.reps + ' km';
+    if (t === 'reps_only') return '';
+    return ex.poids > 0 ? ex.poids + ' kg' : '0 kg';
+  }
+  function formatSerieLabel(ex, state) {
+    const t = getExType(ex.name);
+    if (t === 'time_seconds') return `Série — ${state.reps} s`;
+    if (t === 'distance_km')  return `Série — ${state.reps} km`;
+    return `Série — ${state.reps} reps`;
+  }
+
   /* ── STATE ── */
   let userId = null;
+  let userWeightKg = 70; // poids de l'utilisateur (mis à jour au login)
   let currentDate = localDate(new Date());
   let currentProgram = null;
   let currentProgramKey = null;
   let seriesState = {};         // { exIdx: { serieIdx: { reps, poids, done } } }
   let openExercises = new Set();// which exercise rows are expanded
+  let streakIncrementedToday = false; // évite le double-incrément dans la même session
+  let todaySeriesTotal = 0;           // séries validées aujourd'hui (BDD + session en cours)
+
+  /* ── CALORIES PAR EXERCICE (MET × poids × durée) ──────────────────────
+     Formule : kcal = MET × poids_kg × (durée_série_secondes / 3600)
+     secs = secondes par répétition (durée active)
+     direct: true → les reps sont déjà une durée (secondes ou minutes)
+  ─────────────────────────────────────────────────────────────────────── */
+  const EXERCISE_MET = {
+    // ── Jambes / Compound lourd
+    'Squat barre':                     { met: 5.0, secs: 4 },
+    'Soulevé de terre':                { met: 5.0, secs: 4 },
+    'Soulevé de terre jambes tendues': { met: 4.5, secs: 4 },
+    'Presse à cuisses':                { met: 4.0, secs: 4 },
+    'Fentes avant haltères':           { met: 4.5, secs: 3.5 },
+    'Leg curl allongé':                { met: 3.5, secs: 3.5 },
+    'Mollets debout':                  { met: 3.0, secs: 2 },
+    // ── Dos
+    'Traction pronation':              { met: 5.0, secs: 4 },
+    'Rowing barre':                    { met: 4.5, secs: 3.5 },
+    'Rowing haltère unilatéral':       { met: 4.0, secs: 3.5 },
+    'Rowing haltère unilatéra':        { met: 4.0, secs: 3.5 },
+    'Tirage poulie haute':             { met: 4.0, secs: 3.5 },
+    'Tirage poulie basse':             { met: 4.0, secs: 3.5 },
+    'Shrugs haltères':                 { met: 3.0, secs: 2 },
+    // ── Poitrine
+    'Développé couché':                { met: 4.5, secs: 3.5 },
+    'Développé incliné haltères':      { met: 4.5, secs: 3.5 },
+    'Écarté haltères plat':            { met: 3.5, secs: 3 },
+    'Dips poitrine':                   { met: 5.0, secs: 3.5 },
+    'Poulie croisée haute':            { met: 3.5, secs: 3 },
+    'Pompes lestées':                  { met: 4.0, secs: 3 },
+    // ── Épaules
+    'Développé militaire barre':       { met: 4.5, secs: 3.5 },
+    'Élévations latérales':            { met: 3.0, secs: 2.5 },
+    'Élévations frontales':            { met: 3.0, secs: 2.5 },
+    'Oiseau haltères (rear delt)':     { met: 3.0, secs: 2.5 },
+    'Upright row barre':               { met: 4.0, secs: 3 },
+    // ── Bras
+    'Curl barre droite':               { met: 3.5, secs: 3 },
+    'Curl haltères alterné':           { met: 3.5, secs: 3 },
+    'Extension triceps poulie':        { met: 3.5, secs: 3 },
+    'Barre au front (Skull crusher)':  { met: 3.5, secs: 3 },
+    'Dips banc triceps':               { met: 4.0, secs: 3 },
+    // ── Core
+    'Crunch classique':                { met: 3.0, secs: 2 },
+    'Crunch oblique':                  { met: 3.0, secs: 2 },
+    'Planche':                         { met: 3.5, secs: 1, direct: true }, // reps = secondes
+    'Relevé de jambes suspendu':       { met: 4.0, secs: 3 },
+    'Russian twist':                   { met: 3.5, secs: 1.5 },
+    // ── Cardio
+    'Course à pied':                   { met: 9.0, secs: 360, direct: true }, // reps = km (≈6min/km)
+    'Corde à sauter':                  { met: 11.0, secs: 1, direct: true }, // reps = secondes
+    'Burpees':                         { met: 8.0, secs: 4 },
+  };
+
+  function calcSerieKcal(nomExercice, reps, kg) {
+    // Extraire le nom propre si format "Nom (série X)"
+    const name = (nomExercice || '').replace(/ \(série \d+\)$/, '').trim();
+    const cfg  = EXERCISE_MET[name] || { met: 3.8, secs: 3 };
+    const w    = kg || 70;
+    const secs = cfg.direct ? reps * cfg.secs : reps * cfg.secs;
+    return Math.max(1, Math.round(cfg.met * w * secs / 3600));
+  }
 
   /* ── TIMER STATE ── */
   let currentTimerMode = 'rest';
@@ -516,7 +710,7 @@
 
   /* ── INIT ── */
   /* ── 7-DAY CALORIES BRÛLÉES ── */
-  const DAY_SHORT_TRAIN = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  // DAY_SHORT_TRAIN — bilingual via getDayShortTrain()
   let weekChartTrain = null;
 
   function localDateTrain(d) {
@@ -530,11 +724,11 @@
       const d = new Date(today);
       d.setDate(d.getDate() - i);
       days.push(localDateTrain(d));
-      labels.push(DAY_SHORT_TRAIN[d.getDay()] + ' ' + d.getDate());
+      labels.push(getDayShortTrain(d.getDay()) + ' ' + d.getDate());
     }
 
     const { data: rows } = await sb.from('workouts')
-      .select('date, repetitions, poids')
+      .select('date, nom, reps')
       .eq('user_id', userId)
       .eq('termine', true)
       .gte('date', days[0])
@@ -544,10 +738,8 @@
     days.forEach(d => calsByDay[d] = 0);
     (rows || []).forEach(r => {
       if (calsByDay[r.date] === undefined) return;
-      const reps = r.repetitions || 8;
-      const kg   = r.poids || 0;
-      // Estimation : chaque série brûle ~(reps × max(kg,5) × 0.04) + 4 kcal
-      calsByDay[r.date] += Math.round(reps * Math.max(kg, 5) * 0.04 + 4);
+      // Calcul MET : kcal = MET × poids_utilisateur × durée_série
+      calsByDay[r.date] += calcSerieKcal(r.nom, r.reps || 8, userWeightKg);
     });
 
     const data = days.map(d => calsByDay[d]);
@@ -561,20 +753,20 @@
     if (weekChartTrain) { weekChartTrain.destroy(); weekChartTrain = null; }
     const ctx = document.getElementById('weekChartTrain').getContext('2d');
     const grad = ctx.createLinearGradient(0, 0, 0, 160);
-    grad.addColorStop(0, 'rgba(200,40,40,0.32)');
-    grad.addColorStop(1, 'rgba(200,40,40,0)');
+    grad.addColorStop(0, 'rgba(255,255,255,0.18)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
     weekChartTrain = new Chart(ctx, {
       type: 'line',
       data: {
         labels,
         datasets: [{
           data,
-          borderColor: '#c82828',
+          borderColor: '#ffffff',
           backgroundColor: grad,
           borderWidth: 2,
           fill: true,
           tension: 0.42,
-          pointBackgroundColor: data.map(v => v > 0 ? '#c82828' : 'transparent'),
+          pointBackgroundColor: data.map(v => v > 0 ? '#ffffff' : 'transparent'),
           pointBorderColor:     data.map(v => v > 0 ? '#131313' : 'transparent'),
           pointBorderWidth: 2,
           pointRadius:      data.map(v => v > 0 ? 4 : 0),
@@ -613,7 +805,7 @@
       document.getElementById('sidebar-avatar').textContent = 'Y';
       document.getElementById('sidebar-name').textContent = 'Yoann';
       document.getElementById('sidebar-plan').textContent = '⚔️ Guerrier';
-      document.getElementById('topbar-streak').textContent = '🔥 12';
+      document.getElementById('topbar-streak').textContent = '<img class="si" src="icons/streak-icon.png"> 12';
       document.getElementById('topbar-avatar').textContent = 'Y';
       renderWeek(); renderTimerNum(90); initFreemium('guerrier');
       return;
@@ -625,14 +817,20 @@
       if (!session) { window.location.href = 'inscription.html'; return; }
       userId = session.user.id;
       const { data: profile } = await sb.from('users').select('*').eq('id', userId).single();
+      userWeightKg = profile?.poids || 70; // poids pour le calcul kcal
       const prenom = profile?.prenom || 'Guerrier';
       document.getElementById('sidebar-avatar').textContent = prenom[0].toUpperCase();
       document.getElementById('sidebar-name').textContent = prenom;
       document.getElementById('sidebar-plan').textContent = PLAN_LABEL[profile?.plan || 'gratuit'];
-      document.getElementById('topbar-streak').textContent = '🔥 ' + (profile?.streak || 0);
+      document.getElementById('topbar-streak').innerHTML = '<img class="si" src="icons/streak-icon.png"> ' + (profile?.streak || 0);
       document.getElementById('topbar-avatar').textContent = prenom[0].toUpperCase();
       renderWeek(); renderTimerNum(90); initFreemium(profile?.plan || 'gratuit');
       loadWeekProgressTrain();
+      // Vérifier si le streak a déjà été donné aujourd'hui via localStorage
+      const _streakKey = 'esp_streak_' + userId;
+      if (localStorage.getItem(_streakKey) === currentDate) {
+        streakIncrementedToday = true; // streak déjà validé aujourd'hui, pas de double
+      }
     } catch(e) { console.error(e); }
     finally {}
   }
@@ -654,7 +852,7 @@
       return `
         <div class="wsd ${state}">
           <div class="wsd-label">${d}</div>
-          <div class="wsd-dot">${state === 'done' ? '🔥' : dayNum}</div>
+          <div class="wsd-dot">${state === 'done' ? '<img class="si" src="icons/streak-icon.png">' : dayNum}</div>
         </div>`;
     }).join('');
   }
@@ -704,21 +902,60 @@
       const seriesDone = Object.values(seriesState[i] || {}).filter(s => s.done).length;
       const allDone = seriesDone === ex.series;
       const isOpen = openExercises.has(i);
-      const poids = ex.poids > 0 ? ex.poids + ' kg' : 'BW';
+      const exType = getExType(ex.name);
 
       const seriesHTML = Array.from({ length: ex.series }, (_, s) => {
         const state = seriesState[i][s];
         return `
           <div class="serie-check-row ${state.done ? 'done' : ''}" id="serie-row-${i}-${s}"
                onclick="toggleSerie(${i}, ${s})">
-            <span class="serie-check-label">Série ${s + 1} · ${state.reps} reps</span>
+            <span class="serie-check-label">${formatSerieLabel(ex, state)}</span>
             <div class="serie-check-dot ${state.done ? 'done' : ''}" id="serie-dot-${i}-${s}">
               ${state.done ? '✓' : ''}
             </div>
           </div>`;
       }).join('');
 
-      const imgSrc = 'exercices/' + encodeURIComponent(ex.name) + '.png';
+      // Utilise .webp si disponible (nouvelles images), sinon .png (legacy)
+      const _webpSrc = 'exercices/' + encodeURIComponent(ex.name) + '.webp';
+      const _pngSrc  = 'exercices/' + encodeURIComponent(ex.name) + '.png';
+      const imgSrc   = _webpSrc; // le tag <img> a un onerror fallback vers .png
+
+      // Weight control — dépend du type d'exercice
+      let weightCtrl = '';
+      if (exType === 'bodyweight') {
+        const _bw = _isEN() ? 'bodyweight' : 'poids corps'; const display = ex.poids > 0 ? `${_bw} +${ex.poids}kg` : _bw;
+        weightCtrl = `
+          <div class="weight-ctrl" onclick="event.stopPropagation()">
+            <button class="weight-btn" onclick="adjustWeight(${i}, -2.5)">−</button>
+            <span class="weight-val" id="weight-${i}" style="min-width:72px;font-size:10px;letter-spacing:0.3px">${display}</span>
+            <button class="weight-btn" onclick="adjustWeight(${i}, +2.5)">+</button>
+          </div>`;
+      } else if (exType === 'time_seconds') {
+        weightCtrl = `
+          <div class="weight-ctrl" onclick="event.stopPropagation()">
+            <button class="weight-btn" onclick="adjustReps(${i}, -5)">−</button>
+            <span class="weight-val" id="weight-${i}">${ex.reps} s</span>
+            <button class="weight-btn" onclick="adjustReps(${i}, +5)">+</button>
+          </div>`;
+      } else if (exType === 'distance_km') {
+        weightCtrl = `
+          <div class="weight-ctrl" onclick="event.stopPropagation()">
+            <button class="weight-btn" onclick="adjustReps(${i}, -0.5)">−</button>
+            <span class="weight-val" id="weight-${i}">${ex.reps} km</span>
+            <button class="weight-btn" onclick="adjustReps(${i}, +0.5)">+</button>
+          </div>`;
+      } else if (exType === 'reps_only') {
+        weightCtrl = `<div style="width:36px"></div>`; // espace pour alignement
+      } else {
+        // weighted (défaut)
+        weightCtrl = `
+          <div class="weight-ctrl" onclick="event.stopPropagation()">
+            <button class="weight-btn" onclick="adjustWeight(${i}, -2.5)">−</button>
+            <span class="weight-val" id="weight-${i}">${ex.poids > 0 ? ex.poids + ' kg' : '0 kg'}</span>
+            <button class="weight-btn" onclick="adjustWeight(${i}, +2.5)">+</button>
+          </div>`;
+      }
 
       return `
         <div class="ex-row ${allDone ? 'done-ex' : ''} ${isOpen ? 'open' : ''}" id="ex-card-${i}">
@@ -728,19 +965,15 @@
               ${allDone ? '✓' : ''}
             </div>
             <div class="ex-row-info">
-              <div class="ex-row-name">${ex.name}</div>
-              <div class="ex-row-sub" id="ex-sub-${i}">${seriesDone}/${ex.series} séries</div>
+              <div class="ex-row-name">${exName(ex.name)}</div>
+              <div class="ex-row-sub" id="ex-sub-${i}">${seriesDone}/${ex.series} ${typeof t === 'function' ? t('train_sets_label') : 'séries'}</div>
             </div>
-            <div class="weight-ctrl" onclick="event.stopPropagation()">
-              <button class="weight-btn" onclick="adjustWeight(${i}, -2.5)">−</button>
-              <span class="weight-val" id="weight-${i}">${poids}</span>
-              <button class="weight-btn" onclick="adjustWeight(${i}, +2.5)">+</button>
-            </div>
+            ${weightCtrl}
             <div class="ex-arrow">▾</div>
           </div>
           <div class="series-checklist">
             <img class="ex-exercise-img" src="${imgSrc}" alt="${ex.name}"
-                 onerror="this.style.display='none'">
+                 onerror="if(this.src.endsWith('.webp')){this.src=this.src.replace('.webp','.png')}else{this.style.display='none'}"
             <div class="series-checklist-rows">${seriesHTML}</div>
           </div>
         </div>`;
@@ -765,31 +998,85 @@
   /* ── ADJUST WEIGHT (+/-) ── */
   function adjustWeight(exIdx, delta) {
     const ex = currentProgram.exercises[exIdx];
+    const exType = getExType(ex.name);
     const newPoids = Math.max(0, +(ex.poids + delta).toFixed(1));
     ex.poids = newPoids;
-    // Update undone series with new weight
     for (let s = 0; s < ex.series; s++) {
       if (!seriesState[exIdx][s].done) seriesState[exIdx][s].poids = newPoids;
     }
     const weightEl = document.getElementById(`weight-${exIdx}`);
-    if (weightEl) weightEl.textContent = newPoids > 0 ? newPoids + ' kg' : 'BW';
+    if (!weightEl) return;
+    if (exType === 'bodyweight') {
+      weightEl.style.fontSize = '10px';
+      weightEl.style.letterSpacing = '0.3px';
+      const _bw2 = _isEN() ? 'bodyweight' : 'poids corps'; weightEl.textContent = newPoids > 0 ? `${_bw2} +${newPoids}kg` : _bw2;
+    } else {
+      weightEl.textContent = newPoids > 0 ? newPoids + ' kg' : '0 kg';
+    }
+  }
+
+  /* ── ADJUST REPS (pour exercices temps/distance) ── */
+  function adjustReps(exIdx, delta) {
+    const ex = currentProgram.exercises[exIdx];
+    const exType = getExType(ex.name);
+    let min = exType === 'distance_km' ? 0.5 : 5;
+    const newReps = Math.max(min, +(ex.reps + delta).toFixed(1));
+    ex.reps = newReps;
+    for (let s = 0; s < ex.series; s++) {
+      if (!seriesState[exIdx][s].done) seriesState[exIdx][s].reps = newReps;
+    }
+    const weightEl = document.getElementById(`weight-${exIdx}`);
+    if (!weightEl) return;
+    if (exType === 'distance_km') weightEl.textContent = newReps + ' km';
+    else weightEl.textContent = newReps + ' s';
   }
 
   /* ── TOGGLE INDIVIDUAL SERIE ── */
+  /* ── STREAK : 3 séries validées dans la journée = 1 streak ── */
+  async function checkStreakThreshold() {
+    if (streakIncrementedToday || !userId || todaySeriesTotal < 3) return;
+    streakIncrementedToday = true;
+    // Marquer dans localStorage : streak donné aujourd'hui
+    localStorage.setItem('esp_streak_' + userId, currentDate);
+    try {
+      const { data: u } = await sb.from('users').select('streak').eq('id', userId).single();
+      const newStreak = (u?.streak || 0) + 1;
+      await sb.from('users').update({ streak: newStreak }).eq('id', userId);
+      const pillEl = document.getElementById('topbar-streak');
+      if (pillEl) pillEl.innerHTML = '<img class="si" src="icons/streak-icon.png"> ' + newStreak;
+      showToast('success', `🏆 Jour ${newStreak} — Séance validée ! Streak en cours.`);
+    } catch(e) { console.error('streak error', e); }
+  }
+
   async function toggleSerie(exIdx, serieIdx) {
     const state = seriesState[exIdx][serieIdx];
     state.done = !state.done;
 
     if (state.done && userId) {
       const ex = currentProgram.exercises[exIdx];
+      const exType = getExType(ex.name);
+      // Pour les exercices poids de corps, le poids effectif = PC + extra
+      const effectiveKg = exType === 'bodyweight' ? userWeightKg + ex.poids : userWeightKg;
+      // Poids sauvegardé en BDD
+      const savedPoids = exType === 'bodyweight' ? userWeightKg + ex.poids
+                       : (exType === 'time_seconds' || exType === 'distance_km' || exType === 'reps_only') ? 0
+                       : state.poids;
+      const kcalSerie = calcSerieKcal(ex.name, state.reps, effectiveKg);
+      todaySeriesTotal++;
+      await checkStreakThreshold();
+
       await sb.from('workouts').insert({
         user_id: userId,
         nom: ex.name + ` (série ${serieIdx + 1})`,
         muscle_cible: ex.muscle,
-        series: 1, repetitions: state.reps, poids: state.poids,
+        series: 1, reps: state.reps, poids: savedPoids,
         termine: true, date: currentDate
       });
-      showToast('success', `✓ Série ${serieIdx + 1} validée !`);
+      // Signal dashboard pour rafraîchir la charte immédiatement
+      try { new BroadcastChannel('esp_refresh').postMessage('workouts'); } catch(e) {}
+      localStorage.setItem('esp_chart_refresh', Date.now());
+      showToast('success', `✓ ${_isEN() ? 'Set' : 'Série'} ${serieIdx + 1} — ~${kcalSerie} kcal ${_isEN() ? 'burned' : 'brûlées'} 🔥`);
+      loadWeekProgressTrain(); // refresh chart
     }
 
     // Update the serie row
@@ -803,7 +1090,7 @@
     const seriesDone = Object.values(seriesState[exIdx]).filter(s => s.done).length;
     const allDone = seriesDone === ex.series;
     const sub = document.getElementById(`ex-sub-${exIdx}`);
-    if (sub) sub.textContent = `${seriesDone}/${ex.series} séries`;
+    if (sub) sub.textContent = `${seriesDone}/${ex.series} ${typeof t === 'function' ? t('train_sets_label') : 'séries'}`;
     const card = document.getElementById(`ex-card-${exIdx}`);
     if (card) card.classList.toggle('done-ex', allDone);
     const mainCheck = document.getElementById(`main-check-${exIdx}`);
@@ -831,20 +1118,34 @@
       return;
     }
 
+    const exType = getExType(ex.name);
+    const effectiveKg = exType === 'bodyweight' ? userWeightKg + ex.poids : userWeightKg;
+    let newSeries = 0;
     for (let s = 0; s < ex.series; s++) {
       if (!seriesState[exIdx][s].done) {
+        newSeries++;
         seriesState[exIdx][s].done = true;
         if (userId) {
+          const savedPoids = exType === 'bodyweight' ? userWeightKg + ex.poids
+                           : (exType === 'time_seconds' || exType === 'distance_km' || exType === 'reps_only') ? 0
+                           : seriesState[exIdx][s].poids;
           await sb.from('workouts').insert({
             user_id: userId, nom: ex.name + ` (série ${s + 1})`,
             muscle_cible: ex.muscle, series: 1,
-            repetitions: seriesState[exIdx][s].reps, poids: seriesState[exIdx][s].poids,
+            reps: seriesState[exIdx][s].reps, poids: savedPoids,
             termine: true, date: currentDate
           });
         }
       }
     }
-    showToast('success', `✓ ${ex.name} — terminé !`);
+    todaySeriesTotal += newSeries;
+    await checkStreakThreshold();
+    const totalKcal = Object.values(seriesState[exIdx]).reduce((sum, s) => sum + calcSerieKcal(ex.name, s.reps, effectiveKg), 0);
+    // Signal dashboard pour rafraîchir la charte immédiatement
+    try { new BroadcastChannel('esp_refresh').postMessage('workouts'); } catch(e) {}
+    localStorage.setItem('esp_chart_refresh', Date.now());
+    showToast('success', `✓ ${exName(ex.name)} — ~${totalKcal} kcal ${_isEN() ? 'burned' : 'brûlées'} 🔥`);
+    loadWeekProgressTrain(); // refresh chart
     const wasOpen = openExercises.has(exIdx);
     renderExercises();
     if (wasOpen) {
@@ -990,6 +1291,14 @@
   <a class="mobile-nav-item" href="classement.html"><span class="mobile-nav-icon"><img src="icons/classement.svg" alt="Classement"></span></a>
   <a class="mobile-nav-item" href="profil.html"><span class="mobile-nav-icon"><img src="icons/profil.svg" alt="Profil"></span></a>
 </nav>
-<script src="api-config.js"></script>
+<script src="api-config2.js"></script>
+<script src="topbar-avatar.js?v=2"></script>
+<script src="topbar-streak.js"></script>
+<script src="i18n.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof initI18n === 'function') initI18n();
+  });
+</script>
 </body>
 </html>

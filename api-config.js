@@ -5,18 +5,15 @@
 (function() {
   'use strict';
 
-  // Clés pré-configurées (remplaçables via le modal de configuration)
   var _preset = {
     groq:   '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',
-    gemini: 'AIzaSyDLpX4rxlWq2TY_13EI8lXNctuyhPLOUz8'
+    gemini: ''
   };
 
-  // Auto-init au chargement : si pas encore de clé, on pose la valeur par défaut
-  Object.keys(_preset).forEach(function(svc) {
-    if (!localStorage.getItem('espritum_api_' + svc)) {
-      localStorage.setItem('espritum_api_' + svc, _preset[svc]);
-    }
-  });
+  // Auto-init : pose la clé Groq par défaut si pas encore configurée
+  if (!localStorage.getItem('espritum_api_groq')) {
+    localStorage.setItem('espritum_api_groq', _preset.groq);
+  }
 
   window.EspritumAPI = {
 
@@ -73,7 +70,7 @@
 
     // ── Gemini Vision (gratuit) ───────────────────────────────────
     // Inscription gratuite : aistudio.google.com
-    // Modèle : gemini-1.5-flash · 1 500 req/jour
+    // Modèle : gemini-2.0-flash · gratuit avec clé API
     geminiVision: async function(base64data, mimeType, prompt, maxTokens) {
       maxTokens = maxTokens || 400;
       var key = this.getKey('gemini');
@@ -83,7 +80,7 @@
         throw err;
       }
       var resp = await fetch(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + key,
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + key,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -101,7 +98,7 @@
       if (!resp.ok) {
         var errData = {};
         try { errData = await resp.json(); } catch(e) {}
-        if (resp.status === 400 || resp.status === 401 || resp.status === 403) {
+        if (resp.status === 401 || resp.status === 403) {
           this.clearKey('gemini');
           var e401 = new Error('INVALID_KEY');
           e401.service = 'gemini';
