@@ -4,7 +4,45 @@
 <script src="page-loader.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
-<title>Espritum — Tarifs</title>
+<title>Espritum — Not Just Flesh But Spirit</title>
+<meta name="description" content="Espritum — l'application de fitness chrétienne qui connecte la discipline du corps à la force de l'esprit. Entraînement, nutrition, coach IA, versets bibliques. Rejoins la liste d'attente.">
+<meta name="keywords" content="application fitness chrétien, musculation chrétien, nutrition sport, coach IA fitness, streak workout, discipline corps esprit, fitness foi, programme fitness chrétien">
+<meta name="author" content="Espritum">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://espritum.app">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Espritum — Not Just Flesh But Spirit">
+<meta property="og:description" content="L'application de fitness qui connecte la discipline du corps à la force de l'esprit. Entraînement, nutrition, coach IA et motivation chrétienne.">
+<meta property="og:image" content="https://espritum.app/fav-icon-003.png">
+<meta property="og:url" content="https://espritum.app">
+<meta property="og:site_name" content="Espritum">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Espritum — Not Just Flesh But Spirit">
+<meta name="twitter:description" content="L'app fitness qui connecte corps et esprit. Rejoins la liste d'attente.">
+<meta name="twitter:image" content="https://espritum.app/fav-icon-003.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MobileApplication",
+  "name": "Espritum",
+  "description": "Application de fitness chrétienne combinant entraînement, nutrition, coach IA et motivation spirituelle.",
+  "url": "https://espritum.app",
+  "operatingSystem": "iOS, Android, Web",
+  "applicationCategory": "HealthApplication",
+  "offers": [
+    { "@type": "Offer", "name": "Gratuit", "price": "0", "priceCurrency": "EUR" },
+    { "@type": "Offer", "name": "Guerrier", "price": "5", "priceCurrency": "EUR" },
+    { "@type": "Offer", "name": "Champion", "price": "15", "priceCurrency": "EUR" },
+    { "@type": "Offer", "name": "Élite", "price": "30", "priceCurrency": "EUR" }
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "5",
+    "reviewCount": "1"
+  }
+}
+</script>
 <link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +52,7 @@
   :root {
     --red: #c82828;
     --red-dark: #8a1a1a;
+    --red-glow: rgba(200,40,40,0.25);
     --bg: #080808;
     --bg2: #0d0d0d;
     --bg3: #111111;
@@ -33,6 +72,347 @@
     font-family: var(--font-body);
     font-weight: 400;
     min-height: 100vh;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── CURSOR ── */
+  .cursor {
+    width: 8px; height: 8px;
+    background: var(--red);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    width: 32px; height: 32px;
+    border: 1px solid rgba(200,40,40,0.6);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+  }
+  @media (max-width: 768px) { .cursor, .cursor-ring { display: none; } body { cursor: auto; } }
+
+  /* ── WAITLIST NOTE ── */
+  .wl-note {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    margin-top: 14px;
+    display: block;
+  }
+
+  /* ── WAITLIST MODAL ── */
+  .wl-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.88);
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(6px);
+    animation: wlFade 0.2s ease;
+  }
+  @keyframes wlFade { from { opacity:0; } to { opacity:1; } }
+
+  .wl-modal-inner {
+    background: #0d0d0d;
+    border: 1px solid #222;
+    border-radius: 14px;
+    padding: 44px 40px 36px;
+    width: 100%;
+    max-width: 460px;
+    position: relative;
+    animation: wlSlide 0.25s ease;
+  }
+  @keyframes wlSlide { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+
+  .wl-modal-close {
+    position: absolute;
+    top: 18px; right: 22px;
+    background: none;
+    border: none;
+    color: #444;
+    font-size: 26px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 8px;
+    transition: color 0.2s;
+  }
+  .wl-modal-close:hover { color: #fff; }
+
+  .wl-modal-eyebrow {
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--red);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .wl-modal-title {
+    font-family: var(--font-display);
+    font-size: 38px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #fff;
+    line-height: 0.95;
+    margin-bottom: 10px;
+  }
+  .wl-modal-sub {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  .wl-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .wl-row {
+    display: flex;
+    gap: 10px;
+  }
+  .wl-field {
+    flex: 1;
+    padding: 13px 16px;
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 0;
+  }
+  .wl-field::placeholder { color: #444; }
+  .wl-field:focus { border-color: rgba(200,40,40,0.5); }
+  .wl-field.error { border-color: rgba(200,40,40,0.7); }
+
+  .wl-btn {
+    padding: 16px;
+    background: var(--red);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 4px;
+    width: 100%;
+  }
+  .wl-btn:hover { background: #d93030; }
+  .wl-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .wl-modal-note {
+    font-size: 11px;
+    color: #333;
+    text-align: center;
+    margin-top: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .wl-success {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 16px 0 8px;
+    gap: 18px;
+  }
+  .wl-success-icon {
+    width: 60px; height: 60px;
+    background: rgba(46,204,113,0.1);
+    border: 1px solid rgba(46,204,113,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+  }
+  .wl-success-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #fff;
+  }
+  .wl-success-msg { font-size: 14px; color: #666; line-height: 1.6; }
+
+  @media (max-width: 500px) {
+    .wl-modal-inner { padding: 36px 24px 28px; }
+    .wl-row { flex-direction: column; }
+    .wl-modal-title { font-size: 30px; }
+  }
+  /* ── SINGLE PLAN ── */
+  .single-plan-wrap {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .single-plan-card {
+    background: var(--bg2);
+    border: 1px solid var(--red);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 80px rgba(200,40,40,0.10);
+  }
+  .single-plan-header {
+    padding: 48px 52px 36px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .single-plan-badge {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--red);
+    text-transform: uppercase;
+    font-weight: 600;
+    border: 1px solid rgba(200,40,40,0.3);
+    border-radius: 20px;
+    padding: 4px 16px;
+    margin-bottom: 28px;
+  }
+  .single-plan-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 2px;
+    margin-bottom: 6px;
+  }
+  .single-plan-amount {
+    font-family: var(--font-display);
+    font-size: 96px;
+    letter-spacing: -2px;
+    color: #fff;
+    line-height: 1;
+  }
+  .single-plan-deci {
+    font-family: var(--font-display);
+    font-size: 48px;
+    color: #fff;
+    line-height: 1;
+    align-self: flex-start;
+    padding-top: 12px;
+  }
+  .single-plan-currency {
+    font-family: var(--font-display);
+    font-size: 36px;
+    color: var(--red);
+    padding-bottom: 8px;
+  }
+  .single-plan-period {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .single-plan-desc {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 16px;
+    line-height: 1.6;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .single-plan-features {
+    padding: 36px 52px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .single-feat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.75);
+  }
+  .single-feat .check {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: rgba(200,40,40,0.12);
+    border: 1px solid rgba(200,40,40,0.4);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .single-feat .check::after {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+  }
+  .single-plan-footer {
+    padding: 32px 52px 40px;
+    text-align: center;
+  }
+  .single-plan-footer .cta-waitlist {
+    max-width: 360px;
+    margin: 0 auto;
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+    font-size: 13px;
+    letter-spacing: 3px;
+    padding: 17px;
+    box-shadow: 0 0 30px rgba(200,40,40,0.25);
+  }
+  .single-plan-footer .cta-waitlist:hover { background: #d93030; }
+  @media (max-width: 600px) {
+    .single-plan-header { padding: 36px 28px 28px; }
+    .single-plan-features { grid-template-columns: 1fr; padding: 28px 28px; }
+    .single-plan-footer { padding: 24px 28px 32px; }
+    .single-plan-amount { font-size: 72px; }
+    .single-plan-deci { font-size: 36px; }
+  }
+
+  /* plan waitlist CTA */
+  .cta-waitlist {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 14px;
+    border-radius: 4px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 28px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .cta-waitlist:hover { border-color: var(--red); color: var(--red); }
+  .plan-card.featured .cta-waitlist { background: var(--red); border-color: var(--red); color: #fff; }
+  .plan-card.featured .cta-waitlist:hover { background: #d93030; }
+
+  /* ── NOISE ── */
+  body::before {
+    content: '';
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
   }
 
   /* ── NAV ── */
@@ -41,12 +421,11 @@
     align-items: center;
     justify-content: space-between;
     padding: 18px 48px;
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    background: rgba(8,8,8,0.96);
-    backdrop-filter: blur(14px);
-    z-index: 100;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: linear-gradient(to bottom, rgba(8,8,8,0.97) 0%, transparent 100%);
+    backdrop-filter: blur(12px);
+    z-index: 500;
   }
 
   .nav-brand {
@@ -57,14 +436,14 @@
   }
 
   .nav-logo {
-    width: 38px; height: 38px;
+    width: 36px; height: 36px;
     object-fit: contain;
     border-radius: 8px;
   }
 
   .nav-name {
     font-family: var(--font-display);
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 400;
     letter-spacing: 6px;
     color: #fff;
@@ -87,113 +466,295 @@
     font-weight: 500;
     transition: color 0.2s;
   }
-
   .nav-links a:hover { color: #fff; }
 
-  .nav-btn {
-    padding: 11px 28px;
+  .nav-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+
+  .nav-login {
+    padding: 9px 20px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-login:hover { border-color: #444; color: #aaa; }
+
+  .nav-cta {
+    padding: 10px 22px;
     background: var(--red);
     border: none;
-    border-radius: 3px;
+    border-radius: 4px;
     color: #fff;
     font-family: var(--font-body);
     font-size: 12px;
     font-weight: 600;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    cursor: pointer;
+    cursor: none;
     transition: background 0.2s;
+    white-space: nowrap;
   }
-
-  .nav-btn:hover { background: #d93030; }
+  .nav-cta:hover { background: #d93030; }
 
   /* ── HERO ── */
-  #hero {
-    text-align: center;
-    padding: 140px 24px 100px;
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
     position: relative;
     overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
     background-image:
-      linear-gradient(180deg, rgba(8,8,8,0.55) 0%, rgba(8,8,8,0.78) 70%, rgba(8,8,8,1) 100%),
-      url('https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=1920&auto=format&fit=crop&q=80');
+      linear-gradient(180deg, rgba(8,8,8,0.5) 0%, rgba(8,8,8,0.72) 60%, rgba(8,8,8,1) 100%),
+      url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1800&q=80');
     background-size: cover;
-    background-position: center 30%;
-    background-repeat: no-repeat;
+    background-position: center top;
   }
 
-  #hero::before {
+  .hero-bg::before {
     content: '';
-    position: absolute;
-    top: 0; left: 50%;
-    transform: translateX(-50%);
-    width: 700px; height: 400px;
-    background: radial-gradient(ellipse at top, rgba(200,40,40,0.12) 0%, transparent 70%);
-    pointer-events: none;
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at top center, rgba(200,40,40,0.10) 0%, transparent 65%);
   }
 
-  .hero-tag {
+  .hero-inner {
+    position: relative; z-index: 2;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 120px 48px 80px;
+  }
+
+  .hero-content {
+    flex: 1;
+    max-width: 700px;
+    text-align: left;
+    animation: fadeUp 1s ease both;
+  }
+
+  .hero-visual { display: none; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-logo-mark {
+    width: 180px; height: 180px;
+    object-fit: contain;
+    border-radius: 28px;
+    display: block;
+    opacity: 0.92;
+  }
+
+  .hero-eyebrow {
     font-family: var(--font-body);
     font-size: 11px;
     letter-spacing: 5px;
     color: var(--red);
     text-transform: uppercase;
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
   }
+  .hero-eyebrow::before { display: none; }
+  .hero-eyebrow::after { display: none; }
 
   .hero-title {
     font-family: var(--font-display);
-    font-size: clamp(72px, 11vw, 120px);
+    font-size: clamp(72px, 11vw, 128px);
     font-weight: 400;
     line-height: 0.88;
     letter-spacing: 3px;
     text-transform: uppercase;
     margin-bottom: 28px;
   }
-
-  .hero-title .accent { color: var(--red); }
+  .hero-title .accent { color: var(--red); display: block; font-size: 1.3em; }
 
   .hero-sub {
     font-family: var(--font-body);
     font-size: 17px;
-    color: var(--muted);
+    color: rgba(255,255,255,0.78);
     font-weight: 300;
-    max-width: 480px;
-    margin: 0 auto;
+    max-width: 500px;
+    margin: 0 auto 40px;
     line-height: 1.7;
   }
 
-  /* ── SECTION BASE ── */
-  .section-wrap {
-    max-width: 1160px;
-    margin: 0 auto;
-    padding: 0 24px 90px;
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
+    justify-content: center;
+    flex-wrap: wrap;
   }
+  .hero-actions .btn-primary,
+  .hero-actions .btn-secondary {
+    flex: 1;
+    min-width: 200px;
+    max-width: 280px;
+    text-align: center;
+  }
+
+  .btn-primary {
+    font-family: var(--font-body);
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 700;
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 16px 36px;
+    border-radius: 4px;
+    cursor: none;
+    transition: all 0.2s;
+    box-shadow: 0 0 30px var(--red-glow);
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: #d93030; transform: translateY(-2px); }
+
+  .btn-secondary {
+    font-family: var(--font-body);
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 600;
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.35);
+    padding: 15px 36px;
+    border-radius: 4px;
+    cursor: none;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-secondary:hover { border-color: rgba(255,255,255,0.65); color: #F2F2F2; }
+
+  .hero-stats {
+    position: absolute;
+    bottom: 60px; right: 60px;
+    display: flex; gap: 40px;
+    z-index: 2;
+    animation: fadeUp 1s 0.3s ease both;
+  }
+  .hero-stat { text-align: right; }
+  .hero-stat-num {
+    font-family: var(--font-display);
+    font-size: 44px;
+    color: #fff;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .hero-stat-num span { color: var(--red); }
+  .hero-stat-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .scroll-line {
+    position: absolute; bottom: 30px; left: 50%;
+    transform: translateX(-50%);
+    width: 1px; height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--red));
+    animation: scrollAnim 2s infinite;
+    z-index: 2;
+  }
+  @keyframes scrollAnim {
+    0%,100% { opacity:0; transform:translateX(-50%) scaleY(0); transform-origin:top; }
+    50%      { opacity:1; transform:translateX(-50%) scaleY(1); }
+  }
+
+  /* ── SECTIONS BASE ── */
+  section { padding: 120px 24px; position: relative; }
+
+  .section-tag {
+    font-family: var(--font-body);
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--red);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-tag::before { content: ''; width: 28px; height: 1px; background: var(--red); }
+  .section-tag.centered { justify-content: center; }
+  .section-tag.centered::before { display: none; }
 
   .section-heading {
     font-family: var(--font-display);
-    font-size: clamp(44px, 6vw, 64px);
+    font-size: clamp(44px, 6vw, 76px);
     font-weight: 400;
     letter-spacing: 3px;
-    text-align: center;
-    margin-bottom: 56px;
     text-transform: uppercase;
+    line-height: 0.95;
+    margin-bottom: 20px;
+  }
+  .section-heading span { color: var(--red); }
+
+  /* ── ABOUT ── */
+  #a-propos { background: var(--bg); }
+
+  .about-inner {
+    max-width: 1160px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
   }
 
-  /* ── À PROPOS / VERSET ── */
-  #a-propos .section-wrap { max-width: 720px; }
+  .about-desc {
+    font-family: var(--font-body);
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.8;
+    font-weight: 300;
+    margin-bottom: 32px;
+  }
 
   .verse-card {
-    position: relative;
-    background:
-      linear-gradient(135deg, rgba(13,13,13,0.92) 0%, rgba(13,13,13,0.98) 100%),
-      url('https://images.unsplash.com/photo-1519003300449-424ad0405076?w=1200&auto=format&fit=crop&q=80') center/cover;
+    background: var(--bg2);
     border: 1px solid var(--border);
     border-left: 3px solid var(--red);
-    border-radius: 10px;
-    padding: 44px 44px;
-    text-align: center;
-    overflow: hidden;
+    border-radius: 0 10px 10px 0;
+    padding: 32px 36px;
+    position: relative;
+  }
+  .verse-card::before {
+    content: '"';
+    font-family: var(--font-display);
+    font-size: 100px;
+    color: var(--red);
+    opacity: 0.08;
+    position: absolute;
+    top: -20px; left: 16px;
+    line-height: 1;
   }
 
   .verse-tag {
@@ -203,75 +764,103 @@
     color: var(--red);
     text-transform: uppercase;
     font-weight: 600;
-    margin-bottom: 22px;
+    margin-bottom: 16px;
   }
 
   .verse-text {
     font-family: var(--font-body);
-    font-size: 19px;
+    font-size: 17px;
     font-style: italic;
     color: #ccc;
     line-height: 1.75;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
     font-weight: 300;
+    position: relative; z-index: 1;
   }
 
   .verse-ref {
     font-family: var(--font-body);
-    font-size: 12px;
+    font-size: 11px;
     letter-spacing: 2px;
     color: var(--muted);
     text-transform: uppercase;
     font-weight: 600;
   }
 
+  .about-right { position: relative; }
+  .about-img {
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    border-radius: 10px;
+    filter: grayscale(20%) contrast(1.1);
+    display: block;
+  }
+  .about-img-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, var(--bg) 0%, transparent 50%);
+    border-radius: 10px;
+  }
+
   /* ── FONCTIONNALITÉS ── */
+  #fonctionnalites { background: var(--bg2); }
+
+  .features-header {
+    max-width: 1160px;
+    margin: 0 auto 80px;
+    text-align: center;
+  }
+
   .features-grid {
+    max-width: 1160px;
+    margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
+    gap: 2px;
+    background: var(--border);
+    border-radius: 12px;
+    overflow: hidden;
   }
 
   .feat-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
+    background: var(--bg3);
+    padding: 40px 32px;
+    position: relative;
     overflow: hidden;
-    transition: border-color 0.25s, transform 0.25s;
+    transition: background 0.3s;
   }
-
-  .feat-card:hover {
-    border-color: #3a1a1a;
-    transform: translateY(-2px);
+  .feat-card:hover { background: #161616; }
+  .feat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--red);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
   }
+  .feat-card:hover::before { transform: scaleX(1); }
 
-  .feat-image {
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-    display: block;
-    filter: grayscale(35%) brightness(0.85);
-    transition: filter 0.25s;
+  .feat-num {
+    font-family: var(--font-display);
+    font-size: 72px;
+    color: var(--border);
+    line-height: 1;
+    position: absolute;
+    top: 16px; right: 20px;
+    transition: color 0.3s;
+    letter-spacing: 0;
   }
-
-  .feat-card:hover .feat-image {
-    filter: grayscale(0%) brightness(1);
-  }
-
-  .feat-body {
-    padding: 24px 26px 28px;
-  }
-
-  .feat-icon { font-size: 24px; margin-bottom: 10px; display: block; }
+  .feat-card:hover .feat-num { color: #222; }
 
   .feat-title {
     font-family: var(--font-display);
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 400;
     letter-spacing: 2px;
     text-transform: uppercase;
-    margin-bottom: 8px;
     color: #fff;
+    margin-bottom: 12px;
+    position: relative; z-index: 1;
   }
 
   .feat-desc {
@@ -280,6 +869,7 @@
     color: var(--muted);
     line-height: 1.7;
     font-weight: 300;
+    position: relative; z-index: 1;
   }
 
   /* ── TOGGLE ── */
@@ -301,7 +891,6 @@
     cursor: pointer;
     transition: color 0.2s;
   }
-
   .toggle-label.on { color: #fff; }
 
   .toggle {
@@ -313,7 +902,6 @@
     position: relative;
     transition: background 0.3s, border-color 0.3s;
   }
-
   .toggle.yearly { background: var(--red-dark); border-color: var(--red); }
 
   .toggle-knob {
@@ -324,7 +912,6 @@
     background: var(--muted);
     transition: transform 0.3s, background 0.3s;
   }
-
   .toggle.yearly .toggle-knob { transform: translateX(24px); background: #fff; }
 
   .save-badge {
@@ -339,25 +926,29 @@
     font-weight: 600;
   }
 
-  /* ── GRATUIT ── */
+  /* ── TARIFS ── */
+  #tarifs { background: var(--bg); }
+  .tarifs-wrap { max-width: 1160px; margin: 0 auto; }
+
+  /* ── FREE CARD ── */
   .free-card {
     background: var(--bg2);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 36px 44px;
+    padding: 40px 48px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 40px;
     flex-wrap: wrap;
-    margin-bottom: 48px;
+    margin-bottom: 24px;
   }
 
   .free-left { max-width: 540px; }
 
   .free-tag {
     font-family: var(--font-body);
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 4px;
     color: var(--red);
     text-transform: uppercase;
@@ -374,12 +965,11 @@
     text-transform: uppercase;
     margin-bottom: 6px;
   }
-
   .free-title span { color: var(--red); }
 
   .free-price {
     font-family: var(--font-display);
-    font-size: 72px;
+    font-size: 76px;
     font-weight: 400;
     color: var(--red);
     line-height: 1;
@@ -399,6 +989,7 @@
     flex-direction: column;
     gap: 12px;
     min-width: 220px;
+    align-items: flex-start;
   }
 
   .free-feature {
@@ -410,7 +1001,6 @@
     color: #aaa;
     font-weight: 400;
   }
-
   .free-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
 
   .free-cta {
@@ -422,15 +1012,15 @@
     border-radius: 4px;
     color: var(--muted);
     font-family: var(--font-body);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 3px;
     text-transform: uppercase;
     text-decoration: none;
     transition: border-color 0.2s, color 0.2s;
+    cursor: none;
   }
-
-  .free-cta:hover { border-color: #444; color: #aaa; }
+  .free-cta:hover { border-color: #444; color: #888; }
 
   /* ── PLANS ── */
   .plans-grid {
@@ -449,14 +1039,12 @@
     flex-direction: column;
     transition: border-color 0.3s, transform 0.3s;
   }
-
   .plan-card:hover { border-color: #2a2a2a; transform: translateY(-4px); }
 
   .plan-card.featured {
     border-color: var(--red);
     background: linear-gradient(160deg, #130505 0%, var(--bg2) 55%);
   }
-
   .plan-card.featured:hover { border-color: #e03030; }
 
   .featured-badge {
@@ -485,7 +1073,6 @@
     color: var(--muted);
     text-transform: uppercase;
   }
-
   .plan-card.featured .plan-name { color: var(--red); }
 
   .plan-price { margin: 20px 0; }
@@ -497,15 +1084,14 @@
     line-height: 1;
     color: #fff;
   }
-
   .price-amount .euro {
-    font-size: 32px;
-    vertical-align: top;
-    margin-top: 12px;
+    font-size: 28px;
+    vertical-align: bottom;
+    margin-bottom: 10px;
+    margin-left: 5px;
     display: inline-block;
     color: var(--muted);
   }
-
   .price-period {
     font-family: var(--font-body);
     font-size: 12px;
@@ -514,7 +1100,6 @@
     margin-top: 4px;
     font-weight: 500;
   }
-
   .price-yearly-note {
     font-family: var(--font-body);
     font-size: 11px;
@@ -572,7 +1157,6 @@
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; margin-top: 1px;
   }
-
   .check::after { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--red); }
 
   .feature.locked { opacity: 0.3; }
@@ -588,22 +1172,26 @@
     font-weight: 600;
     letter-spacing: 3px;
     text-transform: uppercase;
-    cursor: pointer;
+    cursor: none;
     transition: all 0.2s;
     margin-top: auto;
     text-decoration: none;
     display: block;
     text-align: center;
+    border: none;
   }
-
   .cta-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
   .cta-ghost:hover { border-color: #333; color: #888; }
-  .cta-red { background: var(--red); border: none; color: #fff; }
-  .cta-red:hover { background: #d93030; }
+  .cta-red { background: var(--red); color: #fff; box-shadow: 0 0 20px var(--red-glow); }
+  .cta-red:hover { background: #d93030; transform: translateY(-1px); }
   .cta-outline { background: transparent; border: 1px solid var(--red); color: var(--red); }
   .cta-outline:hover { background: rgba(200,40,40,0.08); }
 
   /* ── FAQ ── */
+  #faq { background: var(--bg2); }
+  .faq-inner { max-width: 800px; margin: 0 auto; }
+  .faq-header { text-align: center; margin-bottom: 60px; }
+
   .faq-list { display: flex; flex-direction: column; }
   .faq-item { border-bottom: 1px solid var(--border); }
 
@@ -621,7 +1209,6 @@
     transition: color 0.2s;
     gap: 16px;
   }
-
   .faq-q:hover { color: #fff; }
 
   .faq-arrow {
@@ -631,7 +1218,6 @@
     flex-shrink: 0;
     line-height: 1;
   }
-
   .faq-item.open .faq-arrow { transform: rotate(45deg); }
 
   .faq-a {
@@ -644,30 +1230,73 @@
     transition: max-height 0.4s ease, padding-bottom 0.3s ease;
     font-weight: 300;
   }
-
   .faq-item.open .faq-a { max-height: 240px; padding-bottom: 22px; }
 
   /* ── FOOTER ── */
   footer {
     border-top: 1px solid var(--border);
-    padding: 36px 48px;
+    padding: 80px 48px 40px;
+  }
+
+  .footer-top {
+    max-width: 1160px;
+    margin: 0 auto 56px;
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr;
+    gap: 60px;
+  }
+
+  .footer-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .footer-logo { width: 32px; height: 32px; object-fit: contain; border-radius: 6px; }
+  .footer-name {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 5px;
+    color: #fff;
+    text-transform: uppercase;
+  }
+
+  .footer-tagline {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+    max-width: 260px;
+  }
+
+  .footer-col-title {
+    font-family: var(--font-body);
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--red);
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .footer-col a {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+    margin-bottom: 12px;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: #fff; }
+
+  .footer-bottom {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 20px;
-  }
-
-  .footer-brand { display: flex; align-items: center; gap: 10px; }
-  .footer-logo { width: 30px; height: 30px; object-fit: contain; border-radius: 6px; }
-
-  .footer-name {
-    font-family: var(--font-display);
-    font-size: 16px;
-    font-weight: 400;
-    letter-spacing: 5px;
-    color: var(--muted);
-    text-transform: uppercase;
+    gap: 12px;
   }
 
   .footer-copy {
@@ -677,57 +1306,31 @@
     letter-spacing: 1px;
   }
 
+  /* ── MOBILE ── */
   @media (max-width: 960px) {
     nav { padding: 16px 20px; }
     .nav-links { display: none; }
-    .plans-grid { grid-template-columns: 1fr; }
+    section { padding: 80px 20px; }
+    .hero-inner { flex-direction: column; padding: 100px 20px 60px; gap: 40px; }
+    .hero-content { text-align: center; }
+    .hero-visual { display: none; }
+    .hero-stats { display: none; }
+    .about-inner { grid-template-columns: 1fr; gap: 40px; }
+    .about-right { height: 280px; overflow: hidden; border-radius: 10px; }
+    .about-img { width: 100%; height: 100%; aspect-ratio: unset; }
     .features-grid { grid-template-columns: 1fr 1fr; }
-    .free-card { flex-direction: column; }
-    footer { padding: 28px 20px; flex-direction: column; align-items: flex-start; }
+    .plans-grid { grid-template-columns: 1fr; }
+    .free-card { flex-direction: column; padding: 32px 28px; }
+    footer { padding: 60px 20px 36px; }
+    .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
+    .footer-brand-col { grid-column: 1 / -1; }
   }
 
-  @media (max-width: 560px) {
-    .features-grid { grid-template-columns: 1fr; }
-  }
-
-  /* ── LANDING MOBILE ── */
-  @media (max-width: 768px) {
-    body { overflow-x: hidden; }
-    nav { padding: 16px 20px !important; }
-    .nav-name { font-size: 18px !important; letter-spacing: 4px !important; }
-    .nav-logo { width: 40px !important; height: 40px !important; }
-    .hero-title { font-size: clamp(48px, 14vw, 80px) !important; }
-    section { padding: 40px 16px !important; }
-
-    /* Hero mobile : garde l'image bien visible et aérée, cadrage portrait */
-    #hero {
-      padding: 90px 20px 70px !important;
-      background-image:
-        linear-gradient(180deg, rgba(8,8,8,0.45) 0%, rgba(8,8,8,0.75) 70%, rgba(8,8,8,1) 100%),
-        url('https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=900&auto=format&fit=crop&q=80') !important;
-      background-position: center center !important;
-    }
-    #hero::before {
-      width: 100% !important;
-      height: 280px !important;
-    }
-
-    .pricing-grid { grid-template-columns: 1fr !important; }
-    .features-grid { grid-template-columns: 1fr !important; }
-    .faq-grid { grid-template-columns: 1fr !important; }
-
-    /* Feat-cards mobile : image un peu plus compacte */
-    .feat-image { height: 180px !important; }
-    .feat-body { padding: 20px 22px 24px !important; }
-
-    /* Verse-card mobile : padding réduit */
-    .verse-card { padding: 32px 24px !important; }
-  }
   @media (max-width: 600px) {
-    nav { padding: 14px 16px !important; gap: 10px !important; }
-    .nav-name { display: none !important; }
-    .nav-logo { width: 42px !important; height: 42px !important; }
-    nav button { padding: 10px 14px !important; font-size: 12px !important; letter-spacing: 1.5px !important; }
+    .features-grid { grid-template-columns: 1fr; }
+    .nav-name { display: none; }
+    .footer-top { grid-template-columns: 1fr; }
+    .free-features { min-width: unset; width: 100%; }
   }
 
   /* ── BULGARIAN FONT ── */
@@ -754,8 +1357,7 @@
   html[lang="bg"] .plan-name,
   html[lang="bg"] .free-title,
   html[lang="bg"] .feat-title,
-  html[lang="bg"] .nav-name,
-  html[lang="bg"] .plan-tier .plan-name {
+  html[lang="bg"] .nav-name {
     font-family: 'Sofia Sans Condensed', sans-serif !important;
     font-weight: 800 !important;
     letter-spacing: 2px;
@@ -763,7 +1365,6 @@
   html[lang="bg"] .feat-desc,
   html[lang="bg"] .plan-desc,
   html[lang="bg"] .free-desc,
-  html[lang="bg"] .faq-q span,
   html[lang="bg"] .faq-a {
     font-family: 'Sofia Sans Condensed', sans-serif !important;
     font-weight: 400;
@@ -771,213 +1372,518 @@
     line-height: 1.6;
   }
 
+  /* ── VERSE SECTION ── */
+  .verse-section {
+    background: var(--bg2);
+    padding: 90px 24px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .verse-section-inner {
+    max-width: 820px;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+  }
+  .verse-quote-line { width: 48px; height: 2px; background: var(--red); }
+  .verse-big-text {
+    font-family: var(--font-body);
+    font-size: clamp(20px, 3.5vw, 32px);
+    font-style: italic;
+    color: rgba(255,255,255,0.85);
+    font-weight: 300;
+    line-height: 1.55;
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+  .verse-big-ref {
+    font-family: var(--font-body);
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: var(--red);
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  /* ── PROBLEM SECTION ── */
+  .problem-section { background: var(--bg); padding: 110px 24px; }
+  .pb-inner { max-width: 780px; margin: 0 auto; }
+  .pb-sub {
+    font-size: 17px;
+    color: var(--muted);
+    margin-bottom: 48px;
+    line-height: 1.7;
+  }
+  .pb-list { list-style: none; }
+  .pb-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 16px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.65;
+  }
+  .pb-item:first-child { border-top: 1px solid var(--border); }
+  .pb-dash {
+    color: var(--red);
+    font-size: 22px;
+    flex-shrink: 0;
+    line-height: 1.4;
+    font-weight: 700;
+  }
+
+  /* ── SOLUTION SECTION ── */
+  .solution-section { background: var(--bg2); padding: 110px 24px; }
+  .sol-inner { max-width: 780px; margin: 0 auto; }
+  .sol-sub {
+    font-size: 17px;
+    color: var(--muted);
+    margin-bottom: 48px;
+    line-height: 1.7;
+  }
+  .sol-list { list-style: none; }
+  .sol-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .sol-item:first-child { border-top: 1px solid var(--border); }
+  .sol-num {
+    font-family: var(--font-display);
+    font-size: 36px;
+    color: var(--red);
+    flex-shrink: 0;
+    line-height: 1;
+    padding-top: 2px;
+    letter-spacing: 1px;
+    opacity: 0.55;
+    min-width: 44px;
+  }
+  .sol-item-body { display: flex; flex-direction: column; gap: 6px; }
+  .sol-item-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+  .sol-item-desc {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* ── SHOWCASE SECTION ── */
+  .showcase-section { background: var(--bg); padding: 110px 24px; }
+  .showcase-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .showcase-desc {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.75;
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+  .showcase-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .showcase-list li {
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .showcase-list li::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+    flex-shrink: 0;
+  }
+  .phone-frame {
+    width: 270px;
+    height: 550px;
+    border: 2px solid #252525;
+    border-radius: 40px;
+    background: #080808;
+    margin: 0 auto;
+    padding: 28px 18px 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow:
+      0 0 80px rgba(200,40,40,0.08),
+      inset 0 0 0 1px rgba(255,255,255,0.04);
+  }
+  .phone-notch {
+    width: 70px; height: 5px;
+    background: #1a1a1a;
+    border-radius: 3px;
+    margin: 0 auto 24px;
+  }
+  .phone-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .phone-app-icon { margin-bottom: 4px; }
+  .phone-app-icon img { border-radius: 18px; box-shadow: 0 0 24px rgba(200,40,40,0.3); }
+  .phone-app-name {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: 6px;
+    color: #fff;
+  }
+  .phone-app-tag {
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .phone-divider { width: 40px; height: 1px; background: var(--border); margin: 8px 0; }
+  .phone-stats { display: flex; gap: 10px; width: 100%; }
+  .phone-stat {
+    flex: 1;
+    text-align: center;
+    background: #0d0d0d;
+    border: 1px solid #1a1a1a;
+    border-radius: 10px;
+    padding: 10px 8px;
+  }
+  .ps-val {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 20px;
+    color: #fff;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .ps-lbl {
+    display: block;
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .phone-streak { color: #ff6b35 !important; }
+  @media (max-width: 900px) {
+    .showcase-inner { grid-template-columns: 1fr; gap: 56px; }
+    .phone-frame { width: 240px; height: 490px; }
+  }
 </style>
-<script src="site-config.js"></script>
+<script src="site-config.js?v=57"></script>
 </head>
 <body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
 
 <!-- NAV -->
 <nav>
   <a class="nav-brand" href="#">
-    <img class="nav-logo" src="data:image/png;base64,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Rppoj1IPln293sX2jT3Lk5/LBreINs2y32aaomY6U04/XKPq9fKb82lY+jo361B5PeP9n/n7lhB5nUoeZ1KK1s2abVOIco3jeL+63+9u8ojpHhEe/nIiIsqpEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEX1Gx8jwyNjnuPINaNSV7VHh2XVjQ6jxa+VDT0MVvleD9DUHhosklwLOoW8UuF5HG30utcwH9VeNcLZcreeGvt9XSH0TwuZ7wg6iIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiDmdAgL0cesd5yG6R2uxWusudbJ5kFLC6R58dB3eKn3YNut5DmDYb3mrqnHrI7R8dPwAVdU3wB/a2+Lhqe4ac1dLAsGxPBbULbitkpbbDoON0bdZJSO97zq559ZKCnWzbc+y67sirMzu1Nj1O4cRpoQKip9R0IY36XepWAwzdi2R46yN01ilvlSzTWa5zmQE/8ALbws/NU0LxMry7F8UpfhOSZBbLTHpqPhVS1jnfNaTq72AoOxZMesFjibFZbJbbaxvINpKVkQH8UBemoFybey2S2lz46Cou17e3kDR0Zawn50pZ9OhWD12+tZWOIosCuEze4zXBkZ+gMcgtkvioghqIjFUQxzRu6se0OB9hVR6ffYpi7/AFjZ3M0ell2BP1xBZFZN8rAamQMuuO3+36/u42xzNH5wP1IJeynY7swyZr/vvhFmfI/zpoKcQSn8uPhd9ahnOtzfEq9kk+IX+4Wac82wVQFTB6geTx6yXKVsP287JspdHFb8yoKeof0gryaV+vo+MABPqJUkwyRzRNlhkZJG8atc06gj0goNa20rd72n4MJamqsbrrbo9Sa22EzsDfS5uge31lunionW4NRPtb3f9nm0QS1dVbfvReHg6XC3gRvcfTIzzZPEkcXiEGtRFLG2nYJnGzEvraunbdrHxaNudG0ljR3dq3rGfXq30EqJ0BERAREQEREBERAREQEREBERAREQEREBERARF9wRSzzMggjfLLI4MYxjSXOcToAAOpKDlttFV3K4U9vt9NLVVdTK2GCGJpc+R7jo1oA6kkgK9G7Nu10GHx02U51T09wyLyZaakOj4aA9QT3PlHp6NI5anyl6O6fsGpMAtEGVZRRsly2qj1ax+jhbmHXyG93aEacTu7m0ctS6wSAsM2p7TsN2a2sVuU3VsEkgJp6SIcdRP8xno8ToB3lRRvL7yVvwN0+MYc6mueS6FlRMTxQ0B8dOT5Pk66A+d+KaLZDertkN4qLvfLjU3GvqHcUs87y57j6z0HoA5DuQTztY3sM5yWSaixJrcXthOjZIiH1b2+Mh5M9PkAEfjFV/udfXXOtkrrlW1FbVSnWSeolMj3n0lxJJXWRAREQZDFg2ay0cFbFiGQSUtRG2WGZltmdHIxw1a5rg3QgjmCF06jGsjptTUWC6w6de0o5G+8K2m4VtVfUQzbMb7WtL4munsrpXeU5vWSAE9dPPaOunH3AaW6Qag5aOriJEtLPGR14oyFlOA7S88wOoZJjGSV9DEDqaYv46d3ridq0+vTVbUnsa8aPa1w8RquB9BQv046Kmdp01iaf0IKpbKd8WiqTDb9o1n+BSHRpuVuaXRet8R1cPEtLvmhWjxm/2TJrRFdsfutJc6GXzZ6aUPbr3g6dCO8HmF2Pvbbv4PpP5Fv2LlpaWmpWubTU8MDXO4nCNgaCfSdO9B9yxxyxOilY2SN4LXNcNQ4HqCO8Kqm8Luq0NyhqMi2YwR0VwGr5rOXBsE3Ukwk8mO+STwnu4dOdrUQag7hR1dvrp6GvppaWqp5DHNDKwtfG4HQtIPMEFcC2Mbyuwa0bUba+62tsFuyyBnxNWRoyqAHKObTr00DuZb4jktfWUWC8YxfquxX63zUFxpH8E0Eo0IPcR3EEcwRyIIIQeYiIgIiICIiAiIgIiICIiAiIgIiICIiArebjuxds7oNqWS0+sbHO+8dO/904HQ1Dh4HVrQe8F34pUCbv2zmp2n7SqHHml0dBGPhNymaecdO0ji0+U4kNHi4HoCtnNqoKO1Wyltlupo6WjpImwwQxt0bGxo0a0DuAAAQdlVm3vtvr8PhlwbDapn3/njIr6xjudAxw5Nb/9rgddf3I59SCM/wB6DazT7LcDkkpJGOyG5tfBa4uRLHaeVMQf3LNQfElo9OmtyuqqmurZ62snkqKmokdLNLI4udI9x1c4k9SSSdUHE9znvL3uLnOOpJOpJX4iICIiAiIg7thutwsV6o7zaaqSkr6KZs1PMw82PadQf8u9bRNjGf2zaVgFBk9vLWSSN7OspwdTTzt89h8O8elpB71quU3boG1QbOtoYoLtUuZj17Laer1d5EEuvxc/s1LXfJcTz4Qg2KqCM23oMLwzLLljGQ47k9PcbfN2cgZBC5rxoC17T2o1a5pDhy6EKdwQQCCCD0IVbt9nZBPmWP0+Y41bZ6vIbbwwzU9NEXyVdO53LRo5lzCdRp+5LvQEH1+GPsx/gfKv5rD/AIqfhj7Mf4Hyr+aw/wCKqn0mw/a5Ugdns+vrdf32n7P+tovSg3dNtE3m4LVj59VTt98iCysm+bs9A8jG8ndz744B+tXSn30cQA+Iw6+v+fLE33EqBot2HbZIdDiMbOXV1zpf8Rcn4Lm2r/4tT/0nTf30EyVG+vbAD8H2fVjzpy47m1vujKh/b3twse1i2tbV7Oqe23eDQUl1juJfKxnFqWOb2YD2ka8ieROo7wenPuy7bIuI/sNDwPxLjSnX/uLo1G7xtmg148Erjp+JPC/+q8oIsRZ/WbFtrFKCZdnuREAans6J0n9XVY9X4XmNv/8AfYnfqXT9+t0rPe1B4KL9IIJBBBHUFfiAiIgIiICIiAiIgIiICIiAiLKtkmJTZ1tIsWKxEtbX1bWTPHVkI8qRw8QwOI8dEF29yDZ4zEtljMkradrbtkfDUl585lKP2lnoGoJfy68Y16DSeLhWUtvoKivrqiKmpKaJ0080rg1kbGglznE9AACSUoKSmoKGCho4Ww01PG2KGNvRjGjQAeAACr9v257+xrZczFqORor8ikML+flMpmaGQj1ngZz7nO9CCoG3zaFU7S9plyyN5kbQ8XYW6Fx/aqdnJvLuLubz4uKwJEQEREBERARFYzYzu027afgdJlNq2gfBTI50NVSPtXE6mmb5zC4SjiGhDgdBqHDkDqEFc0VvxuTSa89ozP6H/wD2VW87xi64Zl9yxi9Q9lXW+YxSAdHDTVr2/Jc0hw8CEF5dyjaqzNMFbiV1qHOv1hiDA6R2rqml10Y/1t1DD+SdfK5WDWqXZTm912eZ1bsqtDiZKWTSaHi4W1EJ5PidyPJw79DodCOYCs/ct9ekbxC27Ppn+h1Rcw36mxn3oLdoqTVm+nk7ifgeFWeEd3a1Mknu4V5VVvlbR5Nfg9gxeH0awTO/WoL3IqBSb4G1ZwIbS40zXvbRScvpkXH+F5tZ/Ex7+Yu/voNgKKgse+FtVaRxUOMP5d9FKPdKvQpd8zaEwAVGN4zN6S2Oduv/AHCgvUirDsD3nbttE2k27ELpjNvoRXMlLainqHkhzI3P04XDv4T3qzyDVrt/sjce205bamDhjjucskY000ZIe0aPoeFgyn7f0skVr28SXCIvP34tlPVya9A9vFDoPyYWn1lQCgIiICIiAiIgIiICIiAiIgK0n3O/G4K3Osgyioia91romU9OXNB4JJnHVwPcQ2NzfU8qrav7uC2Bls2Jy3gxNE14uU0vaaczHHpE1vqDmyH8ooLDLXFvmZTNku3i8QGftKSzBttpmjo3gGsnrPaOfz9Q7gtiN+uENosdfdahzWw0VNJUSFx0AaxpcdfoWpK719XdbtWXSvnfUVdZO+onlefKkke4uc4+JJJQdVERAREQEREBTduhbVnbOtoTLbc53DHb29lPWDqIJekcwGvLQnR3ySTzLQFCKINwarXvzbKzlGIszqy0jpLxZIyKwM6zUY1JOneYyS75pf10C9Hcq2svzjDH4pep3SX6wxNaJHu1NVS+ax5Oupc06NcfFh1JcdLBPa17Cx7Q5rhoQRqCEGn1FM+9nsnl2bbQZaq20pZjV3e6a3ubqWwu6vgJ7i0nVvySOZIOkMICIiAiIgIiIM+3dLtNZduuF1sBAc67wUziegZM7sX/AJsjltFWpjZ/UGkzzHqoHQw3Smk19UrT+hbZ0FJvujNKGZpilbpzlt00RPzJAf7aqqrffdI4wKnBZu9zK9v0GnP6VUFAREQEREBERAREQEREBERAWz/dooWW7YLhlOxoaH2uOcgDTnJrIT+ctYC2r7GIX0+x/C4JG8L47BQtcPQRTs1QY9vU3R9n3e8xq2EgyUIpeXonkZCfqkWslbLt6nEsmzjZFVY1ilGyrrqqrgL2PnZEOzY7jJ1cQOrW8lUqm3TNr8v7ZR2eD/mXBp/qgoIGRWLptzvalIfjbljEA+VWSn3RL0odzHPSfjspxpnzHTu98YQViRWoi3LcrOna5nZW8ufDTyu+xc7Nyq/Fvl53bAfQKF5/tIKoIraN3KLtwji2gUQPeBbXH9Yv38Ci6f8AEGj/AKMd/iIKlIrau3KLtwnh2gURPcDbXD9YvDzTdAyiw4pcr1QZPQ3aehgdOKNlK6N0zW83BpLj5XDqQNOZGneggjZvmF3wPNLdlNlk4aqil4iwnyZmHk+N3yXDUfX1AW0bBMptGaYlb8nsU/bUFdF2jCfOYejmOHc5pBBHpC1Lqwm5ftdZguXuxW/VnZY7epAGvkIDKSqOgbISejXAcLj80nQAoLm7Zdn9r2l4DXYvc9I3SfG0lRw6mmnaDwSD6SCO8EjvWsTMMdu2J5PcMcvlMaa40Eximj6jXqCD3tIIIPeCCttqrhvo7GX5nYW5pjNvknyO3MDKinp4+J9bT+jQc3PZ1GnMjUc/J0ChaLuXW13O01JprrbqygnHWOpgdE76HAFdNAREQEREHfx0kZBbiCQRVxaEfPC26LUbjEZlyW1xN6vrIWj2vC25IKffdJP9wf8AqP8A4qp6rhfdJP8AcH/qP/iqnqAiIgIiICIiAiIgIiICIiAtrOx2d1Tsiw2peA10thoXkDoCadhWqZWOxfe2y3HMQs2OW/F7I+O10EFEyWofK5zxEwMDiA4aahvRBfVFQWt3wtqczj2FBjNMD0DKOR2n8aQryqreu2xza9ndbZT6/vdujOn8bVBsPRa3KreY21VGv/rExa/vdvpm/q15828Ftkm8/PLiPmRxN9zAg2ZotYMu3Ha7JrxbQL4NRp5M/D7guu/bNtXfprtDyQaeivePcUG0ZFq0k2vbU5NOPaHlHL0XOUe5y+P9LW1D/iFlP9KTf3kG05DzGhWrOPa9tTjJLNoeUc/Tc5T73LmZtl2rsOo2h5J7a+Q+8oMw3v8AZZ/o72jOr7XTNix6+F9RRBgAbBJr8ZDoOgBILe7hcAPNOkJLJ8t2g5tltBFQZNk9zu9LDKJY4qqcvDXgEcQ179HEe1YwgvxuWbYW5ni7cJvtS9+Q2eD4mWR2pq6UEAO1/HZqGnXqOE8zrpYtakcRyG74pktDkViq30lxoZRLDI3094I72kEgjvBIVkcY3z8rpuBmRYlabk0cnPpJX0zyPTz4xr7AgupcrfQXOmNNcqGmrYHdYqiJsjT7HAhRnle7zshyPjfUYfS0Ezufa25zqYg/NYQz6WrCcW3v9mlyDWXmivVjlJ0c6SATxD8phLvzVLeKbUtneU8IsOZWarkd0h+EiOX+Tfo76kFfMu3LrTLxyYpmVZSO11bDcadszfVxs4SP4pUNZjuv7XMeD5ILNT3ynaf2y2VAkOnzHcL/AKAVsYRBqKvNou1lrHUd4tlbbqlvWGqgdE8exwBXRW3W+Waz32idRXq1UNypXdYauBsrPocCFDOc7q+yrIu0mt9DV47VO5h9vm+L18Y36t08G8KCimyylNdtOxWiA1NReqOLT08U7B+lbX1UfBN1C9Yhtgxy/wD3+oLxYbfXCqkJY6GoY6MF8fkeU0+WGdHexW4QU1+6QTcVzwin18yGtfp850I/sqoytB90VrA/aRjlBrzhtBl0+fM8fq1V9AREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERBmGI7T9oWJFox/MLvRRt6Q/CDJF/Jv1b9SmjDd8bOrc5keTWS1X2EacT4taWY+0as/NCrOiDYRhG9fstv5jhus1fjlS7kRWw8cWvhJHry8XBqmnHsgsWRULa6wXigulMQD2tJUNlaPWWk6HwK1HLu2W73WyVzK6z3Kst1UzzZqWZ0Tx7WkFBt2Ra9MC3q9qOOcEN1qaTJaQdW18ekoHhIzQ6+Lg5WG2f72uzi/iODIY63GKtx0PbtM1Pr4SMGo/KaAgrTvq3ue8bwt8hfKJILZFT0VONPNaImvcP5SST6VC6yLabfP2S7RMiv4k42V9ynnjPyHPPB+boFjqAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiD/2Q==" alt="Espritum">
+    <img class="nav-logo" src="fav-icon-003.png" alt="Espritum">
     <span class="nav-name">Espritum</span>
   </a>
   <ul class="nav-links">
-    <li><a href="#a-propos" data-i18n="landing_about">À propos</a></li>
-    <li><a href="#fonctionnalites" data-i18n="landing_features">Fonctionnalités</a></li>
-    <li><a href="#tarifs" data-i18n="landing_pricing">Tarifs</a></li>
-    <li><a href="#faq" data-i18n="landing_faq">FAQ</a></li>
+    <li><a href="#probleme">Le problème</a></li>
+    <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+    <li><a href="#tarifs">Tarifs</a></li>
+    <li><a href="#faq">FAQ</a></li>
   </ul>
-  <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
-    <button onclick="window.location.href='inscription.html?tab=connexion'" style="padding:8px 14px;background:transparent;border:1px solid #333;border-radius:4px;color:#aaa;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;" data-i18n="landing_connect">Connexion</button>
-    <button class="nav-btn" onclick="window.location.href='inscription.html'" style="padding:8px 14px;font-size:11px;letter-spacing:1px;white-space:nowrap;" data-i18n="landing_signup">S'inscrire</button>
+  <div class="nav-actions">
+    <button class="nav-cta" onclick="openWaitlist('nav')">LISTE D'ATTENTE</button>
   </div>
-  </nav>
+</nav>
 
 <!-- HERO -->
-<section id="hero">
-  <h1 class="hero-title" data-i18n="landing_hero">CHOISIS TON ARMURE.</h1>
-  <p class="hero-sub" data-i18n="landing_sub">Chaque plan est une étape vers une meilleure version de toi-même. Commence gratuitement, monte en puissance quand tu es prêt.</p>
-  <p style="font-size:12px;letter-spacing:5px;color:var(--red);text-align:center;margin-top:16px;font-weight:600;text-transform:uppercase;">NOT JUST FLESH, BUT SPIRIT.</p>
+<section class="hero" style="padding:0">
+  <div class="hero-bg"></div>
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-eyebrow">Discipline. Force. Foi.</div>
+      <h1 class="hero-title">
+        ARRÊTE D'ALLER<br>
+        <span class="accent">À LA SALLE.</span>
+      </h1>
+      <p class="hero-sub">Sérieusement. Si tu continues comme ça — sans plan réel, sans suivi précis, sans méthode — dans 6 mois tu seras au même point. Exactement.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="openWaitlist('hero')">REJOINDRE LA LISTE</button>
+        <a href="#fonctionnalites" class="btn-secondary">FONCTIONNALITÉS</a>
+      </div>
+      <span class="wl-note">Gratuit · Pas de spam · Désabonnement en 1 clic</span>
+    </div>
+    <div class="hero-visual">
+      <img class="hero-logo-mark" src="fav-icon-003.png" alt="Espritum">
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num">0<span>€</span></div>
+      <div class="hero-stat-label">Pour commencer</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">6</div>
+      <div class="hero-stat-label">Fonctionnalités</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">∞</div>
+      <div class="hero-stat-label">Progression</div>
+    </div>
+  </div>
+  <div class="scroll-line"></div>
 </section>
 
-<!-- À PROPOS -->
-<section id="a-propos">
-  <div class="section-wrap">
-    <h2 class="section-heading" data-i18n="landing_about">À propos</h2>
-    <div class="verse-card">
-      <div class="verse-tag" data-i18n="landing_verse_tag">— Verset du jour</div>
-      <p class="verse-text" data-i18n="landing_verse">"Ne sais-tu pas ? L'Éternel donne de la force à celui qui est fatigué."</p>
-      <div class="verse-ref" data-i18n="landing_verse_ref">Ésaïe 40 : 28-29</div>
+<!-- SECTION 2 : VERSET -->
+<section class="verse-section">
+  <div class="verse-section-inner">
+    <div class="verse-quote-line"></div>
+    <blockquote class="verse-big-text">
+      "Ce n'est pas par la force, ni par la puissance,<br>mais c'est par mon Esprit."
+    </blockquote>
+    <div class="verse-big-ref">— Zacharie 4 : 6</div>
+    <div class="verse-quote-line"></div>
+  </div>
+</section>
+
+<!-- SECTION 3 : PROBLÈME -->
+<section id="probleme" class="problem-section">
+  <div class="pb-inner">
+    <div class="section-tag">Le problème</div>
+    <h2 class="section-heading">TU VAS À LA SALLE<br><span>MAIS...</span></h2>
+    <p class="pb-sub">Tu te demandes pourquoi tu n'avances pas ? La vérité que personne ne te dit :</p>
+    <ul class="pb-list">
+      <li class="pb-item">
+        <span class="pb-dash">—</span>
+        <span>Tu soulèves des charges sans savoir pourquoi — ton programme vient d'un influenceur qui ne te connaît pas et s'en fout de tes résultats</span>
+      </li>
+      <li class="pb-item">
+        <span class="pb-dash">—</span>
+        <span>Tu manges "sain" mais tu n'as aucune idée de tes calories ni de tes macros réelles — tu navigues à l'aveugle</span>
+      </li>
+      <li class="pb-item">
+        <span class="pb-dash">—</span>
+        <span>Aucun suivi = aucun système. Chaque semaine tu recommences de zéro comme si la précédente n'avait jamais existé</span>
+      </li>
+      <li class="pb-item">
+        <span class="pb-dash">—</span>
+        <span>Tu te motives le dimanche soir. Tu abandonnes le mercredi. Le cycle recommence depuis des mois — voire des années</span>
+      </li>
+      <li class="pb-item">
+        <span class="pb-dash">—</span>
+        <span>Tu n'as personne pour te tenir responsable — et ta propre volonté seule, la science le prouve, ça ne suffit pas</span>
+      </li>
+      <li class="pb-item">
+        <span class="pb-dash">—</span>
+        <span>Tu travailles le corps mais tu négliges l'arme la plus puissante que tu possèdes : ton esprit</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- SECTION 4 : SOLUTION -->
+<section id="solution" class="solution-section">
+  <div class="sol-inner">
+    <div class="section-tag">La solution</div>
+    <h2 class="section-heading">CE DONT TU AS<br><span>VRAIMENT BESOIN.</span></h2>
+    <p class="sol-sub">Pas un énième abonnement de salle à 50€/mois que tu n'utiliseras plus en février. Une méthode complète :</p>
+    <ul class="sol-list">
+      <li class="sol-item">
+        <span class="sol-num">01</span>
+        <div class="sol-item-body">
+          <span class="sol-item-title">Un programme fait pour TOI</span>
+          <span class="sol-item-desc">Généré par l'IA selon ton corps, ton objectif et ton niveau — mis à jour automatiquement. Fini les programmes génériques copiés-collés.</span>
+        </div>
+      </li>
+      <li class="sol-item">
+        <span class="sol-num">02</span>
+        <div class="sol-item-body">
+          <span class="sol-item-title">Un suivi nutritionnel précis</span>
+          <span class="sol-item-desc">Calories, macros, scan de repas par caméra — tu sais enfin ce que tu consommes vraiment. La nutrition, c'est 80% des résultats.</span>
+        </div>
+      </li>
+      <li class="sol-item">
+        <span class="sol-num">03</span>
+        <div class="sol-item-body">
+          <span class="sol-item-title">Un coach IA disponible 24h/24</span>
+          <span class="sol-item-desc">Sensei connaît ton historique complet. Il te parle vrai, sans te ménager, sans te juger. Disponible à 3h du matin si tu en as besoin.</span>
+        </div>
+      </li>
+      <li class="sol-item">
+        <span class="sol-num">04</span>
+        <div class="sol-item-body">
+          <span class="sol-item-title">Un système de responsabilité</span>
+          <span class="sol-item-desc">Streak quotidien, classement entre guerriers, badges de progression — tu avances parce que le système te le rappelle chaque jour.</span>
+        </div>
+      </li>
+      <li class="sol-item">
+        <span class="sol-num">05</span>
+        <div class="sol-item-body">
+          <span class="sol-item-title">Une progression mesurable</span>
+          <span class="sol-item-desc">Photos avant/après, mensurations, courbes de poids — tu vois les chiffres évoluer semaine après semaine. Ce que tu mesures, tu le gères.</span>
+        </div>
+      </li>
+      <li class="sol-item">
+        <span class="sol-num">06</span>
+        <div class="sol-item-body">
+          <span class="sol-item-title">La force de l'esprit</span>
+          <span class="sol-item-desc">Verset biblique du jour, prières avant l'entraînement, citations de guerriers de la foi — parce que la vraie transformation commence en dedans.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- SECTION 5 : SHOWCASE -->
+<section id="appli" class="showcase-section">
+  <div class="showcase-inner">
+    <div class="showcase-text">
+      <div class="section-tag">L'application</div>
+      <h2 class="section-heading">TOUT DANS TON<br><span>TÉLÉPHONE.</span></h2>
+      <p class="showcase-desc">Espritum est une application mobile complète — accessible sur iPhone et Android, sans téléchargement depuis l'App Store. Installe-la en 5 secondes depuis ton navigateur et retrouve-la directement sur ton écran d'accueil.</p>
+      <ul class="showcase-list">
+        <li>Disponible sur iOS & Android</li>
+        <li>Fonctionne hors connexion</li>
+        <li>Interface pensée 100% mobile-first</li>
+        <li>Notifications de rappel personnalisées</li>
+      </ul>
+      <button class="btn-primary" onclick="openWaitlist('showcase')">REJOINDRE LA LISTE</button>
+    </div>
+    <div class="showcase-phone">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-app-icon">
+            <img src="fav-icon-003.png" alt="Espritum" style="width:68px;height:68px;border-radius:18px;">
+          </div>
+          <div class="phone-app-name">ESPRITUM</div>
+          <div class="phone-app-tag">Not Just Flesh But Spirit</div>
+          <div class="phone-divider"></div>
+          <div class="phone-stats">
+            <div class="phone-stat">
+              <span class="ps-val">47</span>
+              <span class="ps-lbl">Séances</span>
+            </div>
+            <div class="phone-stat">
+              <span class="ps-val phone-streak">🔥 12</span>
+              <span class="ps-lbl">Streak</span>
+            </div>
+            <div class="phone-stat">
+              <span class="ps-val">#3</span>
+              <span class="ps-lbl">Classement</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- FONCTIONNALITÉS -->
 <section id="fonctionnalites">
-  <div class="section-wrap">
-    <h2 class="section-heading" data-i18n="landing_features">Fonctionnalités</h2>
-    <div class="features-grid">
-      <div class="feat-card">
-        <img class="feat-image" src="https://images.unsplash.com/photo-1550345332-09e3ac987658?w=600&auto=format&fit=crop&q=80" alt="Silhouette athlétique" loading="lazy">
-        <div class="feat-body">
-          <span class="feat-icon">📸</span>
-          <div class="feat-title" data-i18n="feat_bodyfat_title">Masse grasse par caméra</div>
-          <p class="feat-desc" data-i18n="feat_bodyfat_desc">L'IA analyse ta silhouette et estime ton taux de masse grasse en quelques secondes. Disponible gratuitement.</p>
-        </div>
-      </div>
-      <div class="feat-card">
-        <img class="feat-image" src="https://images.unsplash.com/photo-1545389336-cf090694435e?w=600&auto=format&fit=crop&q=80" alt="Méditation / sagesse" loading="lazy">
-        <div class="feat-body">
-          <span class="feat-icon">🤖</span>
-          <div class="feat-title" data-i18n="feat_coach_title">Coach IA Sensei</div>
-          <p class="feat-desc" data-i18n="feat_coach_desc">Un mentor alimenté par l'IA, disponible 24h/24. Conseils nutrition, entraînement et motivation dans le style anime.</p>
-        </div>
-      </div>
-      <div class="feat-card">
-        <img class="feat-image" src="https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?w=600&auto=format&fit=crop&q=80" alt="Nutrition saine" loading="lazy">
-        <div class="feat-body">
-          <span class="feat-icon">🍎</span>
-          <div class="feat-title" data-i18n="feat_nutrition_title">Suivi nutrition</div>
-          <p class="feat-desc" data-i18n="feat_nutrition_desc">Calories, macros, scan de code-barre et repas favoris. Tout pour maîtriser ton alimentation au quotidien.</p>
-        </div>
-      </div>
-      <div class="feat-card">
-        <img class="feat-image" src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&auto=format&fit=crop&q=80" alt="Haltères noirs" loading="lazy">
-        <div class="feat-body">
-          <span class="feat-icon">💪</span>
-          <div class="feat-title" data-i18n="feat_training_title">Plans d'entraînement</div>
-          <p class="feat-desc" data-i18n="feat_training_desc">Des programmes générés selon ton profil, ton objectif et ton niveau. Mis à jour automatiquement chaque semaine.</p>
-        </div>
-      </div>
-      <div class="feat-card">
-        <img class="feat-image" src="https://images.unsplash.com/photo-1606902965551-dce093cda6e7?w=600&auto=format&fit=crop&q=80" alt="Mesure progression" loading="lazy">
-        <div class="feat-body">
-          <span class="feat-icon">📊</span>
-          <div class="feat-title" data-i18n="feat_progress_title">Progression corporelle</div>
-          <p class="feat-desc" data-i18n="feat_progress_desc">Photos avant/après, mensurations, poids — tout est tracé avec des graphiques clairs semaine après semaine.</p>
-        </div>
-      </div>
-      <div class="feat-card">
-        <img class="feat-image" src="https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=600&auto=format&fit=crop&q=80" alt="Bible ouverte avec lumière" loading="lazy">
-        <div class="feat-body">
-          <span class="feat-icon">📖</span>
-          <div class="feat-title" data-i18n="feat_faith_title">Motivation chrétienne</div>
-          <p class="feat-desc" data-i18n="feat_faith_desc">Un verset biblique chaque matin, des prières avant l'entraînement et des citations de figures bibliques pour tenir le cap.</p>
-        </div>
-      </div>
+  <div class="features-header">
+    <div class="section-tag centered" data-i18n="landing_features">Fonctionnalités</div>
+    <h2 class="section-heading">TOUT CE DONT<br>TU AS <span>BESOIN.</span></h2>
+  </div>
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-num">01</div>
+      <div class="feat-title" data-i18n="feat_bodyfat_title">Masse grasse par caméra</div>
+      <p class="feat-desc" data-i18n="feat_bodyfat_desc">L'IA analyse ta silhouette et estime ton taux de masse grasse en quelques secondes. Disponible gratuitement.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-num">02</div>
+      <div class="feat-title" data-i18n="feat_nutrition_title">Suivi nutrition</div>
+      <p class="feat-desc" data-i18n="feat_nutrition_desc">Calories, macros, scan de code-barre et repas favoris. Tout pour maîtriser ton alimentation au quotidien.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-num">03</div>
+      <div class="feat-title" data-i18n="feat_training_title">Plans d'entraînement</div>
+      <p class="feat-desc" data-i18n="feat_training_desc">Des programmes générés selon ton profil, ton objectif et ton niveau. Mis à jour automatiquement chaque semaine.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-num">04</div>
+      <div class="feat-title" data-i18n="feat_progress_title">Progression corporelle</div>
+      <p class="feat-desc" data-i18n="feat_progress_desc">Photos avant/après, mensurations, poids — tout est tracé avec des graphiques clairs semaine après semaine.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-num">05</div>
+      <div class="feat-title" data-i18n="feat_faith_title">Motivation chrétienne</div>
+      <p class="feat-desc" data-i18n="feat_faith_desc">Un verset biblique chaque matin, des prières avant l'entraînement et des citations de figures bibliques pour tenir le cap.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-num">06</div>
+      <div class="feat-title">Classement global</div>
+      <p class="feat-desc">Compare-toi aux autres guerriers. Streak, séances, points — grimpe dans le classement et prouve que tu es au sommet.</p>
     </div>
   </div>
 </section>
 
 <!-- TARIFS -->
 <section id="tarifs">
-  <div class="section-wrap">
-    <h2 class="section-heading" data-i18n="landing_pricing">Tarifs</h2>
-
-    <!-- Toggle -->
-    <div class="toggle-wrap">
-      <span class="toggle-label on" id="lbl-monthly" data-i18n="landing_monthly">Mensuel</span>
-      <div class="toggle" id="toggle" onclick="switchBilling()">
-        <div class="toggle-knob"></div>
-      </div>
-      <span class="toggle-label" id="lbl-yearly" data-i18n="landing_yearly">Annuel</span>
-      <span class="save-badge" data-i18n="landing_save">-20%</span>
+  <div class="tarifs-wrap">
+    <div style="text-align:center;margin-bottom:60px;">
+      <div class="section-tag centered" data-i18n="landing_pricing">Tarifs</div>
+      <h2 class="section-heading">UN SEUL PLAN.<br><span>TOUT INCLUS.</span></h2>
     </div>
 
-    <!-- Gratuit -->
-    <div class="free-card">
-      <div class="free-left">
-        <div class="free-tag" data-i18n="free_tag">— Toujours gratuit</div>
-        <h2 class="free-title" data-i18n="free_title">COMMENCE SANS PAYER.</h2>
-        <div class="free-price">0€</div>
-        <p class="free-desc" data-i18n="free_desc">Découvre Espritum gratuitement avec la fonctionnalité phare : l'estimation de ta masse grasse par caméra. Pas de carte bancaire requise.</p>
-        <a class="free-cta" href="inscription.html" data-i18n="plan_start">Commencer gratuitement →</a>
-      </div>
-      <div class="free-features">
-        <div class="free-feature"><div class="free-dot"></div><span data-i18n="free_f1">Estimation masse grasse (caméra)</span></div>
-        <div class="free-feature"><div class="free-dot"></div><span data-i18n="free_f2">Verset biblique du jour</span></div>
-        <div class="free-feature"><div class="free-dot"></div><span data-i18n="free_f3">Dashboard basique</span></div>
-        <div class="free-feature"><div class="free-dot"></div><span data-i18n="free_f4">1 plan d'entraînement fixe</span></div>
-        <div class="free-feature"><div class="free-dot"></div><span data-i18n="free_f5">Suivi poids simple</span></div>
-      </div>
-    </div>
+    <div class="single-plan-wrap">
+      <div class="single-plan-card">
 
-    <!-- Plans -->
-    <div class="plans-grid">
-      <div class="plan-card">
-        <div class="plan-tier">
-          <span class="plan-icon">⚔️</span>
-          <span class="plan-name">Guerrier</span>
+        <div class="single-plan-header">
+          <div class="single-plan-badge">Accès complet · Sans engagement</div>
+          <div class="single-plan-price">
+            <span class="single-plan-amount">11</span>
+            <span class="single-plan-deci">,99</span>
+            <span class="single-plan-currency">€</span>
+          </div>
+          <div class="single-plan-period">par mois</div>
+          <p class="single-plan-desc">Toutes les fonctionnalités incluses. Pas de paliers, pas de restrictions. Annule à tout moment.</p>
         </div>
-        <div class="plan-price">
-          <div class="price-amount"><span class="euro">€</span><span class="price-val" data-m="5" data-y="4">5</span></div>
-          <div class="price-period" data-i18n="price_period">par mois</div>
-          <div class="price-yearly-note">soit €48/an — économise €12</div>
-        </div>
-        <p class="plan-desc" data-i18n="warrior_desc">Pour celui qui fait ses premiers pas dans la discipline. Les fondations sont posées.</p>
-        <div class="divider"></div>
-        <div class="features-label" data-i18n="plan_included">Inclus dans ce plan</div>
-        <ul class="features">
-          <li class="feature"><span class="check"></span><span data-i18n="wf1">Tout du plan gratuit</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="wf2">Suivi nutrition complet (calories + macros)</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="wf3">3 plans d'entraînement personnalisés</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="wf4">Historique 30 jours</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="wf5">Badges & système de niveaux</span></li>
-          <li class="feature locked"><span class="check"></span><span data-i18n="wf6">Coach IA Sensei</span></li>
-          <li class="feature locked"><span class="check"></span><span data-i18n="wf7">Scan repas caméra</span></li>
-        </ul>
-        <a class="plan-cta cta-ghost" href="inscription.html?plan=guerrier" data-i18n="warrior_cta">Rejoindre Guerrier →</a>
-      </div>
 
-      <div class="plan-card featured">
-        <div class="featured-badge" data-i18n="plan_popular">Le plus populaire</div>
-        <div class="plan-tier">
-          <span class="plan-icon">🛡️</span>
-          <span class="plan-name">Champion</span>
+        <div class="single-plan-features">
+          <div class="single-feat"><span class="check"></span>Suivi nutrition (calories + macros)</div>
+          <div class="single-feat"><span class="check"></span>Coach IA Sensei illimité</div>
+          <div class="single-feat"><span class="check"></span>Scan de repas par caméra</div>
+          <div class="single-feat"><span class="check"></span>Plans d'entraînement IA personnalisés</div>
+          <div class="single-feat"><span class="check"></span>Estimation masse grasse (caméra)</div>
+          <div class="single-feat"><span class="check"></span>Photos progression avant/après</div>
+          <div class="single-feat"><span class="check"></span>Classement communautaire</div>
+          <div class="single-feat"><span class="check"></span>Badges & système de niveaux</div>
+          <div class="single-feat"><span class="check"></span>Verset biblique & prières</div>
+          <div class="single-feat"><span class="check"></span>Historique illimité</div>
+          <div class="single-feat"><span class="check"></span>Suivi mensurations complet</div>
+          <div class="single-feat"><span class="check"></span>Support prioritaire</div>
         </div>
-        <div class="plan-price">
-          <div class="price-amount"><span class="euro">€</span><span class="price-val" data-m="15" data-y="12">15</span></div>
-          <div class="price-period" data-i18n="price_period">par mois</div>
-          <div class="price-yearly-note">soit €144/an — économise €36</div>
-        </div>
-        <p class="plan-desc" data-i18n="champion_desc">Pour le guerrier sérieux. L'IA devient ton mentor personnel, disponible 24h/24.</p>
-        <div class="divider"></div>
-        <div class="features-label" data-i18n="plan_included">Inclus dans ce plan</div>
-        <ul class="features">
-          <li class="feature"><span class="check"></span><span data-i18n="cf1">Tout du plan Guerrier</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="cf2">Coach IA Sensei (illimité)</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="cf3">Scan de repas par caméra</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="cf4">Suivi mensurations complet</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="cf5">Photos progression avant/après</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="cf6">Classement communautaire</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="cf7">Prières & citations bibliques premium</span></li>
-        </ul>
-        <a class="plan-cta cta-red" href="inscription.html?plan=champion" data-i18n="champion_cta">Rejoindre Champion →</a>
-      </div>
 
-      <div class="plan-card">
-        <div class="plan-tier">
-          <span class="plan-icon">👑</span>
-          <span class="plan-name">Élite</span>
+        <div class="single-plan-footer">
+          <button class="plan-cta cta-waitlist" onclick="openWaitlist('pro')">Rejoindre la liste d'attente →</button>
         </div>
-        <div class="plan-price">
-          <div class="price-amount"><span class="euro">€</span><span class="price-val" data-m="30" data-y="24">30</span></div>
-          <div class="price-period" data-i18n="price_period">par mois</div>
-          <div class="price-yearly-note">soit €288/an — économise €72</div>
-        </div>
-        <p class="plan-desc" data-i18n="elite_desc">Pour ceux qui refusent la médiocrité. Une expérience entièrement sur-mesure.</p>
-        <div class="divider"></div>
-        <div class="features-label" data-i18n="plan_included">Inclus dans ce plan</div>
-        <ul class="features">
-          <li class="feature"><span class="check"></span><span data-i18n="ef1">Tout du plan Champion</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="ef2">Plan nutrition 100% IA personnalisé</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="ef3">Analyse morphologique avancée</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="ef4">Accès prioritaire nouvelles fonctionnalités</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="ef5">Badge Élite exclusif</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="ef6">Support direct prioritaire</span></li>
-        </ul>
-        <a class="plan-cta cta-outline" href="inscription.html?plan=elite" data-i18n="elite_cta">Rejoindre Élite →</a>
+
       </div>
     </div>
   </div>
@@ -985,16 +1891,19 @@
 
 <!-- FAQ -->
 <section id="faq">
-  <div class="section-wrap">
-    <h2 class="section-heading" data-i18n="faq_title">Questions fréquentes</h2>
+  <div class="faq-inner">
+    <div class="faq-header">
+      <div class="section-tag centered" data-i18n="faq_title">FAQ</div>
+      <h2 class="section-heading">TU AS DES<br><span>QUESTIONS ?</span></h2>
+    </div>
     <div class="faq-list">
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q1b">Comment fonctionne l'estimation de masse grasse par caméra ?</span><span class="faq-arrow">+</span></div>
         <div class="faq-a" data-i18n="faq_a1b">L'IA analyse ta silhouette via la caméra de ton téléphone et estime ton taux de masse grasse grâce à des algorithmes de vision par ordinateur. Ce n'est pas une mesure médicale, mais une estimation fiable pour suivre ta progression dans le temps. Cette fonctionnalité est disponible gratuitement.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q2">Puis-je changer de plan à tout moment ?</span><span class="faq-arrow">+</span></div>
-        <div class="faq-a" data-i18n="faq_a2">Oui, tu peux upgrader ou downgrader ton plan à n'importe quel moment depuis ton profil. Le changement prend effet immédiatement et la facturation est ajustée au prorata du mois en cours.</div>
+        <div class="faq-q" onclick="toggleFaq(this)"><span>Puis-je annuler à tout moment ?</span><span class="faq-arrow">+</span></div>
+        <div class="faq-a">Oui, l'abonnement est sans engagement. Tu peux annuler à tout moment depuis ton profil, sans frais ni pénalité. L'accès reste actif jusqu'à la fin de la période déjà payée.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q3b">Le contenu chrétien est-il obligatoire ?</span><span class="faq-arrow">+</span></div>
@@ -1002,7 +1911,7 @@
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q4">Comment fonctionne le Coach IA Sensei ?</span><span class="faq-arrow">+</span></div>
-        <div class="faq-a" data-i18n="faq_a4">Sensei est alimenté par l'IA Claude d'Anthropic. Il analyse tes données nutritionnelles, tes performances et te donne des conseils personnalisés dans un style inspiré de l'univers anime — direct, profond et motivant. Disponible sur les plans Champion et Élite.</div>
+        <div class="faq-a">Sensei est alimenté par l'IA Groq. Il analyse tes données nutritionnelles, tes performances et te donne des conseils personnalisés dans un style inspiré de l'univers anime — direct, profond et motivant. Inclus dans l'abonnement.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q5">L'application est-elle disponible sur iPhone ?</span><span class="faq-arrow">+</span></div>
@@ -1014,7 +1923,7 @@
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q7">Y a-t-il une période d'essai ?</span><span class="faq-arrow">+</span></div>
-        <div class="faq-a" data-i18n="faq_a7">Le plan gratuit est permanent — pas de limite de temps. Pour les plans payants, nous offrons une garantie satisfait ou remboursé de 7 jours. Si tu n'es pas satisfait, contacte-nous et nous te remboursons intégralement.</div>
+        <div class="faq-a">L'abonnement est sans engagement. Tu peux annuler à tout moment depuis ton profil. Nous offrons également une garantie satisfait ou remboursé de 7 jours — si Espritum n'est pas fait pour toi, contacte-nous et nous te remboursons intégralement, sans question.</div>
       </div>
     </div>
   </div>
@@ -1022,14 +1931,88 @@
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-brand">
-    <img class="footer-logo" src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAEsASwDASIAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAcIBgkDBAUCAf/EAFQQAAEDAwEFAwYHCA4JBQAAAAEAAgMEBQYRBwgSITETQWEiMlFxgbEUI2JykaHRCRUYUoKiwcMWM0JTVZKTlJWywtLT4RckQ0ZXc4WjxCY0VmPj/8QAGwEBAAIDAQEAAAAAAAAAAAAAAAQFAwYHAgH/xAAtEQEAAQMCAwYGAwEAAAAAAAAAAQIDEQQFBiExEhNBUWHRFCKBkbHBMnGhUv/aAAwDAQACEQMRAD8ApkiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiy/D7fb621OfUUsckjZS0l3XoCPevYlsVrdE9rKKJri0gHToVEr1lNFU0zDb9HwdqtXpqdRRcpxVGfHP4Rwi+pGPjkdHI0te0lrgeoIXypbUZiYnEiIiPgiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICL9HIgqSILXaZYI5WUNM5r2hwIYOYIWC9fi1jMdV7smxXN3muLdcU9nHX1z7I2RZtllopm2h0tHSRRvieHuLGAHh5g+/X2LCV6s3Yu05hH3jabu1X+5uTnMZzHRkWDV7aevfSSEBtQBwn5Q6D2/Ys4UTNc5rg5pLXA6gjqCs4x3IoauNtPWyNiqRyDjya/7CoessTM9ulufBu/WqLfwN+rGP4zPTn4f3no+sgxyO4SmppnthnPngjyX+PgViNztdbbnaVMJa0nQPHNp9qk1fEsccsbo5WNexw0LXDUFYbWrro5TzhdbvwjpNfNV238lc+MdJn1j2wihFkWUY+aLirKME0+vlM6mP/JY6rS3cpuU9qlyvcNvv7ffmzfjEx9pjzgREXtBEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBZ3hVwbU274I93xtPyHi3u+z6Fgi56GqnoqltRTv4JG/QR6D4LDftd7RhdbDu07Xq4vdaZ5THp7x1SkQCCCNQeoWNXPEoZpHS0U3YE8+zcNW+w931rvWW/0dwY1j3tgqNObHHQE+B717CqYquWKvJ1y7Y27fLEVVYrp8J8Y/cf0jK52uttz9KmIhp6PbzafaukpXnijnhdFMwPY4aOaehUfZLaTa6wBnE6nk5xuPd6QrHT6rvPlq6uc8R8LTttPf2J7Vvxz1j3j1cVrvNfb3jspi+Pvjfzafs9izmy3amukBfEeGRvnxk82/aFGq7VrrZrfWsqYTzafKHc4d4K9X9NTcjMdUfYOJb+3XIouVTVanrHXHrHt0lJ7mtc0tcA5pGhBHIhR3k1s+9txLWA9hJ5UX6R7PsUg0s0dTTxzxHVkjQ5p8CvIzOlFRZXyBnE+Ah4IHMDofZpz9igaa5Nu5ifFv3FG3W9w2+btHOqiO1E+njH1j/cMAREVw4yIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICLN8QpKKosjHy0sEj2vc0udGCeuv6V6Vda6F1FO2Ohpw8xuDSIhqDpyUOrWU01TTMNz03Bl/UaWnU03YxVGcYny6I2Xo2u811vlaWTPfEDziedWkfoXnIpVVMVRiYanp9Te01cXLNU0zHjCU6GpirKSOphJ4JBqNeo8F0sopG1llnby4429ow6d45/WNQsVs+Rz26hbStp2SNaSQXOI6rszZbUSwvjNHEA9pafKPeq34W5TXml0+rirbdVoe61FXzVU4mMT1mOf8AvRjSIitHKWfYRP2tjaw/7KRzP0/pXr1kYlpJoj0fG5p9oXi4JG5llc93SSZzm+rQD3gr26hwZBI49A0k/QqS9yuzjzd02SZr2m13n/EfbHsilERXbhYiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgy/Z9UAx1NIXcwRI0fUf0LK1GNnrX2+4xVTeYadHj0tPVSXDIyaJssTg5jxq0jvCqdZbmmvtebrvBe406jQ/DzPzW/xPOJ/SO8loHUF1lYGBsTzxx6dND3ezovMUl3u2Q3Sj7GQ8L2nWN4HNp+xR/c7dVW6cxVMZH4rx5rvUVM01+LlOJ6tM4m2C7t9+q7bjNqqcxPlnwn9OoiIpTVRfcEUk8zIYmlz3kNaB3lIIZZ5WxQxuke7o1o1JWcYxYfvf/rVVo6pcNABzDB9qw3r1NqnM9V1suyX90vxTTGKI6z4RHv5Q9W1UgobfDSg69m3Qn0nvP0rq5RU/BbHUOBHE9vZj8rl7tV6iwbNrl8KrRRxO1igPlaHk5/+XT6VV2KJu3Of9upb/rLe17ZVTRyzHZpj6Y/yObHkRFdOJiIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAsgxW+/AHfBKpxNM4+S7r2Z+xY+i8XLdNyns1Ju36+9oL8X7M4mPtMeU+iWGPa9gexwc1w1BB1BC/Joop4zHNG2Rh6tcNQVHdmvdbbDwxu7SHvif09noWV0GT22pAEr3Uz+8PHL6R/kqq5pblucxzh1nbOKtBr6OzdmKKvGKun0npP59H7UYvaZXFzY5ISfxH8vr1XHHidradXGok8C/l9QXsxVVLKNYqiF4+S8FfT5oWDV8sbR4uAXjvrscsynTs201z3ndUfaMezioqGkomltLTsiB6kDmfWeq7K8usv8AaqUHiqmyO/Fi8o/VyWM3jKKqraYqRppoj1IPln293sX2jT3Lk5/LBreINs2y32aaomY6U04/XKPq9fKb82lY+jo361B5PeP9n/n7lhB5nUoeZ1KK1s2abVOIco3jeL+63+9u8ojpHhEe/nIiIsqpEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEX1Gx8jwyNjnuPINaNSV7VHh2XVjQ6jxa+VDT0MVvleD9DUHhosklwLOoW8UuF5HG30utcwH9VeNcLZcreeGvt9XSH0TwuZ7wg6iIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiDmdAgL0cesd5yG6R2uxWusudbJ5kFLC6R58dB3eKn3YNut5DmDYb3mrqnHrI7R8dPwAVdU3wB/a2+Lhqe4ac1dLAsGxPBbULbitkpbbDoON0bdZJSO97zq559ZKCnWzbc+y67sirMzu1Nj1O4cRpoQKip9R0IY36XepWAwzdi2R46yN01ilvlSzTWa5zmQE/8ALbws/NU0LxMry7F8UpfhOSZBbLTHpqPhVS1jnfNaTq72AoOxZMesFjibFZbJbbaxvINpKVkQH8UBemoFybey2S2lz46Cou17e3kDR0Zawn50pZ9OhWD12+tZWOIosCuEze4zXBkZ+gMcgtkvioghqIjFUQxzRu6se0OB9hVR6ffYpi7/AFjZ3M0ell2BP1xBZFZN8rAamQMuuO3+36/u42xzNH5wP1IJeynY7swyZr/vvhFmfI/zpoKcQSn8uPhd9ahnOtzfEq9kk+IX+4Wac82wVQFTB6geTx6yXKVsP287JspdHFb8yoKeof0gryaV+vo+MABPqJUkwyRzRNlhkZJG8atc06gj0goNa20rd72n4MJamqsbrrbo9Sa22EzsDfS5uge31lunionW4NRPtb3f9nm0QS1dVbfvReHg6XC3gRvcfTIzzZPEkcXiEGtRFLG2nYJnGzEvraunbdrHxaNudG0ljR3dq3rGfXq30EqJ0BERAREQEREBERAREQEREBERAREQEREBERARF9wRSzzMggjfLLI4MYxjSXOcToAAOpKDlttFV3K4U9vt9NLVVdTK2GCGJpc+R7jo1oA6kkgK9G7Nu10GHx02U51T09wyLyZaakOj4aA9QT3PlHp6NI5anyl6O6fsGpMAtEGVZRRsly2qj1ax+jhbmHXyG93aEacT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" alt="Espritum">
-    <span class="footer-name">Espritum</span>
+  <div class="footer-top">
+    <div class="footer-brand-col">
+      <div class="footer-brand">
+        <img class="footer-logo" src="fav-icon-003.png" alt="Espritum">
+        <span class="footer-name">Espritum</span>
+      </div>
+      <p class="footer-tagline">Une application de fitness fondée sur la discipline du corps et la force de l'esprit.</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Application</div>
+      <a href="#probleme">Le problème</a>
+      <a href="#fonctionnalites">Fonctionnalités</a>
+      <a href="#tarifs">Tarifs</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Rejoindre</div>
+      <a href="#hero-waitlist" onclick="event.preventDefault();openWaitlist('footer')">Liste d'attente</a>
+      <a href="#fonctionnalites">Fonctionnalités</a>
+    </div>
   </div>
-  <div class="footer-copy"><span data-i18n="footer_rights">© 2025 Espritum — Tous droits réservés</span></div>
+  <div class="footer-bottom">
+    <span class="footer-copy"><span data-i18n="footer_rights">© 2026 Espritum — Tous droits réservés</span></span>
+    <span class="footer-copy">Not just flesh — but spirit.</span>
+  </div>
 </footer>
 
+<!-- WAITLIST MODAL -->
+<div id="wl-modal" class="wl-modal" style="display:none" onclick="if(event.target===this)closeWaitlist()">
+  <div class="wl-modal-inner">
+    <button class="wl-modal-close" onclick="closeWaitlist()" aria-label="Fermer">×</button>
+
+    <!-- Form state -->
+    <div id="wl-form-wrap">
+      <div class="wl-modal-eyebrow">Espritum — Accès anticipé</div>
+      <div class="wl-modal-title">REJOINDRE<br><span style="color:var(--red)">LA LISTE</span></div>
+      <p class="wl-modal-sub">Sois parmi les premiers à accéder à l'app. On te prévient dès l'ouverture.</p>
+      <form class="wl-form" onsubmit="joinWaitlist(event)">
+        <div class="wl-row">
+          <input type="text" id="wl-prenom" class="wl-field" placeholder="Prénom" required autocomplete="given-name">
+          <input type="text" id="wl-nom" class="wl-field" placeholder="Nom" required autocomplete="family-name">
+        </div>
+        <input type="email" id="wl-email" class="wl-field" placeholder="ton@email.com" required autocomplete="email">
+        <input type="tel" id="wl-tel" class="wl-field" placeholder="Téléphone (optionnel)" autocomplete="tel">
+        <button type="submit" id="wl-btn" class="wl-btn">REJOINDRE LA LISTE</button>
+      </form>
+      <p class="wl-modal-note">Gratuit · Pas de spam · Désabonnement en 1 clic</p>
+    </div>
+
+    <!-- Success state -->
+    <div id="wl-success" class="wl-success" style="display:none">
+      <div class="wl-success-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="wl-success-title">Tu es sur la liste !</div>
+      <p class="wl-success-msg" id="wl-success-msg">On te prévient en premier dès l'ouverture d'Espritum.<br>Bienvenue dans la communauté des guerriers.</p>
+      <button class="wl-btn" onclick="closeWaitlist()" style="margin-top:8px;max-width:200px;">FERMER</button>
+    </div>
+  </div>
+</div>
+
 <script>
+  // ── Cursor
+  const cursor = document.getElementById('cursor');
+  const ring   = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top  = my + 'px';
+  });
+
+  (function animRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(animRing);
+  })();
+
+  // ── Billing toggle
   let yearly = false;
 
   function switchBilling() {
@@ -1045,12 +2028,105 @@
     });
   }
 
+  // ── FAQ
   function toggleFaq(el) {
     const item = el.parentElement;
     const wasOpen = item.classList.contains('open');
     document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
     if (!wasOpen) item.classList.add('open');
   }
+
+  // ── Waitlist modal
+  var _wlSource = 'hero';
+
+  function openWaitlist(source) {
+    _wlSource = source || 'hero';
+    // Reset form + success state
+    var formWrap = document.getElementById('wl-form-wrap');
+    var success  = document.getElementById('wl-success');
+    var btn      = document.getElementById('wl-btn');
+    if (formWrap) formWrap.style.display = '';
+    if (success)  success.style.display  = 'none';
+    if (btn)      { btn.textContent = 'REJOINDRE LA LISTE'; btn.disabled = false; }
+    document.querySelectorAll('.wl-field').forEach(function(f) { f.classList.remove('error'); f.value = ''; });
+
+    var modal = document.getElementById('wl-modal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    setTimeout(function() {
+      var inp = document.getElementById('wl-prenom');
+      if (inp) inp.focus();
+    }, 250);
+  }
+
+  function closeWaitlist() {
+    var modal = document.getElementById('wl-modal');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  // Fermer avec Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeWaitlist();
+  });
+
+  async function joinWaitlist(e) {
+    e.preventDefault();
+    var prenom = (document.getElementById('wl-prenom') || {}).value || '';
+    var nom    = (document.getElementById('wl-nom')    || {}).value || '';
+    var email  = (document.getElementById('wl-email')  || {}).value || '';
+    var tel    = (document.getElementById('wl-tel')    || {}).value || '';
+
+    prenom = prenom.trim(); nom = nom.trim(); email = email.trim(); tel = tel.trim();
+    if (!email) return;
+
+    var btn = document.getElementById('wl-btn');
+    var origTxt = btn.textContent;
+    btn.textContent = '...';
+    btn.disabled = true;
+
+    try {
+      var resp = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prenom, nom, email, telephone: tel, lang: document.documentElement.lang || 'fr', source: _wlSource })
+      });
+
+      if (resp.status === 201 || resp.status === 200) {
+        document.getElementById('wl-form-wrap').style.display = 'none';
+        document.getElementById('wl-success').style.display = 'flex';
+      } else if (resp.status === 409) {
+        document.getElementById('wl-form-wrap').style.display = 'none';
+        document.getElementById('wl-success').style.display = 'flex';
+        document.getElementById('wl-success-msg').innerHTML = 'Tu es déjà sur la liste —<br>on te prévient en premier !';
+      } else {
+        throw new Error('HTTP ' + resp.status);
+      }
+    } catch(err) {
+      btn.textContent = origTxt;
+      btn.disabled = false;
+      var emailEl = document.getElementById('wl-email');
+      if (emailEl) emailEl.classList.add('error');
+      console.error('Waitlist error:', err);
+    }
+  }
+
+  // ── Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.feat-card, .plan-card, .faq-item, .free-card, .about-right, .about-left').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(28px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    obs.observe(el);
+  });
 </script>
 </body>
 </html>

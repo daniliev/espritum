@@ -25,29 +25,36 @@
     --muted2: #333;
     --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
     --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
-    --sidebar: 240px;
+    --sidebar: 80px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; }
   body { background: var(--bg); color: #fff; font-family: var(--font-body); display: flex; }
 
   /* SIDEBAR */
-  .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 50; }
-  .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 24px 20px; border-bottom: 1px solid var(--border); text-decoration: none; }
-  .sidebar-logo { width: 34px; height: 34px; object-fit: contain; border-radius: 6px; }
-  .sidebar-name { font-family: var(--font-display); font-size: 18px; letter-spacing: 5px; color: #fff; text-transform: uppercase; }
-  .sidebar-nav { flex: 1; padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; }
-  .nav-section-label { font-size: 9px; letter-spacing: 3px; color: var(--muted2); text-transform: uppercase; font-weight: 700; padding: 14px 10px 6px; }
-  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 6px; text-decoration: none; transition: background 0.2s, color 0.2s; color: var(--muted); font-size: 14px; font-weight: 500; }
-  .nav-item:hover { background: var(--bg3); color: #ccc; }
-  .nav-item.active { background: rgba(200,40,40,0.1); color: #fff; border-left: 2px solid var(--red); }
-  .nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
-  .sidebar-bottom { padding: 16px 12px; border-top: 1px solid var(--border); }
-  .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
-  .user-card:hover { background: var(--bg3); }
-  .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(200,40,40,0.15); border: 1px solid rgba(200,40,40,0.3); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; color: var(--red); flex-shrink: 0; }
-  .user-name { font-size: 13px; font-weight: 600; color: #ddd; }
-  .user-plan { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+  .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 50; align-items: center; }
+  .sidebar-brand { display: flex; align-items: center; justify-content: center; padding: 22px 0 26px; text-decoration: none; }
+  .sidebar-logo { width: 38px; height: 38px; object-fit: contain; border-radius: 8px; }
+  .sidebar-name { display: none; }
+  .sidebar-nav { flex: 1; padding: 8px 0; display: flex; flex-direction: column; gap: 6px; align-items: center; width: 100%; }
+  .nav-section-label { display: none; }
+  .nav-item { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 10px; text-decoration: none; transition: background 0.2s; color: transparent; font-size: 0; flex-shrink: 0; }
+  .nav-item span:not(.nav-icon):not(.nav-lock) { display: none; }
+  .nav-item:hover { background: rgba(255,255,255,0.04); }
+  .nav-item.active { background: rgba(255,255,255,0.06); }
+  .nav-icon { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; flex-shrink: 0; }
+  .nav-icon img { width: 26px; height: 26px; object-fit: contain; display: block; opacity: 0.45; transition: opacity 0.2s; }
+  .nav-item:hover .nav-icon img { opacity: 0.85; }
+  .nav-item.active .nav-icon img { opacity: 1; }
+  .nav-lock { display: none; }
+  .sidebar-bottom { padding: 12px 0 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .user-card { display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; cursor: pointer; transition: opacity 0.2s; }
+  .user-card > div:not(.user-avatar) { display: none; }
+  .user-card:hover { opacity: 0.8; }
+  .user-avatar { width: 38px; height: 38px; border-radius: 50%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; color: #ddd; flex-shrink: 0; }
+  .user-name, .user-plan { display: none; }
+  .nav-item.locked { opacity: 0.4; cursor: not-allowed; }
+  .nav-item.locked:hover { background: transparent; }
 
   /* MAIN */
   .main { margin-left: var(--sidebar); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
@@ -454,21 +461,15 @@
 
 <aside class="sidebar">
   <a class="sidebar-brand" href="dashboard.html">
-    <img class="sidebar-logo" src="data:image/png;base64,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" alt="Espritum">
+    <img class="sidebar-logo" src="fav-icon-003.png" alt="Espritum">
     <span class="sidebar-name">Espritum</span>
   </a>
   <nav class="sidebar-nav">
-    <div class="nav-section-label">Principal</div>
     <a class="nav-item active" href="dashboard.html"><span class="nav-icon"><img src="icons/dashboard.svg" alt="Dashboard"></span> Dashboard</a>
     <a class="nav-item nav-freemium" href="nutrition.html" data-feature="Nutrition"><span class="nav-icon"><img src="icons/nutrition.svg" alt="Nutrition"></span> Nutrition<span class="nav-lock" id="lock-nutrition"></span></a>
-    <a class="nav-item nav-freemium" href="entrainement.html" data-feature="Entraînement"><span class="nav-icon"><img src="icons/entrainement.svg" alt="Entraînement"></span> Training<span class="nav-lock" id="lock-entrainement"></span></a>
-    <a class="nav-item nav-freemium" href="progression.html" data-feature="Progression"><span class="nav-icon"><img src="icons/entrainement.svg" alt="Progression"></span> Progression<span class="nav-lock" id="lock-progression"></span></a>
-    <div class="nav-section-label">IA & Motivation</div>
-    <a class="nav-item" href="#" onclick="openScanSheet(); return false;"><span class="nav-icon"><img src="icons/profil.svg" alt="Estimation"></span> Estimation</a>
+    <a class="nav-item nav-freemium" href="entrainement.html" data-feature="Entraînement"><span class="nav-icon"><img src="icons/entrainement.svg" alt="Training"></span> Training<span class="nav-lock" id="lock-entrainement"></span></a>
     <a class="nav-item nav-freemium" href="classement.html" data-feature="Classement"><span class="nav-icon"><img src="icons/classement.svg" alt="Classement"></span> Classement<span class="nav-lock" id="lock-classement"></span></a>
-    <div class="nav-section-label">Compte</div>
     <a class="nav-item" href="profil.html"><span class="nav-icon"><img src="icons/profil.svg" alt="Profil"></span> Profil</a>
-    <a class="nav-item" href="abonnement.html"><span class="nav-icon"><img src="icons/profil.svg" alt="Abonnement"></span> Abonnement</a>
   </nav>
   <div class="sidebar-bottom">
     <div class="user-card" onclick="window.location.href='profil.html'">
@@ -486,7 +487,7 @@
     <div class="topbar-title">NO DAYS <span>OFF.</span></div>
     <div class="topbar-right">
       <div class="topbar-streak-pill" id="topbar-streak"><img class="si" src="icons/streak-icon.png"> <span class="si-num">0</span></div>
-      <div class="topbar-avatar-pill" id="topbar-avatar">?</div>
+      <div class="topbar-avatar-pill" id="topbar-avatar" onclick="window.location.href='profil.html'" style="cursor:pointer;">?</div>
     </div>
   </div>
 
@@ -494,7 +495,7 @@
 
     <!-- WORD OF THE DAY -->
     <div class="wod-card">
-      <div class="wod-label">Word of the day</div>
+      <div class="wod-label" data-i18n="dash_word_day">Word of the day</div>
       <div class="wod-quote" id="wod-quote">"Je puis tout par celui qui me fortifie."</div>
       <div class="wod-ref" id="wod-ref">Philippiens 4:13</div>
     </div>
@@ -518,33 +519,33 @@
     <div class="body-photos-card">
       <div class="body-photos-row">
         <div class="body-photo-item">
-          <div class="body-photo-lbl">Mon corps actuel</div>
+          <div class="body-photo-lbl" data-i18n="dash_mon_corps">Mon corps actuel</div>
           <div class="body-photo-frame" id="current-body-frame" onclick="openScanSheet()">
             <img id="current-body-img" alt="Corps actuel">
             <div class="body-photo-empty" id="current-body-empty">
               <div class="body-photo-add">
                 <svg class="body-photo-add-icon" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
               </div>
-              <div class="body-photo-empty-text">Scanner mon corps</div>
+              <div class="body-photo-empty-text" data-i18n="dash_scanner_corps">Scanner mon corps</div>
             </div>
           </div>
         </div>
         <div class="body-photo-item">
-          <div class="body-photo-lbl">Mon corps de rêve</div>
+          <div class="body-photo-lbl" data-i18n="dash_corps_reve">Mon corps de rêve</div>
           <div class="body-photo-frame" id="dream-body-frame" onclick="document.getElementById('dream-upload').click()">
             <img id="dream-body-img" alt="Corps de rêve">
             <div class="body-photo-empty" id="dream-body-empty">
               <div class="body-photo-add">
                 <svg class="body-photo-add-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               </div>
-              <div class="body-photo-empty-text">Ajouter une photo</div>
+              <div class="body-photo-empty-text" data-i18n="dash_ajouter_photo">Ajouter une photo</div>
             </div>
           </div>
           <input type="file" id="dream-upload" accept="image/*" style="display:none" onchange="handleDreamUpload(this)">
         </div>
       </div>
       <div>
-        <div class="time-goal-lbl">Objectif en combien de temps ?</div>
+        <div class="time-goal-lbl" data-i18n="dash_objectif_temps">Objectif en combien de temps ?</div>
         <div class="slider-wrap">
           <input type="range" id="goal-slider" class="goal-slider" min="0" max="6" step="1" value="2" oninput="onSliderChange(this.value)">
           <div class="slider-ticks">
@@ -569,52 +570,43 @@
       <div class="body-stats-grid4">
         <div class="body-stat-box">
           <div class="body-stat-val"><span id="bstat-poids">—</span><sup>kg</sup></div>
-          <div class="body-stat-label">Poids</div>
+          <div class="body-stat-label" data-i18n="dash_poids_label">Poids</div>
         </div>
         <div class="body-stat-box">
           <div class="body-stat-val"><span id="bstat-mg">—</span><sup>%</sup></div>
-          <div class="body-stat-label">Masse grasse</div>
+          <div class="body-stat-label" data-i18n="dash_masse_grasse_label">Masse grasse</div>
         </div>
         <div class="body-stat-box">
           <div class="body-stat-val"><span id="bstat-mg-kg">—</span><sup>kg</sup></div>
-          <div class="body-stat-label">Graisse (kg)</div>
+          <div class="body-stat-label" data-i18n="dash_graisse_kg">Graisse (kg)</div>
         </div>
         <div class="body-stat-box">
           <div class="body-stat-val"><span id="bstat-mm-kg">—</span><sup>kg</sup></div>
-          <div class="body-stat-label">Muscle (kg)</div>
+          <div class="body-stat-label" data-i18n="dash_muscle_kg">Muscle (kg)</div>
         </div>
       </div>
-      <button class="scan-btn" onclick="openScanSheet()">Scan My Body</button>
+      <button class="scan-btn" onclick="openScanSheet()" data-i18n="dash_scan_my_body">Scan My Body</button>
     </div>
 
-    <!-- CALORIES CONSOMMÉES -->
+    <!-- CALORIES CONSOMMÉES vs BRÛLÉES -->
     <div class="progression-card">
       <div class="progression-header">
         <div>
-          <div class="progression-title">Calories consommées</div>
-          <div class="progression-sub">7 derniers jours</div>
+          <div class="progression-title" data-i18n="dash_calories">Calories</div>
+          <div class="progression-sub" data-i18n="dash_7_jours">7 derniers jours</div>
         </div>
-        <div style="text-align:right">
-          <div class="progression-avg" id="prog-avg-consumed">—</div>
-          <div class="progression-avg-label">moy. kcal/jour</div>
-        </div>
-      </div>
-      <div class="chart-wrap"><canvas id="chartConsumed"></canvas></div>
-    </div>
-
-    <!-- CALORIES BRÛLÉES -->
-    <div class="progression-card">
-      <div class="progression-header">
-        <div>
-          <div class="progression-title">Calories brûlées</div>
-          <div class="progression-sub">7 derniers jours</div>
-        </div>
-        <div style="text-align:right">
-          <div class="progression-avg" id="prog-avg-burned">—</div>
-          <div class="progression-avg-label">moy. kcal/séance</div>
+        <div style="display:flex;gap:18px;align-items:flex-start">
+          <div style="text-align:right">
+            <div class="progression-avg" id="prog-avg-consumed" style="color:#c82828">—</div>
+            <div class="progression-avg-label"><span style="color:#c82828">●</span> <span data-i18n="dash_consommees">consommées</span></div>
+          </div>
+          <div style="text-align:right">
+            <div class="progression-avg" id="prog-avg-burned" style="color:#fff">—</div>
+            <div class="progression-avg-label"><span style="color:#fff">●</span> <span data-i18n="dash_brulees">brûlées</span></div>
+          </div>
         </div>
       </div>
-      <div class="chart-wrap"><canvas id="chartBurned"></canvas></div>
+      <div class="chart-wrap" style="height:180px"><canvas id="chartCalories"></canvas></div>
     </div>
 
   </div>
@@ -632,7 +624,7 @@
 <script>
   const sb = window.sb;
 
-  const VERSETS = [
+  const VERSETS_FR = [
     { text: '"Ne tremble pas, ne t\'effraie pas."', ref: 'Josué 1:9' },
     { text: '"Il donne de la force à celui qui est fatigué."', ref: 'Ésaïe 40:29' },
     { text: '"Sois fort et courageux ! L\'Éternel est avec toi."', ref: 'Josué 1:9' },
@@ -641,14 +633,30 @@
     { text: '"Je connais les projets que j\'ai formés sur vous."', ref: 'Jérémie 29:11' },
     { text: '"Je puis tout par celui qui me fortifie."', ref: 'Philippiens 4:13' },
   ];
+  const VERSETS_EN = [
+    { text: '"Do not be afraid, do not be dismayed."', ref: 'Joshua 1:9' },
+    { text: '"He gives strength to the weary."', ref: 'Isaiah 40:29' },
+    { text: '"Be strong and courageous! The Lord is with you."', ref: 'Joshua 1:9' },
+    { text: '"The Lord is my strength and my shield."', ref: 'Psalm 28:7' },
+    { text: '"Commit your way to the Lord; trust in him."', ref: 'Psalm 37:5' },
+    { text: '"I know the plans I have for you."', ref: 'Jeremiah 29:11' },
+    { text: '"I can do all things through him who strengthens me."', ref: 'Philippians 4:13' },
+  ];
+  function getVerset(dayIdx) {
+    const lang = (typeof getLang === 'function') ? getLang() : 'fr';
+    return (lang === 'en' ? VERSETS_EN : VERSETS_FR)[dayIdx];
+  }
 
   const PLAN_LABEL = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
-  const DAY_SHORT = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
-  const MONTH_NAMES = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const DAY_SHORT_FR = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const DAY_SHORT_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const MONTH_NAMES_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const MONTH_NAMES_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  function getDayShort() { return (typeof getLang==='function' && getLang()==='en') ? DAY_SHORT_EN : DAY_SHORT_FR; }
+  function getMonthNames() { return (typeof getLang==='function' && getLang()==='en') ? MONTH_NAMES_EN : MONTH_NAMES_FR; }
 
   let ringChartInst = null;
-  let chartConsumedInst = null;
-  let chartBurnedInst = null;
+  let chartCaloriesInst = null;
 
   /* ── CALORIES PAR EXERCICE — copie exacte de entrainement.html ── */
   let userWeightKg = 70; // mis à jour depuis profil dans init()
@@ -741,12 +749,13 @@
       window._espritumUser = { id: userId, plan: profile?.plan || 'gratuit', semaine_programme: profile?.semaine_programme || 1, poids: profile?.poids, masse_grasse: profile?.masse_grasse, genre: profile?.genre || 'homme' };
       userWeightKg = profile?.poids || 70; // identique à entrainement.html
 
-      setEl('topbar-streak', '🔥 ' + (profile?.streak || 0));
+      const _sp = document.getElementById('topbar-streak');
+      if (_sp) _sp.innerHTML = '<img class="si" src="icons/streak-icon.png" alt="streak"> ' + (profile?.streak || 0);
       setEl('topbar-avatar', initiale);
 
       // Word of the day
       const now = new Date();
-      const v = VERSETS[now.getDay()];
+      const v = getVerset(now.getDay());
       setEl('wod-quote', v.text);
       setEl('wod-ref', v.ref);
 
@@ -759,9 +768,23 @@
       // Body photos + goal
       loadBodyPhotos();
 
-      // Charts
-      await loadWeekProgressConsumed(userId, profile?.calories_objectif || 2400);
-      await loadWeekProgressBurned(userId);
+      // Charts fusionnés
+      await loadWeekProgressCalories(userId, profile?.calories_objectif || 2400);
+
+      // Rafraîchissement temps réel quand repas/séance validé depuis une autre page
+      const _calObj = profile?.calories_objectif || 2400;
+      let _refreshTimeout = null;
+      function _scheduleRefresh() {
+        clearTimeout(_refreshTimeout);
+        _refreshTimeout = setTimeout(() => loadWeekProgressCalories(userId, _calObj), 300);
+      }
+      try {
+        const bc = new BroadcastChannel('esp_refresh');
+        bc.onmessage = _scheduleRefresh;
+      } catch(e) {}
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'esp_chart_refresh') _scheduleRefresh();
+      });
 
     } catch (err) {
       console.error('Dashboard error:', err);
@@ -797,7 +820,7 @@
       data: {
         datasets: [{
           data: [pct, 100 - pct],
-          backgroundColor: ['#c82828', '#1a1a1a'],
+          backgroundColor: ['#ffffff', '#1a1a1a'],
           borderWidth: 0,
           borderRadius: pct > 0 && pct < 100 ? 4 : 0,
         }]
@@ -841,7 +864,7 @@
     }
   }
 
-  async function loadWeekProgressConsumed(userId, calObj) {
+  async function loadWeekProgressCalories(userId, calObj) {
     const now = new Date();
     const days = [];
     for (let i = 6; i >= 0; i--) {
@@ -850,146 +873,93 @@
       days.push(d);
     }
     const from = localDate(days[0]);
-    const to = localDate(days[6]);
+    const to   = localDate(days[6]);
+    const labels = days.map(d => getDayShort()[d.getDay()]);
 
+    // --- Calories consommées ---
     const { data: meals } = await sb.from('meals')
       .select('date, calories')
       .eq('user_id', userId)
-      .gte('date', from)
-      .lte('date', to);
+      .gte('date', from).lte('date', to);
 
     const byDay = {};
-    (meals || []).forEach(m => {
-      byDay[m.date] = (byDay[m.date] || 0) + (m.calories || 0);
-    });
+    (meals || []).forEach(m => { byDay[m.date] = (byDay[m.date] || 0) + (m.calories || 0); });
+    const consumedData = days.map(d => byDay[localDate(d)] || 0);
+    const avgC = consumedData.filter(v=>v>0).reduce((a,b)=>a+b,0) / (consumedData.filter(v=>v>0).length || 1);
+    setEl('prog-avg-consumed', consumedData.some(v=>v>0) ? Math.round(avgC).toLocaleString('fr-FR') : '—');
 
-    const labels = days.map(d => DAY_SHORT[d.getDay()]);
-    const data = days.map(d => byDay[localDate(d)] || 0);
-    const nonZero = data.filter(v => v > 0);
-    const avg = nonZero.length ? Math.round(nonZero.reduce((a,b)=>a+b,0) / nonZero.length) : 0;
-
-    setEl('prog-avg-consumed', avg > 0 ? avg.toLocaleString('fr-FR') : '—');
-    renderChartConsumed(labels, data, calObj);
-  }
-
-  function renderChartConsumed(labels, data, calObj) {
-    const canvas = document.getElementById('chartConsumed');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (chartConsumedInst) chartConsumedInst.destroy();
-
-    const grad = ctx.createLinearGradient(0, 0, 0, 160);
-    grad.addColorStop(0, 'rgba(200,40,40,0.25)');
-    grad.addColorStop(1, 'rgba(200,40,40,0)');
-
-    chartConsumedInst = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          data,
-          borderColor: '#c82828',
-          borderWidth: 2,
-          backgroundColor: grad,
-          fill: true,
-          tension: 0.4,
-          pointBackgroundColor: data.map(v => v > 0 ? '#c82828' : 'transparent'),
-          pointBorderColor: 'transparent',
-          pointRadius: data.map(v => v > 0 ? 4 : 0),
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: { grid: { color: '#151515' }, ticks: { color: '#555', font: { size: 11 } } },
-          y: {
-            grid: { color: '#151515' },
-            ticks: { color: '#555', font: { size: 11 } },
-            beginAtZero: true,
-          }
-        },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: '#111',
-            titleColor: '#888',
-            bodyColor: '#fff',
-            callbacks: { label: ctx => ctx.parsed.y + ' kcal' }
-          }
-        }
-      }
-    });
-  }
-
-  async function loadWeekProgressBurned(userId) {
-    // Copie exacte de loadWeekProgressTrain (entrainement.html)
-    const days = [], labels = [];
-    const today = new Date();
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      days.push(localDate(d));
-      labels.push(DAY_SHORT[d.getDay()] + ' ' + d.getDate());
-    }
-
+    // --- Calories brûlées ---
+    const dayStrs = days.map(d => localDate(d));
     const { data: rows } = await sb.from('workouts')
       .select('date, nom, reps')
-      .eq('user_id', userId)
-      .eq('termine', true)
-      .gte('date', days[0])
-      .lte('date', days[6]);
+      .eq('user_id', userId).eq('termine', true)
+      .gte('date', from).lte('date', to);
 
     const calsByDay = {};
-    days.forEach(d => calsByDay[d] = 0);
+    dayStrs.forEach(d => calsByDay[d] = 0);
     (rows || []).forEach(r => {
-      if (calsByDay[r.date] === undefined) return;
-      calsByDay[r.date] += calcSerieKcal(r.nom, r.reps || 8, userWeightKg);
+      if (calsByDay[r.date] !== undefined)
+        calsByDay[r.date] += calcSerieKcal(r.nom, r.reps || 8, userWeightKg);
     });
+    const burnedData = dayStrs.map(d => calsByDay[d]);
+    const avgB = burnedData.filter(v=>v>0).reduce((a,b)=>a+b,0) / (burnedData.filter(v=>v>0).length || 1);
+    setEl('prog-avg-burned', burnedData.some(v=>v>0) ? Math.round(avgB).toLocaleString('fr-FR') : '—');
 
-    const data = days.map(d => calsByDay[d]);
-    const active = data.filter(v => v > 0);
-    const avg = active.length ? Math.round(active.reduce((a,b) => a+b, 0) / active.length) : 0;
-    setEl('prog-avg-burned', avg > 0 ? avg.toLocaleString('fr-FR') : '—');
-    renderChartBurned(labels, data);
+    renderChartCalories(labels, consumedData, burnedData);
   }
 
-  function renderChartBurned(labels, data) {
-    const canvas = document.getElementById('chartBurned');
+  function renderChartCalories(labels, consumedData, burnedData) {
+    const canvas = document.getElementById('chartCalories');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    if (chartBurnedInst) chartBurnedInst.destroy();
+    if (chartCaloriesInst) chartCaloriesInst.destroy();
 
-    const grad = ctx.createLinearGradient(0, 0, 0, 160);
-    grad.addColorStop(0, 'rgba(200,40,40,0.25)');
-    grad.addColorStop(1, 'rgba(200,40,40,0)');
+    const gradRed = ctx.createLinearGradient(0, 0, 0, 180);
+    gradRed.addColorStop(0, 'rgba(200,40,40,0.22)');
+    gradRed.addColorStop(1, 'rgba(200,40,40,0)');
 
-    chartBurnedInst = new Chart(ctx, {
+    const gradWhite = ctx.createLinearGradient(0, 0, 0, 180);
+    gradWhite.addColorStop(0, 'rgba(255,255,255,0.10)');
+    gradWhite.addColorStop(1, 'rgba(255,255,255,0)');
+
+    chartCaloriesInst = new Chart(ctx, {
       type: 'line',
       data: {
         labels,
-        datasets: [{
-          data,
-          borderColor: '#c82828',
-          borderWidth: 2,
-          backgroundColor: grad,
-          fill: true,
-          tension: 0.4,
-          pointBackgroundColor: data.map(v => v > 0 ? '#c82828' : 'transparent'),
-          pointBorderColor: 'transparent',
-          pointRadius: data.map(v => v > 0 ? 4 : 0),
-        }]
+        datasets: [
+          {
+            label: 'Consommées',
+            data: consumedData,
+            borderColor: '#c82828',
+            borderWidth: 2,
+            backgroundColor: gradRed,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: consumedData.map(v => v > 0 ? '#c82828' : 'transparent'),
+            pointBorderColor: 'transparent',
+            pointRadius: consumedData.map(v => v > 0 ? 4 : 0),
+          },
+          {
+            label: 'Brûlées',
+            data: burnedData,
+            borderColor: '#ffffff',
+            borderWidth: 2,
+            backgroundColor: gradWhite,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: burnedData.map(v => v > 0 ? '#ffffff' : 'transparent'),
+            pointBorderColor: 'transparent',
+            pointRadius: burnedData.map(v => v > 0 ? 4 : 0),
+          }
+        ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
         scales: {
           x: { grid: { color: '#151515' }, ticks: { color: '#555', font: { size: 11 } } },
-          y: {
-            grid: { color: '#151515' },
-            ticks: { color: '#555', font: { size: 11 } },
-            beginAtZero: true,
-          }
+          y: { grid: { color: '#151515' }, ticks: { color: '#555', font: { size: 11 } }, beginAtZero: true }
         },
         plugins: {
           legend: { display: false },
@@ -997,7 +967,9 @@
             backgroundColor: '#111',
             titleColor: '#888',
             bodyColor: '#fff',
-            callbacks: { label: ctx => ctx.parsed.y + ' kcal' }
+            callbacks: {
+              label: ctx => (ctx.dataset.label === 'Consommées' ? '🔴 ' : '⚪ ') + ctx.parsed.y.toLocaleString('fr-FR') + ' kcal'
+            }
           }
         }
       }
@@ -1157,10 +1129,14 @@
         } catch(e) { dreamBodyDescription = null; }
       }
 
-      itemsEl.innerHTML = `<div class="planning-item"><div class="planning-dot" style="background:#444;"></div><span style="color:var(--muted);">Évaluation de la faisabilité...</span></div>`;
+      const _pgLang = (typeof getLang === 'function') ? getLang() : 'fr';
+      const _isEngPG = _pgLang === 'en';
+      itemsEl.innerHTML = `<div class="planning-item"><div class="planning-dot" style="background:#444;"></div><span style="color:var(--muted);">${_isEngPG ? 'Evaluating feasibility...' : 'Évaluation de la faisabilité...'}</span></div>`;
 
       // 2. Groq évalue faisabilité + génère programme OU message impossible
-      const systemPrompt = `Tu es Coach Sensei, coach fitness chrétien expert. Tu génères des programmes personnalisés et réalistes. Par défaut, tu génères TOUJOURS un programme (feasible: true). Tu ne dis "impossible" QUE dans les cas extrêmes et évidents. Réponds UNIQUEMENT en JSON valide, sans texte supplémentaire.`;
+      const systemPrompt = _isEngPG
+        ? `You are Coach Sensei, an expert Christian fitness coach. You generate personalized and realistic programs. By default, you ALWAYS generate a program (feasible: true). You only say "impossible" in extreme and obvious cases. Respond ONLY in valid JSON, no extra text. All program content MUST be in English.`
+        : `Tu es Coach Sensei, coach fitness chrétien expert. Tu génères des programmes personnalisés et réalistes. Par défaut, tu génères TOUJOURS un programme (feasible: true). Tu ne dis "impossible" QUE dans les cas extrêmes et évidents. Réponds UNIQUEMENT en JSON valide, sans texte supplémentaire.`;
 
       const dreamCtx = dreamBodyDescription
         ? `- Corps de rêve (photo analysée) : "${dreamBodyDescription}"`
@@ -1172,7 +1148,44 @@
       const weeks = weeksMap[key] || 13;
       const maxFatLossKg = (weeks * 0.75).toFixed(1); // 0.75kg/semaine moyenne réaliste
 
-      const userMsg = `Génère un programme ou dis pourquoi c'est impossible.
+      const userMsg = _isEngPG ? `Generate a program or explain why it is impossible.
+
+CURRENT PROFILE:
+- Weight: ${poids || '?'} kg
+- Body fat: ${mgPct || '?'}%
+- Muscle mass: ${mmKg || '?'} kg
+- Gender: ${genre === 'homme' ? 'Male' : genre === 'femme' ? 'Female' : genre}
+- Body type: ${morphLabel || 'not specified'}
+${dreamCtx}
+- Desired duration: ${label} (${weeks} weeks)
+- Max realistic fat loss for this duration: ~${maxFatLossKg} kg
+
+RULE for "impossible" — only block if ALL these conditions are true simultaneously:
+• Duration ≤ 1 month AND very significant transformation required (>8% BF to lose or competition physique)
+• OR duration = 2 weeks AND dream physique is elite athlete (BF <10%, very developed muscles)
+
+In ALL other cases (duration ≥ 3 months, or moderate transformation) → feasible: true is mandatory.
+
+If IMPOSSIBLE (extreme cases only):
+{
+  "feasible": false,
+  "titre_impossible": "Short title",
+  "message": "Honest and kind explanation in 2 sentences",
+  "duree_realiste": "realistic timeframe (e.g. 6 months)"
+}
+
+If FEASIBLE (default) — ultra-personalized program:
+{
+  "feasible": true,
+  "titre": "Program title adapted to duration and profile",
+  "items": [
+    "tip 1 very concrete with precise numbers (calories, sessions, kg)",
+    "tip 2 very concrete with precise numbers",
+    "tip 3 very concrete with precise numbers",
+    "tip 4 very concrete with precise numbers",
+    "tip 5 short motivating Bible verse in English"
+  ]
+}` : `Génère un programme ou dis pourquoi c'est impossible.
 
 PROFIL ACTUEL :
 - Poids : ${poids || '?'} kg
@@ -1223,10 +1236,10 @@ Si FAISABLE (par défaut) — programme ultra-personnalisé :
           <div style="text-align:center;padding:14px 8px 8px;">
             <div style="font-size:13px;color:#ff9058;line-height:1.7;margin-bottom:14px;">${parsed.message || ''}</div>
             <div style="background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);border-radius:8px;padding:12px 14px;margin-bottom:12px;">
-              <div style="font-size:11px;color:var(--muted);margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;">Délai réaliste</div>
+              <div style="font-size:11px;color:var(--muted);margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;">${_isEngPG ? 'Realistic timeframe' : 'Délai réaliste'}</div>
               <div style="font-size:20px;font-family:var(--font-display);color:#fff;letter-spacing:2px;">${parsed.duree_realiste || '?'}</div>
             </div>
-            <div style="font-size:11px;color:#333;font-style:italic;">"La persévérance forge les champions. Choisis un délai réaliste."</div>
+            <div style="font-size:11px;color:#333;font-style:italic;">${_isEngPG ? '"Perseverance builds champions. Choose a realistic timeframe."' : '"La persévérance forge les champions. Choisis un délai réaliste."'}</div>
           </div>`;
       } else {
         titleEl.innerHTML = `<span style="color:var(--red);">🤖</span> ${parsed.titre}`;
@@ -1237,7 +1250,15 @@ Si FAISABLE (par défaut) — programme ultra-personnalisé :
 
     } catch(e) {
       // Fallback statique si API indispo
-      const fallbacks = {
+      const fallbacks = _isEngPG ? {
+        '2sem': { titre: 'Metabolic Shock — 2 weeks', items: ['7 intense sessions over 14 days', '600 kcal/day caloric deficit', 'HIIT cardio 25 min × 5/week', 'Zero refined sugar, zero alcohol', '"Whatever you do, do it with all your heart" — Col 3:23'] },
+        '1m':   { titre: 'Launchpad — 1 month', items: ['6 sessions/week: 4 strength + 2 cardio', '500 kcal/day caloric deficit', 'Protein: 2g × ' + (poids||'your weight') + 'kg/day', 'Hydration: 3L of water/day', '"Be strong and courageous" — Joshua 1:9'] },
+        '3m':   { titre: 'Transformation — 3 months', items: ['5 sessions/week alternating strength + cardio', '400 kcal/day caloric deficit', 'Monthly body recomposition check', 'Minimum 8h sleep — recovery priority', '"I can do all things through him who strengthens me" — Phil 4:13'] },
+        '6m':   { titre: 'Recomposition — 6 months', items: ['4 progressive sessions/week', 'Moderate 250 kcal/day deficit', 'Focus on movement quality', 'Monthly body fat/muscle checkup', '"Hope does not disappoint" — Rom 5:5'] },
+        '12m':  { titre: 'Lifestyle — 1 year', items: ['3-4 consistent sessions/week', 'Intuitive eating + weekly checkup', 'Progressive overload every month', 'Write monthly goals', '"The Lord has entrusted me, and I will do it" — 1 Sam 3:18'] },
+        '24m':  { titre: 'Athlete — 2 years', items: ['Periodization: bulking / cutting phases', '3-5 sessions/week depending on phase', 'Annual blood work follow-up', 'Annual competition or personal challenge', '"Run with perseverance" — Heb 12:1'] },
+        '36m':  { titre: 'Total Transformation — 3 years', items: ['3-month phase program', 'Goal: -' + (mgPct ? Math.max(5, Math.round(mgPct * 0.4)) : 8) + '% body fat over 3 years', 'Progressive muscle building', 'Healthy lifestyle anchored in routine', '"The path of the righteous is like the morning sun" — Prov 4:18'] }
+      } : {
         '2sem': { titre: 'Choc Métabolique — 2 semaines', items: ['7 séances intensives sur 14 jours', 'Déficit calorique 600 kcal/jour', 'Cardio HIIT 25 min × 5/semaine', 'Zéro sucre raffiné, zéro alcool', '"Tout ce que tu fais, fais-le de tout ton cœur" — Col 3:23'] },
         '1m':   { titre: 'Décollage — 1 mois', items: ['6 séances/semaine : 4 muscu + 2 cardio', 'Déficit calorique 500 kcal/jour', 'Protéines : 2g × ' + (poids||'ton poids') + 'kg/jour', 'Hydratation : 3L d\'eau/jour', '"Sois fort et courageux" — Josué 1:9'] },
         '3m':   { titre: 'Transformation — 3 mois', items: ['5 séances/semaine alternant force + cardio', 'Déficit calorique 400 kcal/jour', 'Réévaluation corporelle chaque mois', 'Sommeil 8h minimum — priorité récupération', '"Je puis tout par celui qui me fortifie" — Phil 4:13'] },
@@ -1816,6 +1837,13 @@ function ssSetStep(n, state) {
 function ssSleep(ms) { return new Promise(function(r){ setTimeout(r, ms); }); }
 </script>
 
+<script src="topbar-avatar.js?v=2"></script>
 <script src="topbar-streak.js"></script>
+<script src="i18n.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof initI18n === 'function') initI18n();
+  });
+</script>
 </body>
 </html>

@@ -71,7 +71,6 @@
       pill = document.createElement('div');
       pill.className = 'topbar-streak-pill';
       pill.id = 'topbar-streak';
-      pill.innerHTML = renderPill(0);
       // Insérer AVANT l'avatar pill s'il existe
       const avatarPill = right.querySelector('.topbar-avatar-pill, #topbar-avatar-pill');
       if (avatarPill) {
@@ -80,6 +79,8 @@
         right.appendChild(pill);
       }
     }
+    // Mettre l'icône IMMÉDIATEMENT (évite le flash de l'emoji 🔥)
+    pill.innerHTML = renderPill(pill.textContent.trim().replace(/\D/g,'') || 0);
 
     // Charger le streak depuis Supabase
     try {
