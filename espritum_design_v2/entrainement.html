@@ -322,11 +322,11 @@
     <!-- ① TIMER (first thing you see) -->
     <div class="timer-card">
       <div class="timer-tabs">
-        <div class="timer-tab active" id="tab-rest" onclick="switchTimerTab('rest')">REST TIMER</div>
-        <div class="timer-tab" id="tab-exercise" onclick="switchTimerTab('exercise')">EXERCISE TIMER</div>
+        <div class="timer-tab active" id="tab-rest" onclick="switchTimerTab('rest')" data-i18n="train_rest_timer">REST TIMER</div>
+        <div class="timer-tab" id="tab-exercise" onclick="switchTimerTab('exercise')" data-i18n="train_exercise_timer">EXERCISE TIMER</div>
       </div>
       <div class="timer-display">
-        <div class="timer-label" id="timer-label-top">REST TIME</div>
+        <div class="timer-label" id="timer-label-top" data-i18n="train_rest_time">REST TIME</div>
         <div class="timer-num" id="timer-num">01:30</div>
         <div class="timer-btns">
           <button class="timer-btn" onclick="resetCurrentTimer()">RESET</button>
@@ -345,7 +345,7 @@
 
     <!-- ② CHOOSE YOUR SESSION -->
     <div id="programs-section">
-      <div class="section-header">CHOOSE YOUR SESSION.</div>
+      <div class="section-header" data-i18n="train_choose_session">CHOOSE YOUR SESSION.</div>
       <div class="muscle-grid">
         <div class="muscle-card" id="card-bras" onclick="selectSession('bras')">
           <img src="body/bras.png" class="muscle-img" alt="Arms"
@@ -399,7 +399,7 @@
           <div class="session-day-title" id="session-day-title">—</div>
         </div>
         <div class="session-progress-row">
-          <span class="session-pct-label">Progression</span>
+          <span class="session-pct-label" data-i18n="train_progression">Progression</span>
           <span class="session-pct" id="session-pct">0%</span>
         </div>
         <div class="progress-bar">
@@ -409,7 +409,7 @@
 
       <!-- Exercise list: flat rows with weight +/- and expandable series checklist -->
       <div class="exercise-list-card">
-        <div class="ex-list-title">EXERCICES</div>
+        <div class="ex-list-title" data-i18n="train_exercices">EXERCICES</div>
         <div id="exercise-list"></div>
       </div>
 
@@ -419,12 +419,12 @@
     <div class="progression-card">
       <div class="progression-header">
         <div>
-          <div class="progression-title">Calories brûlées</div>
-          <div class="progression-sub">7 derniers jours</div>
+          <div class="progression-title" data-i18n="train_calories_brulees">Calories brûlées</div>
+          <div class="progression-sub" data-i18n="dash_7_jours">7 derniers jours</div>
         </div>
         <div style="text-align:right">
           <div class="progression-avg" id="prog-avg-train">—</div>
-          <div class="progression-avg-label">moy. kcal/séance</div>
+          <div class="progression-avg-label" data-i18n="train_moy_kcal">moy. kcal/séance</div>
         </div>
       </div>
       <div class="chart-wrap">
@@ -438,6 +438,56 @@
 <script>
   const sb = window.sb;
   const PLAN_LABEL = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
+
+  /* ── EXERCISE TRANSLATIONS ── */
+  const EXERCISE_NAMES_EN = {
+    'Développé couché': 'Bench Press',
+    'Développé incliné haltères': 'Incline Dumbbell Press',
+    'Écarté haltères plat': 'Flat Dumbbell Fly',
+    'Dips poitrine': 'Chest Dips',
+    'Poulie croisée haute': 'High Cable Crossover',
+    'Pompes lestées': 'Weighted Push-ups',
+    'Traction pronation': 'Pull-ups',
+    'Rowing barre': 'Barbell Row',
+    'Tirage poulie haute': 'Lat Pulldown',
+    'Rowing haltère unilatéral': 'Single-arm Dumbbell Row',
+    'Tirage poulie basse': 'Seated Cable Row',
+    'Shrugs haltères': 'Dumbbell Shrugs',
+    'Curl barre droite': 'Straight Bar Curl',
+    'Curl haltères alterné': 'Alternating Dumbbell Curl',
+    'Extension triceps poulie': 'Cable Tricep Extension',
+    'Barre au front (Skull crusher)': 'Skull Crusher',
+    'Dips banc triceps': 'Bench Dips',
+    'Développé militaire barre': 'Military Press',
+    'Élévations latérales': 'Lateral Raises',
+    'Élévations frontales': 'Front Raises',
+    'Oiseau haltères (rear delt)': 'Rear Delt Fly',
+    'Upright row barre': 'Barbell Upright Row',
+    'Squat barre': 'Barbell Squat',
+    'Presse à cuisses': 'Leg Press',
+    'Soulevé de terre jambes tendues': 'Romanian Deadlift',
+    'Soulevé de terre': 'Deadlift',
+    'Fentes avant haltères': 'Forward Lunges',
+    'Leg curl allongé': 'Lying Leg Curl',
+    'Mollets debout': 'Standing Calf Raises',
+    'Crunch classique': 'Classic Crunch',
+    'Planche': 'Plank',
+    'Relevé de jambes suspendu': 'Hanging Leg Raise',
+    'Crunch oblique': 'Oblique Crunch',
+    'Russian twist': 'Russian Twist',
+    'Course à pied': 'Running',
+    'Corde à sauter': 'Jump Rope',
+    'Burpees': 'Burpees',
+  };
+  function exName(name) {
+    if (typeof getLang === 'function' && getLang() === 'en') return EXERCISE_NAMES_EN[name] || name;
+    return name;
+  }
+  function _isEN() { return typeof getLang === 'function' && getLang() === 'en'; }
+
+  const DAY_SHORT_TRAIN_FR = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const DAY_SHORT_TRAIN_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  function getDayShortTrain(d) { return (_isEN() ? DAY_SHORT_TRAIN_EN : DAY_SHORT_TRAIN_FR)[d]; }
 
   /* ── PROGRAMS DATA ── */
   const PROGRAMS = {
@@ -558,7 +608,7 @@
   }
   function formatWeight(ex) {
     const t = getExType(ex.name);
-    if (t === 'bodyweight') return ex.poids > 0 ? `poids corps +${ex.poids}kg` : 'poids corps';
+    if (t === 'bodyweight') { const _bw = _isEN() ? 'bodyweight' : 'poids corps'; return ex.poids > 0 ? `${_bw} +${ex.poids}kg` : _bw; }
     if (t === 'time_seconds') return ex.reps + ' s';
     if (t === 'distance_km') return ex.reps + ' km';
     if (t === 'reps_only') return '';
@@ -660,7 +710,7 @@
 
   /* ── INIT ── */
   /* ── 7-DAY CALORIES BRÛLÉES ── */
-  const DAY_SHORT_TRAIN = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  // DAY_SHORT_TRAIN — bilingual via getDayShortTrain()
   let weekChartTrain = null;
 
   function localDateTrain(d) {
@@ -674,7 +724,7 @@
       const d = new Date(today);
       d.setDate(d.getDate() - i);
       days.push(localDateTrain(d));
-      labels.push(DAY_SHORT_TRAIN[d.getDay()] + ' ' + d.getDate());
+      labels.push(getDayShortTrain(d.getDay()) + ' ' + d.getDate());
     }
 
     const { data: rows } = await sb.from('workouts')
@@ -874,7 +924,7 @@
       // Weight control — dépend du type d'exercice
       let weightCtrl = '';
       if (exType === 'bodyweight') {
-        const display = ex.poids > 0 ? `poids corps +${ex.poids}kg` : 'poids corps';
+        const _bw = _isEN() ? 'bodyweight' : 'poids corps'; const display = ex.poids > 0 ? `${_bw} +${ex.poids}kg` : _bw;
         weightCtrl = `
           <div class="weight-ctrl" onclick="event.stopPropagation()">
             <button class="weight-btn" onclick="adjustWeight(${i}, -2.5)">−</button>
@@ -915,8 +965,8 @@
               ${allDone ? '✓' : ''}
             </div>
             <div class="ex-row-info">
-              <div class="ex-row-name">${ex.name}</div>
-              <div class="ex-row-sub" id="ex-sub-${i}">${seriesDone}/${ex.series} séries</div>
+              <div class="ex-row-name">${exName(ex.name)}</div>
+              <div class="ex-row-sub" id="ex-sub-${i}">${seriesDone}/${ex.series} ${typeof t === 'function' ? t('train_sets_label') : 'séries'}</div>
             </div>
             ${weightCtrl}
             <div class="ex-arrow">▾</div>
@@ -959,7 +1009,7 @@
     if (exType === 'bodyweight') {
       weightEl.style.fontSize = '10px';
       weightEl.style.letterSpacing = '0.3px';
-      weightEl.textContent = newPoids > 0 ? `poids corps +${newPoids}kg` : 'poids corps';
+      const _bw2 = _isEN() ? 'bodyweight' : 'poids corps'; weightEl.textContent = newPoids > 0 ? `${_bw2} +${newPoids}kg` : _bw2;
     } else {
       weightEl.textContent = newPoids > 0 ? newPoids + ' kg' : '0 kg';
     }
@@ -1025,7 +1075,7 @@
       // Signal dashboard pour rafraîchir la charte immédiatement
       try { new BroadcastChannel('esp_refresh').postMessage('workouts'); } catch(e) {}
       localStorage.setItem('esp_chart_refresh', Date.now());
-      showToast('success', `✓ Série ${serieIdx + 1} — ~${kcalSerie} kcal brûlées 🔥`);
+      showToast('success', `✓ ${_isEN() ? 'Set' : 'Série'} ${serieIdx + 1} — ~${kcalSerie} kcal ${_isEN() ? 'burned' : 'brûlées'} 🔥`);
       loadWeekProgressTrain(); // refresh chart
     }
 
@@ -1040,7 +1090,7 @@
     const seriesDone = Object.values(seriesState[exIdx]).filter(s => s.done).length;
     const allDone = seriesDone === ex.series;
     const sub = document.getElementById(`ex-sub-${exIdx}`);
-    if (sub) sub.textContent = `${seriesDone}/${ex.series} séries`;
+    if (sub) sub.textContent = `${seriesDone}/${ex.series} ${typeof t === 'function' ? t('train_sets_label') : 'séries'}`;
     const card = document.getElementById(`ex-card-${exIdx}`);
     if (card) card.classList.toggle('done-ex', allDone);
     const mainCheck = document.getElementById(`main-check-${exIdx}`);
@@ -1094,7 +1144,7 @@
     // Signal dashboard pour rafraîchir la charte immédiatement
     try { new BroadcastChannel('esp_refresh').postMessage('workouts'); } catch(e) {}
     localStorage.setItem('esp_chart_refresh', Date.now());
-    showToast('success', `✓ ${ex.name} — ~${totalKcal} kcal brûlées 🔥`);
+    showToast('success', `✓ ${exName(ex.name)} — ~${totalKcal} kcal ${_isEN() ? 'burned' : 'brûlées'} 🔥`);
     loadWeekProgressTrain(); // refresh chart
     const wasOpen = openExercises.has(exIdx);
     renderExercises();
@@ -1244,5 +1294,11 @@
 <script src="api-config2.js"></script>
 <script src="topbar-avatar.js?v=2"></script>
 <script src="topbar-streak.js"></script>
+<script src="i18n.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof initI18n === 'function') initI18n();
+  });
+</script>
 </body>
 </html>

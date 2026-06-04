@@ -479,8 +479,8 @@
 
     <!-- Tab switcher card -->
     <div class="tab-card">
-      <div class="main-tab active" onclick="switchMainTab('global')">GLOBAL</div>
-      <div class="main-tab" onclick="switchMainTab('friends')">FRIENDS</div>
+      <div class="main-tab active" onclick="switchMainTab('global')" data-i18n="class_global">GLOBAL</div>
+      <div class="main-tab" onclick="switchMainTab('friends')" data-i18n="class_friends">FRIENDS</div>
     </div>
 
     <!-- ═══ PANEL GLOBAL ═══ -->
@@ -505,8 +505,8 @@
       <!-- TOP 10 -->
       <div class="card">
         <div class="card-header">
-          <div class="card-title">TOP 10</div>
-          <span style="font-size:11px;color:var(--muted);letter-spacing:1px;font-family:var(--font-display);">GLOBAL</span>
+          <div class="card-title" data-i18n="class_top10">TOP 10</div>
+          <span style="font-size:11px;color:var(--muted);letter-spacing:1px;font-family:var(--font-display);" data-i18n="class_global">GLOBAL</span>
         </div>
         <div class="rank-list" id="rank-list"><!-- filled by JS --></div>
       </div>
@@ -524,7 +524,7 @@
         <div class="my-pos-avatar" id="friends-my-avatar">?</div>
         <div class="my-pos-info">
           <div class="my-pos-name" id="friends-my-name">Toi</div>
-          <div class="my-pos-detail">Parmi tes amis</div>
+          <div class="my-pos-detail" data-i18n="class_parmi_amis">Parmi tes amis</div>
         </div>
         <div class="my-pos-streak-num" id="friends-my-streak"><img class="si" src="icons/streak-icon.png"> <span class="si-num">0</span></div>
       </div>
@@ -532,9 +532,9 @@
       <div class="card">
         <div class="friends-search">
           <span style="font-size:16px;">🔍</span>
-          <input type="text" placeholder="Chercher un ami..." oninput="filterFriends(this.value)">
+          <input type="text" placeholder="Chercher un ami..." data-i18n="class_chercher_ami" oninput="filterFriends(this.value)">
         </div>
-        <div class="friends-section-label">TES <span>AMIS</span></div>
+        <div class="friends-section-label" data-i18n="class_mes_amis">TES AMIS</div>
         <div class="friends-grid-new" id="friends-grid"><!-- filled by JS --></div>
       </div>
 
@@ -562,11 +562,11 @@
       <div class="ps-name" id="ps-name">—</div>
       <div class="ps-plan" id="ps-plan">—</div>
       <div class="ps-stats" id="ps-stats"></div>
-      <button class="ps-follow-btn" id="ps-follow-btn" onclick="toggleFollow()" style="display:none">+ Suivre</button>
+      <button class="ps-follow-btn" id="ps-follow-btn" onclick="toggleFollow()" style="display:none" data-i18n="class_suivre">+ Suivre</button>
     </div>
     <!-- Posts permanents -->
     <div class="ps-divider"></div>
-    <div class="ps-section-label">POSTS</div>
+    <div class="ps-section-label" data-i18n="class_posts">POSTS</div>
     <div class="ps-posts-grid" id="ps-posts-grid">
       <div class="ps-post-slot empty"></div>
       <div class="ps-post-slot empty"></div>
@@ -575,9 +575,9 @@
 
     <!-- Moments -->
     <div class="ps-divider"></div>
-    <div class="ps-section-label">MOMENTS</div>
+    <div class="ps-section-label" data-i18n="class_moments">MOMENTS</div>
     <div class="ps-photos-scroll" id="ps-photos"></div>
-    <div class="ps-no-photos" id="ps-no-photos" style="display:none">Aucune photo partagée pour l'instant.</div>
+    <div class="ps-no-photos" id="ps-no-photos" style="display:none" data-i18n="class_aucune_photo">Aucune photo partagée pour l'instant.</div>
   </div>
 </div>
 
@@ -624,11 +624,20 @@
   let currentProfileUserId = null;
   let currentProfilePhotos = [];
   let currentPhotoIndex = 0;
-function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
+function fillMyPosition(rank, initiale, prenom, seances, streak, plan, avatarUrl) {
     document.getElementById('my-pos-rank').textContent = '#' + rank;
-    document.getElementById('my-pos-avatar').textContent = initiale;
+    const avEl = document.getElementById('my-pos-avatar');
+    if (avatarUrl) {
+      avEl.style.backgroundImage = `url('${avatarUrl}')`;
+      avEl.style.backgroundSize = 'cover';
+      avEl.style.backgroundPosition = 'center';
+      avEl.style.color = 'transparent';
+      avEl.textContent = '';
+    } else {
+      avEl.textContent = initiale;
+    }
     document.getElementById('my-pos-name').textContent = prenom;
-    document.getElementById('my-pos-detail').textContent = seances + ' séances · ' + streak + 'j';
+    document.getElementById('my-pos-detail').textContent = seances + ' ' + (typeof t === 'function' ? t('class_seances') : 'séances') + ' · ' + streak + 'j';
     document.getElementById('my-pos-streak-val').innerHTML = '<img class="si" src="icons/streak-icon.png"> ' + streak;
   }
 
@@ -637,9 +646,19 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
     document.getElementById('topbar-avatar').textContent = initiale;
   }
 
-  function fillFriendsPanel(initiale, prenom, streak, plan, myGlobalRank) {
+  function fillFriendsPanel(initiale, prenom, streak, plan, myGlobalRank, avatarUrl) {
     const avatarEl = document.getElementById('friends-my-avatar');
-    if (avatarEl) avatarEl.textContent = initiale;
+    if (avatarEl) {
+      if (avatarUrl) {
+        avatarEl.style.backgroundImage = `url('${avatarUrl}')`;
+        avatarEl.style.backgroundSize = 'cover';
+        avatarEl.style.backgroundPosition = 'center';
+        avatarEl.style.color = 'transparent';
+        avatarEl.textContent = '';
+      } else {
+        avatarEl.textContent = initiale;
+      }
+    }
     const nameEl = document.getElementById('friends-my-name');
     if (nameEl) nameEl.textContent = prenom;
     const streakEl = document.getElementById('friends-my-streak');
@@ -732,12 +751,21 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
     const seances = me.seances || 0;
     const myRank = allUsers.findIndex(u => u.isMe) + 1;
 
-    document.getElementById('sidebar-avatar').textContent = initiale;
+    const sbAv = document.getElementById('sidebar-avatar');
+    if (me.avatar_url) {
+      sbAv.style.backgroundImage = `url('${me.avatar_url}')`;
+      sbAv.style.backgroundSize = 'cover';
+      sbAv.style.backgroundPosition = 'center';
+      sbAv.style.color = 'transparent';
+      sbAv.textContent = '';
+    } else {
+      sbAv.textContent = initiale;
+    }
     document.getElementById('sidebar-name').textContent = prenom;
     document.getElementById('sidebar-plan').textContent = planLabel[plan];
     fillTopbar(initiale, streak);
     initFreemium(plan);
-    fillMyPosition(myRank, initiale, prenom, seances, streak, plan);
+    fillMyPosition(myRank, initiale, prenom, seances, streak, plan, me.avatar_url);
     renderPodium(allUsers.slice(0, 3));
     renderRankList(allUsers);
     allUsersRef = allUsers;
@@ -746,7 +774,7 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
     const followedUsers = allUsers.filter(u => followingSet.has(u.id));
     renderFriendsGrid(followedUsers);
     const friendsWithMe = [me, ...followedUsers].sort((a, b) => calcPts(b) - calcPts(a));
-    fillFriendsPanel(initiale, prenom, streak, plan, friendsWithMe.findIndex(u => u.isMe) + 1);
+    fillFriendsPanel(initiale, prenom, streak, plan, friendsWithMe.findIndex(u => u.isMe) + 1, me.avatar_url);
 
     // ── 5. Weekly (optionnel, ne bloque pas le rendu) ─────
     try {
@@ -763,7 +791,7 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
       if (wAv) { if (meW.avatar_url) { wAv.style.cssText=`background-image:url('${meW.avatar_url}');background-size:cover;background-position:center;`; wAv.textContent=''; } else wAv.textContent=initiale; }
       const _s = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
       _s('weekly-my-rank','#'+(myWRank||'—')); _s('weekly-my-name',prenom);
-      _s('weekly-my-detail',(meW.weeklySeances||0)+' séances cette semaine');
+      _s('weekly-my-detail',(meW.weeklySeances||0)+' ' + (typeof t === 'function' ? t('class_seances') : 'séances') + ' cette semaine');
       const wSt=document.getElementById('weekly-my-streak'); if(wSt) wSt.innerHTML='<img class="si" src="icons/streak-icon.png"> '+streak;
       renderWeeklyList(weeklyUsers);
     } catch(e) { console.warn('Weekly error:', e); }
@@ -813,7 +841,7 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
           <div class="rank-avatar" ${avatarContent}>${u.avatar_url ? '' : u.prenom[0]}</div>
           <div class="rank-info">
             <div class="rank-name">${u.prenom} ${u.nom || ''}${u.isMe ? ' <span style="color:var(--red);font-size:10px;letter-spacing:1px;">TOI</span>' : ''}</div>
-            <div class="rank-detail">${u.seances} séances · ${planLabel[u.plan] || 'Gratuit'}</div>
+            <div class="rank-detail">${u.seances} ${typeof t === 'function' ? t('class_seances') : 'séances'} · ${planLabel[u.plan] || 'Gratuit'}</div>
           </div>
           <div class="rank-score">
             <div class="rank-score-val">${pts}</div>
@@ -846,7 +874,7 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
           <div class="rank-avatar" ${avatarContent}>${u.avatar_url ? '' : u.prenom[0]}</div>
           <div class="rank-info">
             <div class="rank-name">${u.prenom} ${u.nom || ''}${u.isMe ? ' <span style="color:var(--red);font-size:10px;letter-spacing:1px;">TOI</span>' : ''}</div>
-            <div class="rank-detail">${u.weeklySeances || 0} séances · <img class="si" src="icons/streak-icon.png" alt="streak"> ${u.streak}j</div>
+            <div class="rank-detail">${u.weeklySeances || 0} ${typeof t === 'function' ? t('class_seances') : 'séances'} · <img class="si" src="icons/streak-icon.png" alt="streak"> ${u.streak}j</div>
           </div>
           <div class="rank-score">
             <div class="rank-score-val">${u.weeklySeances || 0}</div>
@@ -882,7 +910,7 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
     }).join('');
 
     if (!allUsers.length) {
-      grid.innerHTML = '<div style="grid-column:1/-1;padding:24px;text-align:center;color:var(--muted);font-size:13px;letter-spacing:1px;">Suis des guerriers pour les voir ici.</div>';
+      grid.innerHTML = '<div style="grid-column:1/-1;padding:24px;text-align:center;color:var(--muted);font-size:13px;letter-spacing:1px;">' + (typeof t === 'function' ? t('class_suis_guerriers') : 'Suis des guerriers pour les voir ici.') + '</div>';
     }
   }
 
@@ -1137,8 +1165,8 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
   function _refreshFollowBtn(btn, isFollowing) {
     if (!btn) return;
     btn.innerHTML = isFollowing
-      ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Suivi'
-      : '+ Suivre';
+      ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> ' + (typeof t === 'function' ? t('class_suivi') : 'Suivi')
+      : (typeof t === 'function' ? t('class_suivre') : '+ Suivre');
     btn.classList.toggle('following', isFollowing);
   }
 
@@ -1192,5 +1220,11 @@ function fillMyPosition(rank, initiale, prenom, seances, streak, plan) {
 </script>
 <script src="topbar-avatar.js?v=2"></script>
 <script src="topbar-streak.js"></script>
+<script src="i18n.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof initI18n === 'function') initI18n();
+  });
+</script>
 </body>
 </html>

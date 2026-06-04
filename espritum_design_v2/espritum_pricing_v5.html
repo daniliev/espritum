@@ -5,6 +5,44 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
 <title>Espritum — Not Just Flesh But Spirit</title>
+<meta name="description" content="Espritum — l'application de fitness chrétienne qui connecte la discipline du corps à la force de l'esprit. Entraînement, nutrition, coach IA, versets bibliques. Rejoins la liste d'attente.">
+<meta name="keywords" content="application fitness chrétien, musculation chrétien, nutrition sport, coach IA fitness, streak workout, discipline corps esprit, fitness foi, programme fitness chrétien">
+<meta name="author" content="Espritum">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://espritum.app">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Espritum — Not Just Flesh But Spirit">
+<meta property="og:description" content="L'application de fitness qui connecte la discipline du corps à la force de l'esprit. Entraînement, nutrition, coach IA et motivation chrétienne.">
+<meta property="og:image" content="https://espritum.app/fav-icon-003.png">
+<meta property="og:url" content="https://espritum.app">
+<meta property="og:site_name" content="Espritum">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Espritum — Not Just Flesh But Spirit">
+<meta name="twitter:description" content="L'app fitness qui connecte corps et esprit. Rejoins la liste d'attente.">
+<meta name="twitter:image" content="https://espritum.app/fav-icon-003.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MobileApplication",
+  "name": "Espritum",
+  "description": "Application de fitness chrétienne combinant entraînement, nutrition, coach IA et motivation spirituelle.",
+  "url": "https://espritum.app",
+  "operatingSystem": "iOS, Android, Web",
+  "applicationCategory": "HealthApplication",
+  "offers": [
+    { "@type": "Offer", "name": "Gratuit", "price": "0", "priceCurrency": "EUR" },
+    { "@type": "Offer", "name": "Guerrier", "price": "5", "priceCurrency": "EUR" },
+    { "@type": "Offer", "name": "Champion", "price": "15", "priceCurrency": "EUR" },
+    { "@type": "Offer", "name": "Élite", "price": "30", "priceCurrency": "EUR" }
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "5",
+    "reviewCount": "1"
+  }
+}
+</script>
 <link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,6 +96,314 @@
     transform: translate(-50%, -50%);
   }
   @media (max-width: 768px) { .cursor, .cursor-ring { display: none; } body { cursor: auto; } }
+
+  /* ── WAITLIST NOTE ── */
+  .wl-note {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    margin-top: 14px;
+    display: block;
+  }
+
+  /* ── WAITLIST MODAL ── */
+  .wl-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.88);
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(6px);
+    animation: wlFade 0.2s ease;
+  }
+  @keyframes wlFade { from { opacity:0; } to { opacity:1; } }
+
+  .wl-modal-inner {
+    background: #0d0d0d;
+    border: 1px solid #222;
+    border-radius: 14px;
+    padding: 44px 40px 36px;
+    width: 100%;
+    max-width: 460px;
+    position: relative;
+    animation: wlSlide 0.25s ease;
+  }
+  @keyframes wlSlide { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+
+  .wl-modal-close {
+    position: absolute;
+    top: 18px; right: 22px;
+    background: none;
+    border: none;
+    color: #444;
+    font-size: 26px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 8px;
+    transition: color 0.2s;
+  }
+  .wl-modal-close:hover { color: #fff; }
+
+  .wl-modal-eyebrow {
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--red);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .wl-modal-title {
+    font-family: var(--font-display);
+    font-size: 38px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #fff;
+    line-height: 0.95;
+    margin-bottom: 10px;
+  }
+  .wl-modal-sub {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  .wl-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .wl-row {
+    display: flex;
+    gap: 10px;
+  }
+  .wl-field {
+    flex: 1;
+    padding: 13px 16px;
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 0;
+  }
+  .wl-field::placeholder { color: #444; }
+  .wl-field:focus { border-color: rgba(200,40,40,0.5); }
+  .wl-field.error { border-color: rgba(200,40,40,0.7); }
+
+  .wl-btn {
+    padding: 16px;
+    background: var(--red);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 4px;
+    width: 100%;
+  }
+  .wl-btn:hover { background: #d93030; }
+  .wl-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .wl-modal-note {
+    font-size: 11px;
+    color: #333;
+    text-align: center;
+    margin-top: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .wl-success {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 16px 0 8px;
+    gap: 18px;
+  }
+  .wl-success-icon {
+    width: 60px; height: 60px;
+    background: rgba(46,204,113,0.1);
+    border: 1px solid rgba(46,204,113,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+  }
+  .wl-success-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #fff;
+  }
+  .wl-success-msg { font-size: 14px; color: #666; line-height: 1.6; }
+
+  @media (max-width: 500px) {
+    .wl-modal-inner { padding: 36px 24px 28px; }
+    .wl-row { flex-direction: column; }
+    .wl-modal-title { font-size: 30px; }
+  }
+  /* ── SINGLE PLAN ── */
+  .single-plan-wrap {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .single-plan-card {
+    background: var(--bg2);
+    border: 1px solid var(--red);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 80px rgba(200,40,40,0.10);
+  }
+  .single-plan-header {
+    padding: 48px 52px 36px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .single-plan-badge {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--red);
+    text-transform: uppercase;
+    font-weight: 600;
+    border: 1px solid rgba(200,40,40,0.3);
+    border-radius: 20px;
+    padding: 4px 16px;
+    margin-bottom: 28px;
+  }
+  .single-plan-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 2px;
+    margin-bottom: 6px;
+  }
+  .single-plan-amount {
+    font-family: var(--font-display);
+    font-size: 96px;
+    letter-spacing: -2px;
+    color: #fff;
+    line-height: 1;
+  }
+  .single-plan-deci {
+    font-family: var(--font-display);
+    font-size: 48px;
+    color: #fff;
+    line-height: 1;
+    align-self: flex-start;
+    padding-top: 12px;
+  }
+  .single-plan-currency {
+    font-family: var(--font-display);
+    font-size: 36px;
+    color: var(--red);
+    padding-bottom: 8px;
+  }
+  .single-plan-period {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .single-plan-desc {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 16px;
+    line-height: 1.6;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .single-plan-features {
+    padding: 36px 52px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .single-feat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.75);
+  }
+  .single-feat .check {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: rgba(200,40,40,0.12);
+    border: 1px solid rgba(200,40,40,0.4);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .single-feat .check::after {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+  }
+  .single-plan-footer {
+    padding: 32px 52px 40px;
+    text-align: center;
+  }
+  .single-plan-footer .cta-waitlist {
+    max-width: 360px;
+    margin: 0 auto;
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+    font-size: 13px;
+    letter-spacing: 3px;
+    padding: 17px;
+    box-shadow: 0 0 30px rgba(200,40,40,0.25);
+  }
+  .single-plan-footer .cta-waitlist:hover { background: #d93030; }
+  @media (max-width: 600px) {
+    .single-plan-header { padding: 36px 28px 28px; }
+    .single-plan-features { grid-template-columns: 1fr; padding: 28px 28px; }
+    .single-plan-footer { padding: 24px 28px 32px; }
+    .single-plan-amount { font-size: 72px; }
+    .single-plan-deci { font-size: 36px; }
+  }
+
+  /* plan waitlist CTA */
+  .cta-waitlist {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 14px;
+    border-radius: 4px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 28px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .cta-waitlist:hover { border-color: var(--red); color: var(--red); }
+  .plan-card.featured .cta-waitlist { background: var(--red); border-color: var(--red); color: #fff; }
+  .plan-card.featured .cta-waitlist:hover { background: #d93030; }
 
   /* ── NOISE ── */
   body::before {
@@ -225,10 +571,10 @@
     margin-bottom: 22px;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 14px;
   }
-  .hero-eyebrow::before { content: ''; width: 36px; height: 1px; background: var(--red); }
+  .hero-eyebrow::before { display: none; }
   .hero-eyebrow::after { display: none; }
 
   .hero-title {
@@ -255,9 +601,16 @@
   .hero-actions {
     display: flex;
     gap: 16px;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     flex-wrap: wrap;
+  }
+  .hero-actions .btn-primary,
+  .hero-actions .btn-secondary {
+    flex: 1;
+    min-width: 200px;
+    max-width: 280px;
+    text-align: center;
   }
 
   .btn-primary {
@@ -1018,6 +1371,230 @@
     font-size: 16px;
     line-height: 1.6;
   }
+
+  /* ── VERSE SECTION ── */
+  .verse-section {
+    background: var(--bg2);
+    padding: 90px 24px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .verse-section-inner {
+    max-width: 820px;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+  }
+  .verse-quote-line { width: 48px; height: 2px; background: var(--red); }
+  .verse-big-text {
+    font-family: var(--font-body);
+    font-size: clamp(20px, 3.5vw, 32px);
+    font-style: italic;
+    color: rgba(255,255,255,0.85);
+    font-weight: 300;
+    line-height: 1.55;
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+  .verse-big-ref {
+    font-family: var(--font-body);
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: var(--red);
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  /* ── PROBLEM SECTION ── */
+  .problem-section { background: var(--bg); padding: 110px 24px; }
+  .pb-inner { max-width: 780px; margin: 0 auto; }
+  .pb-sub {
+    font-size: 17px;
+    color: var(--muted);
+    margin-bottom: 48px;
+    line-height: 1.7;
+  }
+  .pb-list { list-style: none; }
+  .pb-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 16px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.65;
+  }
+  .pb-item:first-child { border-top: 1px solid var(--border); }
+  .pb-dash {
+    color: var(--red);
+    font-size: 22px;
+    flex-shrink: 0;
+    line-height: 1.4;
+    font-weight: 700;
+  }
+
+  /* ── SOLUTION SECTION ── */
+  .solution-section { background: var(--bg2); padding: 110px 24px; }
+  .sol-inner { max-width: 780px; margin: 0 auto; }
+  .sol-sub {
+    font-size: 17px;
+    color: var(--muted);
+    margin-bottom: 48px;
+    line-height: 1.7;
+  }
+  .sol-list { list-style: none; }
+  .sol-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .sol-item:first-child { border-top: 1px solid var(--border); }
+  .sol-num {
+    font-family: var(--font-display);
+    font-size: 36px;
+    color: var(--red);
+    flex-shrink: 0;
+    line-height: 1;
+    padding-top: 2px;
+    letter-spacing: 1px;
+    opacity: 0.55;
+    min-width: 44px;
+  }
+  .sol-item-body { display: flex; flex-direction: column; gap: 6px; }
+  .sol-item-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+  .sol-item-desc {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* ── SHOWCASE SECTION ── */
+  .showcase-section { background: var(--bg); padding: 110px 24px; }
+  .showcase-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .showcase-desc {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.75;
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+  .showcase-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .showcase-list li {
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .showcase-list li::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+    flex-shrink: 0;
+  }
+  .phone-frame {
+    width: 270px;
+    height: 550px;
+    border: 2px solid #252525;
+    border-radius: 40px;
+    background: #080808;
+    margin: 0 auto;
+    padding: 28px 18px 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow:
+      0 0 80px rgba(200,40,40,0.08),
+      inset 0 0 0 1px rgba(255,255,255,0.04);
+  }
+  .phone-notch {
+    width: 70px; height: 5px;
+    background: #1a1a1a;
+    border-radius: 3px;
+    margin: 0 auto 24px;
+  }
+  .phone-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .phone-app-icon { margin-bottom: 4px; }
+  .phone-app-icon img { border-radius: 18px; box-shadow: 0 0 24px rgba(200,40,40,0.3); }
+  .phone-app-name {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: 6px;
+    color: #fff;
+  }
+  .phone-app-tag {
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .phone-divider { width: 40px; height: 1px; background: var(--border); margin: 8px 0; }
+  .phone-stats { display: flex; gap: 10px; width: 100%; }
+  .phone-stat {
+    flex: 1;
+    text-align: center;
+    background: #0d0d0d;
+    border: 1px solid #1a1a1a;
+    border-radius: 10px;
+    padding: 10px 8px;
+  }
+  .ps-val {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 20px;
+    color: #fff;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .ps-lbl {
+    display: block;
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .phone-streak { color: #ff6b35 !important; }
+  @media (max-width: 900px) {
+    .showcase-inner { grid-template-columns: 1fr; gap: 56px; }
+    .phone-frame { width: 240px; height: 490px; }
+  }
 </style>
 <script src="site-config.js?v=57"></script>
 </head>
@@ -1033,14 +1610,13 @@
     <span class="nav-name">Espritum</span>
   </a>
   <ul class="nav-links">
-    <li><a href="#a-propos" data-i18n="landing_about">À propos</a></li>
-    <li><a href="#fonctionnalites" data-i18n="landing_features">Fonctionnalités</a></li>
-    <li><a href="#tarifs" data-i18n="landing_pricing">Tarifs</a></li>
-    <li><a href="#faq" data-i18n="landing_faq">FAQ</a></li>
+    <li><a href="#probleme">Le problème</a></li>
+    <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+    <li><a href="#tarifs">Tarifs</a></li>
+    <li><a href="#faq">FAQ</a></li>
   </ul>
   <div class="nav-actions">
-    <button class="nav-login" onclick="window.location.href='inscription.html?tab=connexion'" data-i18n="landing_connect">Connexion</button>
-    <button class="nav-cta" onclick="window.location.href='inscription.html'" data-i18n="landing_signup">S'inscrire</button>
+    <button class="nav-cta" onclick="openWaitlist('nav')">LISTE D'ATTENTE</button>
   </div>
 </nav>
 
@@ -1051,14 +1627,15 @@
     <div class="hero-content">
       <div class="hero-eyebrow">Discipline. Force. Foi.</div>
       <h1 class="hero-title">
-        NOT JUST FLESH<br>
-        <span class="accent">BUT SPIRIT</span>
+        ARRÊTE D'ALLER<br>
+        <span class="accent">À LA SALLE.</span>
       </h1>
-      <p class="hero-sub" data-i18n="landing_sub">Chaque plan est une étape vers une meilleure version de toi-même. Commence gratuitement, monte en puissance quand tu es prêt.</p>
+      <p class="hero-sub">Sérieusement. Si tu continues comme ça — sans plan réel, sans suivi précis, sans méthode — dans 6 mois tu seras au même point. Exactement.</p>
       <div class="hero-actions">
-        <a href="inscription.html" class="btn-primary" data-i18n="plan_start">COMMENCER GRATUITEMENT</a>
-        <a href="#fonctionnalites" class="btn-secondary" data-i18n="landing_features_cta">VOIR LES FONCTIONNALITÉS</a>
+        <button class="btn-primary" onclick="openWaitlist('hero')">REJOINDRE LA LISTE</button>
+        <a href="#fonctionnalites" class="btn-secondary">FONCTIONNALITÉS</a>
       </div>
+      <span class="wl-note">Gratuit · Pas de spam · Désabonnement en 1 clic</span>
     </div>
     <div class="hero-visual">
       <img class="hero-logo-mark" src="fav-icon-003.png" alt="Espritum">
@@ -1081,22 +1658,147 @@
   <div class="scroll-line"></div>
 </section>
 
-<!-- À PROPOS -->
-<section id="a-propos">
-  <div class="about-inner">
-    <div class="about-left">
-      <div class="section-tag" data-i18n="landing_about">À propos</div>
-      <h2 class="section-heading">PLUS QU'UNE<br><span>APPLICATION.</span></h2>
-      <p class="about-desc">Espritum n'est pas une app de fitness classique. C'est un système complet qui connecte la discipline du corps à la force de l'esprit — fondée sur des valeurs chrétiennes et une mentalité de guerrier.</p>
-      <div class="verse-card">
-        <div class="verse-tag" data-i18n="landing_verse_tag">— Verset du jour</div>
-        <p class="verse-text" data-i18n="landing_verse">"Ne sais-tu pas ? L'Éternel donne de la force à celui qui est fatigué."</p>
-        <div class="verse-ref" data-i18n="landing_verse_ref">Ésaïe 40 : 28-29</div>
-      </div>
+<!-- SECTION 2 : VERSET -->
+<section class="verse-section">
+  <div class="verse-section-inner">
+    <div class="verse-quote-line"></div>
+    <blockquote class="verse-big-text">
+      "Ce n'est pas par la force, ni par la puissance,<br>mais c'est par mon Esprit."
+    </blockquote>
+    <div class="verse-big-ref">— Zacharie 4 : 6</div>
+    <div class="verse-quote-line"></div>
+  </div>
+</section>
+
+<!-- SECTION 3 : PROBLÈME -->
+<section id="probleme" class="problem-section">
+  <div class="pb-inner">
+    <div class="section-tag">Le problème</div>
+    <h2 class="section-heading">TU VAS À LA SALLE<br><span>MAIS...</span></h2>
+    <p class="pb-sub">Tu te demandes pourquoi tu n'avances pas ? La vérité que personne ne te dit :</p>
+    <ul class="pb-list">
+      <li class="pb-item">
+        <span class="pb-dash">—</span>
+        <span>Tu soulèves des charges sans savoir pourquoi — ton programme vient d'un influenceur qui ne te connaît pas et s'en fout de tes résultats</span>
+      </li>
+      <li class="pb-item">
+        <span class="pb-dash">—</span>
+        <span>Tu manges "sain" mais tu n'as aucune idée de tes calories ni de tes macros réelles — tu navigues à l'aveugle</span>
+      </li>
+      <li class="pb-item">
+        <span class="pb-dash">—</span>
+        <span>Aucun suivi = aucun système. Chaque semaine tu recommences de zéro comme si la précédente n'avait jamais existé</span>
+      </li>
+      <li class="pb-item">
+        <span class="pb-dash">—</span>
+        <span>Tu te motives le dimanche soir. Tu abandonnes le mercredi. Le cycle recommence depuis des mois — voire des années</span>
+      </li>
+      <li class="pb-item">
+        <span class="pb-dash">—</span>
+        <span>Tu n'as personne pour te tenir responsable — et ta propre volonté seule, la science le prouve, ça ne suffit pas</span>
+      </li>
+      <li class="pb-item">
+        <span class="pb-dash">—</span>
+        <span>Tu travailles le corps mais tu négliges l'arme la plus puissante que tu possèdes : ton esprit</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- SECTION 4 : SOLUTION -->
+<section id="solution" class="solution-section">
+  <div class="sol-inner">
+    <div class="section-tag">La solution</div>
+    <h2 class="section-heading">CE DONT TU AS<br><span>VRAIMENT BESOIN.</span></h2>
+    <p class="sol-sub">Pas un énième abonnement de salle à 50€/mois que tu n'utiliseras plus en février. Une méthode complète :</p>
+    <ul class="sol-list">
+      <li class="sol-item">
+        <span class="sol-num">01</span>
+        <div class="sol-item-body">
+          <span class="sol-item-title">Un programme fait pour TOI</span>
+          <span class="sol-item-desc">Généré par l'IA selon ton corps, ton objectif et ton niveau — mis à jour automatiquement. Fini les programmes génériques copiés-collés.</span>
+        </div>
+      </li>
+      <li class="sol-item">
+        <span class="sol-num">02</span>
+        <div class="sol-item-body">
+          <span class="sol-item-title">Un suivi nutritionnel précis</span>
+          <span class="sol-item-desc">Calories, macros, scan de repas par caméra — tu sais enfin ce que tu consommes vraiment. La nutrition, c'est 80% des résultats.</span>
+        </div>
+      </li>
+      <li class="sol-item">
+        <span class="sol-num">03</span>
+        <div class="sol-item-body">
+          <span class="sol-item-title">Un coach IA disponible 24h/24</span>
+          <span class="sol-item-desc">Sensei connaît ton historique complet. Il te parle vrai, sans te ménager, sans te juger. Disponible à 3h du matin si tu en as besoin.</span>
+        </div>
+      </li>
+      <li class="sol-item">
+        <span class="sol-num">04</span>
+        <div class="sol-item-body">
+          <span class="sol-item-title">Un système de responsabilité</span>
+          <span class="sol-item-desc">Streak quotidien, classement entre guerriers, badges de progression — tu avances parce que le système te le rappelle chaque jour.</span>
+        </div>
+      </li>
+      <li class="sol-item">
+        <span class="sol-num">05</span>
+        <div class="sol-item-body">
+          <span class="sol-item-title">Une progression mesurable</span>
+          <span class="sol-item-desc">Photos avant/après, mensurations, courbes de poids — tu vois les chiffres évoluer semaine après semaine. Ce que tu mesures, tu le gères.</span>
+        </div>
+      </li>
+      <li class="sol-item">
+        <span class="sol-num">06</span>
+        <div class="sol-item-body">
+          <span class="sol-item-title">La force de l'esprit</span>
+          <span class="sol-item-desc">Verset biblique du jour, prières avant l'entraînement, citations de guerriers de la foi — parce que la vraie transformation commence en dedans.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- SECTION 5 : SHOWCASE -->
+<section id="appli" class="showcase-section">
+  <div class="showcase-inner">
+    <div class="showcase-text">
+      <div class="section-tag">L'application</div>
+      <h2 class="section-heading">TOUT DANS TON<br><span>TÉLÉPHONE.</span></h2>
+      <p class="showcase-desc">Espritum est une application mobile complète — accessible sur iPhone et Android, sans téléchargement depuis l'App Store. Installe-la en 5 secondes depuis ton navigateur et retrouve-la directement sur ton écran d'accueil.</p>
+      <ul class="showcase-list">
+        <li>Disponible sur iOS & Android</li>
+        <li>Fonctionne hors connexion</li>
+        <li>Interface pensée 100% mobile-first</li>
+        <li>Notifications de rappel personnalisées</li>
+      </ul>
+      <button class="btn-primary" onclick="openWaitlist('showcase')">REJOINDRE LA LISTE</button>
     </div>
-    <div class="about-right">
-      <img class="about-img" src="https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=800&q=80" alt="Training" loading="lazy">
-      <div class="about-img-overlay"></div>
+    <div class="showcase-phone">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-app-icon">
+            <img src="fav-icon-003.png" alt="Espritum" style="width:68px;height:68px;border-radius:18px;">
+          </div>
+          <div class="phone-app-name">ESPRITUM</div>
+          <div class="phone-app-tag">Not Just Flesh But Spirit</div>
+          <div class="phone-divider"></div>
+          <div class="phone-stats">
+            <div class="phone-stat">
+              <span class="ps-val">47</span>
+              <span class="ps-lbl">Séances</span>
+            </div>
+            <div class="phone-stat">
+              <span class="ps-val phone-streak">🔥 12</span>
+              <span class="ps-lbl">Streak</span>
+            </div>
+            <div class="phone-stat">
+              <span class="ps-val">#3</span>
+              <span class="ps-lbl">Classement</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -1146,109 +1848,42 @@
   <div class="tarifs-wrap">
     <div style="text-align:center;margin-bottom:60px;">
       <div class="section-tag centered" data-i18n="landing_pricing">Tarifs</div>
-      <h2 class="section-heading">CHOISIS TON<br><span>NIVEAU.</span></h2>
+      <h2 class="section-heading">UN SEUL PLAN.<br><span>TOUT INCLUS.</span></h2>
     </div>
 
-    <!-- Toggle -->
-    <div class="toggle-wrap">
-      <span class="toggle-label on" id="lbl-monthly" data-i18n="landing_monthly">Mensuel</span>
-      <div class="toggle" id="toggle" onclick="switchBilling()">
-        <div class="toggle-knob"></div>
-      </div>
-      <span class="toggle-label" id="lbl-yearly" data-i18n="landing_yearly">Annuel</span>
-      <span class="save-badge" data-i18n="landing_save">-20%</span>
-    </div>
+    <div class="single-plan-wrap">
+      <div class="single-plan-card">
 
-    <!-- Gratuit -->
-    <div class="free-card">
-      <div class="free-left">
-        <div class="free-tag" data-i18n="free_tag">— Toujours gratuit</div>
-        <h2 class="free-title" data-i18n="free_title">COMMENCE SANS PAYER.</h2>
-        <div class="free-price">0 €</div>
-        <p class="free-desc" data-i18n="free_desc">Découvre Espritum gratuitement avec la fonctionnalité phare : l'estimation de ta masse grasse par caméra. Pas de carte bancaire requise.</p>
-        <a class="free-cta" href="inscription.html" data-i18n="plan_start">Commencer gratuitement →</a>
-      </div>
-      <div class="free-features">
-        <div class="free-feature"><div class="free-dot"></div><span data-i18n="free_f1">Estimation masse grasse (caméra)</span></div>
-        <div class="free-feature"><div class="free-dot"></div><span data-i18n="free_f2">Verset biblique du jour</span></div>
-        <div class="free-feature"><div class="free-dot"></div><span data-i18n="free_f3">Dashboard basique</span></div>
-        <div class="free-feature"><div class="free-dot"></div><span data-i18n="free_f4">1 plan d'entraînement fixe</span></div>
-        <div class="free-feature"><div class="free-dot"></div><span data-i18n="free_f5">Suivi poids simple</span></div>
-      </div>
-    </div>
+        <div class="single-plan-header">
+          <div class="single-plan-badge">Accès complet · Sans engagement</div>
+          <div class="single-plan-price">
+            <span class="single-plan-amount">11</span>
+            <span class="single-plan-deci">,99</span>
+            <span class="single-plan-currency">€</span>
+          </div>
+          <div class="single-plan-period">par mois</div>
+          <p class="single-plan-desc">Toutes les fonctionnalités incluses. Pas de paliers, pas de restrictions. Annule à tout moment.</p>
+        </div>
 
-    <!-- Plans -->
-    <div class="plans-grid">
-      <div class="plan-card">
-        <div class="plan-tier">
-          <span class="plan-name">Guerrier</span>
+        <div class="single-plan-features">
+          <div class="single-feat"><span class="check"></span>Suivi nutrition (calories + macros)</div>
+          <div class="single-feat"><span class="check"></span>Coach IA Sensei illimité</div>
+          <div class="single-feat"><span class="check"></span>Scan de repas par caméra</div>
+          <div class="single-feat"><span class="check"></span>Plans d'entraînement IA personnalisés</div>
+          <div class="single-feat"><span class="check"></span>Estimation masse grasse (caméra)</div>
+          <div class="single-feat"><span class="check"></span>Photos progression avant/après</div>
+          <div class="single-feat"><span class="check"></span>Classement communautaire</div>
+          <div class="single-feat"><span class="check"></span>Badges & système de niveaux</div>
+          <div class="single-feat"><span class="check"></span>Verset biblique & prières</div>
+          <div class="single-feat"><span class="check"></span>Historique illimité</div>
+          <div class="single-feat"><span class="check"></span>Suivi mensurations complet</div>
+          <div class="single-feat"><span class="check"></span>Support prioritaire</div>
         </div>
-        <div class="plan-price">
-          <div class="price-amount"><span class="price-val" data-m="5" data-y="4">5</span><span class="euro"> €</span></div>
-          <div class="price-period" data-i18n="price_period">par mois</div>
-          <div class="price-yearly-note">soit 48 € / an — économise 12 €</div>
-        </div>
-        <p class="plan-desc" data-i18n="warrior_desc">Pour celui qui fait ses premiers pas dans la discipline. Les fondations sont posées.</p>
-        <div class="divider"></div>
-        <div class="features-label" data-i18n="plan_included">Inclus dans ce plan</div>
-        <ul class="features">
-          <li class="feature"><span class="check"></span><span data-i18n="wf1">Tout du plan gratuit</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="wf2">Suivi nutrition complet (calories + macros)</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="wf3">3 plans d'entraînement personnalisés</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="wf4">Historique 30 jours</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="wf5">Badges & système de niveaux</span></li>
-          <li class="feature locked"><span class="check"></span><span data-i18n="wf6">Coach IA Sensei</span></li>
-          <li class="feature locked"><span class="check"></span><span data-i18n="wf7">Scan repas caméra</span></li>
-        </ul>
-        <a class="plan-cta cta-ghost" href="inscription.html?plan=guerrier" data-i18n="warrior_cta">Rejoindre Guerrier →</a>
-      </div>
 
-      <div class="plan-card featured">
-        <div class="featured-badge" data-i18n="plan_popular">Le plus populaire</div>
-        <div class="plan-tier">
-          <span class="plan-name">Champion</span>
+        <div class="single-plan-footer">
+          <button class="plan-cta cta-waitlist" onclick="openWaitlist('pro')">Rejoindre la liste d'attente →</button>
         </div>
-        <div class="plan-price">
-          <div class="price-amount"><span class="price-val" data-m="15" data-y="12">15</span><span class="euro"> €</span></div>
-          <div class="price-period" data-i18n="price_period">par mois</div>
-          <div class="price-yearly-note">soit 144 € / an — économise 36 €</div>
-        </div>
-        <p class="plan-desc" data-i18n="champion_desc">Pour le guerrier sérieux. L'IA devient ton mentor personnel, disponible 24h/24.</p>
-        <div class="divider"></div>
-        <div class="features-label" data-i18n="plan_included">Inclus dans ce plan</div>
-        <ul class="features">
-          <li class="feature"><span class="check"></span><span data-i18n="cf1">Tout du plan Guerrier</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="cf2">Coach IA Sensei (illimité)</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="cf3">Scan de repas par caméra</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="cf4">Suivi mensurations complet</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="cf5">Photos progression avant/après</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="cf6">Classement communautaire</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="cf7">Prières & citations bibliques premium</span></li>
-        </ul>
-        <a class="plan-cta cta-red" href="inscription.html?plan=champion" data-i18n="champion_cta">Rejoindre Champion →</a>
-      </div>
 
-      <div class="plan-card">
-        <div class="plan-tier">
-          <span class="plan-name">Élite</span>
-        </div>
-        <div class="plan-price">
-          <div class="price-amount"><span class="price-val" data-m="30" data-y="24">30</span><span class="euro"> €</span></div>
-          <div class="price-period" data-i18n="price_period">par mois</div>
-          <div class="price-yearly-note">soit 288 € / an — économise 72 €</div>
-        </div>
-        <p class="plan-desc" data-i18n="elite_desc">Pour ceux qui refusent la médiocrité. Une expérience entièrement sur-mesure.</p>
-        <div class="divider"></div>
-        <div class="features-label" data-i18n="plan_included">Inclus dans ce plan</div>
-        <ul class="features">
-          <li class="feature"><span class="check"></span><span data-i18n="ef1">Tout du plan Champion</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="ef2">Plan nutrition 100% IA personnalisé</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="ef3">Analyse morphologique avancée</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="ef4">Accès prioritaire nouvelles fonctionnalités</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="ef5">Badge Élite exclusif</span></li>
-          <li class="feature"><span class="check"></span><span data-i18n="ef6">Support direct prioritaire</span></li>
-        </ul>
-        <a class="plan-cta cta-outline" href="inscription.html?plan=elite" data-i18n="elite_cta">Rejoindre Élite →</a>
       </div>
     </div>
   </div>
@@ -1267,8 +1902,8 @@
         <div class="faq-a" data-i18n="faq_a1b">L'IA analyse ta silhouette via la caméra de ton téléphone et estime ton taux de masse grasse grâce à des algorithmes de vision par ordinateur. Ce n'est pas une mesure médicale, mais une estimation fiable pour suivre ta progression dans le temps. Cette fonctionnalité est disponible gratuitement.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q2">Puis-je changer de plan à tout moment ?</span><span class="faq-arrow">+</span></div>
-        <div class="faq-a" data-i18n="faq_a2">Oui, tu peux upgrader ou downgrader ton plan à n'importe quel moment depuis ton profil. Le changement prend effet immédiatement et la facturation est ajustée au prorata du mois en cours.</div>
+        <div class="faq-q" onclick="toggleFaq(this)"><span>Puis-je annuler à tout moment ?</span><span class="faq-arrow">+</span></div>
+        <div class="faq-a">Oui, l'abonnement est sans engagement. Tu peux annuler à tout moment depuis ton profil, sans frais ni pénalité. L'accès reste actif jusqu'à la fin de la période déjà payée.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q3b">Le contenu chrétien est-il obligatoire ?</span><span class="faq-arrow">+</span></div>
@@ -1276,7 +1911,7 @@
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q4">Comment fonctionne le Coach IA Sensei ?</span><span class="faq-arrow">+</span></div>
-        <div class="faq-a" data-i18n="faq_a4">Sensei est alimenté par l'IA Claude d'Anthropic. Il analyse tes données nutritionnelles, tes performances et te donne des conseils personnalisés dans un style inspiré de l'univers anime — direct, profond et motivant. Disponible sur les plans Champion et Élite.</div>
+        <div class="faq-a">Sensei est alimenté par l'IA Groq. Il analyse tes données nutritionnelles, tes performances et te donne des conseils personnalisés dans un style inspiré de l'univers anime — direct, profond et motivant. Inclus dans l'abonnement.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q5">L'application est-elle disponible sur iPhone ?</span><span class="faq-arrow">+</span></div>
@@ -1288,7 +1923,7 @@
       </div>
       <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q7">Y a-t-il une période d'essai ?</span><span class="faq-arrow">+</span></div>
-        <div class="faq-a" data-i18n="faq_a7">Le plan gratuit est permanent — pas de limite de temps. Pour les plans payants, nous offrons une garantie satisfait ou remboursé de 7 jours. Si tu n'es pas satisfait, contacte-nous et nous te remboursons intégralement.</div>
+        <div class="faq-a">L'abonnement est sans engagement. Tu peux annuler à tout moment depuis ton profil. Nous offrons également une garantie satisfait ou remboursé de 7 jours — si Espritum n'est pas fait pour toi, contacte-nous et nous te remboursons intégralement, sans question.</div>
       </div>
     </div>
   </div>
@@ -1306,15 +1941,15 @@
     </div>
     <div class="footer-col">
       <div class="footer-col-title">Application</div>
-      <a href="#fonctionnalites" data-i18n="landing_features">Fonctionnalités</a>
-      <a href="#tarifs" data-i18n="landing_pricing">Tarifs</a>
-      <a href="#faq" data-i18n="landing_faq">FAQ</a>
-      <a href="#a-propos" data-i18n="landing_about">À propos</a>
+      <a href="#probleme">Le problème</a>
+      <a href="#fonctionnalites">Fonctionnalités</a>
+      <a href="#tarifs">Tarifs</a>
+      <a href="#faq">FAQ</a>
     </div>
     <div class="footer-col">
-      <div class="footer-col-title">Compte</div>
-      <a href="inscription.html" data-i18n="landing_signup">S'inscrire</a>
-      <a href="inscription.html?tab=connexion" data-i18n="landing_connect">Connexion</a>
+      <div class="footer-col-title">Rejoindre</div>
+      <a href="#hero-waitlist" onclick="event.preventDefault();openWaitlist('footer')">Liste d'attente</a>
+      <a href="#fonctionnalites">Fonctionnalités</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -1322,6 +1957,40 @@
     <span class="footer-copy">Not just flesh — but spirit.</span>
   </div>
 </footer>
+
+<!-- WAITLIST MODAL -->
+<div id="wl-modal" class="wl-modal" style="display:none" onclick="if(event.target===this)closeWaitlist()">
+  <div class="wl-modal-inner">
+    <button class="wl-modal-close" onclick="closeWaitlist()" aria-label="Fermer">×</button>
+
+    <!-- Form state -->
+    <div id="wl-form-wrap">
+      <div class="wl-modal-eyebrow">Espritum — Accès anticipé</div>
+      <div class="wl-modal-title">REJOINDRE<br><span style="color:var(--red)">LA LISTE</span></div>
+      <p class="wl-modal-sub">Sois parmi les premiers à accéder à l'app. On te prévient dès l'ouverture.</p>
+      <form class="wl-form" onsubmit="joinWaitlist(event)">
+        <div class="wl-row">
+          <input type="text" id="wl-prenom" class="wl-field" placeholder="Prénom" required autocomplete="given-name">
+          <input type="text" id="wl-nom" class="wl-field" placeholder="Nom" required autocomplete="family-name">
+        </div>
+        <input type="email" id="wl-email" class="wl-field" placeholder="ton@email.com" required autocomplete="email">
+        <input type="tel" id="wl-tel" class="wl-field" placeholder="Téléphone (optionnel)" autocomplete="tel">
+        <button type="submit" id="wl-btn" class="wl-btn">REJOINDRE LA LISTE</button>
+      </form>
+      <p class="wl-modal-note">Gratuit · Pas de spam · Désabonnement en 1 clic</p>
+    </div>
+
+    <!-- Success state -->
+    <div id="wl-success" class="wl-success" style="display:none">
+      <div class="wl-success-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <div class="wl-success-title">Tu es sur la liste !</div>
+      <p class="wl-success-msg" id="wl-success-msg">On te prévient en premier dès l'ouverture d'Espritum.<br>Bienvenue dans la communauté des guerriers.</p>
+      <button class="wl-btn" onclick="closeWaitlist()" style="margin-top:8px;max-width:200px;">FERMER</button>
+    </div>
+  </div>
+</div>
 
 <script>
   // ── Cursor
@@ -1365,6 +2034,81 @@
     const wasOpen = item.classList.contains('open');
     document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
     if (!wasOpen) item.classList.add('open');
+  }
+
+  // ── Waitlist modal
+  var _wlSource = 'hero';
+
+  function openWaitlist(source) {
+    _wlSource = source || 'hero';
+    // Reset form + success state
+    var formWrap = document.getElementById('wl-form-wrap');
+    var success  = document.getElementById('wl-success');
+    var btn      = document.getElementById('wl-btn');
+    if (formWrap) formWrap.style.display = '';
+    if (success)  success.style.display  = 'none';
+    if (btn)      { btn.textContent = 'REJOINDRE LA LISTE'; btn.disabled = false; }
+    document.querySelectorAll('.wl-field').forEach(function(f) { f.classList.remove('error'); f.value = ''; });
+
+    var modal = document.getElementById('wl-modal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    setTimeout(function() {
+      var inp = document.getElementById('wl-prenom');
+      if (inp) inp.focus();
+    }, 250);
+  }
+
+  function closeWaitlist() {
+    var modal = document.getElementById('wl-modal');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  // Fermer avec Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeWaitlist();
+  });
+
+  async function joinWaitlist(e) {
+    e.preventDefault();
+    var prenom = (document.getElementById('wl-prenom') || {}).value || '';
+    var nom    = (document.getElementById('wl-nom')    || {}).value || '';
+    var email  = (document.getElementById('wl-email')  || {}).value || '';
+    var tel    = (document.getElementById('wl-tel')    || {}).value || '';
+
+    prenom = prenom.trim(); nom = nom.trim(); email = email.trim(); tel = tel.trim();
+    if (!email) return;
+
+    var btn = document.getElementById('wl-btn');
+    var origTxt = btn.textContent;
+    btn.textContent = '...';
+    btn.disabled = true;
+
+    try {
+      var resp = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prenom, nom, email, telephone: tel, lang: document.documentElement.lang || 'fr', source: _wlSource })
+      });
+
+      if (resp.status === 201 || resp.status === 200) {
+        document.getElementById('wl-form-wrap').style.display = 'none';
+        document.getElementById('wl-success').style.display = 'flex';
+      } else if (resp.status === 409) {
+        document.getElementById('wl-form-wrap').style.display = 'none';
+        document.getElementById('wl-success').style.display = 'flex';
+        document.getElementById('wl-success-msg').innerHTML = 'Tu es déjà sur la liste —<br>on te prévient en premier !';
+      } else {
+        throw new Error('HTTP ' + resp.status);
+      }
+    } catch(err) {
+      btn.textContent = origTxt;
+      btn.disabled = false;
+      var emailEl = document.getElementById('wl-email');
+      if (emailEl) emailEl.classList.add('error');
+      console.error('Waitlist error:', err);
+    }
   }
 
   // ── Scroll reveal

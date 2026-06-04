@@ -316,9 +316,9 @@ html[lang="bg"] .topbar-title { font-family: 'Sofia Sans Condensed', var(--font-
     <!-- GOAL MINI CARD -->
     <div class="goal-card">
       <div class="goal-info">
-        <div class="goal-label">TODAY'S GOAL</div>
+        <div class="goal-label" data-i18n="nutr_today_goal">TODAY'S GOAL</div>
         <div class="goal-cal-num" id="objectif-display">2400 <span>kcal</span></div>
-        <div class="goal-consumed-txt"><b id="ring-val">0</b> consumed</div>
+        <div class="goal-consumed-txt"><b id="ring-val">0</b> <span data-i18n="nutr_consumed">consumed</span></div>
       </div>
       <div class="goal-ring-wrap">
         <canvas id="ringSmall"></canvas>
@@ -342,21 +342,21 @@ html[lang="bg"] .topbar-title { font-family: 'Sofia Sans Condensed', var(--font-
     <div class="macros-card">
       <div class="macro-row">
         <div class="macro-header">
-          <span class="macro-name">🥩 Protein</span>
+          <span class="macro-name">🥩 <span data-i18n="nutr_protein_label">Protein</span></span>
           <span class="macro-nums"><span id="prot-val">0</span>g / <span id="prot-goal">200</span>g</span>
         </div>
         <div class="macro-track"><div class="macro-fill fill-prot" id="prot-bar" style="width:0%"></div></div>
       </div>
       <div class="macro-row">
         <div class="macro-header">
-          <span class="macro-name">🌾 Carbs</span>
+          <span class="macro-name">🌾 <span data-i18n="nutr_carbs_label">Carbs</span></span>
           <span class="macro-nums"><span id="carb-val">0</span>g / <span id="carb-goal">250</span>g</span>
         </div>
         <div class="macro-track"><div class="macro-fill fill-carb" id="carb-bar" style="width:0%"></div></div>
       </div>
       <div class="macro-row">
         <div class="macro-header">
-          <span class="macro-name">🥑 Fat</span>
+          <span class="macro-name">🥑 <span data-i18n="nutr_fat_label">Fat</span></span>
           <span class="macro-nums"><span id="fat-val">0</span>g / <span id="fat-goal">80</span>g</span>
         </div>
         <div class="macro-track"><div class="macro-fill fill-fat" id="fat-bar" style="width:0%"></div></div>
@@ -367,12 +367,12 @@ html[lang="bg"] .topbar-title { font-family: 'Sofia Sans Condensed', var(--font-
     <div class="meals-cards" id="meals-list-card"></div>
 
     <!-- SCAN -->
-    <button class="scan-btn" onclick="openSheet(null, true)">SCAN MY MEAL</button>
+    <button class="scan-btn" onclick="openSheet(null, true)" data-i18n="nutr_scan_meal">SCAN MY MEAL</button>
 
     <!-- HYDRATION -->
     <div class="hydration-card">
       <div class="hydration-header">
-        <div class="hydration-title">💧 Hydratation</div>
+        <div class="hydration-title">💧 <span data-i18n="nutr_hydratation">Hydratation</span></div>
         <div class="hydration-val" id="water-val">0 mL / 2000 mL</div>
       </div>
       <div class="glasses-grid" id="glasses-grid"></div>
@@ -382,12 +382,12 @@ html[lang="bg"] .topbar-title { font-family: 'Sofia Sans Condensed', var(--font-
     <div class="progression-card">
       <div class="progression-header">
         <div>
-          <div class="progression-title">Calories consommées</div>
-          <div class="progression-sub">7 derniers jours</div>
+          <div class="progression-title" data-i18n="nutr_calories_consommees">Calories consommées</div>
+          <div class="progression-sub" data-i18n="dash_7_jours">7 derniers jours</div>
         </div>
         <div style="text-align:right">
           <div class="progression-avg" id="prog-avg">—</div>
-          <div class="progression-avg-label">moy. kcal/jour</div>
+          <div class="progression-avg-label" data-i18n="nutr_moy_kcal">moy. kcal/jour</div>
         </div>
       </div>
       <div class="chart-wrap">
@@ -403,7 +403,7 @@ html[lang="bg"] .topbar-title { font-family: 'Sofia Sans Condensed', var(--font-
   <div class="sheet-inner">
     <div class="sheet-handle"></div>
     <div class="sheet-topbar">
-      <div class="sheet-title">LOG YOUR <span style="color:var(--red)">MEAL</span></div>
+      <div class="sheet-title" data-i18n="nutr_log_meal">LOG YOUR MEAL</div>
       <button class="sheet-close" onclick="closeSheet()">✕</button>
     </div>
 
@@ -414,35 +414,35 @@ html[lang="bg"] .topbar-title { font-family: 'Sofia Sans Condensed', var(--font-
           <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
           <circle cx="12" cy="13" r="4"/>
         </svg>
-        <span>Prendre une photo (optionnel)</span>
+        <span data-i18n="nutr_photo_optionnel">Prendre une photo (optionnel)</span>
       </div>
     </div>
 
     <div class="sheet-photo-notice" id="sheet-photo-notice">📸 Photo prête — ajoute une description pour lancer l'analyse</div>
 
     <div class="sheet-field">
-      <div class="sheet-hint">✍️ Description obligatoire — photo optionnelle pour plus de précision</div>
+      <div class="sheet-hint">✍️ <span data-i18n="nutr_desc_obligatoire">Description obligatoire — photo optionnelle pour plus de précision</span></div>
       <div style="font-size:10px;color:#444;text-align:center;margin:-4px 0 8px;font-style:italic;letter-spacing:0.3px;">Les valeurs nutritionnelles sont estimées par IA et sont approximatives.</div>
       <textarea class="sheet-textarea" id="sheet-desc" rows="3" placeholder="Décris ce que tu as mangé... (ex: escalope de poulet grillé, riz 200g, salade verte)" oninput="checkDescReady()"></textarea>
     </div>
 
     <div class="sheet-field">
       <div class="sheet-meal-btns">
-        <button class="sheet-meal-btn" data-val="petit-dejeuner" onclick="selectMeal('petit-dejeuner')">Breakfast</button>
-        <button class="sheet-meal-btn" data-val="dejeuner" onclick="selectMeal('dejeuner')">Lunch</button>
-        <button class="sheet-meal-btn" data-val="diner" onclick="selectMeal('diner')">Dinner</button>
-        <button class="sheet-meal-btn" data-val="collation" onclick="selectMeal('collation')">Snack</button>
+        <button class="sheet-meal-btn" data-val="petit-dejeuner" onclick="selectMeal('petit-dejeuner')" data-i18n="nutr_breakfast_label">Breakfast</button>
+        <button class="sheet-meal-btn" data-val="dejeuner" onclick="selectMeal('dejeuner')" data-i18n="nutr_lunch_label">Lunch</button>
+        <button class="sheet-meal-btn" data-val="diner" onclick="selectMeal('diner')" data-i18n="nutr_dinner_label">Dinner</button>
+        <button class="sheet-meal-btn" data-val="collation" onclick="selectMeal('collation')" data-i18n="nutr_snack_label">Snack</button>
       </div>
     </div>
 
     <div class="sheet-actions">
       <button class="sheet-estimate-btn" id="sheet-estimate-btn" onclick="estimateWithAI()" disabled>
-        <span id="sheet-btn-text">Décris ton repas pour analyser</span>
+        <span id="sheet-btn-text" data-i18n="nutr_desc_repas">Décris ton repas pour analyser</span>
       </button>
     </div>
 
     <div class="sheet-results" id="sheet-results" style="display:none">
-      <div class="sheet-results-title">Estimation IA <span style="font-size:10px;color:#444;font-family:var(--font-body);font-weight:400;letter-spacing:0.5px;vertical-align:middle;">— approximative</span></div>
+      <div class="sheet-results-title"><span data-i18n="nutr_estimation_ia">Estimation IA</span> <span style="font-size:10px;color:#444;font-family:var(--font-body);font-weight:400;letter-spacing:0.5px;vertical-align:middle;">— approximative</span></div>
       <div class="sheet-results-grid">
         <div class="sheet-result-item">
           <div class="sheet-result-val" id="res-cal">0</div>
@@ -450,19 +450,19 @@ html[lang="bg"] .topbar-title { font-family: 'Sofia Sans Condensed', var(--font-
         </div>
         <div class="sheet-result-item">
           <div class="sheet-result-val" id="res-prot">0g</div>
-          <div class="sheet-result-label">Protéines</div>
+          <div class="sheet-result-label" data-i18n="nutr_protéines">Protéines</div>
         </div>
         <div class="sheet-result-item">
           <div class="sheet-result-val" id="res-carb">0g</div>
-          <div class="sheet-result-label">Glucides</div>
+          <div class="sheet-result-label" data-i18n="nutr_glucides">Glucides</div>
         </div>
         <div class="sheet-result-item">
           <div class="sheet-result-val" id="res-fat">0g</div>
-          <div class="sheet-result-label">Lipides</div>
+          <div class="sheet-result-label" data-i18n="nutr_lipides">Lipides</div>
         </div>
       </div>
       <div class="sheet-result-name" id="res-name"></div>
-      <button class="sheet-confirm-btn" onclick="confirmMeal()">✓ Confirmer et enregistrer</button>
+      <button class="sheet-confirm-btn" onclick="confirmMeal()" data-i18n="nutr_confirmer">✓ Confirmer et enregistrer</button>
     </div>
 
   </div>
@@ -939,5 +939,11 @@ async function init() {
 </nav>
 <script src="topbar-avatar.js?v=2"></script>
 <script src="topbar-streak.js"></script>
+<script src="i18n.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof initI18n === 'function') initI18n();
+  });
+</script>
 </body>
 </html>

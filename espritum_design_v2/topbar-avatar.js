@@ -37,20 +37,34 @@
                 || document.getElementById('topbar-avatar');
       if (!pill) return;
 
-      if (profile.avatar_url) {
-        // Afficher la photo dans le pill
-        pill.style.backgroundImage = `url('${profile.avatar_url}')`;
-        pill.style.backgroundSize = 'cover';
-        pill.style.backgroundPosition = 'center';
-        pill.style.backgroundColor = 'transparent';
-        pill.classList.add('has-photo');
-        pill.textContent = '';
-        pill.style.color = 'transparent';
-        pill.style.fontSize = '0';
-      } else {
-        // Fallback : initiale du prénom
-        pill.textContent = (profile.prenom || '?').charAt(0).toUpperCase();
+      function applyAvatar(el, avatarUrl, initiale) {
+        if (!el) return;
+        if (avatarUrl) {
+          el.style.backgroundImage = `url('${avatarUrl}')`;
+          el.style.backgroundSize = 'cover';
+          el.style.backgroundPosition = 'center';
+          el.style.backgroundColor = 'transparent';
+          el.style.color = 'transparent';
+          el.style.fontSize = '0';
+          el.textContent = '';
+        } else {
+          el.textContent = initiale;
+        }
       }
+
+      const initiale = (profile.prenom || '?').charAt(0).toUpperCase();
+
+      // Topbar pill
+      if (profile.avatar_url) pill.classList.add('has-photo');
+      applyAvatar(pill, profile.avatar_url, initiale);
+
+      // Ma position dans le classement (global + amis)
+      applyAvatar(document.getElementById('my-pos-avatar'), profile.avatar_url, initiale);
+      applyAvatar(document.getElementById('friends-my-avatar'), profile.avatar_url, initiale);
+
+      // Sidebar avatar (si présent)
+      applyAvatar(document.getElementById('sidebar-avatar'), profile.avatar_url, initiale);
+
     } catch (e) { /* silencieux */ }
   }
 

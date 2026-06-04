@@ -542,7 +542,7 @@
 
   <div class="topbar">
     <div class="topbar-left">
-      <div class="topbar-title">MON PROFIL.</div>
+      <div class="topbar-title" data-i18n="profil_mon_profil">MON PROFIL.</div>
     </div>
     <div class="topbar-right">
       <div class="topbar-streak-pill" id="topbar-streak"><img class="si" src="icons/streak-icon.png"> <span class="si-num">0</span></div>
@@ -561,7 +561,7 @@
             <div class="moment-ring-inner" id="my-moment-avatar">?</div>
             <div class="moment-add" id="moment-add-btn">+</div>
           </div>
-          <div class="moment-name">Ajouter</div>
+          <div class="moment-name" data-i18n="profil_ajouter">Ajouter</div>
         </div>
         <input type="file" id="moment-file" accept="image/*" style="display:none" onchange="handleMomentUpload(event)">
         <!-- Moments des gens que je suis — rempli par JS -->
@@ -592,23 +592,23 @@
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
         <div style="background:var(--bg3);border-radius:12px;padding:14px 10px;text-align:center;">
           <div style="font-family:var(--font-display);font-size:24px;color:#fff;letter-spacing:1px;line-height:1;" id="stat-total-sessions">0</div>
-          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Séances</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;" data-i18n="profil_seances_label">Séances</div>
         </div>
         <div style="background:var(--bg3);border-radius:12px;padding:14px 10px;text-align:center;">
           <div style="font-family:var(--font-display);font-size:24px;color:#fff;letter-spacing:1px;line-height:1;" id="stat-volume-total">0<span style="font-size:14px;color:var(--red);">k</span></div>
-          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">kg soulevés</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;" data-i18n="profil_kg_souleves">kg soulevés</div>
         </div>
         <div style="background:var(--bg3);border-radius:12px;padding:14px 10px;text-align:center;">
           <div style="font-family:var(--font-display);font-size:24px;color:#fff;letter-spacing:1px;line-height:1;" id="stat-best-streak"><img class="si" src="icons/streak-icon.png">0</div>
-          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Meilleur streak</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;" data-i18n="profil_meilleur_streak">Meilleur streak</div>
         </div>
       </div>
     </div>
 
     <!-- ===== MES POSTS (3 permanents) ===== -->
     <div class="card" style="border-radius:18px;padding:20px;">
-      <div class="badges-section-title">MES <span>POSTS</span></div>
-      <div style="font-size:11px;color:var(--muted);margin-top:-10px;margin-bottom:12px;letter-spacing:0.5px;">Prenez des photos de vos résultats physiques !</div>
+      <div class="badges-section-title" data-i18n="profil_mes_posts">MES <span>POSTS</span></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:-10px;margin-bottom:12px;letter-spacing:0.5px;" data-i18n="profil_photos_resultats">Prenez des photos de vos résultats physiques !</div>
       <div class="my-posts-grid" id="my-posts-grid">
         <!-- filled by JS -->
         <div class="my-post-slot empty" onclick="triggerPostUpload(0)"><div class="post-add-icon">+</div></div>
@@ -620,7 +620,7 @@
 
     <!-- ===== MY BADGES ===== -->
     <div class="card" style="border-radius:18px;padding:20px;">
-      <div class="badges-section-title">MES <span>BADGES</span></div>
+      <div class="badges-section-title" data-i18n="profil_mes_badges">MES <span>BADGES</span></div>
       <div class="badges-grid-new">
         <div class="badge-item-new unlocked"><div class="badge-icon-new unlocked">🏆</div><div class="badge-name-new">Premier PR</div></div>
         <div class="badge-item-new unlocked"><div class="badge-icon-new unlocked"><img src="icons/streak-icon.png" style="width:28px;height:28px;object-fit:contain;"></div><div class="badge-name-new">7j streak</div></div>
@@ -636,15 +636,15 @@
 
     <!-- ===== SETTINGS (toggles) ===== -->
     <div class="card" style="border-radius:18px;padding:20px;">
-      <div class="badges-section-title">SET<span>TINGS</span></div>
+      <div class="badges-section-title" data-i18n="profil_settings_label">SET<span>TINGS</span></div>
       <div style="display:flex;flex-direction:column;gap:2px;">
         <!-- Langue -->
         <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border);">
           <div style="display:flex;align-items:center;gap:12px;">
             <span style="font-size:18px;width:24px;text-align:center;">🌐</span>
             <div>
-              <div style="font-size:13px;color:#ddd;font-weight:500;margin-bottom:2px;">Langue</div>
-              <select id="f-langue" style="background:transparent;border:none;color:var(--muted);font-size:12px;font-family:var(--font-body);cursor:pointer;outline:none;">
+              <div style="font-size:13px;color:#ddd;font-weight:500;margin-bottom:2px;" data-i18n="profil_langue">Langue</div>
+              <select id="f-langue" style="background:transparent;border:none;color:var(--muted);font-size:12px;font-family:var(--font-body);cursor:pointer;outline:none;" onchange="setLang(this.value)">
                 <option value="fr">Français</option>
                 <option value="en">English</option>
                 <option value="bg">Български</option>
@@ -657,7 +657,7 @@
         <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border);">
           <div style="display:flex;align-items:center;gap:12px;">
             <span style="font-size:18px;width:24px;text-align:center;">🔔</span>
-            <div style="font-size:13px;color:#ddd;font-weight:500;">Notifications</div>
+            <div style="font-size:13px;color:#ddd;font-weight:500;" data-i18n="profil_notifications">Notifications</div>
           </div>
           <div class="toggle-switch on" onclick="this.classList.toggle('on');"><div class="toggle-knob" style="transform:translateX(20px)"></div></div>
         </div>
@@ -665,7 +665,7 @@
         <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border);">
           <div style="display:flex;align-items:center;gap:12px;">
             <span style="font-size:18px;width:24px;text-align:center;">🌙</span>
-            <div style="font-size:13px;color:#ddd;font-weight:500;">Rappels de repos</div>
+            <div style="font-size:13px;color:#ddd;font-weight:500;" data-i18n="profil_rest_reminders">Rappels de repos</div>
           </div>
           <div class="toggle-switch" onclick="this.classList.toggle('on');"><div class="toggle-knob"></div></div>
         </div>
@@ -673,7 +673,7 @@
         <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;">
           <div style="display:flex;align-items:center;gap:12px;">
             <span style="font-size:18px;width:24px;text-align:center;">🔒</span>
-            <div style="font-size:13px;color:#ddd;font-weight:500;">Profil privé</div>
+            <div style="font-size:13px;color:#ddd;font-weight:500;" data-i18n="profil_private">Profil privé</div>
           </div>
           <div class="toggle-switch" onclick="this.classList.toggle('on');"><div class="toggle-knob"></div></div>
         </div>
@@ -688,25 +688,25 @@
 
     <!-- ===== CHANGEMENT DE MOT DE PASSE ===== -->
     <div class="card" style="border-radius:18px;padding:20px;">
-      <div class="badges-section-title">MOT DE <span>PASSE</span></div>
+      <div class="badges-section-title" data-i18n="profil_mot_de_passe">MOT DE <span>PASSE</span></div>
       <div class="fields-grid" style="margin-bottom:16px;">
-        <div class="field" style="grid-column:1/-1"><label>Nouveau mot de passe</label><input type="password" id="f-newpwd" placeholder="8 caractères minimum"></div>
-        <div class="field" style="grid-column:1/-1"><label>Confirmer le mot de passe</label><input type="password" id="f-confirmpwd" placeholder="Répète le mot de passe"></div>
+        <div class="field" style="grid-column:1/-1"><label data-i18n="profil_nouveau_pwd">Nouveau mot de passe</label><input type="password" id="f-newpwd" placeholder="8 caractères minimum"></div>
+        <div class="field" style="grid-column:1/-1"><label data-i18n="profil_confirmer_pwd">Confirmer le mot de passe</label><input type="password" id="f-confirmpwd" placeholder="Répète le mot de passe"></div>
       </div>
-      <button class="btn-save" onclick="changePassword()">Mettre à jour le mot de passe →</button>
+      <button class="btn-save" onclick="changePassword()" data-i18n="profil_update_pwd">Mettre à jour le mot de passe →</button>
     </div>
 
     <!-- ===== LOG OUT + DANGER ===== -->
     <div class="danger-zone">
-      <div class="danger-title">⚠️ Zone dangereuse</div>
-      <div class="danger-desc">Ces actions sont irréversibles. Assure-toi de bien vouloir continuer avant de procéder.</div>
+      <div class="danger-title" data-i18n="profil_zone_danger">⚠️ Zone dangereuse</div>
+      <div class="danger-desc" data-i18n="profil_zone_danger_desc">Ces actions sont irréversibles. Assure-toi de bien vouloir continuer avant de procéder.</div>
       <div style="display:flex;flex-direction:column;gap:10px;">
-        <button class="btn-danger" onclick="window.location.href='abonnement.html'" style="border-color:rgba(200,140,0,0.4);color:#e6a020;">Se désabonner — Gérer mon abonnement</button>
-        <button class="btn-danger" onclick="deleteAccount()">Supprimer définitivement mon compte</button>
+        <button class="btn-danger" onclick="window.location.href='abonnement.html'" style="border-color:rgba(200,140,0,0.4);color:#e6a020;" data-i18n="profil_desabonner">Se désabonner — Gérer mon abonnement</button>
+        <button class="btn-danger" onclick="deleteAccount()" data-i18n="profil_supprimer">Supprimer définitivement mon compte</button>
       </div>
     </div>
 
-    <button onclick="logoutUser()" style="width:100%;background:transparent;border:1px solid rgba(200,40,40,0.2);border-radius:12px;padding:15px;font-family:var(--font-display);font-size:16px;letter-spacing:3px;color:var(--red);cursor:pointer;text-align:center;transition:all 0.2s;margin-top:4px;" onmouseover="this.style.background='rgba(200,40,40,0.07)'" onmouseout="this.style.background='transparent'">LOG OUT</button>
+    <button onclick="logoutUser()" style="width:100%;background:transparent;border:1px solid rgba(200,40,40,0.2);border-radius:12px;padding:15px;font-family:var(--font-display);font-size:16px;letter-spacing:3px;color:var(--red);cursor:pointer;text-align:center;transition:all 0.2s;margin-top:4px;" onmouseover="this.style.background='rgba(200,40,40,0.07)'" onmouseout="this.style.background='transparent'" data-i18n="profil_log_out">LOG OUT</button>
 
     <!-- Bouton save caché (utilisé par le modal edit) -->
     <button id="btn-save" onclick="saveProfile()" style="display:none;"></button>
@@ -718,28 +718,28 @@
 <div class="edit-overlay" id="editOverlay" onclick="if(event.target===this)closeEditModal()">
   <div class="edit-sheet">
     <div class="edit-sheet-handle"></div>
-    <div class="edit-sheet-title">MODIFIER <span>TON PROFIL</span></div>
+    <div class="edit-sheet-title" data-i18n="profil_modifier">MODIFIER <span>TON PROFIL</span></div>
     <div class="edit-fields">
       <div class="edit-field">
-        <label>Prénom</label>
+        <label data-i18n="profil_prenom">Prénom</label>
         <input type="text" id="edit-prenom" placeholder="Kaito">
       </div>
       <div class="edit-field">
-        <label>Nom</label>
+        <label data-i18n="profil_nom">Nom</label>
         <input type="text" id="edit-nom" placeholder="Yamada">
       </div>
       <div class="edit-field">
-        <label>Nom d'utilisateur</label>
+        <label data-i18n="profil_username">Nom d'utilisateur</label>
         <input type="text" id="edit-username" placeholder="@kaito_warrior">
       </div>
       <div class="edit-field">
-        <label>Email (non modifiable)</label>
+        <label data-i18n="profil_email_non_modifiable">Email (non modifiable)</label>
         <input type="email" id="edit-email" readonly style="opacity:0.5;cursor:not-allowed;">
       </div>
     </div>
     <div class="edit-btns">
-      <button class="edit-cancel" onclick="closeEditModal()">ANNULER</button>
-      <button class="edit-save" onclick="saveEditModal()">SAUVEGARDER</button>
+      <button class="edit-cancel" onclick="closeEditModal()" data-i18n="profil_annuler">ANNULER</button>
+      <button class="edit-save" onclick="saveEditModal()" data-i18n="profil_sauvegarder_modal">SAUVEGARDER</button>
     </div>
   </div>
 </div>
@@ -1416,5 +1416,13 @@ var safetyTimeout = 0;
 </nav>
 <script src="topbar-avatar.js?v=2"></script>
 <script src="topbar-streak.js"></script>
+<script src="i18n.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof initI18n === 'function') initI18n();
+    var sel = document.getElementById('f-langue');
+    if (sel && typeof getLang === 'function') sel.value = getLang();
+  });
+</script>
 </body>
 </html>

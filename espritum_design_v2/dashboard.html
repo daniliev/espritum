@@ -495,7 +495,7 @@
 
     <!-- WORD OF THE DAY -->
     <div class="wod-card">
-      <div class="wod-label">Word of the day</div>
+      <div class="wod-label" data-i18n="dash_word_day">Word of the day</div>
       <div class="wod-quote" id="wod-quote">"Je puis tout par celui qui me fortifie."</div>
       <div class="wod-ref" id="wod-ref">Philippiens 4:13</div>
     </div>
@@ -519,33 +519,33 @@
     <div class="body-photos-card">
       <div class="body-photos-row">
         <div class="body-photo-item">
-          <div class="body-photo-lbl">Mon corps actuel</div>
+          <div class="body-photo-lbl" data-i18n="dash_mon_corps">Mon corps actuel</div>
           <div class="body-photo-frame" id="current-body-frame" onclick="openScanSheet()">
             <img id="current-body-img" alt="Corps actuel">
             <div class="body-photo-empty" id="current-body-empty">
               <div class="body-photo-add">
                 <svg class="body-photo-add-icon" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
               </div>
-              <div class="body-photo-empty-text">Scanner mon corps</div>
+              <div class="body-photo-empty-text" data-i18n="dash_scanner_corps">Scanner mon corps</div>
             </div>
           </div>
         </div>
         <div class="body-photo-item">
-          <div class="body-photo-lbl">Mon corps de rêve</div>
+          <div class="body-photo-lbl" data-i18n="dash_corps_reve">Mon corps de rêve</div>
           <div class="body-photo-frame" id="dream-body-frame" onclick="document.getElementById('dream-upload').click()">
             <img id="dream-body-img" alt="Corps de rêve">
             <div class="body-photo-empty" id="dream-body-empty">
               <div class="body-photo-add">
                 <svg class="body-photo-add-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               </div>
-              <div class="body-photo-empty-text">Ajouter une photo</div>
+              <div class="body-photo-empty-text" data-i18n="dash_ajouter_photo">Ajouter une photo</div>
             </div>
           </div>
           <input type="file" id="dream-upload" accept="image/*" style="display:none" onchange="handleDreamUpload(this)">
         </div>
       </div>
       <div>
-        <div class="time-goal-lbl">Objectif en combien de temps ?</div>
+        <div class="time-goal-lbl" data-i18n="dash_objectif_temps">Objectif en combien de temps ?</div>
         <div class="slider-wrap">
           <input type="range" id="goal-slider" class="goal-slider" min="0" max="6" step="1" value="2" oninput="onSliderChange(this.value)">
           <div class="slider-ticks">
@@ -570,39 +570,39 @@
       <div class="body-stats-grid4">
         <div class="body-stat-box">
           <div class="body-stat-val"><span id="bstat-poids">—</span><sup>kg</sup></div>
-          <div class="body-stat-label">Poids</div>
+          <div class="body-stat-label" data-i18n="dash_poids_label">Poids</div>
         </div>
         <div class="body-stat-box">
           <div class="body-stat-val"><span id="bstat-mg">—</span><sup>%</sup></div>
-          <div class="body-stat-label">Masse grasse</div>
+          <div class="body-stat-label" data-i18n="dash_masse_grasse_label">Masse grasse</div>
         </div>
         <div class="body-stat-box">
           <div class="body-stat-val"><span id="bstat-mg-kg">—</span><sup>kg</sup></div>
-          <div class="body-stat-label">Graisse (kg)</div>
+          <div class="body-stat-label" data-i18n="dash_graisse_kg">Graisse (kg)</div>
         </div>
         <div class="body-stat-box">
           <div class="body-stat-val"><span id="bstat-mm-kg">—</span><sup>kg</sup></div>
-          <div class="body-stat-label">Muscle (kg)</div>
+          <div class="body-stat-label" data-i18n="dash_muscle_kg">Muscle (kg)</div>
         </div>
       </div>
-      <button class="scan-btn" onclick="openScanSheet()">Scan My Body</button>
+      <button class="scan-btn" onclick="openScanSheet()" data-i18n="dash_scan_my_body">Scan My Body</button>
     </div>
 
     <!-- CALORIES CONSOMMÉES vs BRÛLÉES -->
     <div class="progression-card">
       <div class="progression-header">
         <div>
-          <div class="progression-title">Calories</div>
-          <div class="progression-sub">7 derniers jours</div>
+          <div class="progression-title" data-i18n="dash_calories">Calories</div>
+          <div class="progression-sub" data-i18n="dash_7_jours">7 derniers jours</div>
         </div>
         <div style="display:flex;gap:18px;align-items:flex-start">
           <div style="text-align:right">
             <div class="progression-avg" id="prog-avg-consumed" style="color:#c82828">—</div>
-            <div class="progression-avg-label"><span style="color:#c82828">●</span> consommées</div>
+            <div class="progression-avg-label"><span style="color:#c82828">●</span> <span data-i18n="dash_consommees">consommées</span></div>
           </div>
           <div style="text-align:right">
             <div class="progression-avg" id="prog-avg-burned" style="color:#fff">—</div>
-            <div class="progression-avg-label"><span style="color:#fff">●</span> brûlées</div>
+            <div class="progression-avg-label"><span style="color:#fff">●</span> <span data-i18n="dash_brulees">brûlées</span></div>
           </div>
         </div>
       </div>
@@ -624,7 +624,7 @@
 <script>
   const sb = window.sb;
 
-  const VERSETS = [
+  const VERSETS_FR = [
     { text: '"Ne tremble pas, ne t\'effraie pas."', ref: 'Josué 1:9' },
     { text: '"Il donne de la force à celui qui est fatigué."', ref: 'Ésaïe 40:29' },
     { text: '"Sois fort et courageux ! L\'Éternel est avec toi."', ref: 'Josué 1:9' },
@@ -633,10 +633,27 @@
     { text: '"Je connais les projets que j\'ai formés sur vous."', ref: 'Jérémie 29:11' },
     { text: '"Je puis tout par celui qui me fortifie."', ref: 'Philippiens 4:13' },
   ];
+  const VERSETS_EN = [
+    { text: '"Do not be afraid, do not be dismayed."', ref: 'Joshua 1:9' },
+    { text: '"He gives strength to the weary."', ref: 'Isaiah 40:29' },
+    { text: '"Be strong and courageous! The Lord is with you."', ref: 'Joshua 1:9' },
+    { text: '"The Lord is my strength and my shield."', ref: 'Psalm 28:7' },
+    { text: '"Commit your way to the Lord; trust in him."', ref: 'Psalm 37:5' },
+    { text: '"I know the plans I have for you."', ref: 'Jeremiah 29:11' },
+    { text: '"I can do all things through him who strengthens me."', ref: 'Philippians 4:13' },
+  ];
+  function getVerset(dayIdx) {
+    const lang = (typeof getLang === 'function') ? getLang() : 'fr';
+    return (lang === 'en' ? VERSETS_EN : VERSETS_FR)[dayIdx];
+  }
 
   const PLAN_LABEL = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
-  const DAY_SHORT = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
-  const MONTH_NAMES = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const DAY_SHORT_FR = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const DAY_SHORT_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const MONTH_NAMES_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const MONTH_NAMES_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  function getDayShort() { return (typeof getLang==='function' && getLang()==='en') ? DAY_SHORT_EN : DAY_SHORT_FR; }
+  function getMonthNames() { return (typeof getLang==='function' && getLang()==='en') ? MONTH_NAMES_EN : MONTH_NAMES_FR; }
 
   let ringChartInst = null;
   let chartCaloriesInst = null;
@@ -738,7 +755,7 @@
 
       // Word of the day
       const now = new Date();
-      const v = VERSETS[now.getDay()];
+      const v = getVerset(now.getDay());
       setEl('wod-quote', v.text);
       setEl('wod-ref', v.ref);
 
@@ -857,7 +874,7 @@
     }
     const from = localDate(days[0]);
     const to   = localDate(days[6]);
-    const labels = days.map(d => DAY_SHORT[d.getDay()]);
+    const labels = days.map(d => getDayShort()[d.getDay()]);
 
     // --- Calories consommées ---
     const { data: meals } = await sb.from('meals')
@@ -1112,10 +1129,14 @@
         } catch(e) { dreamBodyDescription = null; }
       }
 
-      itemsEl.innerHTML = `<div class="planning-item"><div class="planning-dot" style="background:#444;"></div><span style="color:var(--muted);">Évaluation de la faisabilité...</span></div>`;
+      const _pgLang = (typeof getLang === 'function') ? getLang() : 'fr';
+      const _isEngPG = _pgLang === 'en';
+      itemsEl.innerHTML = `<div class="planning-item"><div class="planning-dot" style="background:#444;"></div><span style="color:var(--muted);">${_isEngPG ? 'Evaluating feasibility...' : 'Évaluation de la faisabilité...'}</span></div>`;
 
       // 2. Groq évalue faisabilité + génère programme OU message impossible
-      const systemPrompt = `Tu es Coach Sensei, coach fitness chrétien expert. Tu génères des programmes personnalisés et réalistes. Par défaut, tu génères TOUJOURS un programme (feasible: true). Tu ne dis "impossible" QUE dans les cas extrêmes et évidents. Réponds UNIQUEMENT en JSON valide, sans texte supplémentaire.`;
+      const systemPrompt = _isEngPG
+        ? `You are Coach Sensei, an expert Christian fitness coach. You generate personalized and realistic programs. By default, you ALWAYS generate a program (feasible: true). You only say "impossible" in extreme and obvious cases. Respond ONLY in valid JSON, no extra text. All program content MUST be in English.`
+        : `Tu es Coach Sensei, coach fitness chrétien expert. Tu génères des programmes personnalisés et réalistes. Par défaut, tu génères TOUJOURS un programme (feasible: true). Tu ne dis "impossible" QUE dans les cas extrêmes et évidents. Réponds UNIQUEMENT en JSON valide, sans texte supplémentaire.`;
 
       const dreamCtx = dreamBodyDescription
         ? `- Corps de rêve (photo analysée) : "${dreamBodyDescription}"`
@@ -1127,7 +1148,44 @@
       const weeks = weeksMap[key] || 13;
       const maxFatLossKg = (weeks * 0.75).toFixed(1); // 0.75kg/semaine moyenne réaliste
 
-      const userMsg = `Génère un programme ou dis pourquoi c'est impossible.
+      const userMsg = _isEngPG ? `Generate a program or explain why it is impossible.
+
+CURRENT PROFILE:
+- Weight: ${poids || '?'} kg
+- Body fat: ${mgPct || '?'}%
+- Muscle mass: ${mmKg || '?'} kg
+- Gender: ${genre === 'homme' ? 'Male' : genre === 'femme' ? 'Female' : genre}
+- Body type: ${morphLabel || 'not specified'}
+${dreamCtx}
+- Desired duration: ${label} (${weeks} weeks)
+- Max realistic fat loss for this duration: ~${maxFatLossKg} kg
+
+RULE for "impossible" — only block if ALL these conditions are true simultaneously:
+• Duration ≤ 1 month AND very significant transformation required (>8% BF to lose or competition physique)
+• OR duration = 2 weeks AND dream physique is elite athlete (BF <10%, very developed muscles)
+
+In ALL other cases (duration ≥ 3 months, or moderate transformation) → feasible: true is mandatory.
+
+If IMPOSSIBLE (extreme cases only):
+{
+  "feasible": false,
+  "titre_impossible": "Short title",
+  "message": "Honest and kind explanation in 2 sentences",
+  "duree_realiste": "realistic timeframe (e.g. 6 months)"
+}
+
+If FEASIBLE (default) — ultra-personalized program:
+{
+  "feasible": true,
+  "titre": "Program title adapted to duration and profile",
+  "items": [
+    "tip 1 very concrete with precise numbers (calories, sessions, kg)",
+    "tip 2 very concrete with precise numbers",
+    "tip 3 very concrete with precise numbers",
+    "tip 4 very concrete with precise numbers",
+    "tip 5 short motivating Bible verse in English"
+  ]
+}` : `Génère un programme ou dis pourquoi c'est impossible.
 
 PROFIL ACTUEL :
 - Poids : ${poids || '?'} kg
@@ -1178,10 +1236,10 @@ Si FAISABLE (par défaut) — programme ultra-personnalisé :
           <div style="text-align:center;padding:14px 8px 8px;">
             <div style="font-size:13px;color:#ff9058;line-height:1.7;margin-bottom:14px;">${parsed.message || ''}</div>
             <div style="background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);border-radius:8px;padding:12px 14px;margin-bottom:12px;">
-              <div style="font-size:11px;color:var(--muted);margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;">Délai réaliste</div>
+              <div style="font-size:11px;color:var(--muted);margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;">${_isEngPG ? 'Realistic timeframe' : 'Délai réaliste'}</div>
               <div style="font-size:20px;font-family:var(--font-display);color:#fff;letter-spacing:2px;">${parsed.duree_realiste || '?'}</div>
             </div>
-            <div style="font-size:11px;color:#333;font-style:italic;">"La persévérance forge les champions. Choisis un délai réaliste."</div>
+            <div style="font-size:11px;color:#333;font-style:italic;">${_isEngPG ? '"Perseverance builds champions. Choose a realistic timeframe."' : '"La persévérance forge les champions. Choisis un délai réaliste."'}</div>
           </div>`;
       } else {
         titleEl.innerHTML = `<span style="color:var(--red);">🤖</span> ${parsed.titre}`;
@@ -1192,7 +1250,15 @@ Si FAISABLE (par défaut) — programme ultra-personnalisé :
 
     } catch(e) {
       // Fallback statique si API indispo
-      const fallbacks = {
+      const fallbacks = _isEngPG ? {
+        '2sem': { titre: 'Metabolic Shock — 2 weeks', items: ['7 intense sessions over 14 days', '600 kcal/day caloric deficit', 'HIIT cardio 25 min × 5/week', 'Zero refined sugar, zero alcohol', '"Whatever you do, do it with all your heart" — Col 3:23'] },
+        '1m':   { titre: 'Launchpad — 1 month', items: ['6 sessions/week: 4 strength + 2 cardio', '500 kcal/day caloric deficit', 'Protein: 2g × ' + (poids||'your weight') + 'kg/day', 'Hydration: 3L of water/day', '"Be strong and courageous" — Joshua 1:9'] },
+        '3m':   { titre: 'Transformation — 3 months', items: ['5 sessions/week alternating strength + cardio', '400 kcal/day caloric deficit', 'Monthly body recomposition check', 'Minimum 8h sleep — recovery priority', '"I can do all things through him who strengthens me" — Phil 4:13'] },
+        '6m':   { titre: 'Recomposition — 6 months', items: ['4 progressive sessions/week', 'Moderate 250 kcal/day deficit', 'Focus on movement quality', 'Monthly body fat/muscle checkup', '"Hope does not disappoint" — Rom 5:5'] },
+        '12m':  { titre: 'Lifestyle — 1 year', items: ['3-4 consistent sessions/week', 'Intuitive eating + weekly checkup', 'Progressive overload every month', 'Write monthly goals', '"The Lord has entrusted me, and I will do it" — 1 Sam 3:18'] },
+        '24m':  { titre: 'Athlete — 2 years', items: ['Periodization: bulking / cutting phases', '3-5 sessions/week depending on phase', 'Annual blood work follow-up', 'Annual competition or personal challenge', '"Run with perseverance" — Heb 12:1'] },
+        '36m':  { titre: 'Total Transformation — 3 years', items: ['3-month phase program', 'Goal: -' + (mgPct ? Math.max(5, Math.round(mgPct * 0.4)) : 8) + '% body fat over 3 years', 'Progressive muscle building', 'Healthy lifestyle anchored in routine', '"The path of the righteous is like the morning sun" — Prov 4:18'] }
+      } : {
         '2sem': { titre: 'Choc Métabolique — 2 semaines', items: ['7 séances intensives sur 14 jours', 'Déficit calorique 600 kcal/jour', 'Cardio HIIT 25 min × 5/semaine', 'Zéro sucre raffiné, zéro alcool', '"Tout ce que tu fais, fais-le de tout ton cœur" — Col 3:23'] },
         '1m':   { titre: 'Décollage — 1 mois', items: ['6 séances/semaine : 4 muscu + 2 cardio', 'Déficit calorique 500 kcal/jour', 'Protéines : 2g × ' + (poids||'ton poids') + 'kg/jour', 'Hydratation : 3L d\'eau/jour', '"Sois fort et courageux" — Josué 1:9'] },
         '3m':   { titre: 'Transformation — 3 mois', items: ['5 séances/semaine alternant force + cardio', 'Déficit calorique 400 kcal/jour', 'Réévaluation corporelle chaque mois', 'Sommeil 8h minimum — priorité récupération', '"Je puis tout par celui qui me fortifie" — Phil 4:13'] },
@@ -1773,5 +1839,11 @@ function ssSleep(ms) { return new Promise(function(r){ setTimeout(r, ms); }); }
 
 <script src="topbar-avatar.js?v=2"></script>
 <script src="topbar-streak.js"></script>
+<script src="i18n.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof initI18n === 'function') initI18n();
+  });
+</script>
 </body>
 </html>
