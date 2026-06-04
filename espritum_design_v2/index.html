@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<script src="page-loader.js?v=84"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
 <title>Espritum — Not Just Flesh But Spirit</title>
@@ -1652,11 +1651,9 @@
   }
   .phone-screen {
     flex: 1;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
   }
   .phone-app-icon { margin-bottom: 4px; }
   .phone-app-icon img { border-radius: 18px; box-shadow: 0 0 24px rgba(200,40,40,0.3); }
@@ -1738,7 +1735,7 @@
         ARRÊTE D'ALLER<br>
         <span class="accent">À LA SALLE.</span>
       </h1>
-      <p class="hero-sub">Sérieusement. Si tu continues comme ça — sans plan réel, sans suivi précis, sans méthode — dans 6 mois tu seras au même point. Exactement.</p>
+      <p class="hero-sub">Sans plan réel, sans méthode, sans suivi — dans 6 mois tu seras au même point. Exactement.</p>
       <div class="hero-actions">
         <button class="btn-primary" onclick="openWaitlist('hero')">REJOINDRE LA LISTE</button>
         <a href="#fonctionnalites" class="btn-secondary">FONCTIONNALITÉS</a>
@@ -1781,33 +1778,21 @@
 <!-- SECTION 3 : PROBLÈME -->
 <section id="probleme" class="problem-section">
   <div class="pb-inner">
-    <div class="section-tag">Le problème</div>
-    <h2 class="section-heading">TU VAS À LA SALLE<br><span>MAIS...</span></h2>
-    <p class="pb-sub">Tu te demandes pourquoi tu n'avances pas ? La vérité que personne ne te dit :</p>
+    <div class="section-tag centered">Le problème</div>
+    <h2 class="section-heading" style="text-align:center">TU VAS À LA SALLE<br><span>MAIS...</span></h2>
+    <p class="pb-sub" style="text-align:center;max-width:100%">La vérité que personne ne te dit :</p>
     <div class="pb-grid">
       <div class="pb-card">
         <span class="pb-dash">—</span>
-        <p class="pb-card-text">Ton programme vient d'un influenceur qui ne te connaît pas et s'en fout de tes résultats. Tu soulèves des charges sans savoir pourquoi.</p>
+        <p class="pb-card-text">Ton programme vient d'un influenceur qui ne te connaît pas. Tu soulèves des charges sans savoir pourquoi.</p>
       </div>
       <div class="pb-card">
         <span class="pb-dash">—</span>
-        <p class="pb-card-text">Tu manges "sain" mais tu n'as aucune idée de tes calories ni de tes macros réelles. Tu navigues à l'aveugle depuis le début.</p>
+        <p class="pb-card-text">Tu manges "sain" mais tu ignores tes calories et tes macros. Tu navigues à l'aveugle.</p>
       </div>
       <div class="pb-card">
         <span class="pb-dash">—</span>
-        <p class="pb-card-text">Aucun suivi = aucun système. Chaque semaine tu recommences de zéro comme si la précédente n'avait jamais existé.</p>
-      </div>
-      <div class="pb-card">
-        <span class="pb-dash">—</span>
-        <p class="pb-card-text">Tu te motives le dimanche soir. Tu abandonnes le mercredi. Ce cycle tourne depuis des mois — voire des années.</p>
-      </div>
-      <div class="pb-card">
-        <span class="pb-dash">—</span>
-        <p class="pb-card-text">Tu n'as personne pour te tenir responsable. Et ta propre volonté seule, la science le prouve, ça ne suffit jamais.</p>
-      </div>
-      <div class="pb-card">
-        <span class="pb-dash">—</span>
-        <p class="pb-card-text">Tu entraînes le corps mais tu négliges l'arme la plus puissante que tu possèdes : ton esprit.</p>
+        <p class="pb-card-text">Tu te motives le dimanche. Tu abandonnes le mercredi. Ce cycle tourne depuis des années.</p>
       </div>
     </div>
   </div>
@@ -1816,39 +1801,21 @@
 <!-- SECTION 4 : SOLUTION -->
 <section id="solution" class="solution-section">
   <div class="sol-inner">
-    <div class="section-tag">La solution</div>
-    <h2 class="section-heading">CE DONT TU AS<br><span>VRAIMENT BESOIN.</span></h2>
-    <p class="sol-sub">Pas un énième abonnement de salle à 50€/mois que tu n'utiliseras plus en février. Une méthode complète :</p>
-    <div class="sol-grid">
-      <div class="sol-card">
-        <div class="sol-card-num">01</div>
-        <div class="sol-card-title">Un programme fait pour TOI</div>
-        <p class="sol-card-desc">Généré par l'IA selon ton corps, ton objectif et ton niveau — mis à jour automatiquement. Fini les programmes génériques copiés-collés.</p>
+    <div class="section-tag centered">La solution</div>
+    <h2 class="section-heading" style="text-align:center">CE DONT TU AS<br><span>VRAIMENT BESOIN.</span></h2>
+    <p class="sol-sub" style="text-align:center;max-width:100%">Pas un abonnement de salle. Une méthode :</p>
+    <div class="pb-grid">
+      <div class="pb-card">
+        <span class="pb-dash">—</span>
+        <p class="pb-card-text">Généré par l'IA selon ton corps et ton objectif. Mis à jour chaque semaine.</p>
       </div>
-      <div class="sol-card">
-        <div class="sol-card-num">02</div>
-        <div class="sol-card-title">Un suivi nutritionnel précis</div>
-        <p class="sol-card-desc">Calories, macros, scan de repas par caméra — tu sais enfin ce que tu consommes vraiment. La nutrition, c'est 80% des résultats.</p>
+      <div class="pb-card">
+        <span class="pb-dash">—</span>
+        <p class="pb-card-text">Calories, macros, scan par caméra. Tu sais enfin ce que tu consommes.</p>
       </div>
-      <div class="sol-card">
-        <div class="sol-card-num">03</div>
-        <div class="sol-card-title">Un coach IA disponible 24h/24</div>
-        <p class="sol-card-desc">Sensei connaît ton historique complet. Il te parle vrai, sans te ménager, sans te juger. Disponible à 3h du matin si tu en as besoin.</p>
-      </div>
-      <div class="sol-card">
-        <div class="sol-card-num">04</div>
-        <div class="sol-card-title">Un système de responsabilité</div>
-        <p class="sol-card-desc">Streak quotidien, classement entre guerriers, badges de progression — tu avances parce que le système te le rappelle chaque jour.</p>
-      </div>
-      <div class="sol-card">
-        <div class="sol-card-num">05</div>
-        <div class="sol-card-title">Une progression mesurable</div>
-        <p class="sol-card-desc">Photos avant/après, mensurations, courbes de poids — tu vois les chiffres évoluer semaine après semaine. Ce que tu mesures, tu le gères.</p>
-      </div>
-      <div class="sol-card">
-        <div class="sol-card-num">06</div>
-        <div class="sol-card-title">La force de l'esprit</div>
-        <p class="sol-card-desc">Verset biblique du jour, prières avant l'entraînement, citations de guerriers de la foi — parce que la vraie transformation commence en dedans.</p>
+      <div class="pb-card">
+        <span class="pb-dash">—</span>
+        <p class="pb-card-text">Sensei connaît ton historique. Il te parle vrai, sans te ménager.</p>
       </div>
     </div>
   </div>
@@ -1858,43 +1825,18 @@
 <section id="appli" class="showcase-section">
   <div class="showcase-inner">
     <div class="showcase-text">
-      <div class="section-tag">L'application</div>
-      <h2 class="section-heading">TOUT DANS TON<br><span>TÉLÉPHONE.</span></h2>
-      <p class="showcase-desc">Espritum est une application mobile complète — accessible sur iPhone et Android, sans téléchargement depuis l'App Store. Installe-la en 5 secondes depuis ton navigateur et retrouve-la directement sur ton écran d'accueil.</p>
-      <ul class="showcase-list">
-        <li>Disponible sur iOS & Android</li>
-        <li>Fonctionne hors connexion</li>
-        <li>Interface pensée 100% mobile-first</li>
-        <li>Notifications de rappel personnalisées</li>
-      </ul>
-      <button class="btn-primary" onclick="openWaitlist('showcase')">REJOINDRE LA LISTE</button>
-    </div>
-    <div class="showcase-phone">
-      <div class="phone-frame">
-        <div class="phone-notch"></div>
-        <div class="phone-screen">
-          <div class="phone-app-icon">
-            <img src="fav-icon-003.png" alt="Espritum" style="width:68px;height:68px;border-radius:18px;">
-          </div>
-          <div class="phone-app-name">ESPRITUM</div>
-          <div class="phone-app-tag">Not Just Flesh But Spirit</div>
-          <div class="phone-divider"></div>
-          <div class="phone-stats">
-            <div class="phone-stat">
-              <span class="ps-val">47</span>
-              <span class="ps-lbl">Séances</span>
-            </div>
-            <div class="phone-stat">
-              <span class="ps-val phone-streak">🔥 12</span>
-              <span class="ps-lbl">Streak</span>
-            </div>
-            <div class="phone-stat">
-              <span class="ps-val">#3</span>
-              <span class="ps-lbl">Classement</span>
-            </div>
-          </div>
-        </div>
+      <div class="section-tag centered">L'application</div>
+      <h2 class="section-heading" style="text-align:center">TOUT DANS TON<br><span>TÉLÉPHONE.</span></h2>
+      <p class="showcase-desc" style="text-align:center">Accessible sur iPhone et Android. Installe-la en 5 secondes depuis ton navigateur — pas d'App Store nécessaire.</p>
+      <div style="display:flex;justify-content:center;gap:28px;margin-bottom:36px;flex-wrap:wrap;">
+        <span style="font-size:13px;color:rgba(255,255,255,0.4);letter-spacing:1px;">iOS & Android</span>
+        <span style="font-size:13px;color:rgba(255,255,255,0.4);letter-spacing:1px;">Hors connexion</span>
+        <span style="font-size:13px;color:rgba(255,255,255,0.4);letter-spacing:1px;">Notifications</span>
       </div>
+      <button class="btn-primary" onclick="openWaitlist('showcase')" style="display:block;margin:0 auto">REJOINDRE LA LISTE</button>
+    </div>
+    <div class="showcase-phone" style="display:flex;justify-content:center;align-items:center;">
+      <img src="app-preview.png" alt="Espritum App" style="max-width:260px;width:75%;filter:drop-shadow(0 0 50px rgba(200,40,40,0.25));">
     </div>
   </div>
 </section>
@@ -1958,11 +1900,9 @@
             <span class="free-tier-cur">€</span>
           </div>
           <div class="free-tier-period">pour toujours</div>
-          <p class="free-tier-desc">Pour découvrir Espritum sans engagement. Une seule fonctionnalité, mais la plus puissante pour débuter.</p>
+          <p class="free-tier-desc">Découvre Espritum sans engagement.</p>
         </div>
         <div class="free-tier-feature">Estimation masse grasse par caméra</div>
-        <div class="free-tier-feature">Verset biblique du jour</div>
-        <div class="free-tier-feature">Dashboard basique</div>
         <div class="free-tier-footer">
           <button class="plan-cta cta-waitlist" onclick="openWaitlist('gratuit')">Rejoindre la liste →</button>
         </div>
@@ -1978,7 +1918,7 @@
             <span class="single-plan-currency">€</span>
           </div>
           <div class="single-plan-period">par mois</div>
-          <p class="single-plan-desc">Toutes les fonctionnalités incluses. Pas de paliers, pas de restrictions. Annule à tout moment.</p>
+          <p class="single-plan-desc">Tout inclus. Annule à tout moment.</p>
         </div>
         <div class="single-plan-features">
           <div class="single-feat"><span class="check"></span>Suivi nutrition (calories + macros)</div>
