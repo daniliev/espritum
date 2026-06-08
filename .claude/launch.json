@@ -4,7 +4,7 @@
     {
       "name": "espritum",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["/Users/ilievdanail/Desktop/espritum/espritum_design_v2/serve.py"],
+      "runtimeArgs": ["serve.py"],
       "port": 8765
     }
   ]
