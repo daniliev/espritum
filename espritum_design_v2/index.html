@@ -690,16 +690,7 @@
   section { padding: 120px 24px; position: relative; }
 
   .section-tag {
-    font-family: var(--font-body);
-    font-size: 10px;
-    letter-spacing: 4px;
-    color: var(--red);
-    text-transform: uppercase;
-    font-weight: 600;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    display: none !important;
   }
   .section-tag::before { content: ''; width: 28px; height: 1px; background: var(--red); }
   .section-tag.centered { justify-content: center; }
@@ -850,6 +841,13 @@
     letter-spacing: 0;
   }
   .feat-card:hover .feat-num { color: #222; }
+
+  .feat-icon {
+    color: var(--red);
+    margin-bottom: 22px;
+    position: relative; z-index: 1;
+  }
+  .feat-icon svg { width: 40px; height: 40px; }
 
   .feat-title {
     font-family: var(--font-display);
@@ -1424,24 +1422,35 @@
     gap: 14px;
   }
   .pb-card {
-    background: #0a0a0a;
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--red);
+    background: transparent;
     border-radius: 10px;
-    padding: 26px 28px;
+    padding: 18px 4px;
     display: flex;
     gap: 18px;
     align-items: flex-start;
-    transition: background 0.2s, border-left-color 0.2s;
+    transition: background 0.2s;
   }
-  .pb-card:hover { background: #0f0f0f; border-left-color: #e03030; }
+  .pb-card:hover { background: rgba(255,255,255,0.02); }
+  /* puce : point rouge entouré d'un cercle */
   .pb-dash {
-    color: var(--red);
-    font-size: 20px;
+    width: 22px;
+    height: 22px;
     flex-shrink: 0;
-    line-height: 1.3;
-    font-weight: 700;
-    margin-top: 1px;
+    border: 2px solid rgba(200,40,40,0.45);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0;
+    line-height: 0;
+    margin-top: 2px;
+  }
+  .pb-dash::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    background: var(--red);
+    border-radius: 50%;
   }
   .pb-card-text {
     font-size: 15px;
@@ -1499,6 +1508,155 @@
     line-height: 1.65;
   }
   @media (max-width: 768px) { .sol-grid { grid-template-columns: 1fr; } }
+
+  /* ── SPLIT IMAGE/TEXTE (problème & solution) ── */
+  .split-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 52px;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .split-media { position: relative; }
+  .split-media img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    display: block;
+  }
+  /* léger voile rouge pour fondre l'image dans le thème */
+  .split-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(200,40,40,0.0) 55%, rgba(200,40,40,0.22) 100%);
+    pointer-events: none;
+  }
+  .split-content .section-tag,
+  .split-content .section-heading,
+  .split-content .pb-sub,
+  .split-content .sol-sub { text-align: left !important; }
+  .split-content .section-heading { margin-left: 0; }
+  .split-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  /* image à droite pour la section solution */
+  .sol-split .split-media { order: 2; }
+  @media (max-width: 900px) {
+    .split-row { grid-template-columns: 1fr; gap: 28px; }
+    /* mobile : image toujours en haut, texte en bas */
+    .sol-split .split-media { order: -1; }
+    .split-content .section-tag,
+    .split-content .section-heading,
+    .split-content .pb-sub,
+    .split-content .sol-sub { text-align: center !important; }
+  }
+
+  /* ── ÉTAPES (gratuit, 3 étapes) ── */
+  .steps-section { background: var(--bg2); padding: 110px 24px; }
+  .steps-inner { max-width: 1100px; margin: 0 auto; }
+  .steps-head { text-align: center; margin-bottom: 18px; }
+  .steps-free-badge {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--red);
+    border: 1px solid rgba(200,40,40,0.4);
+    border-radius: 100px;
+    padding: 7px 16px;
+    margin-bottom: 22px;
+  }
+  .steps-sub {
+    text-align: center;
+    font-size: 17px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 560px;
+    margin: 0 auto 56px;
+  }
+  .steps-flow {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 8px;
+  }
+  .step-item {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .step-bignum {
+    font-family: var(--font-display);
+    font-size: 62px;
+    line-height: 1;
+    color: var(--red);
+    text-align: center;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+  .step-card {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 34px 26px 30px;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .step-card:hover { border-color: rgba(200,40,40,0.4); transform: translateY(-4px); }
+  .step-arrow {
+    align-self: center;
+    flex: 0 0 auto;
+    color: rgba(200,40,40,0.6);
+    font-size: 32px;
+    line-height: 1;
+    padding: 0 6px;
+  }
+  .step-arrow .arrow-down { display: none; }
+  .step-icon {
+    color: var(--red);
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: center;
+  }
+  .step-icon svg { width: 44px; height: 44px; }
+  .step-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+  .step-desc {
+    font-size: 14.5px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+  .steps-cta-wrap { text-align: center; margin-top: 48px; }
+  .steps-cta-note {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 16px;
+    letter-spacing: 0.5px;
+  }
+  @media (max-width: 860px) {
+    .steps-flow { flex-direction: column; align-items: stretch; }
+    .step-arrow { padding: 4px 0; }
+    .step-arrow .arrow-right { display: none; }
+    .step-arrow .arrow-down { display: inline; }
+    .steps-section { padding: 80px 22px; }
+  }
 
   /* ── PLANS DUO ── */
   .plans-duo {
@@ -1716,7 +1874,6 @@
   <ul class="nav-links">
     <li><a href="#probleme">Le problème</a></li>
     <li><a href="#fonctionnalites">Fonctionnalités</a></li>
-    <li><a href="#tarifs">Tarifs</a></li>
     <li><a href="#faq">FAQ</a></li>
   </ul>
   <div class="nav-actions">
@@ -1762,36 +1919,31 @@
   <div class="scroll-line"></div>
 </section>
 
-<!-- SECTION 2 : VERSET -->
-<section class="verse-section">
-  <div class="verse-section-inner">
-    <div class="verse-quote-line"></div>
-    <blockquote class="verse-big-text">
-      "Ce n'est pas par la force, ni par la puissance,<br>mais c'est par mon Esprit."
-    </blockquote>
-    <div class="verse-big-ref">— Zacharie 4 : 6</div>
-    <div class="verse-quote-line"></div>
-  </div>
-</section>
-
 <!-- SECTION 3 : PROBLÈME -->
 <section id="probleme" class="problem-section">
   <div class="pb-inner">
-    <div class="section-tag centered">Le problème</div>
-    <h2 class="section-heading" style="text-align:center">TU VAS À LA SALLE<br><span>MAIS...</span></h2>
-    <p class="pb-sub" style="text-align:center;max-width:100%">La vérité que personne ne te dit :</p>
-    <div class="pb-grid">
-      <div class="pb-card">
-        <span class="pb-dash">—</span>
-        <p class="pb-card-text">Ton programme vient d'un influenceur qui ne te connaît pas. Tu soulèves des charges sans savoir pourquoi.</p>
+    <div class="split-row prob-split">
+      <div class="split-media">
+        <img src="img/probleme-section.png" alt="Perdu à la salle de sport, sans méthode" loading="lazy">
       </div>
-      <div class="pb-card">
-        <span class="pb-dash">—</span>
-        <p class="pb-card-text">Tu manges "sain" mais tu ignores tes calories et tes macros. Tu navigues à l'aveugle.</p>
-      </div>
-      <div class="pb-card">
-        <span class="pb-dash">—</span>
-        <p class="pb-card-text">Tu te motives le dimanche. Tu abandonnes le mercredi. Ce cycle tourne depuis des années.</p>
+      <div class="split-content">
+        <div class="section-tag">Le problème</div>
+        <h2 class="section-heading">TU VAS À LA SALLE<br><span>MAIS...</span></h2>
+        <p class="pb-sub">La vérité que personne ne te dit :</p>
+        <div class="split-stack">
+          <div class="pb-card">
+            <span class="pb-dash">—</span>
+            <p class="pb-card-text">Ton programme vient d'un influenceur qui ne te connaît pas. Tu soulèves des charges sans savoir pourquoi.</p>
+          </div>
+          <div class="pb-card">
+            <span class="pb-dash">—</span>
+            <p class="pb-card-text">Tu manges "sain" mais tu ignores tes calories et tes macros. Tu navigues à l'aveugle.</p>
+          </div>
+          <div class="pb-card">
+            <span class="pb-dash">—</span>
+            <p class="pb-card-text">Tu te motives le dimanche. Tu abandonnes le mercredi. Ce cycle tourne depuis des années.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1800,22 +1952,72 @@
 <!-- SECTION 4 : SOLUTION -->
 <section id="solution" class="solution-section">
   <div class="sol-inner">
-    <div class="section-tag centered">La solution</div>
-    <h2 class="section-heading" style="text-align:center">CE DONT TU AS<br><span>VRAIMENT BESOIN.</span></h2>
-    <p class="sol-sub" style="text-align:center;max-width:100%">Pas un abonnement de salle. Une méthode :</p>
-    <div class="pb-grid">
-      <div class="pb-card">
-        <span class="pb-dash">—</span>
-        <p class="pb-card-text">Généré par l'IA selon ton corps et ton objectif. Mis à jour chaque semaine.</p>
+    <div class="split-row sol-split">
+      <div class="split-media">
+        <img src="img/solution-section.png" alt="En confiance et en contrôle à la salle" loading="lazy">
       </div>
-      <div class="pb-card">
-        <span class="pb-dash">—</span>
-        <p class="pb-card-text">Calories, macros, scan par caméra. Tu sais enfin ce que tu consommes.</p>
+      <div class="split-content">
+        <div class="section-tag">La solution</div>
+        <h2 class="section-heading">CE DONT TU AS<br><span>VRAIMENT BESOIN.</span></h2>
+        <p class="sol-sub">Pas un abonnement de salle. Une méthode :</p>
+        <div class="split-stack">
+          <div class="pb-card">
+            <span class="pb-dash">—</span>
+            <p class="pb-card-text">Généré par l'IA selon ton corps et ton objectif. Mis à jour chaque semaine.</p>
+          </div>
+          <div class="pb-card">
+            <span class="pb-dash">—</span>
+            <p class="pb-card-text">Calories, macros, scan par caméra. Tu sais enfin ce que tu consommes.</p>
+          </div>
+          <div class="pb-card">
+            <span class="pb-dash">—</span>
+            <p class="pb-card-text">Sensei connaît ton historique. Il te parle vrai, sans te ménager.</p>
+          </div>
+        </div>
       </div>
-      <div class="pb-card">
-        <span class="pb-dash">—</span>
-        <p class="pb-card-text">Sensei connaît ton historique. Il te parle vrai, sans te ménager.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4B : 3 ÉTAPES (GRATUIT) -->
+<section id="etapes" class="steps-section">
+  <div class="steps-inner">
+    <div class="steps-head">
+      <span class="steps-free-badge">100% Gratuit</span>
+      <h2 class="section-heading" style="text-align:center">EN <span>3 ÉTAPES.</span></h2>
+    </div>
+    <p class="steps-sub">Avant même de t'abonner, l'IA t'analyse et te dit quoi faire. Gratuitement, sans carte bancaire.</p>
+    <div class="steps-flow">
+      <div class="step-item">
+        <div class="step-bignum">01</div>
+        <div class="step-card">
+          <div class="step-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.2"/></svg></div>
+          <div class="step-title">Photographie ton corps</div>
+          <p class="step-desc">Prends une photo de ton corps aujourd'hui. C'est ton point de départ, ton "avant".</p>
+        </div>
       </div>
+      <div class="step-arrow"><span class="arrow-right">→</span><span class="arrow-down">↓</span></div>
+      <div class="step-item">
+        <div class="step-bignum">02</div>
+        <div class="step-card">
+          <div class="step-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="1.6"/></svg></div>
+          <div class="step-title">Photo de ton corps de rêve</div>
+          <p class="step-desc">Ajoute la photo du physique que tu veux atteindre. Ton objectif devient concret et visuel.</p>
+        </div>
+      </div>
+      <div class="step-arrow"><span class="arrow-right">→</span><span class="arrow-down">↓</span></div>
+      <div class="step-item">
+        <div class="step-bignum">03</div>
+        <div class="step-card">
+          <div class="step-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.4a2 2 0 0 0 1.2 1.2L20.5 11.5 15.1 13.4a2 2 0 0 0-1.2 1.2L12 20l-1.9-5.4a2 2 0 0 0-1.2-1.2L3.5 11.5l5.4-1.9a2 2 0 0 0 1.2-1.2L12 3z"/><path d="M19 3v4M21 5h-4"/></svg></div>
+          <div class="step-title">L'IA analyse & te guide</div>
+          <p class="step-desc">L'IA compare les deux, analyse ta morphologie et te donne les meilleures recommandations : exactement quoi faire pour y arriver.</p>
+        </div>
+      </div>
+    </div>
+    <div class="steps-cta-wrap">
+      <button class="btn-primary" onclick="openWaitlist('etapes')">ESSAYER GRATUITEMENT</button>
+      <div class="steps-cta-note">Aucune carte bancaire requise</div>
     </div>
   </div>
 </section>
@@ -1849,31 +2051,37 @@
   <div class="features-grid">
     <div class="feat-card">
       <div class="feat-num">01</div>
+      <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.2"/></svg></div>
       <div class="feat-title" data-i18n="feat_bodyfat_title">Masse grasse par caméra</div>
       <p class="feat-desc" data-i18n="feat_bodyfat_desc">L'IA analyse ta silhouette et estime ton taux de masse grasse en quelques secondes. Disponible gratuitement.</p>
     </div>
     <div class="feat-card">
       <div class="feat-num">02</div>
+      <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.94c1.5 0 2.75-.67 3.6-1.74 1.9-2.4 2.4-6.2 2.4-8.2 0-3-2-5-4.5-5-1.2 0-2 .5-3 1-.9-.5-1.8-1-3-1-2.5 0-4.5 2-4.5 5 0 2 .5 5.8 2.4 8.2.85 1.07 2.1 1.74 3.6 1.74Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg></div>
       <div class="feat-title" data-i18n="feat_nutrition_title">Suivi nutrition</div>
       <p class="feat-desc" data-i18n="feat_nutrition_desc">Calories, macros, scan de code-barre et repas favoris. Tout pour maîtriser ton alimentation au quotidien.</p>
     </div>
     <div class="feat-card">
       <div class="feat-num">03</div>
+      <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/></svg></div>
       <div class="feat-title" data-i18n="feat_training_title">Plans d'entraînement</div>
       <p class="feat-desc" data-i18n="feat_training_desc">Des programmes générés selon ton profil, ton objectif et ton niveau. Mis à jour automatiquement chaque semaine.</p>
     </div>
     <div class="feat-card">
       <div class="feat-num">04</div>
+      <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
       <div class="feat-title" data-i18n="feat_progress_title">Progression corporelle</div>
       <p class="feat-desc" data-i18n="feat_progress_desc">Photos avant/après, mensurations, poids — tout est tracé avec des graphiques clairs semaine après semaine.</p>
     </div>
     <div class="feat-card">
       <div class="feat-num">05</div>
+      <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></div>
       <div class="feat-title" data-i18n="feat_faith_title">Motivation chrétienne</div>
       <p class="feat-desc" data-i18n="feat_faith_desc">Un verset biblique chaque matin, des prières avant l'entraînement et des citations de figures bibliques pour tenir le cap.</p>
     </div>
     <div class="feat-card">
       <div class="feat-num">06</div>
+      <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>
       <div class="feat-title">Classement global</div>
       <p class="feat-desc">Compare-toi aux autres guerriers. Streak, séances, points — grimpe dans le classement et prouve que tu es au sommet.</p>
     </div>
@@ -1881,67 +2089,6 @@
 </section>
 
 <!-- TARIFS -->
-<section id="tarifs">
-  <div class="tarifs-wrap">
-    <div style="text-align:center;margin-bottom:60px;">
-      <div class="section-tag centered" data-i18n="landing_pricing">Tarifs</div>
-      <h2 class="section-heading">UN SEUL PLAN.<br><span>TOUT INCLUS.</span></h2>
-    </div>
-
-    <div class="plans-duo">
-
-      <!-- Plan Gratuit -->
-      <div class="free-tier-card">
-        <div class="free-tier-header">
-          <span class="free-tier-label">Découverte</span>
-          <div class="free-tier-price-wrap">
-            <span class="free-tier-amount">0</span>
-            <span class="free-tier-cur">€</span>
-          </div>
-          <div class="free-tier-period">pour toujours</div>
-          <p class="free-tier-desc">Découvre Espritum sans engagement.</p>
-        </div>
-        <div class="free-tier-feature">Estimation masse grasse par caméra</div>
-        <div class="free-tier-footer">
-          <button class="plan-cta cta-waitlist" onclick="openWaitlist('gratuit')">Rejoindre la liste →</button>
-        </div>
-      </div>
-
-      <!-- Plan Pro -->
-      <div class="single-plan-card">
-        <div class="single-plan-header">
-          <div class="single-plan-badge">Accès complet · Sans engagement</div>
-          <div class="single-plan-price">
-            <span class="single-plan-amount">11</span>
-            <span class="single-plan-deci">,99</span>
-            <span class="single-plan-currency">€</span>
-          </div>
-          <div class="single-plan-period">par mois</div>
-          <p class="single-plan-desc">Tout inclus. Annule à tout moment.</p>
-        </div>
-        <div class="single-plan-features">
-          <div class="single-feat"><span class="check"></span>Suivi nutrition (calories + macros)</div>
-          <div class="single-feat"><span class="check"></span>Coach IA Sensei illimité</div>
-          <div class="single-feat"><span class="check"></span>Scan de repas par caméra</div>
-          <div class="single-feat"><span class="check"></span>Plans d'entraînement IA personnalisés</div>
-          <div class="single-feat"><span class="check"></span>Estimation masse grasse (caméra)</div>
-          <div class="single-feat"><span class="check"></span>Photos progression avant/après</div>
-          <div class="single-feat"><span class="check"></span>Classement communautaire</div>
-          <div class="single-feat"><span class="check"></span>Badges & système de niveaux</div>
-          <div class="single-feat"><span class="check"></span>Verset biblique & prières</div>
-          <div class="single-feat"><span class="check"></span>Historique illimité</div>
-          <div class="single-feat"><span class="check"></span>Suivi mensurations complet</div>
-          <div class="single-feat"><span class="check"></span>Support prioritaire</div>
-        </div>
-        <div class="single-plan-footer">
-          <button class="plan-cta cta-waitlist" onclick="openWaitlist('pro')">Rejoindre la liste d'attente →</button>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
 <!-- FAQ -->
 <section id="faq">
   <div class="faq-inner">
@@ -1996,7 +2143,6 @@
       <div class="footer-col-title">Application</div>
       <a href="#probleme">Le problème</a>
       <a href="#fonctionnalites">Fonctionnalités</a>
-      <a href="#tarifs">Tarifs</a>
       <a href="#faq">FAQ</a>
     </div>
     <div class="footer-col">
