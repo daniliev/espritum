@@ -24,8 +24,12 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Email invalide' });
   }
 
-  // ── 1. Insert Supabase ─────────────────────────────────────────────
+  // ── 1. Insert Supabase (best-effort, ne bloque pas la notif email) ──
+  // On tente d'enregistrer en base, mais un échec DB ne doit JAMAIS faire
+  // perdre le lead : la notification email part quoi qu'il arrive.
   const sbKey = process.env.SUPABASE_SERVICE_KEY || SUPABASE_KEY;
+  let dbOk = false;
+  let dbDuplicate = false;
 
   try {
     const sbResp = await fetch(`${SUPABASE_URL}/rest/v1/waitlist`, {
@@ -47,26 +51,27 @@ export default async function handler(req, res) {
     });
 
     if (sbResp.status === 409) {
-      // Email déjà inscrit — on répond quand même 200 pour l'UX
-      return res.status(409).json({ message: 'Already registered' });
-    }
-
-    if (!sbResp.ok) {
+      dbDuplicate = true;
+    } else if (sbResp.ok) {
+      dbOk = true;
+    } else {
       const errText = await sbResp.text();
-      console.error('Supabase insert error:', errText);
-      return res.status(502).json({ error: 'Database error' });
+      console.error('Supabase insert error:', sbResp.status, errText);
     }
   } catch (e) {
     console.error('Supabase fetch error:', e.message);
-    return res.status(500).json({ error: 'Database unreachable' });
   }
 
   // ── 2. Email notification via Resend ───────────────────────────────
   const RESEND_KEY = process.env.RESEND_API_KEY;
+  let emailOk = false;
 
   if (RESEND_KEY) {
     const fullName = [prenom, nom].filter(Boolean).join(' ') || '—';
     const now = new Date().toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
+    const dbBadge = dbOk
+      ? ''
+      : `<div style="background:#fff3cd;color:#856404;padding:10px 32px;font-size:12px;">⚠️ Non enregistré en base${dbDuplicate ? ' (email déjà présent)' : ' (vérifie la table Supabase)'} — pense à copier ce lead.</div>`;
 
     const html = `
       <div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:520px;margin:0 auto;background:#f5f5f5;border-radius:10px;overflow:hidden;">
@@ -106,6 +111,7 @@ export default async function handler(req, res) {
             </tr>
           </table>
         </div>
+        ${dbBadge}
         <div style="padding:16px 32px;background:#f5f5f5;text-align:center;">
           <p style="margin:0;font-size:11px;color:#aaa;letter-spacing:1px;text-transform:uppercase;">Espritum — Not Just Flesh But Spirit</p>
         </div>
@@ -113,26 +119,41 @@ export default async function handler(req, res) {
     `;
 
     try {
-      await fetch('https://api.resend.com/emails', {
+      const mailResp = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${RESEND_KEY}`
         },
         body: JSON.stringify({
-          from: 'Espritum <onboarding@resend.dev>',
+          from: process.env.RESEND_FROM || 'Espritum <onboarding@resend.dev>',
           to: [NOTIFY_EMAIL],
           subject: `🔥 ${fullName} rejoint la liste d'attente Espritum`,
           html
         })
       });
+      if (mailResp.ok) {
+        emailOk = true;
+      } else {
+        console.error('Resend error:', mailResp.status, await mailResp.text());
+      }
     } catch (emailErr) {
-      // Ne pas bloquer la réponse si l'email échoue
       console.error('Resend error:', emailErr.message);
     }
   } else {
     console.warn('RESEND_API_KEY not set — email notification skipped');
   }
 
-  return res.status(201).json({ success: true });
+  // ── 3. Réponse ─────────────────────────────────────────────────────
+  // Doublon connu → 409 (l'UX affiche "déjà inscrit").
+  if (dbDuplicate) {
+    return res.status(409).json({ message: 'Already registered' });
+  }
+  // Succès si on a capturé le lead par AU MOINS un canal (base ou email).
+  if (dbOk || emailOk) {
+    return res.status(201).json({ success: true });
+  }
+  // Les deux canaux ont échoué → vraie erreur.
+  console.error('Lead lost — DB and email both failed for:', email);
+  return res.status(502).json({ error: 'Capture failed' });
 }
