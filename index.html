@@ -586,6 +586,16 @@
     margin-bottom: 28px;
   }
   .hero-title .accent { color: var(--red); display: block; font-size: 1.3em; }
+  /* Titre hero ajusté sur mobile pour ne pas se casser en trop de lignes */
+  @media (max-width: 600px) {
+    .hero-title {
+      font-size: 50px;
+      letter-spacing: 1px;
+      line-height: 0.95;
+      margin-bottom: 22px;
+    }
+    .hero-title .accent { font-size: 1.22em; }
+  }
 
   .hero-sub {
     font-family: var(--font-body);
@@ -1942,7 +1952,6 @@
         <button class="btn-primary" onclick="openWaitlist('hero')">REJOINDRE LA LISTE</button>
         <a href="#probleme" class="btn-secondary">DÉCOUVRIR ↓</a>
       </div>
-      <span class="wl-note">Scrolle — ça prend 30 secondes.</span>
     </div>
     <div class="hero-visual">
       <img class="hero-logo-mark" src="fav-icon-003.png" alt="Espritum">
