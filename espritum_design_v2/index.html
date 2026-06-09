@@ -46,7 +46,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
     --red: #c82828;
@@ -58,8 +58,8 @@
     --border: #1e1e1e;
     --muted: #555555;
     --muted2: #333333;
-    --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
-    --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'Poppins', sans-serif;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -69,7 +69,7 @@
     background: var(--bg);
     color: #fff;
     font-family: var(--font-body);
-    font-weight: 400;
+    font-weight: 300;
     min-height: 100vh;
     overflow-x: hidden;
     cursor: none;
@@ -649,6 +649,20 @@
   }
   .btn-secondary:hover { border-color: rgba(255,255,255,0.65); color: #F2F2F2; }
 
+  /* ── Boutons : Bebas Neue, majuscules ── */
+  .btn-primary, .btn-secondary, .nav-cta, .cta-waitlist, .plan-cta {
+    font-family: var(--font-display) !important;
+    font-weight: 400 !important;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 16px;
+  }
+
+  /* ── Sous-titres : masqués ── */
+  .hero-sub, .pb-sub, .sol-sub, .steps-sub, .showcase-desc {
+    display: none !important;
+  }
+
   .hero-stats {
     position: absolute;
     bottom: 60px; right: 60px;
@@ -843,11 +857,19 @@
   .feat-card:hover .feat-num { color: #222; }
 
   .feat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1.5px solid var(--red);
+    background: rgba(200,40,40,0.30);
     color: var(--red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 22px;
     position: relative; z-index: 1;
   }
-  .feat-icon svg { width: 40px; height: 40px; }
+  .feat-icon svg { width: 20px; height: 20px; }
 
   .feat-title {
     font-family: var(--font-display);
@@ -1595,13 +1617,20 @@
     flex-direction: column;
   }
   .step-bignum {
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    border: 1.5px solid var(--red);
+    background: rgba(200,40,40,0.30);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-family: var(--font-display);
-    font-size: 62px;
+    font-size: 20px;
     line-height: 1;
+    letter-spacing: 1px;
     color: var(--red);
-    text-align: center;
-    letter-spacing: 2px;
-    margin-bottom: 16px;
   }
   .step-card {
     flex: 1;
@@ -1626,9 +1655,26 @@
     color: var(--red);
     margin-bottom: 18px;
     display: flex;
+    align-items: center;
     justify-content: center;
   }
   .step-icon svg { width: 44px; height: 44px; }
+  /* photos avant/après dans les étapes */
+  .step-icon img {
+    object-fit: cover;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    display: block;
+  }
+  .step-icon.photo-single img { width: 92px; height: 116px; }
+  .step-icon.photo-duo { gap: 14px; }
+  .step-icon.photo-duo img { width: 74px; height: 96px; }
+  .step-duo-arrow {
+    color: var(--red);
+    font-size: 26px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
   .step-title {
     font-family: var(--font-display);
     font-size: 20px;
@@ -1991,7 +2037,7 @@
       <div class="step-item">
         <div class="step-bignum">01</div>
         <div class="step-card">
-          <div class="step-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.2"/></svg></div>
+          <div class="step-icon photo-single"><img src="img/photo-avant.png" alt="Photo de ton corps actuel"></div>
           <div class="step-title">Photographie ton corps</div>
           <p class="step-desc">Prends une photo de ton corps aujourd'hui. C'est ton point de départ, ton "avant".</p>
         </div>
@@ -2000,7 +2046,7 @@
       <div class="step-item">
         <div class="step-bignum">02</div>
         <div class="step-card">
-          <div class="step-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="1.6"/></svg></div>
+          <div class="step-icon photo-single"><img src="img/photo-apres.png" alt="Photo de ton corps de rêve"></div>
           <div class="step-title">Photo de ton corps de rêve</div>
           <p class="step-desc">Ajoute la photo du physique que tu veux atteindre. Ton objectif devient concret et visuel.</p>
         </div>
@@ -2009,7 +2055,7 @@
       <div class="step-item">
         <div class="step-bignum">03</div>
         <div class="step-card">
-          <div class="step-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.4a2 2 0 0 0 1.2 1.2L20.5 11.5 15.1 13.4a2 2 0 0 0-1.2 1.2L12 20l-1.9-5.4a2 2 0 0 0-1.2-1.2L3.5 11.5l5.4-1.9a2 2 0 0 0 1.2-1.2L12 3z"/><path d="M19 3v4M21 5h-4"/></svg></div>
+          <div class="step-icon photo-duo"><img src="img/photo-avant.png" alt="Avant"><span class="step-duo-arrow">→</span><img src="img/photo-apres.png" alt="Après"></div>
           <div class="step-title">L'IA analyse & te guide</div>
           <p class="step-desc">L'IA compare les deux, analyse ta morphologie et te donne les meilleures recommandations : exactement quoi faire pour y arriver.</p>
         </div>
