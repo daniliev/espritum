@@ -570,7 +570,7 @@
     margin-bottom: 22px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 14px;
   }
   .hero-eyebrow::before { display: none; }
@@ -675,7 +675,7 @@
 
   .hero-stats {
     position: absolute;
-    bottom: 60px; right: 60px;
+    bottom: 60px; left: 48px;
     display: flex; gap: 40px;
     z-index: 2;
     animation: fadeUp 1s 0.3s ease both;
@@ -1343,6 +1343,7 @@
     .hero { min-height: 82vh; }
     .hero-inner { flex-direction: column; padding: 104px 20px 84px; gap: 40px; }
     .hero-content { text-align: center; }
+    .hero-eyebrow { justify-content: center; }
     .hero-visual { display: none; }
     .hero-stats { display: none; }
     .about-inner { grid-template-columns: 1fr; gap: 40px; }
