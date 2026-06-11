@@ -63,7 +63,7 @@
 
   .content { padding: 28px 32px; display: flex; flex-direction: column; gap: 22px; max-width: 900px; }
 
-  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 24px; }
+  .card { background: transparent; border: none; padding: 0; margin-bottom: 28px; }
   .card-title { font-family: var(--font-display); font-size: 20px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
 
   /* Plan actuel */
@@ -83,23 +83,24 @@
   /* Features du plan */
   .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-  .feature-item { display: flex; align-items: center; gap: 10px; padding: 11px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; }
-  .feature-icon { font-size: 16px; flex-shrink: 0; }
+  .feature-item { display: flex; align-items: center; gap: 10px; padding: 13px 14px; background: var(--bg3); border-radius: 8px; }
+  .feature-icon { flex-shrink: 0; color: var(--red); display: flex; align-items: center; }
+  .feature-icon svg { width: 18px; height: 18px; display: block; }
   .feature-text { font-size: 13px; color: #ccc; }
   .feature-item.locked .feature-text { color: var(--muted); }
   .feature-lock { font-size: 12px; margin-left: auto; color: var(--muted2); }
 
   /* Plans upgrade */
-  .plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .plans-grid { display: grid; grid-template-columns: 1fr; gap: 14px; max-width: 460px; margin: 0 auto; }
 
   .plan-card {
-    background: var(--bg3); border: 2px solid var(--border);
-    border-radius: 8px; padding: 22px; cursor: pointer;
+    background: var(--bg3); border: 1.5px solid transparent;
+    border-radius: 12px; padding: 24px; cursor: pointer;
     transition: all 0.2s; position: relative; display: flex; flex-direction: column; gap: 14px;
   }
-
-  .plan-card:hover { border-color: rgba(200,40,40,0.4); transform: translateY(-2px); }
-  .plan-card.current { border-color: var(--muted2); cursor: default; opacity: 0.6; }
+  .plan-card.popular { border-color: rgba(200,40,40,0.45); }
+  .plan-card:hover { border-color: rgba(200,40,40,0.5); transform: translateY(-2px); }
+  .plan-card.current { border-color: transparent; cursor: default; opacity: 0.6; }
   .plan-card.current:hover { transform: none; }
   .plan-card.recommended { border-color: var(--red); }
 
@@ -113,7 +114,9 @@
   .badge-popular { background: var(--red); color: #fff; }
   .badge-premium { background: var(--gold); color: #000; }
 
-  .plan-card-icon { font-size: 32px; }
+  .plan-card-icon { font-size: 32px; color: var(--red); }
+  .plan-card-icon svg { width: 34px; height: 34px; display: block; }
+  .plan-badge-icon svg { width: 30px; height: 30px; display: block; color: var(--red); }
   .plan-card-name { font-family: var(--font-display); font-size: 26px; letter-spacing: 2px; text-transform: uppercase; }
   .plan-card-price { font-family: var(--font-display); font-size: 36px; color: var(--red); line-height: 1; }
   .plan-card-period { font-size: 12px; color: var(--muted); }
@@ -362,13 +365,13 @@
 
       <div class="selected-plan-banner" id="selected-banner">
         <div class="selected-plan-info">
-          <span id="sel-icon" style="font-size:28px;">⚔️</span>
+          <span id="sel-icon" style="font-size:28px;">👑</span>
           <div>
-            <div class="selected-plan-name" id="sel-name">Guerrier</div>
+            <div class="selected-plan-name" id="sel-name">Premium</div>
             <div style="font-size:12px;color:var(--muted);">Débité chaque mois · Annulable à tout moment</div>
           </div>
         </div>
-        <div class="selected-plan-price" id="sel-price">5€/mois</div>
+        <div class="selected-plan-price" id="sel-price">11,99€/mois</div>
       </div>
 
       <div class="field">
@@ -439,48 +442,25 @@
         { icon: '🏆', text: 'Classement communauté', locked: true },
       ]
     },
-    guerrier: {
-      icon: '⚔️', name: 'Guerrier', price: '5€', period: 'par mois',
+    premium: {
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.52l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5 21h14"/></svg>', name: 'Premium', price: '11,99€', period: 'par mois',
       features: [
-        { icon: '📸', text: 'Estimation masse grasse', locked: false },
-        { icon: '✝️', text: 'Verset du jour', locked: false },
-        { icon: '🍎', text: 'Nutrition complète', locked: false },
-        { icon: '💪', text: '3 programmes entraînement', locked: false },
-        { icon: '📊', text: 'Historique 30 jours', locked: false },
-        { icon: '🏅', text: 'Badges motivation', locked: false },
-        { icon: '🤖', text: 'Coach Sensei IA', locked: true },
-        { icon: '🏆', text: 'Classement communauté', locked: true },
-      ]
-    },
-    champion: {
-      icon: '🛡️', name: 'Champion', price: '15€', period: 'par mois',
-      features: [
-        { icon: '📸', text: 'Estimation masse grasse avancée', locked: false },
-        { icon: '🍎', text: 'Nutrition + scan repas', locked: false },
-        { icon: '💪', text: 'Tous les programmes', locked: false },
-        { icon: '🤖', text: 'Coach Sensei IA illimité', locked: false },
-        { icon: '📊', text: 'Mensurations + photos', locked: false },
-        { icon: '🏆', text: 'Classement communauté', locked: false },
-        { icon: '📅', text: 'Historique illimité', locked: false },
-        { icon: '⭐', text: 'Support prioritaire', locked: false },
-      ]
-    },
-    elite: {
-      icon: '👑', name: 'Élite', price: '30€', period: 'par mois',
-      features: [
-        { icon: '🤖', text: 'Plan nutrition 100% IA', locked: false },
-        { icon: '📸', text: 'Analyse morphologique avancée', locked: false },
-        { icon: '💪', text: 'Programme sur-mesure IA', locked: false },
-        { icon: '🏆', text: 'Tout Champion inclus', locked: false },
-        { icon: '📞', text: 'Support prioritaire 24/7', locked: false },
-        { icon: '🎯', text: 'Objectifs personnalisés IA', locked: false },
-        { icon: '📊', text: 'Analytics avancés', locked: false },
-        { icon: '👑', text: 'Badge Élite exclusif', locked: false },
+        { svg: '<path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/>', text: 'Programme d\'entraînement IA', locked: false },
+        { svg: '<path d="M12 20.94c1.5 0 2.75-.67 3.6-1.74 1.9-2.4 2.4-6.2 2.4-8.2 0-3-2-5-4.5-5-1.2 0-2 .5-3 1-.9-.5-1.8-1-3-1-2.5 0-4.5 2-4.5 5 0 2 .5 5.8 2.4 8.2.85 1.07 2.1 1.74 3.6 1.74Z"/><path d="M10 2c1 .5 2 2 2 5"/>', text: 'Nutrition complète + scan repas', locked: false },
+        { svg: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.2"/>', text: 'Analyse corporelle par photo', locked: false },
+        { svg: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>', text: 'Classement communauté', locked: false },
       ]
     }
   };
 
-  const PLAN_LABEL = { gratuit: 'Soldat — Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
+  // anciens plans → tous renvoyés vers Premium (compatibilité données existantes)
+  PLANS.guerrier = PLANS.champion = PLANS.elite = PLANS.premium;
+
+  const PLAN_LABEL = { gratuit: 'Gratuit', premium: '👑 Premium', guerrier: '👑 Premium', champion: '👑 Premium', elite: '👑 Premium' };
+
+  // Lien de paiement Stripe (abonnement Premium 11,99€/mois)
+  const STRIPE_CHECKOUT_URL = 'https://buy.stripe.com/test_9B64gyeKAbEE0b15K0bV600';
+  function goCheckout() { window.location.href = STRIPE_CHECKOUT_URL; }
 
   let userId = null;
   let currentPlan = 'gratuit';
@@ -505,7 +485,7 @@ var safetyTimeout = 0;
 
       // Plan actuel
       const p = PLANS[currentPlan];
-      document.getElementById('plan-icon').textContent = p.icon;
+      document.getElementById('plan-icon').innerHTML = p.icon;
       document.getElementById('plan-name').textContent = p.name;
       document.getElementById('plan-price').textContent = p.price;
       document.getElementById('plan-period').textContent = p.period;
@@ -529,7 +509,7 @@ var safetyTimeout = 0;
     const features = PLANS[plan].features;
     document.getElementById('features-grid').innerHTML = features.map(f => `
       <div class="feature-item ${f.locked ? 'locked' : ''}">
-        <span class="feature-icon">${f.icon}</span>
+        <span class="feature-icon">${f.svg ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${f.svg}</svg>` : (f.icon || '')}</span>
         <span class="feature-text">${f.text}</span>
         ${f.locked ? '<span class="feature-lock">🔒</span>' : '<span style="margin-left:auto;color:#4caf50;font-size:12px;">✓</span>'}
       </div>
@@ -537,37 +517,29 @@ var safetyTimeout = 0;
   }
 
   function renderPlans() {
-    const order = ['guerrier', 'champion', 'elite'];
-    document.getElementById('plans-grid').innerHTML = order.map(key => {
-      const p = PLANS[key];
-      const isCurrent = key === currentPlan;
-      const badges = {
-        guerrier: { cls: '', label: '' },
-        champion: { cls: 'popular', label: '⭐ Populaire' },
-        elite: { cls: '', label: '👑 Premium' }
-      };
-      const b = badges[key];
+    const p = PLANS.premium;
+    const isCurrent = currentPlan !== 'gratuit';
 
-      return `
-        <div class="plan-card ${isCurrent ? 'current' : b.cls}" id="plancard-${key}">
-          ${isCurrent ? '<div class="plan-card-badge badge-current">Plan actuel</div>' :
-            b.label ? `<div class="plan-card-badge ${key === 'champion' ? 'badge-popular' : 'badge-premium'}">${b.label}</div>` : ''}
-          <div class="plan-card-icon">${p.icon}</div>
-          <div>
-            <div class="plan-card-name">${p.name}</div>
-            <div class="plan-card-price">${p.price}</div>
-            <div class="plan-card-period">${p.period}</div>
-          </div>
-          <div class="plan-card-features">
-            ${p.features.filter(f => !f.locked).slice(0,4).map(f => `<div class="plan-card-feat">${f.text}</div>`).join('')}
-          </div>
-          <button class="btn-select ${isCurrent ? 'disabled' : 'active'}"
-            ${isCurrent ? 'disabled' : `onclick="selectPlan('${key}')"`}>
-            ${isCurrent ? 'Plan actuel' : 'Choisir ce plan →'}
-          </button>
+    document.getElementById('plans-grid').innerHTML = `
+      <div class="plan-card ${isCurrent ? 'current' : 'popular'}" id="plancard-premium">
+        ${isCurrent
+          ? '<div class="plan-card-badge badge-current">Ton plan</div>'
+          : '<div class="plan-card-badge badge-popular">Accès complet</div>'}
+        <div class="plan-card-icon">${p.icon}</div>
+        <div>
+          <div class="plan-card-name">${p.name}</div>
+          <div class="plan-card-price">${p.price}</div>
+          <div class="plan-card-period">${p.period}</div>
         </div>
-      `;
-    }).join('');
+        <div class="plan-card-features">
+          ${p.features.filter(f => !f.locked).map(f => `<div class="plan-card-feat">${f.text}</div>`).join('')}
+        </div>
+        <button class="btn-select ${isCurrent ? 'disabled' : 'active'}"
+          ${isCurrent ? 'disabled' : `onclick="goCheckout()"`}>
+          ${isCurrent ? 'Abonnement actif' : 'S\'abonner — 11,99€/mois →'}
+        </button>
+      </div>
+    `;
   }
 
   function selectPlan(plan) {
