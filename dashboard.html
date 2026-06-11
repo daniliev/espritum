@@ -1835,7 +1835,7 @@ function wizGoStep(n) {
     if (seg) seg.classList.toggle('active', s <= n);
   });
   if (n === 4) { wizComputeResults(); wizAnalyze(); }
-  document.getElementById('wiz-back').style.visibility = (n > 1) ? 'visible' : 'hidden';
+  document.getElementById('wiz-back').style.display = (n > 1) ? '' : 'none';
   var next = document.getElementById('wiz-next');
   next.textContent = (n === 4) ? 'Valider les résultats' : 'Suivant';
   next.classList.toggle('valid', n === 4);
