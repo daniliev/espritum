@@ -84,7 +84,8 @@
   .choice-card:hover { border-color: rgba(200,40,40,0.4); background: rgba(200,40,40,0.04); }
   .choice-card.selected { border-color: var(--red); background: rgba(200,40,40,0.08); }
 
-  .choice-icon { display: flex; align-items: center; justify-content: center; color: var(--muted); }
+  .choice-icon { width: 54px; height: 54px; border-radius: 50%; border: 1.5px solid var(--red); background: rgba(200,40,40,0.30); display: flex; align-items: center; justify-content: center; color: var(--red); }
+  .choice-icon svg { width: 26px; height: 26px; }
   .choice-card.selected .choice-icon { color: var(--red); }
   .choice-name { font-family: var(--font-display); font-size: 24px; letter-spacing: 2px; text-transform: uppercase; }
   .choice-card.selected .choice-name { color: var(--red); }
@@ -102,7 +103,8 @@
   .obj-card:hover { border-color: rgba(200,40,40,0.4); background: rgba(200,40,40,0.04); }
   .obj-card.selected { border-color: var(--red); background: rgba(200,40,40,0.08); }
 
-  .obj-icon { display: flex; color: var(--muted); }
+  .obj-icon { width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid var(--red); background: rgba(200,40,40,0.30); display: flex; align-items: center; justify-content: center; color: var(--red); margin-bottom: 4px; }
+  .obj-icon svg { width: 22px; height: 22px; }
   .obj-card.selected .obj-icon { color: var(--red); }
   .obj-name { font-family: var(--font-display); font-size: 20px; letter-spacing: 1px; text-transform: uppercase; }
   .obj-card.selected .obj-name { color: var(--red); }
