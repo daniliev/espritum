@@ -84,7 +84,8 @@
   .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
   .feature-item { display: flex; align-items: center; gap: 10px; padding: 11px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; }
-  .feature-icon { font-size: 16px; flex-shrink: 0; }
+  .feature-icon { flex-shrink: 0; color: var(--red); display: flex; align-items: center; }
+  .feature-icon svg { width: 18px; height: 18px; display: block; }
   .feature-text { font-size: 13px; color: #ccc; }
   .feature-item.locked .feature-text { color: var(--muted); }
   .feature-lock { font-size: 12px; margin-left: auto; color: var(--muted2); }
@@ -113,7 +114,9 @@
   .badge-popular { background: var(--red); color: #fff; }
   .badge-premium { background: var(--gold); color: #000; }
 
-  .plan-card-icon { font-size: 32px; }
+  .plan-card-icon { font-size: 32px; color: var(--red); }
+  .plan-card-icon svg { width: 34px; height: 34px; display: block; }
+  .plan-badge-icon svg { width: 30px; height: 30px; display: block; color: var(--red); }
   .plan-card-name { font-family: var(--font-display); font-size: 26px; letter-spacing: 2px; text-transform: uppercase; }
   .plan-card-price { font-family: var(--font-display); font-size: 36px; color: var(--red); line-height: 1; }
   .plan-card-period { font-size: 12px; color: var(--muted); }
@@ -440,16 +443,12 @@
       ]
     },
     premium: {
-      icon: '👑', name: 'Premium', price: '11,99€', period: 'par mois',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.52l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5 21h14"/></svg>', name: 'Premium', price: '11,99€', period: 'par mois',
       features: [
-        { icon: '💪', text: 'Programme d\'entraînement IA personnalisé', locked: false },
-        { icon: '🍎', text: 'Nutrition complète + scan repas', locked: false },
-        { icon: '🤖', text: 'Coach Sensei IA illimité', locked: false },
-        { icon: '📸', text: 'Analyse corporelle par photo', locked: false },
-        { icon: '📊', text: 'Suivi mensurations + photos avant/après', locked: false },
-        { icon: '🏆', text: 'Classement communauté', locked: false },
-        { icon: '📅', text: 'Historique illimité', locked: false },
-        { icon: '⭐', text: 'Support prioritaire', locked: false },
+        { svg: '<path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/>', text: 'Programme d\'entraînement IA personnalisé', locked: false },
+        { svg: '<path d="M12 20.94c1.5 0 2.75-.67 3.6-1.74 1.9-2.4 2.4-6.2 2.4-8.2 0-3-2-5-4.5-5-1.2 0-2 .5-3 1-.9-.5-1.8-1-3-1-2.5 0-4.5 2-4.5 5 0 2 .5 5.8 2.4 8.2.85 1.07 2.1 1.74 3.6 1.74Z"/><path d="M10 2c1 .5 2 2 2 5"/>', text: 'Nutrition complète + scan repas', locked: false },
+        { svg: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.2"/>', text: 'Analyse corporelle par photo', locked: false },
+        { svg: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>', text: 'Classement communauté', locked: false },
       ]
     }
   };
@@ -482,7 +481,7 @@ var safetyTimeout = 0;
 
       // Plan actuel
       const p = PLANS[currentPlan];
-      document.getElementById('plan-icon').textContent = p.icon;
+      document.getElementById('plan-icon').innerHTML = p.icon;
       document.getElementById('plan-name').textContent = p.name;
       document.getElementById('plan-price').textContent = p.price;
       document.getElementById('plan-period').textContent = p.period;
@@ -506,7 +505,7 @@ var safetyTimeout = 0;
     const features = PLANS[plan].features;
     document.getElementById('features-grid').innerHTML = features.map(f => `
       <div class="feature-item ${f.locked ? 'locked' : ''}">
-        <span class="feature-icon">${f.icon}</span>
+        <span class="feature-icon">${f.svg ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${f.svg}</svg>` : (f.icon || '')}</span>
         <span class="feature-text">${f.text}</span>
         ${f.locked ? '<span class="feature-lock">🔒</span>' : '<span style="margin-left:auto;color:#4caf50;font-size:12px;">✓</span>'}
       </div>
