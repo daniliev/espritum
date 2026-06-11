@@ -23,18 +23,27 @@ export default async function handler(req, res) {
     if (!key) return res.status(503).json({ error: 'GROQ_API_KEY not configured on server' });
 
     try {
+      // model par défaut (texte) — peut être surchargé (ex: modèle vision pour comparer des photos)
+      const model = req.body.model || 'llama-3.3-70b-versatile';
+      // si systemPrompt fourni, on le préfixe ; sinon on prend messages tel quel (peut contenir des images)
+      const allMessages = systemPrompt
+        ? [{ role: 'system', content: systemPrompt }].concat(messages || [])
+        : (messages || []);
+      const payload = {
+        model,
+        messages: allMessages,
+        temperature: (typeof req.body.temperature === 'number') ? req.body.temperature : 0.75,
+        max_tokens: maxTokens || 512
+      };
+      if (req.body.responseFormat) payload.response_format = req.body.responseFormat;
+
       const upstream = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + key
         },
-        body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
-          messages: [{ role: 'system', content: systemPrompt || '' }].concat(messages || []),
-          temperature: 0.75,
-          max_tokens: maxTokens || 512
-        })
+        body: JSON.stringify(payload)
       });
       const data = await upstream.json();
       if (!upstream.ok) return res.status(upstream.status).json(data);

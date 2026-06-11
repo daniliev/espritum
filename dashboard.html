@@ -1870,7 +1870,6 @@ function wizComputeResults() {
   wizResults = { poids: poids, bf: bf, mgkg: mgkg, mmkg: mmkg };
 }
 
-var GROQ_KEY = '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';
 var wizAnalysisDone = false;
 
 async function wizAnalyze() {
@@ -1906,11 +1905,12 @@ async function wizGroqCompare(currentUrl, dreamUrl, delai) {
     '{"feasible": true ou false, "verdict": "une phrase qui dit clairement si le délai de ' + delai + ' est réaliste ou non, et pourquoi", ' +
     '"recommendations": ["exactement 5 recommandations concrètes et actionnables pour passer du corps actuel au corps objectif (entrainement, nutrition, cardio, récupération...), chacune en une phrase précise"]}. ' +
     "Réponds en français, sois direct et motivant.";
-  var key = (window.EspritumAPI && EspritumAPI.getKey && EspritumAPI.getKey('groq')) || GROQ_KEY;
-  var resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+  // Appel via le proxy serveur sécurisé (/api/ai) — la clé reste côté serveur, jamais dans la page
+  var resp = await fetch('/api/ai', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
+      service: 'groq',
       model: 'meta-llama/llama-4-scout-17b-16e-instruct',
       messages: [{
         role: 'user',
@@ -1921,15 +1921,16 @@ async function wizGroqCompare(currentUrl, dreamUrl, delai) {
         ]
       }],
       temperature: 0.6,
-      max_tokens: 900,
-      response_format: { type: 'json_object' }
+      maxTokens: 900,
+      responseFormat: { type: 'json_object' }
     })
   });
-  if (!resp.ok) throw new Error('Groq HTTP ' + resp.status);
+  if (!resp.ok) throw new Error('Proxy HTTP ' + resp.status);
   var json = await resp.json();
   var content = json.choices && json.choices[0] && json.choices[0].message.content;
   if (!content) throw new Error('pas de contenu');
-  return JSON.parse(content);
+  var match = content.match(/\{[\s\S]*\}/);
+  return JSON.parse(match ? match[0] : content);
 }
 
 function wizFallbackAnalysis(delai) {
