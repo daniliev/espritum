@@ -945,5 +945,56 @@ async function init() {
     if (typeof initI18n === 'function') initI18n();
   });
 </script>
+
+<!-- PAYWALL FREEMIUM -->
+<style>
+  #esp-paywall { position: fixed; inset: 0; z-index: 9000; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(200,40,40,0.30); backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); }
+  #esp-paywall.show { display: flex; }
+  /* la barre de nav reste au-dessus du paywall (pour quitter la page) */
+  .mobile-nav, .sidebar { z-index: 9500 !important; }
+  .esp-pw-box { width: 100%; max-width: 440px; background: transparent; border: none; padding: 34px 26px 30px; text-align: center; font-family: 'acumin-pro-condensed','Barlow Semi Condensed',sans-serif; }
+  .esp-pw-lock { width: 52px; height: 52px; margin: 0 auto 16px; border-radius: 50%; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; }
+  .esp-pw-lock svg { width: 24px; height: 24px; stroke: #fff; fill: none; stroke-width: 2; }
+  .esp-pw-tag { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #fff; opacity: 0.85; font-weight: 700; margin-bottom: 8px; }
+  .esp-pw-title { font-family: 'acumin-pro-extra-condensed','Bebas Neue',sans-serif; font-size: 46px; letter-spacing: 2px; text-transform: uppercase; color: #fff; line-height: 1; margin-bottom: 20px; }
+  .esp-pw-feats { display: flex; flex-direction: column; gap: 10px; text-align: center; max-width: 320px; margin: 0 auto 24px; }
+  .esp-pw-feat { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px; color: #fff; }
+  .esp-pw-feat svg { width: 16px; height: 16px; stroke: #fff; fill: none; stroke-width: 2.5; flex-shrink: 0; }
+  .esp-pw-btn { width: 100%; padding: 16px; background: #c82828; border: none; border-radius: 12px; color: #fff; font-family: 'acumin-pro-extra-condensed','Bebas Neue',sans-serif; font-size: 21px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: opacity 0.2s; }
+  .esp-pw-btn:hover { opacity: 0.9; }
+  .esp-pw-note { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 12px; }
+</style>
+<div id="esp-paywall">
+  <div class="esp-pw-box">
+    <div class="esp-pw-lock"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+    <div class="esp-pw-tag">Réservé aux membres Premium</div>
+    <div class="esp-pw-title">Nutrition</div>
+    <div class="esp-pw-feats">
+      <div class="esp-pw-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Suivi calories &amp; macros</div>
+      <div class="esp-pw-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Scan de repas par caméra</div>
+      <div class="esp-pw-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Base d'aliments complète</div>
+      <div class="esp-pw-feat"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Repas favoris &amp; historique</div>
+    </div>
+    <button class="esp-pw-btn" onclick="window.location.href='https://buy.stripe.com/test_9B64gyeKAbEE0b15K0bV600'">Passer Premium — 11,99€/mois</button>
+    <div class="esp-pw-note">Annulable à tout moment</div>
+  </div>
+</div>
+<script>
+(async function () {
+  try {
+    var sb = window.sb;
+    if (!sb) return;
+    var s = await sb.auth.getSession();
+    var session = s && s.data && s.data.session;
+    if (!session) return;
+    var r = await sb.from('users').select('plan').eq('id', session.user.id).single();
+    var plan = (r && r.data && r.data.plan) || 'gratuit';
+    if (plan === 'gratuit') {
+      document.getElementById('esp-paywall').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+  } catch (e) {}
+})();
+</script>
 </body>
 </html>
