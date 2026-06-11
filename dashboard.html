@@ -520,10 +520,14 @@
   .wiz-res-stat-val { font-family: var(--font-display); font-size: 32px; color: #fff; line-height: 1; margin-bottom: 5px; }
   .wiz-res-stat-label { font-size: 9px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
   /* étapes 1 & 2 : la zone photo remplit l'espace jusqu'au bouton (zéro vide) */
-  #wiz-sheet .scan-sheet-body { display: flex; flex-direction: column; }
+  #wiz-sheet .scan-sheet-body { display: flex; flex-direction: column; min-height: 0; }
   #wiz-sheet .wiz-step { flex: 1; display: flex; flex-direction: column; }
   #wiz-sheet .wiz-step .ss-upload-zone { flex: 1; margin-bottom: 0; }
-  #wiz-sheet .wiz-step .ss-upload-zone.has-image .ss-preview-img { width: 100%; height: 100%; max-height: none; object-fit: cover; }
+  #wiz-sheet .wiz-step .ss-upload-zone.has-image { background: #0a0a0a; }
+  #wiz-sheet .wiz-step .ss-upload-zone.has-image .ss-preview-img { width: 100%; height: 100%; max-height: none; object-fit: contain; }
+  /* étapes photo : la zone se réduit pour tenir dans l'écran (photo entière visible, sans scroll) */
+  #wiz-sheet #wiz-step-1, #wiz-sheet #wiz-step-2 { min-height: 0; }
+  #wiz-sheet #wiz-step-1 .ss-upload-zone, #wiz-sheet #wiz-step-2 .ss-upload-zone { min-height: 0; }
   /* slide 4 — chargement IA */
   .wiz-loading { text-align: center; padding: 50px 20px; }
   .wiz-loading-gif { width: 110px; height: 110px; object-fit: contain; margin: 0 auto 18px; display: block; }
@@ -1830,7 +1834,7 @@ function wizGoStep(n) {
   wizStep = n;
   [1, 2, 3, 4].forEach(function (s) {
     var el = document.getElementById('wiz-step-' + s);
-    if (el) el.style.display = (s === n) ? 'block' : 'none';
+    if (el) el.style.display = (s === n) ? '' : 'none';
     var seg = document.getElementById('wiz-seg-' + s);
     if (seg) seg.classList.toggle('active', s <= n);
   });
