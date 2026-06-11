@@ -83,8 +83,7 @@
   .body-photos-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .body-photo-item { display: flex; flex-direction: column; gap: 8px; }
   .body-photo-lbl { font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
-  .body-photo-frame { width: 100%; aspect-ratio: 3/4; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: border-color 0.2s; }
-  .body-photo-frame:hover { border-color: #333; }
+  .body-photo-frame { width: 100%; aspect-ratio: 3/4; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
   .body-photo-frame img { width: 100%; height: 100%; object-fit: cover; display: none; }
   .body-photo-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px; text-align: center; }
   .body-photo-empty-icon { font-size: 28px; opacity: 0.3; }
@@ -573,26 +572,24 @@
     <div class="body-photos-card">
       <div class="body-photos-row">
         <div class="body-photo-item">
-          <div class="body-photo-lbl" data-i18n="dash_mon_corps">Mon corps actuel</div>
-          <div class="body-photo-frame" id="current-body-frame" onclick="openScanSheet()">
+          <div class="body-photo-frame" id="current-body-frame">
             <img id="current-body-img" alt="Corps actuel">
             <div class="body-photo-empty" id="current-body-empty">
               <div class="body-photo-add">
                 <svg class="body-photo-add-icon" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
               </div>
-              <div class="body-photo-empty-text" data-i18n="dash_scanner_corps">Scanner mon corps</div>
+              <div class="body-photo-empty-text">Mon corps actuel</div>
             </div>
           </div>
         </div>
         <div class="body-photo-item">
-          <div class="body-photo-lbl" data-i18n="dash_corps_reve">Mon corps de rêve</div>
-          <div class="body-photo-frame" id="dream-body-frame" onclick="document.getElementById('dream-upload').click()">
+          <div class="body-photo-frame" id="dream-body-frame">
             <img id="dream-body-img" alt="Corps de rêve">
             <div class="body-photo-empty" id="dream-body-empty">
               <div class="body-photo-add">
-                <svg class="body-photo-add-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <svg class="body-photo-add-icon" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
               </div>
-              <div class="body-photo-empty-text" data-i18n="dash_ajouter_photo">Ajouter une photo</div>
+              <div class="body-photo-empty-text">Mon corps de rêve</div>
             </div>
           </div>
           <input type="file" id="dream-upload" accept="image/*" style="display:none" onchange="handleDreamUpload(this)">
