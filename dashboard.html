@@ -498,8 +498,9 @@
   .wiz-advice-text { font-size: 13px; color: #aaa; line-height: 1.6; }
   /* Footer nav */
   .wiz-footer { display: flex; gap: 12px; padding: 14px 20px max(16px, env(safe-area-inset-bottom)); border-top: 1px solid #1a1a1a; flex-shrink: 0; }
-  .wiz-back { padding: 14px 22px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
-  .wiz-back:hover { border-color: #333; color: #999; }
+  .wiz-back { padding: 13px 20px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+  .wiz-back:hover { border-color: #333; color: #fff; }
+  .wiz-back svg { width: 20px; height: 20px; display: block; }
   .wiz-next { flex: 1; padding: 14px; background: var(--red); border: none; border-radius: 10px; color: #fff; font-family: var(--font-display); font-size: 19px; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
   .wiz-next:hover { background: #d93030; }
   .wiz-next:disabled { background: #1a1a1a; color: #444; cursor: not-allowed; }
@@ -819,7 +820,7 @@
     </div>
   </div>
   <div class="wiz-footer">
-    <button class="wiz-back" id="wiz-back" onclick="wizPrev()" style="visibility:hidden">Retour</button>
+    <button class="wiz-back" id="wiz-back" onclick="wizPrev()" aria-label="Retour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
     <button class="wiz-next" id="wiz-next" onclick="wizNext()" disabled>Suivant</button>
   </div>
 </div>
