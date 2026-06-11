@@ -63,7 +63,7 @@
 
   .content { padding: 28px 32px; display: flex; flex-direction: column; gap: 22px; max-width: 900px; }
 
-  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 24px; }
+  .card { background: transparent; border: none; padding: 0; margin-bottom: 28px; }
   .card-title { font-family: var(--font-display); font-size: 20px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
 
   /* Plan actuel */
@@ -83,7 +83,7 @@
   /* Features du plan */
   .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-  .feature-item { display: flex; align-items: center; gap: 10px; padding: 11px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; }
+  .feature-item { display: flex; align-items: center; gap: 10px; padding: 13px 14px; background: var(--bg3); border-radius: 8px; }
   .feature-icon { flex-shrink: 0; color: var(--red); display: flex; align-items: center; }
   .feature-icon svg { width: 18px; height: 18px; display: block; }
   .feature-text { font-size: 13px; color: #ccc; }
@@ -94,13 +94,13 @@
   .plans-grid { display: grid; grid-template-columns: 1fr; gap: 14px; max-width: 460px; margin: 0 auto; }
 
   .plan-card {
-    background: var(--bg3); border: 2px solid var(--border);
-    border-radius: 8px; padding: 22px; cursor: pointer;
+    background: var(--bg3); border: 1.5px solid transparent;
+    border-radius: 12px; padding: 24px; cursor: pointer;
     transition: all 0.2s; position: relative; display: flex; flex-direction: column; gap: 14px;
   }
-
-  .plan-card:hover { border-color: rgba(200,40,40,0.4); transform: translateY(-2px); }
-  .plan-card.current { border-color: var(--muted2); cursor: default; opacity: 0.6; }
+  .plan-card.popular { border-color: rgba(200,40,40,0.45); }
+  .plan-card:hover { border-color: rgba(200,40,40,0.5); transform: translateY(-2px); }
+  .plan-card.current { border-color: transparent; cursor: default; opacity: 0.6; }
   .plan-card.current:hover { transform: none; }
   .plan-card.recommended { border-color: var(--red); }
 
