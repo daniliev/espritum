@@ -22,9 +22,11 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, {
 });
 
 const PRICES: Record<string, string | undefined> = {
-  guerrier: Deno.env.get('STRIPE_PRICE_GUERRIER'),
-  champion: Deno.env.get('STRIPE_PRICE_CHAMPION'),
-  elite: Deno.env.get('STRIPE_PRICE_ELITE'),
+  premium: Deno.env.get('STRIPE_PRICE_PREMIUM'),
+  // anciens plans (compatibilité) — tous rabattus sur le tarif Premium
+  guerrier: Deno.env.get('STRIPE_PRICE_PREMIUM'),
+  champion: Deno.env.get('STRIPE_PRICE_PREMIUM'),
+  elite: Deno.env.get('STRIPE_PRICE_PREMIUM'),
 };
 
 const CORS = {
