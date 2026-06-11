@@ -436,8 +436,8 @@
 
   // ── NAVIGATION ──
   function goTo(step) {
-    // Cacher étape actuelle
-    document.getElementById(`step${currentStep}`).classList.remove('active');
+    // Masquer TOUTES les étapes (robuste — jamais deux écrans affichés en même temps)
+    document.querySelectorAll('.step-card, .confirm-card').forEach(function (s) { s.classList.remove('active'); });
 
     // Mettre à jour progress
     updateProgress(step);
