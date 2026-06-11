@@ -1,7 +1,7 @@
 // ── Espritum — Cache Buster ──
 // Ajoute ?v=VERSION dans l'URL pour forcer le navigateur à recharger les fichiers.
 (function () {
-  var APP_VERSION = 126;
+  var APP_VERSION = 127;
   var params = new URLSearchParams(window.location.search);
   if (params.get('v') !== String(APP_VERSION)) {
     params.set('v', APP_VERSION);
