@@ -506,6 +506,22 @@
   .wiz-next { flex: 1; padding: 14px; background: var(--red); border: none; border-radius: 10px; color: #fff; font-family: var(--font-display); font-size: 19px; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
   .wiz-next:hover { background: #d93030; }
   .wiz-next:disabled { background: #1a1a1a; color: #444; cursor: not-allowed; }
+  .wiz-next.valid { background: #2e7d32; }
+  .wiz-next.valid:hover { background: #388e3c; }
+  /* centrage + épuration des slides */
+  .wiz-line { max-width: 48px; }
+  .scan-sheet-body .wiz-step { text-align: center; }
+  .wiz-step-num { margin-top: 6px; }
+  .wiz-step-sub { max-width: 340px; margin-left: auto; margin-right: auto; margin-bottom: 26px; }
+  .wiz-step .ss-upload-zone { text-align: center; }
+  /* slide résultats */
+  .wiz-result-hero { background: linear-gradient(135deg, #0f0404, #100808); border: 1px solid rgba(200,40,40,0.2); border-radius: 14px; padding: 26px 20px 22px; margin: 8px 0 14px; }
+  .wiz-result-pct { font-family: var(--font-display); font-size: 76px; line-height: 1; color: var(--red); }
+  .wiz-result-pct-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
+  .wiz-result-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .wiz-res-stat { background: #131313; border: 1px solid var(--border); border-radius: 12px; padding: 16px 12px; }
+  .wiz-res-stat-val { font-family: var(--font-display); font-size: 32px; color: #fff; line-height: 1; margin-bottom: 5px; }
+  .wiz-res-stat-label { font-size: 9px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
 </style>
 <script src="site-config.js"></script>
 </head>
@@ -670,11 +686,13 @@
     <div class="wiz-dot" id="wiz-dot-2">2</div>
     <div class="wiz-line" id="wiz-line-2"></div>
     <div class="wiz-dot" id="wiz-dot-3">3</div>
+    <div class="wiz-line" id="wiz-line-3"></div>
+    <div class="wiz-dot" id="wiz-dot-4">4</div>
   </div>
   <div class="scan-sheet-body">
     <!-- ÉTAPE 1 : photo corps actuel -->
     <div class="wiz-step" id="wiz-step-1">
-      <div class="wiz-step-num">Étape 1 / 3</div>
+      <div class="wiz-step-num">Étape 1 / 4</div>
       <div class="wiz-step-title">Ta photo actuelle</div>
       <div class="wiz-step-sub">Prends ou choisis une photo de ton corps aujourd'hui. C'est ton point de départ.</div>
       <div class="ss-upload-zone wiz-zone" id="wiz-zone-1" onclick="document.getElementById('wiz-file-1').click()">
@@ -686,7 +704,7 @@
     </div>
     <!-- ÉTAPE 2 : photo corps de rêve -->
     <div class="wiz-step" id="wiz-step-2" style="display:none">
-      <div class="wiz-step-num">Étape 2 / 3</div>
+      <div class="wiz-step-num">Étape 2 / 4</div>
       <div class="wiz-step-title">Ton corps de rêve</div>
       <div class="wiz-step-sub">Ajoute la photo du physique que tu veux atteindre. Ton objectif devient concret.</div>
       <div class="ss-upload-zone wiz-zone" id="wiz-zone-2" onclick="document.getElementById('wiz-file-2').click()">
@@ -698,9 +716,9 @@
     </div>
     <!-- ÉTAPE 3 : objectif en combien de temps -->
     <div class="wiz-step" id="wiz-step-3" style="display:none">
-      <div class="wiz-step-num">Étape 3 / 3</div>
+      <div class="wiz-step-num">Étape 3 / 4</div>
       <div class="wiz-step-title">En combien de temps ?</div>
-      <div class="wiz-step-sub">Choisis le délai dans lequel tu veux atteindre ton objectif.</div>
+      <div class="wiz-step-sub">Choisis le délai pour atteindre ton objectif.</div>
       <div class="wiz-time-display"><span class="wiz-time-val" id="wiz-time-val">3 mois</span></div>
       <div class="wiz-slider-wrap">
         <input type="range" id="wiz-slider" class="goal-slider" min="0" max="6" step="1" value="2" oninput="wizSliderChange(this.value)">
@@ -711,6 +729,23 @@
       <div class="wiz-advice">
         <div class="wiz-advice-title" id="wiz-advice-title">Délai idéal</div>
         <div class="wiz-advice-text" id="wiz-advice-text"></div>
+      </div>
+    </div>
+    <!-- ÉTAPE 4 : résultats -->
+    <div class="wiz-step" id="wiz-step-4" style="display:none">
+      <div class="wiz-step-num">Étape 4 / 4 · Résultats</div>
+      <div class="wiz-step-title">Ton analyse</div>
+      <div class="wiz-step-sub">Voici ton point de départ estimé par l'IA.</div>
+      <div class="wiz-result-hero">
+        <div class="wiz-result-pct"><span id="wiz-res-bf">20</span>%</div>
+        <div class="wiz-result-pct-label">Masse grasse estimée</div>
+        <span class="ss-morph-badge morph-meso" id="wiz-res-morph">Mésomorphe</span>
+      </div>
+      <div class="wiz-result-stats">
+        <div class="wiz-res-stat"><div class="wiz-res-stat-val" id="wiz-res-poids">78</div><div class="wiz-res-stat-label">Poids (kg)</div></div>
+        <div class="wiz-res-stat"><div class="wiz-res-stat-val" id="wiz-res-mgkg">15.6</div><div class="wiz-res-stat-label">Graisse (kg)</div></div>
+        <div class="wiz-res-stat"><div class="wiz-res-stat-val" id="wiz-res-mmkg">34</div><div class="wiz-res-stat-label">Muscle (kg)</div></div>
+        <div class="wiz-res-stat"><div class="wiz-res-stat-val" id="wiz-res-delai">3 mois</div><div class="wiz-res-stat-label">Objectif</div></div>
       </div>
     </div>
   </div>
@@ -1719,19 +1754,25 @@ function wizSliderChange(val) {
   setEl('wiz-advice-text', a.d);
 }
 
+let wizResults = null;
+
 function wizGoStep(n) {
   wizStep = n;
-  [1, 2, 3].forEach(function (s) {
+  [1, 2, 3, 4].forEach(function (s) {
     var el = document.getElementById('wiz-step-' + s);
     if (el) el.style.display = (s === n) ? 'block' : 'none';
     var dot = document.getElementById('wiz-dot-' + s);
     if (dot) { dot.classList.toggle('active', s === n); dot.classList.toggle('done', s < n); }
   });
-  var l1 = document.getElementById('wiz-line-1'), l2 = document.getElementById('wiz-line-2');
-  if (l1) l1.classList.toggle('done', n > 1);
-  if (l2) l2.classList.toggle('done', n > 2);
+  [1, 2, 3].forEach(function (i) {
+    var line = document.getElementById('wiz-line-' + i);
+    if (line) line.classList.toggle('done', n > i);
+  });
+  if (n === 4) wizComputeResults();
   document.getElementById('wiz-back').style.visibility = (n > 1) ? 'visible' : 'hidden';
-  document.getElementById('wiz-next').textContent = (n === 3) ? 'Terminer' : 'Suivant';
+  var next = document.getElementById('wiz-next');
+  next.textContent = (n === 4) ? 'Valider les résultats' : 'Suivant';
+  next.classList.toggle('valid', n === 4);
   document.querySelector('.scan-sheet-body').scrollTop = 0;
   wizUpdateNav();
 }
@@ -1743,8 +1784,28 @@ function wizUpdateNav() {
   else next.disabled = false;
 }
 
+function wizComputeResults() {
+  var u = window._espritumUser || {};
+  var poids = u.poids || 78;
+  var bf = u.masse_grasse || 20;
+  var mgkg = +(poids * bf / 100).toFixed(1);
+  var mmkg = +((poids - mgkg) * 0.55).toFixed(1);
+  var idx = parseInt(document.getElementById('wiz-slider').value);
+  var morph = bf >= 22 ? { name: 'Endomorphe', cls: 'morph-endo' }
+            : (bf <= 13 ? { name: 'Ectomorphe', cls: 'morph-ecto' }
+            : { name: 'Mésomorphe', cls: 'morph-meso' });
+  setEl('wiz-res-bf', bf);
+  setEl('wiz-res-poids', poids);
+  setEl('wiz-res-mgkg', mgkg);
+  setEl('wiz-res-mmkg', mmkg);
+  setEl('wiz-res-delai', WIZ_TIME_LABELS[idx]);
+  var badge = document.getElementById('wiz-res-morph');
+  if (badge) { badge.textContent = morph.name; badge.className = 'ss-morph-badge ' + morph.cls; }
+  wizResults = { poids: poids, bf: bf, mgkg: mgkg, mmkg: mmkg };
+}
+
 function wizNext() {
-  if (wizStep < 3) { wizGoStep(wizStep + 1); return; }
+  if (wizStep < 4) { wizGoStep(wizStep + 1); return; }
   wizFinish();
 }
 
@@ -1759,6 +1820,12 @@ function wizFinish() {
   localStorage.setItem('espritum_goal_time', WIZ_TIME_KEYS[idx]);
   var ds = document.getElementById('goal-slider');
   if (ds) ds.value = idx;
+  if (wizResults) {
+    setEl('bstat-poids', wizResults.poids);
+    setEl('bstat-mg', wizResults.bf);
+    setEl('bstat-mg-kg', wizResults.mgkg);
+    setEl('bstat-mm-kg', wizResults.mmkg);
+  }
   closeAnalysisWizard();
   if (typeof loadBodyPhotos === 'function') loadBodyPhotos();
 }
