@@ -79,11 +79,11 @@
   .wod-ref { font-size: 12px; color: #666; font-style: italic; }
 
   /* ── BODY PHOTOS ── */
-  .body-photos-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .body-photos-card { background: var(--bg2); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
   .body-photos-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .body-photo-item { display: flex; flex-direction: column; gap: 8px; }
   .body-photo-lbl { font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
-  .body-photo-frame { width: 100%; aspect-ratio: 3/4; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
+  .body-photo-frame { width: 100%; aspect-ratio: 3/4; background: var(--bg3); border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
   .body-photo-frame img { width: 100%; height: 100%; object-fit: cover; display: none; }
   .body-photo-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px; text-align: center; }
   .body-photo-empty-icon { font-size: 28px; opacity: 0.3; }
@@ -171,7 +171,7 @@
   .body-stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
   .body-stats-row2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
   .body-stats-grid4 { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
-  .body-stat-box { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 14px 10px 10px; text-align: center; }
+  .body-stat-box { background: var(--bg3); border-radius: 12px; padding: 16px 10px 12px; text-align: center; }
   .body-stat-val { font-family: var(--font-display); font-size: 34px; line-height: 1; color: #fff; }
   .body-stat-val sup { font-size: 14px; color: var(--muted); font-family: var(--font-body); font-weight: 400; vertical-align: super; line-height: 0; }
   .body-stat-label { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
@@ -185,7 +185,7 @@
 
   /* ── CALENDAR ── */
   /* ── PROGRESSION CHARTS ── */
-  .progression-card { background: #0d0d0d; border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px 16px; }
+  .progression-card { background: var(--bg2); border-radius: 16px; padding: 20px 22px 16px; }
   .progression-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
   .progression-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; }
   .progression-sub { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
@@ -517,7 +517,7 @@
   .wiz-result-pct { font-family: var(--font-display); font-size: 76px; line-height: 1; color: var(--red); }
   .wiz-result-pct-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
   .wiz-result-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .wiz-res-stat { background: #131313; border: 1px solid var(--border); border-radius: 12px; padding: 16px 12px; }
+  .wiz-res-stat { background: #131313; border-radius: 12px; padding: 16px 12px; }
   .wiz-res-stat-val { font-family: var(--font-display); font-size: 32px; color: #fff; line-height: 1; margin-bottom: 5px; }
   .wiz-res-stat-label { font-size: 9px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
   /* étapes 1 & 2 : la zone photo remplit l'espace jusqu'au bouton (zéro vide) */
@@ -545,7 +545,7 @@
   /* recommandations */
   .wiz-recos { margin-top: 16px; text-align: left; }
   .wiz-recos-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; text-align: center; }
-  .wiz-reco-item { display: flex; gap: 12px; align-items: flex-start; padding: 13px 14px; background: #131313; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; }
+  .wiz-reco-item { display: flex; gap: 12px; align-items: flex-start; padding: 13px 14px; background: #131313; border-radius: 10px; margin-bottom: 8px; }
   .wiz-reco-num { font-family: var(--font-display); font-size: 19px; color: var(--red); line-height: 1.1; flex-shrink: 0; min-width: 16px; }
   .wiz-reco-text { font-size: 13px; color: #bbb; line-height: 1.5; }
   /* paywall plan complet */
