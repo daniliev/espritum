@@ -90,7 +90,7 @@
   .feature-lock { font-size: 12px; margin-left: auto; color: var(--muted2); }
 
   /* Plans upgrade */
-  .plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .plans-grid { display: grid; grid-template-columns: 1fr; gap: 14px; max-width: 460px; margin: 0 auto; }
 
   .plan-card {
     background: var(--bg3); border: 2px solid var(--border);
@@ -362,13 +362,13 @@
 
       <div class="selected-plan-banner" id="selected-banner">
         <div class="selected-plan-info">
-          <span id="sel-icon" style="font-size:28px;">⚔️</span>
+          <span id="sel-icon" style="font-size:28px;">👑</span>
           <div>
-            <div class="selected-plan-name" id="sel-name">Guerrier</div>
+            <div class="selected-plan-name" id="sel-name">Premium</div>
             <div style="font-size:12px;color:var(--muted);">Débité chaque mois · Annulable à tout moment</div>
           </div>
         </div>
-        <div class="selected-plan-price" id="sel-price">5€/mois</div>
+        <div class="selected-plan-price" id="sel-price">11,99€/mois</div>
       </div>
 
       <div class="field">
@@ -439,48 +439,25 @@
         { icon: '🏆', text: 'Classement communauté', locked: true },
       ]
     },
-    guerrier: {
-      icon: '⚔️', name: 'Guerrier', price: '5€', period: 'par mois',
+    premium: {
+      icon: '👑', name: 'Premium', price: '11,99€', period: 'par mois',
       features: [
-        { icon: '📸', text: 'Estimation masse grasse', locked: false },
-        { icon: '✝️', text: 'Verset du jour', locked: false },
-        { icon: '🍎', text: 'Nutrition complète', locked: false },
-        { icon: '💪', text: '3 programmes entraînement', locked: false },
-        { icon: '📊', text: 'Historique 30 jours', locked: false },
-        { icon: '🏅', text: 'Badges motivation', locked: false },
-        { icon: '🤖', text: 'Coach Sensei IA', locked: true },
-        { icon: '🏆', text: 'Classement communauté', locked: true },
-      ]
-    },
-    champion: {
-      icon: '🛡️', name: 'Champion', price: '15€', period: 'par mois',
-      features: [
-        { icon: '📸', text: 'Estimation masse grasse avancée', locked: false },
-        { icon: '🍎', text: 'Nutrition + scan repas', locked: false },
-        { icon: '💪', text: 'Tous les programmes', locked: false },
+        { icon: '💪', text: 'Programme d\'entraînement IA personnalisé', locked: false },
+        { icon: '🍎', text: 'Nutrition complète + scan repas', locked: false },
         { icon: '🤖', text: 'Coach Sensei IA illimité', locked: false },
-        { icon: '📊', text: 'Mensurations + photos', locked: false },
+        { icon: '📸', text: 'Analyse corporelle par photo', locked: false },
+        { icon: '📊', text: 'Suivi mensurations + photos avant/après', locked: false },
         { icon: '🏆', text: 'Classement communauté', locked: false },
         { icon: '📅', text: 'Historique illimité', locked: false },
         { icon: '⭐', text: 'Support prioritaire', locked: false },
       ]
-    },
-    elite: {
-      icon: '👑', name: 'Élite', price: '30€', period: 'par mois',
-      features: [
-        { icon: '🤖', text: 'Plan nutrition 100% IA', locked: false },
-        { icon: '📸', text: 'Analyse morphologique avancée', locked: false },
-        { icon: '💪', text: 'Programme sur-mesure IA', locked: false },
-        { icon: '🏆', text: 'Tout Champion inclus', locked: false },
-        { icon: '📞', text: 'Support prioritaire 24/7', locked: false },
-        { icon: '🎯', text: 'Objectifs personnalisés IA', locked: false },
-        { icon: '📊', text: 'Analytics avancés', locked: false },
-        { icon: '👑', text: 'Badge Élite exclusif', locked: false },
-      ]
     }
   };
 
-  const PLAN_LABEL = { gratuit: 'Soldat — Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
+  // anciens plans → tous renvoyés vers Premium (compatibilité données existantes)
+  PLANS.guerrier = PLANS.champion = PLANS.elite = PLANS.premium;
+
+  const PLAN_LABEL = { gratuit: 'Gratuit', premium: '👑 Premium', guerrier: '👑 Premium', champion: '👑 Premium', elite: '👑 Premium' };
 
   let userId = null;
   let currentPlan = 'gratuit';
@@ -537,37 +514,29 @@ var safetyTimeout = 0;
   }
 
   function renderPlans() {
-    const order = ['guerrier', 'champion', 'elite'];
-    document.getElementById('plans-grid').innerHTML = order.map(key => {
-      const p = PLANS[key];
-      const isCurrent = key === currentPlan;
-      const badges = {
-        guerrier: { cls: '', label: '' },
-        champion: { cls: 'popular', label: '⭐ Populaire' },
-        elite: { cls: '', label: '👑 Premium' }
-      };
-      const b = badges[key];
+    const p = PLANS.premium;
+    const isCurrent = currentPlan !== 'gratuit';
 
-      return `
-        <div class="plan-card ${isCurrent ? 'current' : b.cls}" id="plancard-${key}">
-          ${isCurrent ? '<div class="plan-card-badge badge-current">Plan actuel</div>' :
-            b.label ? `<div class="plan-card-badge ${key === 'champion' ? 'badge-popular' : 'badge-premium'}">${b.label}</div>` : ''}
-          <div class="plan-card-icon">${p.icon}</div>
-          <div>
-            <div class="plan-card-name">${p.name}</div>
-            <div class="plan-card-price">${p.price}</div>
-            <div class="plan-card-period">${p.period}</div>
-          </div>
-          <div class="plan-card-features">
-            ${p.features.filter(f => !f.locked).slice(0,4).map(f => `<div class="plan-card-feat">${f.text}</div>`).join('')}
-          </div>
-          <button class="btn-select ${isCurrent ? 'disabled' : 'active'}"
-            ${isCurrent ? 'disabled' : `onclick="selectPlan('${key}')"`}>
-            ${isCurrent ? 'Plan actuel' : 'Choisir ce plan →'}
-          </button>
+    document.getElementById('plans-grid').innerHTML = `
+      <div class="plan-card ${isCurrent ? 'current' : 'popular'}" id="plancard-premium">
+        ${isCurrent
+          ? '<div class="plan-card-badge badge-current">Ton plan</div>'
+          : '<div class="plan-card-badge badge-popular">Accès complet</div>'}
+        <div class="plan-card-icon">${p.icon}</div>
+        <div>
+          <div class="plan-card-name">${p.name}</div>
+          <div class="plan-card-price">${p.price}</div>
+          <div class="plan-card-period">${p.period}</div>
         </div>
-      `;
-    }).join('');
+        <div class="plan-card-features">
+          ${p.features.filter(f => !f.locked).map(f => `<div class="plan-card-feat">${f.text}</div>`).join('')}
+        </div>
+        <button class="btn-select ${isCurrent ? 'disabled' : 'active'}"
+          ${isCurrent ? 'disabled' : `onclick="selectPlan('premium')"`}>
+          ${isCurrent ? 'Abonnement actif' : 'S\'abonner — 11,99€/mois →'}
+        </button>
+      </div>
+    `;
   }
 
   function selectPlan(plan) {
