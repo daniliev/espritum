@@ -1303,7 +1303,7 @@
 
 <!-- PAYWALL FREEMIUM -->
 <style>
-  #esp-paywall { position: fixed; inset: 0; z-index: 9000; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(200,40,40,0.30); backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); }
+  #esp-paywall { position: fixed; inset: 0; z-index: 9000; display: none; align-items: center; justify-content: center; padding: 24px; overflow-y: auto; background: rgba(200,40,40,0.30); backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); }
   #esp-paywall.show { display: flex; }
   /* la barre de nav reste au-dessus du paywall (pour quitter la page) */
   .mobile-nav, .sidebar { z-index: 9500 !important; }
@@ -1346,6 +1346,7 @@
     var plan = (r && r.data && r.data.plan) || 'gratuit';
     if (plan === 'gratuit') {
       document.getElementById('esp-paywall').classList.add('show');
+      document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
     }
   } catch (e) {}

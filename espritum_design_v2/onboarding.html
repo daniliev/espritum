@@ -60,7 +60,7 @@
   /* ── CARDS ── */
   .step-card {
     width: 100%; max-width: 520px;
-    background: var(--bg2); border: 1px solid var(--border);
+    background: var(--bg2);
     border-radius: 12px; padding: 40px; display: none;
   }
 
@@ -68,14 +68,14 @@
   @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
   .step-tag { font-size: 10px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; font-weight: 600; margin-bottom: 10px; }
-  .step-title { font-family: var(--font-display); font-size: 42px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; margin-bottom: 8px; }
+  .step-title { font-family: var(--font-display); font-size: 42px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; margin-bottom: 28px; text-align: center; }
   .step-sub { font-size: 14px; color: var(--muted); font-weight: 300; line-height: 1.6; margin-bottom: 32px; }
 
   /* ── CHOIX GENRE ── */
   .genre-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 28px; }
 
   .choice-card {
-    padding: 28px 20px; border: 2px solid var(--border);
+    padding: 28px 20px; border: 2px solid transparent;
     border-radius: 8px; text-align: center; cursor: pointer;
     transition: all 0.2s; background: var(--bg3);
     display: flex; flex-direction: column; align-items: center; gap: 12px;
@@ -84,7 +84,8 @@
   .choice-card:hover { border-color: rgba(200,40,40,0.4); background: rgba(200,40,40,0.04); }
   .choice-card.selected { border-color: var(--red); background: rgba(200,40,40,0.08); }
 
-  .choice-icon { display: flex; align-items: center; justify-content: center; color: var(--muted); }
+  .choice-icon { width: 54px; height: 54px; border-radius: 50%; border: 1.5px solid var(--red); background: rgba(200,40,40,0.30); display: flex; align-items: center; justify-content: center; color: var(--red); }
+  .choice-icon svg { width: 26px; height: 26px; }
   .choice-card.selected .choice-icon { color: var(--red); }
   .choice-name { font-family: var(--font-display); font-size: 24px; letter-spacing: 2px; text-transform: uppercase; }
   .choice-card.selected .choice-name { color: var(--red); }
@@ -93,7 +94,7 @@
   .objectif-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
 
   .obj-card {
-    padding: 22px 16px; border: 2px solid var(--border);
+    padding: 22px 16px; border: 2px solid transparent;
     border-radius: 8px; cursor: pointer;
     transition: all 0.2s; background: var(--bg3);
     display: flex; flex-direction: column; gap: 8px;
@@ -102,18 +103,19 @@
   .obj-card:hover { border-color: rgba(200,40,40,0.4); background: rgba(200,40,40,0.04); }
   .obj-card.selected { border-color: var(--red); background: rgba(200,40,40,0.08); }
 
-  .obj-icon { display: flex; color: var(--muted); }
+  .obj-icon { width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid var(--red); background: rgba(200,40,40,0.30); display: flex; align-items: center; justify-content: center; color: var(--red); margin-bottom: 4px; }
+  .obj-icon svg { width: 22px; height: 22px; }
   .obj-card.selected .obj-icon { color: var(--red); }
   .obj-name { font-family: var(--font-display); font-size: 20px; letter-spacing: 1px; text-transform: uppercase; }
   .obj-card.selected .obj-name { color: var(--red); }
   .obj-desc { font-size: 12px; color: var(--muted); font-weight: 300; line-height: 1.5; }
 
   /* ── PLANS ── */
-  .plans-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .plans-list { display: flex; flex-direction: column; gap: 38px; margin-bottom: 38px; }
 
   .plan-card {
     display: flex; align-items: center; gap: 16px;
-    padding: 18px 20px; border: 2px solid var(--border);
+    padding: 18px 20px; border: 2px solid transparent;
     border-radius: 8px; cursor: pointer;
     transition: all 0.2s; background: var(--bg3);
     position: relative;
@@ -129,7 +131,8 @@
     font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
   }
 
-  .plan-icon { font-size: 28px; flex-shrink: 0; }
+  .plan-icon { flex-shrink: 0; color: var(--red); display: flex; }
+  .plan-icon svg { width: 26px; height: 26px; }
 
   .plan-info { flex: 1; }
   .plan-name { font-family: var(--font-display); font-size: 22px; letter-spacing: 1px; text-transform: uppercase; color: #fff; }
@@ -170,11 +173,16 @@
   }
 
   .btn-back:hover { border-color: #333; color: #aaa; }
+  /* ligne Retour (flèche) + Continuer côte à côte */
+  .btn-row { display: flex; gap: 10px; }
+  .btn-row .btn-next { flex: 1; margin-top: 0; }
+  .btn-row .btn-back { width: auto; margin-top: 0; padding: 13px 22px; display: flex; align-items: center; justify-content: center; }
+  .btn-back svg { width: 20px; height: 20px; display: block; }
 
   /* ── CONFIRMATION ── */
   .confirm-card {
     width: 100%; max-width: 520px;
-    background: var(--bg2); border: 1px solid var(--border);
+    background: var(--bg2);
     border-radius: 12px; padding: 48px 40px;
     text-align: center; display: none;
   }
@@ -186,7 +194,7 @@
   .confirm-sub { font-size: 14px; color: var(--muted); line-height: 1.7; font-weight: 300; margin-bottom: 28px; }
 
   .confirm-summary {
-    background: var(--bg3); border: 1px solid var(--border);
+    background: var(--bg3);
     border-radius: 8px; padding: 16px 20px; margin-bottom: 24px; text-align: left;
     display: flex; flex-direction: column; gap: 10px;
   }
@@ -238,7 +246,6 @@
 <div class="step-card active" id="step1">
   
   <div class="step-title">Définis<br>ton profil.</div>
-  <div class="step-sub">Ça nous aide à personnaliser ton expérience et tes objectifs.</div>
 
   <div class="genre-grid">
     <div class="choice-card" id="genre-homme" onclick="selectGenre('homme')">
@@ -269,7 +276,6 @@
 <div class="step-card" id="step2">
   
   <div class="step-title">Ton<br>objectif.</div>
-  <div class="step-sub">Sois honnête avec toi-même — c'est la base de tout.</div>
 
   <div class="objectif-grid">
     <div class="obj-card" id="obj-perte_gras" onclick="selectObj('perte_gras')">
@@ -280,7 +286,6 @@
         </svg>
       </span>
       <div class="obj-name">Perte de gras</div>
-      <div class="obj-desc">Brûler les graisses et révéler ta musculature</div>
     </div>
     <div class="obj-card" id="obj-prise_masse" onclick="selectObj('prise_masse')">
       <span class="obj-icon">
@@ -293,7 +298,6 @@
         </svg>
       </span>
       <div class="obj-name">Prise de masse</div>
-      <div class="obj-desc">Développer ta musculature et prendre du volume</div>
     </div>
     <div class="obj-card" id="obj-endurance" onclick="selectObj('endurance')">
       <span class="obj-icon">
@@ -302,7 +306,6 @@
         </svg>
       </span>
       <div class="obj-name">Endurance</div>
-      <div class="obj-desc">Améliorer tes performances cardio et ta résistance</div>
     </div>
     <div class="obj-card" id="obj-reequilibrage" onclick="selectObj('reequilibrage')">
       <span class="obj-icon">
@@ -314,70 +317,42 @@
         </svg>
       </span>
       <div class="obj-name">Rééquilibrage</div>
-      <div class="obj-desc">Adopter un mode de vie sain et équilibré</div>
     </div>
   </div>
 
-  <button class="btn-next" id="btn2" onclick="goTo(3)" disabled>Continuer →</button>
-  <button class="btn-back" onclick="goTo(1)">← Retour</button>
+  <div class="btn-row">
+    <button class="btn-back" onclick="goTo(1)" aria-label="Retour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="btn-next" id="btn2" onclick="goTo(3)" disabled>Continuer →</button>
+  </div>
 </div>
 
 <!-- ÉTAPE 3 — Plan -->
 <div class="step-card" id="step3">
   
-  <div class="step-title">Choisis<br>ton armure.</div>
-  <div class="step-sub">Commence gratuitement. Monte en puissance quand tu es prêt.</div>
+  <div class="step-title">Choisis<br>ton plan.</div>
 
   <div class="plans-list">
 
     <div class="plan-card selected" id="plan-gratuit" onclick="selectPlan('gratuit')">
-      <span class="plan-icon">🛡️</span>
+      <span class="plan-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
       <div class="plan-info">
-        <div class="plan-name">Soldat</div>
-        <div class="plan-features">Estimation masse grasse · Verset du jour · Dashboard</div>
+        <div class="plan-name">Gratuit</div>
       </div>
       <div class="plan-price">
-        <div class="plan-amount">Gratuit</div>
+        <div class="plan-amount">0€</div>
         <div class="plan-period">pour toujours</div>
       </div>
       <div class="plan-check">✓</div>
     </div>
 
-    <div class="plan-card" id="plan-guerrier" onclick="selectPlan('guerrier')">
-      <span class="plan-icon">⚔️</span>
+    <div class="plan-card popular" id="plan-premium" onclick="selectPlan('premium')">
+      <div class="popular-tag">Accès complet</div>
+      <span class="plan-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.52l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5 21h14"/></svg></span>
       <div class="plan-info">
-        <div class="plan-name">Guerrier</div>
-        <div class="plan-features">Nutrition complète · 3 plans entraînement · Historique 30j</div>
+        <div class="plan-name">Premium</div>
       </div>
       <div class="plan-price">
-        <div class="plan-amount">5€</div>
-        <div class="plan-period">par mois</div>
-      </div>
-      <div class="plan-check"></div>
-    </div>
-
-    <div class="plan-card popular" id="plan-champion" onclick="selectPlan('champion')">
-      <div class="popular-tag">⭐ Populaire</div>
-      <span class="plan-icon">🛡️</span>
-      <div class="plan-info">
-        <div class="plan-name">Champion</div>
-        <div class="plan-features">Coach IA Sensei · Scan repas · Mensurations · Classement</div>
-      </div>
-      <div class="plan-price">
-        <div class="plan-amount">15€</div>
-        <div class="plan-period">par mois</div>
-      </div>
-      <div class="plan-check"></div>
-    </div>
-
-    <div class="plan-card" id="plan-elite" onclick="selectPlan('elite')">
-      <span class="plan-icon">👑</span>
-      <div class="plan-info">
-        <div class="plan-name">Élite</div>
-        <div class="plan-features">Plan IA 100% · Analyse morphologique · Support prioritaire</div>
-      </div>
-      <div class="plan-price">
-        <div class="plan-amount">30€</div>
+        <div class="plan-amount">11,99€</div>
         <div class="plan-period">par mois</div>
       </div>
       <div class="plan-check"></div>
@@ -385,8 +360,10 @@
 
   </div>
 
-  <button class="btn-next" id="btn3" onclick="finish()">Commencer →</button>
-  <button class="btn-back" onclick="goTo(2)">← Retour</button>
+  <div class="btn-row">
+    <button class="btn-back" onclick="goTo(2)" aria-label="Retour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="btn-next" id="btn3" onclick="finish()">Commencer →</button>
+  </div>
 </div>
 
 <!-- CONFIRMATION -->
@@ -435,10 +412,8 @@
   };
 
   const PLAN_LABEL = {
-    gratuit: '🛡️ Soldat — Gratuit',
-    guerrier: '⚔️ Guerrier — 5€/mois',
-    champion: '🛡️ Champion — 15€/mois',
-    elite: '👑 Élite — 30€/mois'
+    gratuit: 'Gratuit',
+    premium: 'Premium — 11,99€/mois'
   };
 
   async function init() {
@@ -472,8 +447,8 @@
 
   // ── NAVIGATION ──
   function goTo(step) {
-    // Cacher étape actuelle
-    document.getElementById(`step${currentStep}`).classList.remove('active');
+    // Masquer TOUTES les étapes (robuste — jamais deux écrans affichés en même temps)
+    document.querySelectorAll('.step-card, .confirm-card').forEach(function (s) { s.classList.remove('active'); });
 
     // Mettre à jour progress
     updateProgress(step);
@@ -569,9 +544,9 @@
       // On log l'erreur mais on continue quand même — le profil peut être complété plus tard
       if (saveErr) console.warn('Onboarding save warning:', saveErr.message || saveErr.code);
 
-      // Si plan payant → paiement
+      // Si plan payant → checkout Stripe (le compte reste gratuit tant que le paiement n'est pas validé)
       if (selectedPlan !== 'gratuit') {
-        window.location.href = `paiement.html?plan=${selectedPlan}`;
+        window.location.href = 'https://buy.stripe.com/test_9B64gyeKAbEE0b15K0bV600';
         return;
       }
 
