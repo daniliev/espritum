@@ -379,34 +379,26 @@
 
   // Données plans (côté affichage uniquement — la source de vérité des priceId est côté backend)
   const plans = {
-    guerrier: {
-      icon: '⚔️', name: 'Guerrier', price: 5,
-      features: ['Suivi nutrition complet', '3 plans d\'entraînement', 'Historique 30 jours', 'Badges & niveaux']
-    },
-    champion: {
-      icon: '🛡️', name: 'Champion', price: 15,
-      features: ['Coach IA Sensei illimité', 'Scan de repas caméra', 'Suivi mensurations', 'Classement communautaire']
-    },
-    elite: {
-      icon: '👑', name: 'Élite', price: 30,
-      features: ['Plan nutrition 100% IA', 'Analyse morphologique', 'Accès prioritaire nouveautés', 'Badge Élite exclusif']
+    premium: {
+      icon: '', name: 'Premium', price: 11.99,
+      features: ['Programme d\'entraînement IA', 'Nutrition complète + scan repas', 'Analyse corporelle par photo', 'Classement communauté']
     }
   };
 
-  const params = new URLSearchParams(window.location.search);
-  const planKey = params.get('plan') || 'champion';
-  const plan = plans[planKey] || plans.champion;
+  const planKey = 'premium';
+  const plan = plans.premium;
 
   // Mettre à jour le récap
   document.getElementById('recap-icon').textContent = plan.icon;
   document.getElementById('recap-name').textContent = plan.name;
-  document.getElementById('recap-amount').textContent = plan.price + '€';
+  document.getElementById('recap-amount').textContent = '11,99€';
 
-  const tva = (plan.price * 0.2).toFixed(2);
-  const total = (plan.price * 1.2).toFixed(2);
-  document.getElementById('total-ht').textContent = plan.price.toFixed(2) + ' €';
-  document.getElementById('total-tva').textContent = tva + ' €';
-  document.getElementById('total-ttc').textContent = total + ' €';
+  // 11,99€ = montant TTC réellement facturé par Stripe
+  const ht = plan.price / 1.2;
+  const tva = plan.price - ht;
+  document.getElementById('total-ht').textContent = ht.toFixed(2).replace('.', ',') + ' €';
+  document.getElementById('total-tva').textContent = tva.toFixed(2).replace('.', ',') + ' €';
+  document.getElementById('total-ttc').textContent = plan.price.toFixed(2).replace('.', ',') + ' €';
 
   document.getElementById('recap-features').innerHTML = plan.features.map(f =>
     `<div class="recap-feature"><div class="recap-dot"></div>${f}</div>`
@@ -446,15 +438,29 @@
   paymentRequest.on('paymentmethod', async (ev) => {
     try {
       const { data: { session } } = await sb.auth.getSession();
-      if (!session) { ev.complete('fail'); return; }
+      if (!session) { ev.complete('fail'); window.location.href = 'inscription.html'; return; }
 
-      const { error: updateErr } = await sb.from('users')
-        .update({ plan: planKey }).eq('id', session.user.id);
+      const resp = await fetch('/api/create-subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payment_method_id: ev.paymentMethod.id, email: ev.payerEmail || session.user.email, user_id: session.user.id })
+      });
+      const data = await resp.json();
+      if (!resp.ok || data.error) { ev.complete('fail'); showError(data.error || 'Paiement refusé.'); return; }
 
-      if (updateErr) { ev.complete('fail'); showError('Erreur lors de la mise à jour.'); return; }
+      if (data.client_secret && data.status !== 'succeeded' && data.status !== 'active') {
+        const conf = await stripe.confirmCardPayment(data.client_secret, { payment_method: ev.paymentMethod.id }, { handleActions: false });
+        if (conf.error) { ev.complete('fail'); showError(conf.error.message); return; }
+        ev.complete('success');
+        if (conf.paymentIntent && conf.paymentIntent.status === 'requires_action') {
+          await stripe.confirmCardPayment(data.client_secret);
+        }
+      } else {
+        ev.complete('success');
+      }
 
-      ev.complete('success');
-      localStorage.setItem('espritum_plan', planKey);
+      await sb.from('users').update({ plan: 'premium' }).eq('id', session.user.id);
+      localStorage.setItem('espritum_plan', 'premium');
       document.getElementById('payment-form').style.display = 'none';
       document.getElementById('success-screen').style.display = 'block';
       setTimeout(() => { window.location.href = 'dashboard.html'; }, 2500);
@@ -481,35 +487,35 @@
     errorMsg.style.display = 'none';
 
     try {
-      // 1) Tokenize la carte via Stripe.js
+      // 0) Auth
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { window.location.href = 'inscription.html'; return; }
+
+      // 1) Crée le moyen de paiement (carte) via Stripe.js
       const { paymentMethod, error: pmError } = await stripe.createPaymentMethod({
         type: 'card',
         card: cardElement,
         billing_details: { email: userEmail }
       });
+      if (pmError) { showError(traduireErreur(pmError.message)); resetBtn(btn); return; }
 
-      if (pmError) {
-        showError(traduireErreur(pmError.message));
-        resetBtn(btn);
-        return;
+      // 2) Crée l'abonnement côté serveur (Stripe) → renvoie le client_secret
+      const resp = await fetch('/api/create-subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payment_method_id: paymentMethod.id, email: userEmail, user_id: userId })
+      });
+      const data = await resp.json();
+      if (!resp.ok || data.error) { showError(traduireErreur(data.error || 'Paiement refusé.')); resetBtn(btn); return; }
+
+      // 3) Confirme le paiement (3D Secure si nécessaire)
+      if (data.client_secret && data.status !== 'succeeded' && data.status !== 'active') {
+        const conf = await stripe.confirmCardPayment(data.client_secret);
+        if (conf.error) { showError(traduireErreur(conf.error.message)); resetBtn(btn); return; }
       }
 
-      // 2) Auth check
-      const { data: { session } } = await sb.auth.getSession();
-      if (!session) { window.location.href = 'inscription.html'; return; }
-
-      // 3) Mise à jour directe du plan dans Supabase
-      //    (L'Edge Function create-subscription sera activée en production avec Stripe live)
-      const { error: updateErr } = await sb.from('users')
-        .update({ plan: planKey })
-        .eq('id', userId);
-
-      if (updateErr) {
-        console.error('Plan update error:', updateErr);
-        showError('Erreur lors de la mise à jour du plan. Contacte le support.');
-        resetBtn(btn);
-        return;
-      }
+      // 4) Active le plan Premium dans l'app
+      await sb.from('users').update({ plan: 'premium' }).eq('id', userId);
 
       // 4) Succès
       localStorage.setItem('espritum_plan', planKey);

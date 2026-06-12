@@ -546,7 +546,7 @@
 
       // Si plan payant → checkout Stripe (le compte reste gratuit tant que le paiement n'est pas validé)
       if (selectedPlan !== 'gratuit') {
-        window.location.href = 'https://buy.stripe.com/test_9B64gyeKAbEE0b15K0bV600';
+        window.location.href = 'paiement.html?plan=premium';
         return;
       }
 

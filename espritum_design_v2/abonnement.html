@@ -459,7 +459,7 @@
   const PLAN_LABEL = { gratuit: 'Gratuit', premium: '👑 Premium', guerrier: '👑 Premium', champion: '👑 Premium', elite: '👑 Premium' };
 
   // Lien de paiement Stripe (abonnement Premium 11,99€/mois)
-  const STRIPE_CHECKOUT_URL = 'https://buy.stripe.com/test_9B64gyeKAbEE0b15K0bV600';
+  const STRIPE_CHECKOUT_URL = 'paiement.html?plan=premium';
   function goCheckout() { window.location.href = STRIPE_CHECKOUT_URL; }
 
   let userId = null;
