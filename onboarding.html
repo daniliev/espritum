@@ -173,6 +173,11 @@
   }
 
   .btn-back:hover { border-color: #333; color: #aaa; }
+  /* ligne Retour (flèche) + Continuer côte à côte */
+  .btn-row { display: flex; gap: 10px; }
+  .btn-row .btn-next { flex: 1; margin-top: 0; }
+  .btn-row .btn-back { width: auto; margin-top: 0; padding: 13px 22px; display: flex; align-items: center; justify-content: center; }
+  .btn-back svg { width: 20px; height: 20px; display: block; }
 
   /* ── CONFIRMATION ── */
   .confirm-card {
@@ -315,8 +320,10 @@
     </div>
   </div>
 
-  <button class="btn-next" id="btn2" onclick="goTo(3)" disabled>Continuer →</button>
-  <button class="btn-back" onclick="goTo(1)">← Retour</button>
+  <div class="btn-row">
+    <button class="btn-back" onclick="goTo(1)" aria-label="Retour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="btn-next" id="btn2" onclick="goTo(3)" disabled>Continuer →</button>
+  </div>
 </div>
 
 <!-- ÉTAPE 3 — Plan -->
@@ -353,8 +360,10 @@
 
   </div>
 
-  <button class="btn-next" id="btn3" onclick="finish()">Commencer →</button>
-  <button class="btn-back" onclick="goTo(2)">← Retour</button>
+  <div class="btn-row">
+    <button class="btn-back" onclick="goTo(2)" aria-label="Retour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="btn-next" id="btn3" onclick="finish()">Commencer →</button>
+  </div>
 </div>
 
 <!-- CONFIRMATION -->
