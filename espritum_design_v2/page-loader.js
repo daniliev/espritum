@@ -1,13 +1,59 @@
 // ── Espritum — Cache Buster ──
 // Ajoute ?v=VERSION dans l'URL pour forcer le navigateur à recharger les fichiers.
 (function () {
-  var APP_VERSION = 130;
+  var APP_VERSION = 136;
   var params = new URLSearchParams(window.location.search);
   if (params.get('v') !== String(APP_VERSION)) {
     params.set('v', APP_VERSION);
     // Remplace l'URL avec la version — force un rechargement propre sans boucle
     window.location.replace(window.location.pathname + '?' + params.toString() + (window.location.hash || ''));
   }
+})();
+
+// ── Espritum — Suivi de trafic (analytics maison) ──
+// Enregistre chaque visite de page dans la table Supabase `page_views`.
+// Source du trafic = document.referrer (déduit côté admin).
+(function () {
+  // Ne pas tracker les pages admin elles-mêmes
+  var path = window.location.pathname;
+  if (/\/admin[a-z_]*\.html$/.test(path)) return;
+
+  // Évite le double comptage : on ne logge qu'une fois la version d'URL stabilisée
+  var v = new URLSearchParams(window.location.search).get('v');
+  if (v !== '136') return; // doit matcher APP_VERSION ci-dessus
+
+  function track() {
+    try {
+      var URL_BASE = window.SUPABASE_URL || 'https://lbxlvrtujzwlcnloheyh.supabase.co';
+      var KEY = window.SUPABASE_ANON_KEY || 'sb_publishable_40dpIdYthKMZkJImacoKoQ_ftEeaPeg';
+
+      // Identifiant visiteur anonyme (persistant)
+      var vid = localStorage.getItem('esp_vid');
+      if (!vid) {
+        vid = 'v_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+        localStorage.setItem('esp_vid', vid);
+      }
+
+      fetch(URL_BASE + '/rest/v1/page_views', {
+        method: 'POST',
+        headers: {
+          'apikey': KEY,
+          'Authorization': 'Bearer ' + KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          path: path,
+          referrer: document.referrer || null,
+          visitor_id: vid
+        }),
+        keepalive: true
+      }).catch(function(){});
+    } catch (e) {}
+  }
+
+  if (document.readyState === 'complete') track();
+  else window.addEventListener('load', track);
 })();
 
 // ── Espritum — Page Loader ──
