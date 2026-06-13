@@ -1217,6 +1217,28 @@
   .cta-outline { background: transparent; border: 1px solid var(--red); color: var(--red); }
   .cta-outline:hover { background: rgba(200,40,40,0.08); }
 
+  /* ── BLOG CAROUSEL ── */
+  #blog-carousel { background: var(--bg); overflow: hidden; }
+  .bc-header { max-width: 1160px; margin: 0 auto 50px; text-align: center; }
+  .bc-wrap { max-width: 1200px; margin: 0 auto; }
+  .bc-track { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding: 6px 4px 14px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .bc-track::-webkit-scrollbar { display: none; }
+  .bc-card { flex: 0 0 300px; scroll-snap-align: start; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; text-decoration: none; display: flex; flex-direction: column; transition: border-color 0.25s, transform 0.25s; }
+  .bc-card:hover { border-color: rgba(200,40,40,0.45); transform: translateY(-4px); }
+  .bc-thumb { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; border-bottom: 1px solid var(--border); }
+  .bc-body { padding: 20px 22px 24px; display: flex; flex-direction: column; flex: 1; }
+  .bc-cat { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; color: var(--red); margin-bottom: 10px; }
+  .bc-title { font-family: var(--font-display); font-size: 23px; letter-spacing: 1px; text-transform: uppercase; color: #fff; line-height: 1.05; margin-bottom: 12px; }
+  .bc-exc { font-size: 13px; color: #9a9a9a; line-height: 1.55; flex: 1; }
+  .bc-more { margin-top: 16px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; color: var(--red); }
+  .bc-nav { display: flex; justify-content: center; gap: 12px; margin-top: 26px; }
+  .bc-arrow { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--border); background: var(--bg2); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .bc-arrow:hover { border-color: var(--red); background: rgba(200,40,40,0.12); }
+  .bc-alllink { text-align: center; margin-top: 22px; }
+  .bc-alllink a { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; color: #888; text-decoration: none; }
+  .bc-alllink a:hover { color: #fff; }
+  @media (max-width: 560px) { .bc-card { flex: 0 0 82%; } }
+
   /* ── FAQ ── */
   #faq { background: var(--bg2); }
   .faq-inner { max-width: 800px; margin: 0 auto; }
@@ -2172,6 +2194,71 @@
     </div>
   </div>
 </section>
+
+<!-- BLOG CAROUSEL -->
+<section id="blog-carousel">
+  <div class="bc-header">
+    <div class="section-tag centered">Le blog</div>
+    <h2 class="section-heading">NOS DERNIERS<br><span>ARTICLES.</span></h2>
+  </div>
+  <div class="bc-wrap">
+    <div class="bc-track" id="bc-track">
+      <a class="bc-card" href="comment-perdre-du-ventre-homme.html">
+        <img class="bc-thumb" src="blog-ventre-hero.jpg" alt="Comment perdre du ventre homme" loading="lazy">
+        <div class="bc-body">
+          <div class="bc-cat">Perte de gras</div>
+          <div class="bc-title">Comment perdre du ventre (homme)</div>
+          <div class="bc-exc">Le vrai responsable n'est pas les calories — c'est l'insuline. La méthode complète.</div>
+          <div class="bc-more">Lire l'article →</div>
+        </div>
+      </a>
+      <a class="bc-card" href="exercice-pour-perdre-du-ventre-homme.html">
+        <img class="bc-thumb" src="blog-exercice-hero.jpg" alt="Exercice pour perdre du ventre homme" loading="lazy">
+        <div class="bc-body">
+          <div class="bc-cat">Entraînement</div>
+          <div class="bc-title">Quel exercice pour perdre du ventre</div>
+          <div class="bc-exc">Pas d'exercice magique : déficit calorique + musculation. Le programme complet.</div>
+          <div class="bc-more">Lire l'article →</div>
+        </div>
+      </a>
+      <a class="bc-card" href="quoi-manger-pour-perdre-du-ventre-homme.html">
+        <img class="bc-thumb" src="blog-alimentation-hero.jpg" alt="Quoi manger pour perdre du ventre homme" loading="lazy">
+        <div class="bc-body">
+          <div class="bc-cat">Nutrition</div>
+          <div class="bc-title">Quoi manger pour perdre du ventre</div>
+          <div class="bc-exc">L'alimentation, c'est 70 à 80 % du résultat. Le plan alimentaire concret.</div>
+          <div class="bc-more">Lire l'article →</div>
+        </div>
+      </a>
+      <a class="bc-card" href="perdre-du-ventre-rapidement-homme.html">
+        <img class="bc-thumb" src="blog-rapide-hero.jpg" alt="Perdre du ventre rapidement homme" loading="lazy">
+        <div class="bc-body">
+          <div class="bc-cat">Mindset</div>
+          <div class="bc-title">Perdre du ventre rapidement</div>
+          <div class="bc-exc">Mythe ou réalité ? La vérité sur le délai et la méthode sans effet yoyo.</div>
+          <div class="bc-more">Lire l'article →</div>
+        </div>
+      </a>
+      <a class="bc-card" href="comment-mesurer-sa-graisse-abdominale.html">
+        <img class="bc-thumb" src="blog-mesurer-hero.jpg" alt="Comment mesurer sa graisse abdominale" loading="lazy">
+        <div class="bc-body">
+          <div class="bc-cat">Composition corporelle</div>
+          <div class="bc-title">Mesurer sa graisse abdominale</div>
+          <div class="bc-exc">Tour de taille, masse grasse, DEXA, analyse photo : les vraies méthodes.</div>
+          <div class="bc-more">Lire l'article →</div>
+        </div>
+      </a>
+    </div>
+    <div class="bc-nav">
+      <button class="bc-arrow" onclick="bcScroll(-1)" aria-label="Précédent">‹</button>
+      <button class="bc-arrow" onclick="bcScroll(1)" aria-label="Suivant">›</button>
+    </div>
+    <div class="bc-alllink"><a href="blog.html">Voir tous les articles →</a></div>
+  </div>
+</section>
+<script>
+  function bcScroll(dir){ var t = document.getElementById('bc-track'); if(t) t.scrollBy({ left: dir * 320, behavior: 'smooth' }); }
+</script>
 
 <!-- TARIFS -->
 <!-- FAQ -->
