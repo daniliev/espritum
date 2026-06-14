@@ -199,6 +199,7 @@
   <div class="tab-bar">
     <div class="tab active" id="tab-overview" onclick="showTab('overview')">Vue d'ensemble</div>
     <div class="tab" id="tab-users" onclick="showTab('users')">Utilisateurs</div>
+    <div class="tab" id="tab-waitlist" onclick="showTab('waitlist')">Liste d'attente</div>
     <a class="tab" href="admin_trafic.html" style="text-decoration:none;">Trafic</a>
   </div>
 
@@ -286,6 +287,31 @@
     </div>
   </div>
 
+  <!-- PANEL WAITLIST -->
+  <div class="panel" id="panel-waitlist">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Liste d'attente</div>
+        <span class="card-meta" id="wl-count">—</span>
+      </div>
+      <div class="filters-bar">
+        <input class="search-input" type="text" placeholder="Rechercher un nom, email…" oninput="filterWaitlist()" id="wl-search">
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr><th>Inscrit</th><th>Email</th><th>Téléphone</th><th>Source</th><th>Date</th></tr>
+          </thead>
+          <tbody id="wl-table"></tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span class="page-info" id="wl-page-info">—</span>
+        <div class="page-btns" id="wl-page-btns"></div>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <script>
@@ -312,11 +338,12 @@
   let plansChart = null, visitsChart = null;
   const PER_PAGE = 10;
   let currentUserId = null;
+  let allWaitlist = [], filteredWaitlist = [], wlPage = 1;
 
   // ── INIT ──
   async function init() {
     try {
-      await Promise.all([loadUsers(), loadAnalytics()]);
+      await Promise.all([loadUsers(), loadAnalytics(), loadWaitlist()]);
     } catch(e) { console.error(e); }
     finally {
       document.getElementById('last-update').textContent = 'Mis à jour : ' + new Date().toLocaleTimeString('fr-FR');
@@ -324,12 +351,13 @@
   }
 
   function showTab(tab) {
-    ['overview','users'].forEach(t => {
+    ['overview','users','waitlist'].forEach(t => {
       document.getElementById('panel-' + t).classList.toggle('active', t === tab);
       document.getElementById('tab-' + t).classList.toggle('active', t === tab);
     });
   }
   if (location.hash === '#users') showTab('users');
+  if (location.hash === '#waitlist') showTab('waitlist');
 
   // ── USERS + KPI plans ──
   async function loadUsers() {
@@ -603,6 +631,79 @@
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // ── LISTE D'ATTENTE ──
+  async function loadWaitlist() {
+    let data, error;
+    try {
+      const res = await sb.from('waitlist').select('*');
+      data = res.data; error = res.error;
+    } catch(e) { error = e; }
+
+    const tbody = document.getElementById('wl-table');
+    if (error || !data) {
+      document.getElementById('wl-count').textContent = '—';
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Impossible de lire la table <code style="color:var(--red);">waitlist</code>.<br>Vérifie qu'une règle RLS autorise la lecture (SELECT) pour la clé publique.</td></tr>`;
+      return;
+    }
+    // Tri du plus récent au plus ancien (created_at si présent)
+    data.sort((a, b) => {
+      const da = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const db = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return db - da;
+    });
+    allWaitlist = data;
+    filteredWaitlist = [...allWaitlist];
+    renderWaitlist();
+  }
+
+  function filterWaitlist() {
+    wlPage = 1;
+    const q = (document.getElementById('wl-search').value || '').toLowerCase();
+    filteredWaitlist = allWaitlist.filter(w =>
+      !q || (w.prenom||'').toLowerCase().includes(q) || (w.nom||'').toLowerCase().includes(q)
+      || (w.email||'').toLowerCase().includes(q) || (w.telephone||'').toLowerCase().includes(q)
+    );
+    renderWaitlist();
+  }
+
+  function renderWaitlist() {
+    const total = filteredWaitlist.length;
+    document.getElementById('wl-count').textContent = `${total} inscrit${total > 1 ? 's' : ''}`;
+    const start = (wlPage - 1) * PER_PAGE;
+    const page = filteredWaitlist.slice(start, start + PER_PAGE);
+    document.getElementById('wl-page-info').textContent = `Page ${wlPage} sur ${Math.ceil(total / PER_PAGE) || 1}`;
+
+    const tbody = document.getElementById('wl-table');
+    tbody.innerHTML = page.length === 0
+      ? `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Aucune inscription pour le moment.</td></tr>`
+      : page.map(w => {
+          const name = `${w.prenom || ''} ${w.nom || ''}`.trim() || '—';
+          const initiale = (w.prenom || w.email || '?')[0].toUpperCase();
+          const date = w.created_at ? new Date(w.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+          return `<tr>
+            <td><div class="user-cell">
+              <div class="u-avatar" style="background:rgba(200,40,40,0.1);border:1px solid rgba(200,40,40,0.25);color:var(--red);">${initiale}</div>
+              <div class="u-name">${name}</div>
+            </div></td>
+            <td style="font-size:12px;color:#bbb;">${w.email || '—'}</td>
+            <td style="font-size:12px;">${w.telephone || '—'}</td>
+            <td style="font-size:11px;"><span class="plan-pill pill-gratuit">${w.source || '—'}</span></td>
+            <td style="font-size:12px;color:#666;">${date}</td>
+          </tr>`;
+        }).join('');
+
+    const totalPages = Math.ceil(total / PER_PAGE);
+    const btns = document.getElementById('wl-page-btns');
+    btns.innerHTML = '';
+    for (let p = 1; p <= Math.min(totalPages, 6); p++) {
+      const b = document.createElement('button');
+      b.className = `page-btn ${p === wlPage ? 'active' : ''}`;
+      b.textContent = p;
+      b.onclick = () => { wlPage = p; renderWaitlist(); };
+      btns.appendChild(b);
+    }
   }
 
   init();

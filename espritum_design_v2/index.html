@@ -1231,12 +1231,13 @@
   .bc-title { font-family: var(--font-display); font-size: 23px; letter-spacing: 1px; text-transform: uppercase; color: #fff; line-height: 1.05; margin-bottom: 12px; }
   .bc-exc { font-size: 13px; color: #9a9a9a; line-height: 1.55; flex: 1; }
   .bc-more { margin-top: 16px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; color: var(--red); }
-  .bc-nav { display: flex; justify-content: center; gap: 12px; margin-top: 26px; }
-  .bc-arrow { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--border); background: var(--bg2); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-  .bc-arrow:hover { border-color: var(--red); background: rgba(200,40,40,0.12); }
-  .bc-alllink { text-align: center; margin-top: 22px; }
-  .bc-alllink a { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; color: #888; text-decoration: none; }
-  .bc-alllink a:hover { color: #fff; }
+  .bc-viewport { position: relative; }
+  .bc-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border); background: rgba(13,13,13,0.92); color: #fff; font-size: 18px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 6; }
+  .bc-arrow:hover { border-color: var(--red); color: var(--red); }
+  .bc-arrow.prev { left: -6px; }
+  .bc-arrow.next { right: -6px; }
+  .bc-bottom { text-align: center; margin-top: 32px; }
+  @media (max-width: 760px) { .bc-arrow { display: none; } }
   @media (max-width: 560px) { .bc-card { flex: 0 0 82%; } }
 
   /* ── FAQ ── */
@@ -1614,6 +1615,7 @@
     .split-content .section-heading,
     .split-content .pb-sub,
     .split-content .sol-sub { text-align: center !important; }
+    .split-content .btn-primary { display: block; width: -moz-fit-content; width: fit-content; margin-left: auto; margin-right: auto; }
   }
 
   /* ── ÉTAPES (gratuit, 3 étapes) ── */
@@ -2047,6 +2049,7 @@
             <p class="pb-card-text">Tu te motives le dimanche. Tu abandonnes le mercredi. Ce cycle tourne depuis des années.</p>
           </div>
         </div>
+        <a class="btn-primary" href="inscription.html" style="margin-top:32px;">Rejoindre la liste</a>
       </div>
     </div>
   </div>
@@ -2077,6 +2080,7 @@
             <p class="pb-card-text">Sensei connaît ton historique. Il te parle vrai, sans te ménager.</p>
           </div>
         </div>
+        <a class="btn-primary" href="inscription.html" style="margin-top:32px;">Rejoindre la liste</a>
       </div>
     </div>
   </div>
@@ -2123,7 +2127,7 @@
         <span class="steps-offer-badge">Offre de lancement</span>
         <p class="steps-offer-text">Inscris-toi à la liste d'attente et reçois <strong>5 scans corporels gratuits</strong>, avec analyse et recommandations personnalisées de l'IA.</p>
       </div>
-      <button class="btn-primary" onclick="openWaitlist('etapes')">ESSAYER GRATUITEMENT</button>
+      <button class="btn-primary" onclick="openWaitlist('etapes')">REJOINDRE LA LISTE D'ATTENTE</button>
       <div class="steps-cta-note">Aucune carte bancaire requise</div>
     </div>
   </div>
@@ -2202,6 +2206,8 @@
     <h2 class="section-heading">NOS DERNIERS<br><span>ARTICLES.</span></h2>
   </div>
   <div class="bc-wrap">
+    <div class="bc-viewport">
+    <button class="bc-arrow prev" onclick="bcScroll(-1)" aria-label="Précédent">‹</button>
     <div class="bc-track" id="bc-track">
       <a class="bc-card" href="comment-perdre-du-ventre-homme.html">
         <img class="bc-thumb" src="blog-ventre-hero.jpg" alt="Comment perdre du ventre homme" loading="lazy">
@@ -2249,11 +2255,9 @@
         </div>
       </a>
     </div>
-    <div class="bc-nav">
-      <button class="bc-arrow" onclick="bcScroll(-1)" aria-label="Précédent">‹</button>
-      <button class="bc-arrow" onclick="bcScroll(1)" aria-label="Suivant">›</button>
+    <button class="bc-arrow next" onclick="bcScroll(1)" aria-label="Suivant">›</button>
     </div>
-    <div class="bc-alllink"><a href="blog.html">Voir tous les articles →</a></div>
+    <div class="bc-bottom"><a class="btn-primary" href="blog.html">Voir tous les articles</a></div>
   </div>
 </section>
 <script>
