@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="page-loader.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Test — Découvre ton archétype corporel | Espritum</title>
+<meta name="description" content="En 30 secondes, découvre ton archétype corporel, ton taux de masse grasse estimé et tes recommandations personnalisées. Test gratuit Espritum.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://espritum.com/quiz.html">
+<meta property="og:title" content="Découvre ton archétype corporel en 30 secondes">
+<meta property="og:description" content="Taille, poids, objectif : obtiens ton archétype, ta masse grasse estimée et tes recommandations personnalisées.">
+<meta property="og:image" content="https://espritum.com/blog-mesurer-hero.jpg">
+<meta property="og:url" content="https://espritum.com/quiz.html">
+<link rel="icon" href="fav-icon-003.png">
+<link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #c82828; --bg: #080808; --bg2: #0d0d0d; --bg3: #111; --border: #1e1e1e; --muted: #888;
+    --green: #3ea66a; --amber: #e8a000;
+    --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
+    --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: #e9e9e9; font-family: var(--font-body); min-height: 100vh; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased; }
+
+  .topbar { padding: 16px 22px; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid var(--border); }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .brand img { width: 30px; height: 30px; object-fit: contain; }
+  .brand span { font-family: var(--font-display); font-size: 20px; letter-spacing: 5px; text-transform: uppercase; color: #fff; }
+  .back-btn { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); cursor: pointer; font-size: 24px; line-height: 1; display: none; padding: 6px; }
+  .back-btn:hover { color: #fff; }
+
+  .progress-wrap { height: 4px; background: var(--bg3); }
+  .progress-bar { height: 100%; width: 0; background: linear-gradient(90deg, var(--red), #ff5a5a); transition: width 0.4s ease; }
+
+  .stage { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px 22px 50px; max-width: 560px; width: 100%; margin: 0 auto; }
+
+  .step { width: 100%; animation: fade 0.35s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+  .q-count { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--red); font-weight: 700; text-align: center; margin-bottom: 12px; }
+  .q-title { font-family: var(--font-display); font-size: clamp(30px, 7vw, 44px); letter-spacing: 1px; text-transform: uppercase; color: #fff; text-align: center; line-height: 1.05; margin-bottom: 30px; }
+
+  .options { display: flex; flex-direction: column; gap: 12px; }
+  .opt { display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.18s; color: #eee; font-size: 17px; text-align: left; font-family: inherit; }
+  .opt:hover { border-color: rgba(200,40,40,0.55); background: rgba(200,40,40,0.06); transform: translateX(3px); }
+  .opt-ico { width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(200,40,40,0.4); background: rgba(200,40,40,0.12); color: var(--red); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.18s; }
+  .opt-ico svg { width: 21px; height: 21px; }
+  .opt:hover .opt-ico { background: rgba(200,40,40,0.2); border-color: var(--red); }
+  .opt-label { flex: 1; }
+
+  .num-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .num-input { width: 100%; max-width: 280px; text-align: center; font-family: var(--font-display); font-size: 56px; letter-spacing: 1px; color: #fff; background: transparent; border: none; border-bottom: 2px solid var(--border); outline: none; padding: 6px 0; transition: border-color 0.2s; -moz-appearance: textfield; appearance: textfield; }
+  .num-input::-webkit-outer-spin-button, .num-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .num-input:focus { border-bottom-color: var(--red); }
+  .num-input::placeholder { color: #333; }
+  .num-unit { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+  .num-err { color: #ef5350; font-size: 13px; min-height: 18px; margin-top: 4px; }
+
+  .btn { width: 100%; max-width: 320px; margin: 28px auto 0; display: block; padding: 16px; background: var(--red); border: none; border-radius: 8px; color: #fff; font-family: var(--font-body); font-size: 14px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; text-decoration: none; text-align: center; }
+  .btn:hover { background: #d93030; }
+  .btn:disabled { background: var(--muted2, #2e2e2e); cursor: not-allowed; opacity: 0.5; }
+
+  /* LOADING */
+  .loader { text-align: center; }
+  .loader-ring { width: 70px; height: 70px; border: 4px solid var(--bg3); border-top-color: var(--red); border-radius: 50%; margin: 0 auto 26px; animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loader h2 { font-family: var(--font-display); font-size: 30px; letter-spacing: 1px; text-transform: uppercase; color: #fff; margin-bottom: 8px; }
+  .loader p { font-size: 15px; color: var(--muted); }
+
+  /* RESULT */
+  .result { width: 100%; text-align: center; animation: fade 0.4s ease; }
+  .res-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 8px; }
+  .res-name { font-family: var(--font-display); font-size: clamp(40px, 10vw, 64px); letter-spacing: 1px; text-transform: uppercase; color: #fff; line-height: 1; margin-bottom: 16px; }
+  .res-desc { font-size: 16px; color: #cfcfcf; line-height: 1.6; margin-bottom: 26px; }
+  .res-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 26px; }
+  .res-stat { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 16px 10px; }
+  .res-stat .v { font-family: var(--font-display); font-size: 28px; color: var(--red); line-height: 1; }
+  .res-stat .l { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+  .res-reco { text-align: left; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 22px 22px 8px; margin-bottom: 24px; }
+  .res-reco .rtitle { font-family: var(--font-display); font-size: 18px; letter-spacing: 1px; text-transform: uppercase; color: #fff; margin-bottom: 14px; }
+  .reco-item { display: flex; align-items: flex-start; gap: 12px; padding-bottom: 16px; }
+  .reco-ico { width: 26px; height: 26px; border-radius: 50%; background: rgba(200,40,40,0.12); border: 1px solid rgba(200,40,40,0.4); color: var(--red); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .reco-ico svg { width: 14px; height: 14px; }
+  .reco-item span.t { font-size: 15px; color: #d4d4d4; line-height: 1.5; }
+  .res-teaser { font-size: 15px; color: #fff; background: rgba(200,40,40,0.07); border: 1px solid rgba(200,40,40,0.25); border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; }
+  .redirect-note { font-size: 12px; color: var(--muted); margin-top: 14px; }
+  .redirect-note b { color: #fff; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="back-btn" id="back-btn" onclick="goBack()">‹</button>
+  <a class="brand" href="index.html"><img src="fav-icon-003.png" alt="Espritum"><span>Espritum</span></a>
+</div>
+<div class="progress-wrap"><div class="progress-bar" id="progress"></div></div>
+
+<main class="stage" id="stage"></main>
+
+<script>
+  // Icône "barres d'intensité" (1 à 4 barres pleines)
+  function barsIcon(n) {
+    const h = [7, 11, 15, 19];
+    let out = '';
+    for (let k = 0; k < 4; k++) {
+      const op = k < n ? '1' : '0.22';
+      out += '<rect x="' + (2.5 + k * 5.2) + '" y="' + (21 - h[k]) + '" width="3.2" height="' + h[k] + '" rx="1.2" fill="currentColor" stroke="none" opacity="' + op + '"/>';
+    }
+    return out;
+  }
+
+  const IC = {
+    homme: '<circle cx="10" cy="14" r="5.5"/><line x1="14" y1="10" x2="20.5" y2="3.5"/><polyline points="15 3.5 20.5 3.5 20.5 9"/>',
+    femme: '<circle cx="12" cy="8.5" r="5.5"/><line x1="12" y1="14" x2="12" y2="21.5"/><line x1="8.5" y1="18.5" x2="15.5" y2="18.5"/>',
+    ventre: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/>',
+    partout: '<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>',
+    bas: '<circle cx="12" cy="12" r="9"/><line x1="12" y1="7.5" x2="12" y2="15"/><polyline points="8.5 11.5 12 15.5 15.5 11.5"/>',
+    mince: '<circle cx="12" cy="12" r="9"/><line x1="8" y1="12" x2="16" y2="12"/>',
+    down: '<polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/>',
+    up: '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+    repeat: '<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+    heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z"/>'
+  };
+
+  const STEPS = [
+    { key:'genre', q:'Tu es…', type:'choice', options:[
+      {v:'homme',l:'Un homme',icon:IC.homme},{v:'femme',l:'Une femme',icon:IC.femme}] },
+    { key:'age', q:'Quel âge as-tu ?', type:'number', unit:'ans', min:14, max:99, ph:'28' },
+    { key:'taille', q:'Quelle est ta taille ?', type:'number', unit:'cm', min:120, max:230, ph:'178' },
+    { key:'poids', q:'Quel est ton poids ?', type:'number', unit:'kg', min:35, max:250, ph:'82' },
+    { key:'stockage', q:'Où stockes-tu la graisse en premier ?', type:'choice', options:[
+      {v:'ventre',l:'Surtout le ventre',icon:IC.ventre},{v:'partout',l:'Un peu partout',icon:IC.partout},{v:'bas',l:'Hanches / cuisses',icon:IC.bas},{v:'mince',l:'Je suis plutôt mince',icon:IC.mince}] },
+    { key:'objectif', q:'Ton objectif principal ?', type:'choice', options:[
+      {v:'perte',l:'Perdre du gras',icon:IC.down},{v:'muscle',l:'Prendre du muscle',icon:IC.up},{v:'recomp',l:'Recomposition (les deux)',icon:IC.repeat},{v:'forme',l:'Rester en forme',icon:IC.heart}] },
+    { key:'activite', q:'Ton niveau d’activité au quotidien ?', type:'choice', options:[
+      {v:'sed',l:'Sédentaire (bureau)',icon:barsIcon(1)},{v:'leger',l:'Léger',icon:barsIcon(2)},{v:'modere',l:'Modéré',icon:barsIcon(3)},{v:'intense',l:'Intense (physique)',icon:barsIcon(4)}] },
+    { key:'seances', q:'Combien de séances de sport par semaine ?', type:'choice', options:[
+      {v:'0',l:'0 à 1',icon:barsIcon(1)},{v:'2',l:'2 à 3',icon:barsIcon(2)},{v:'4',l:'4 à 5',icon:barsIcon(3)},{v:'6',l:'6 et plus',icon:barsIcon(4)}] },
+  ];
+
+  const ARCH = {
+    ecto: { name:'Ectomorphe', desc:"Ossature fine, métabolisme rapide : tu brûles vite les calories et tu as du mal à prendre. Ton levier, c'est construire du muscle avec des charges et assez de calories." },
+    meso: { name:'Mésomorphe', desc:"Ton corps répond vite à l'entraînement : tu prends du muscle et tu perds du gras facilement quand tu es discipliné. La recomposition est ton terrain de jeu." },
+    endo: { name:'Endomorphe', desc:"Tu stockes la graisse facilement mais tu construis un muscle puissant. Ton vrai levier, c'est l'insuline : couper le sucre et tenir un déficit modéré change tout." },
+  };
+
+  let answers = {};
+  let i = 0;
+
+  function render() {
+    document.getElementById('progress').style.width = ((i) / STEPS.length * 100) + '%';
+    document.getElementById('back-btn').style.display = i > 0 ? 'block' : 'none';
+    const s = STEPS[i];
+    const stage = document.getElementById('stage');
+
+    let html = `<div class="step"><div class="q-count">Question ${i+1} / ${STEPS.length}</div><div class="q-title">${s.q}</div>`;
+
+    if (s.type === 'choice') {
+      html += '<div class="options">';
+      s.options.forEach(o => {
+        html += `<button class="opt" onclick="choose('${s.key}','${o.v}')"><span class="opt-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${o.icon || ''}</svg></span><span class="opt-label">${o.l}</span></button>`;
+      });
+      html += '</div>';
+    } else {
+      const cur = answers[s.key] || '';
+      html += `<div class="num-wrap">
+        <input class="num-input" id="num" type="number" inputmode="numeric" placeholder="${s.ph}" value="${cur}" min="${s.min}" max="${s.max}">
+        <div class="num-unit">${s.unit}</div>
+        <div class="num-err" id="num-err"></div>
+      </div>
+      <button class="btn" onclick="submitNum()">Continuer →</button>`;
+    }
+    html += '</div>';
+    stage.innerHTML = html;
+
+    if (s.type === 'number') {
+      const inp = document.getElementById('num');
+      inp.focus();
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') submitNum(); });
+    }
+  }
+
+  function choose(key, val) { answers[key] = val; next(); }
+
+  function submitNum() {
+    const s = STEPS[i];
+    const inp = document.getElementById('num');
+    const val = parseInt(inp.value, 10);
+    const err = document.getElementById('num-err');
+    if (isNaN(val) || val < s.min || val > s.max) {
+      err.textContent = `Entre une valeur entre ${s.min} et ${s.max}.`;
+      return;
+    }
+    answers[s.key] = val;
+    next();
+  }
+
+  function next() {
+    i++;
+    if (i >= STEPS.length) finish();
+    else render();
+  }
+
+  function goBack() { if (i > 0) { i--; render(); } }
+
+  function round10(n) { return Math.round(n / 10) * 10; }
+
+  function compute() {
+    const poids = answers.poids, taille = answers.taille, age = answers.age;
+    const homme = answers.genre === 'homme';
+    const imc = poids / Math.pow(taille / 100, 2);
+
+    // BMR Mifflin-St Jeor
+    let bmr = 10 * poids + 6.25 * taille - 5 * age + (homme ? 5 : -161);
+    const af = { sed: 1.2, leger: 1.375, modere: 1.55, intense: 1.725 }[answers.activite] || 1.375;
+    let tdee = bmr * af;
+    let cal = tdee;
+    if (answers.objectif === 'perte') cal = tdee - 450;
+    else if (answers.objectif === 'muscle') cal = tdee + 250;
+    else if (answers.objectif === 'recomp') cal = tdee - 200;
+    cal = round10(Math.max(1300, cal));
+
+    // Archétype
+    let arch;
+    if (answers.stockage === 'mince' || imc < 20) arch = 'ecto';
+    else if ((answers.stockage === 'ventre' || answers.stockage === 'partout') && imc >= 26) arch = 'endo';
+    else if (imc >= 28) arch = 'endo';
+    else arch = 'meso';
+
+    // Masse grasse estimée (approx, +7% pour femmes)
+    let bf;
+    if (imc < 22) bf = homme ? '12–17 %' : '19–24 %';
+    else if (imc < 27) bf = homme ? '18–24 %' : '25–31 %';
+    else bf = homme ? '25 %+' : '32 %+';
+
+    return { imc: imc.toFixed(1), cal, arch, bf };
+  }
+
+  function recosFor(arch, objectif) {
+    const base = {
+      ecto: [
+        'Mange en léger surplus calorique : ton corps brûle vite, il faut le nourrir.',
+        'Priorise les charges lourdes et les exercices polyarticulaires (squat, deadlift).',
+        'Limite le cardio intense et vise 1,8 g de protéines par kilo.'
+      ],
+      meso: [
+        'La recomposition est possible : muscle + perte de gras en même temps.',
+        'Muscu 4×/semaine, déficit ou surplus léger selon ton objectif.',
+        'Ta régularité est ton super-pouvoir : ne casse pas la chaîne.'
+      ],
+      endo: [
+        'Coupe le sucre ajouté : c’est ton levier n°1 sur l’insuline.',
+        'Déficit modéré (−400 kcal) + musculation + marche quotidienne.',
+        'Protéines élevées à chaque repas pour préserver ton muscle.'
+      ]
+    };
+    return base[arch];
+  }
+
+  function finish() {
+    document.getElementById('progress').style.width = '100%';
+    document.getElementById('back-btn').style.display = 'none';
+    const stage = document.getElementById('stage');
+
+    // Écran de calcul
+    stage.innerHTML = `<div class="loader">
+      <div class="loader-ring"></div>
+      <h2>Analyse de ton corps…</h2>
+      <p>On calcule ton archétype et tes recommandations.</p>
+    </div>`;
+
+    const r = compute();
+    const a = ARCH[r.arch];
+    const recos = recosFor(r.arch, answers.objectif);
+
+    // Sauvegarde pour la landing / conversion
+    try {
+      localStorage.setItem('esp_quiz', JSON.stringify({ ...answers, ...r, ts: Date.now() }));
+    } catch (e) {}
+
+    setTimeout(() => showResult(r, a, recos), 2200);
+  }
+
+  function showResult(r, a, recos) {
+    const stage = document.getElementById('stage');
+    const check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    let recoHtml = recos.map(t => `<div class="reco-item"><span class="reco-ico">${check}</span><span class="t">${t}</span></div>`).join('');
+
+    stage.innerHTML = `<div class="result">
+      <div class="res-label">Ton archétype corporel</div>
+      <div class="res-name">${a.name}</div>
+      <div class="res-desc">${a.desc}</div>
+      <div class="res-stats">
+        <div class="res-stat"><div class="v">${r.imc}</div><div class="l">IMC</div></div>
+        <div class="res-stat"><div class="v">${r.bf}</div><div class="l">Masse grasse est.</div></div>
+        <div class="res-stat"><div class="v">${r.cal}</div><div class="l">Kcal / jour cible</div></div>
+      </div>
+      <div class="res-reco">
+        <div class="rtitle">Tes 3 priorités</div>
+        ${recoHtml}
+      </div>
+      <div class="res-teaser">🔓 Ton <b>plan complet</b> — nutrition + entraînement semaine par semaine, adapté à ton archétype — t'attend sur Espritum.</div>
+      <a class="btn" id="cta" href="index.html?from=quiz&archetype=${r.arch}">Découvrir la méthode →</a>
+    </div>`;
+  }
+
+  render();
+</script>
+</body>
+</html>
