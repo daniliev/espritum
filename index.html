@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<script src="lang.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
 <title>Espritum — Not Just Flesh But Spirit</title>
@@ -8,25 +9,25 @@
 <meta name="keywords" content="application fitness chrétien, musculation chrétien, nutrition sport, coach IA fitness, streak workout, discipline corps esprit, fitness foi, programme fitness chrétien">
 <meta name="author" content="Espritum">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://espritum.app">
+<link rel="canonical" href="https://espritum.com">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Espritum — Not Just Flesh But Spirit">
 <meta property="og:description" content="L'application de fitness qui connecte la discipline du corps à la force de l'esprit. Entraînement, nutrition, coach IA et motivation chrétienne.">
-<meta property="og:image" content="https://espritum.app/fav-icon-003.png">
-<meta property="og:url" content="https://espritum.app">
+<meta property="og:image" content="https://espritum.com/fav-icon-003.png">
+<meta property="og:url" content="https://espritum.com">
 <meta property="og:site_name" content="Espritum">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Espritum — Not Just Flesh But Spirit">
 <meta name="twitter:description" content="L'app fitness qui connecte corps et esprit. Rejoins la liste d'attente.">
-<meta name="twitter:image" content="https://espritum.app/fav-icon-003.png">
+<meta name="twitter:image" content="https://espritum.com/fav-icon-003.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "MobileApplication",
   "name": "Espritum",
   "description": "Application de fitness chrétienne combinant entraînement, nutrition, coach IA et motivation spirituelle.",
-  "url": "https://espritum.app",
+  "url": "https://espritum.com",
   "operatingSystem": "iOS, Android, Web",
   "applicationCategory": "HealthApplication",
   "offers": [
@@ -570,7 +571,7 @@
     margin-bottom: 22px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 14px;
   }
   .hero-eyebrow::before { display: none; }
@@ -586,6 +587,16 @@
     margin-bottom: 28px;
   }
   .hero-title .accent { color: var(--red); display: block; font-size: 1.3em; }
+  /* Titre hero ajusté sur mobile pour ne pas se casser en trop de lignes */
+  @media (max-width: 600px) {
+    .hero-title {
+      font-size: 50px;
+      letter-spacing: 1px;
+      line-height: 0.95;
+      margin-bottom: 22px;
+    }
+    .hero-title .accent { font-size: 1.22em; }
+  }
 
   .hero-sub {
     font-family: var(--font-body);
@@ -601,7 +612,7 @@
     display: flex;
     gap: 16px;
     align-items: stretch;
-    justify-content: center;
+    justify-content: flex-start;
     flex-wrap: wrap;
   }
   .hero-actions .btn-primary,
@@ -665,7 +676,8 @@
 
   .hero-stats {
     position: absolute;
-    bottom: 60px; right: 60px;
+    bottom: 60px;
+    left: max(48px, calc((100vw - 1160px) / 2 + 48px));
     display: flex; gap: 40px;
     z-index: 2;
     animation: fadeUp 1s 0.3s ease both;
@@ -1206,6 +1218,29 @@
   .cta-outline { background: transparent; border: 1px solid var(--red); color: var(--red); }
   .cta-outline:hover { background: rgba(200,40,40,0.08); }
 
+  /* ── BLOG CAROUSEL ── */
+  #blog-carousel { background: var(--bg); overflow: hidden; }
+  .bc-header { max-width: 1160px; margin: 0 auto 50px; text-align: center; }
+  .bc-wrap { max-width: 1200px; margin: 0 auto; }
+  .bc-track { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding: 6px 4px 14px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .bc-track::-webkit-scrollbar { display: none; }
+  .bc-card { flex: 0 0 300px; scroll-snap-align: start; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; text-decoration: none; display: flex; flex-direction: column; transition: border-color 0.25s, transform 0.25s; }
+  .bc-card:hover { border-color: rgba(200,40,40,0.45); transform: translateY(-4px); }
+  .bc-thumb { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; border-bottom: 1px solid var(--border); }
+  .bc-body { padding: 20px 22px 24px; display: flex; flex-direction: column; flex: 1; }
+  .bc-cat { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; color: var(--red); margin-bottom: 10px; }
+  .bc-title { font-family: var(--font-display); font-size: 23px; letter-spacing: 1px; text-transform: uppercase; color: #fff; line-height: 1.05; margin-bottom: 12px; }
+  .bc-exc { font-size: 13px; color: #9a9a9a; line-height: 1.55; flex: 1; }
+  .bc-more { margin-top: 16px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; color: var(--red); }
+  .bc-viewport { position: relative; }
+  .bc-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border); background: rgba(13,13,13,0.92); color: #fff; font-size: 18px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 6; }
+  .bc-arrow:hover { border-color: var(--red); color: var(--red); }
+  .bc-arrow.prev { left: -6px; }
+  .bc-arrow.next { right: -6px; }
+  .bc-bottom { text-align: center; margin-top: 32px; }
+  @media (max-width: 760px) { .bc-arrow { display: none; } }
+  @media (max-width: 560px) { .bc-card { flex: 0 0 82%; } }
+
   /* ── FAQ ── */
   #faq { background: var(--bg2); }
   .faq-inner { max-width: 800px; margin: 0 auto; }
@@ -1330,8 +1365,11 @@
     nav { padding: 16px 20px; }
     .nav-links { display: none; }
     section { padding: 80px 20px; }
-    .hero-inner { flex-direction: column; padding: 100px 20px 60px; gap: 40px; }
+    .hero { min-height: 82vh; }
+    .hero-inner { flex-direction: column; padding: 104px 20px 84px; gap: 40px; }
     .hero-content { text-align: center; }
+    .hero-eyebrow { justify-content: center; }
+    .hero-actions { justify-content: center; }
     .hero-visual { display: none; }
     .hero-stats { display: none; }
     .about-inner { grid-template-columns: 1fr; gap: 40px; }
@@ -1578,6 +1616,7 @@
     .split-content .section-heading,
     .split-content .pb-sub,
     .split-content .sol-sub { text-align: center !important; }
+    .split-content .btn-primary { display: block; width: -moz-fit-content; width: fit-content; margin-left: auto; margin-right: auto; }
   }
 
   /* ── ÉTAPES (gratuit, 3 étapes) ── */
@@ -1634,8 +1673,7 @@
   }
   .step-card {
     flex: 1;
-    background: var(--bg);
-    border: 1px solid var(--border);
+    background: var(--bg2);
     border-radius: 16px;
     padding: 34px 26px 30px;
     text-align: center;
@@ -1690,6 +1728,29 @@
     line-height: 1.65;
   }
   .steps-cta-wrap { text-align: center; margin-top: 48px; }
+  .steps-offer {
+    max-width: 560px;
+    margin: 0 auto 28px;
+    background: rgba(200,40,40,0.10);
+    border: 1px solid rgba(200,40,40,0.38);
+    border-radius: 16px;
+    padding: 22px 28px;
+  }
+  .steps-offer-badge {
+    display: inline-block;
+    font-family: var(--font-display);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-size: 16px;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+  .steps-offer-text {
+    font-size: 15px;
+    color: rgba(255,255,255,0.82);
+    line-height: 1.55;
+  }
+  .steps-offer-text strong { color: #fff; font-weight: 600; }
   .steps-cta-note {
     font-size: 13px;
     color: rgba(255,255,255,0.4);
@@ -1918,12 +1979,13 @@
     <span class="nav-name">Espritum</span>
   </a>
   <ul class="nav-links">
-    <li><a href="#probleme">Le problème</a></li>
-    <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+    <li><a href="#probleme" data-en="The problem">Le problème</a></li>
+    <li><a href="#fonctionnalites" data-en="Features">Fonctionnalités</a></li>
     <li><a href="#faq">FAQ</a></li>
   </ul>
   <div class="nav-actions">
-    <button class="nav-cta" onclick="openWaitlist('nav')">LISTE D'ATTENTE</button>
+    <div id="esp-lang" style="margin-right:14px;"></div>
+    <button class="nav-cta" onclick="openWaitlist('nav')" data-en="WAITLIST">LISTE D'ATTENTE</button>
   </div>
 </nav>
 
@@ -1932,17 +1994,16 @@
   <div class="hero-bg"></div>
   <div class="hero-inner">
     <div class="hero-content">
-      <div class="hero-eyebrow">Discipline. Force. Foi.</div>
-      <h1 class="hero-title">
+      <div class="hero-eyebrow" data-en="Discipline. Strength. Faith.">Discipline. Force. Foi.</div>
+      <h1 class="hero-title" data-en="STOP GOING<br><span class='accent'>TO THE GYM.</span>">
         ARRÊTE D'ALLER<br>
         <span class="accent">À LA SALLE.</span>
       </h1>
-      <p class="hero-sub">Ça ne sert à rien de commencer le sport sans savoir ça.</p>
+      <p class="hero-sub" data-en="There's no point starting training without knowing this.">Ça ne sert à rien de commencer le sport sans savoir ça.</p>
       <div class="hero-actions">
-        <button class="btn-primary" onclick="openWaitlist('hero')">REJOINDRE LA LISTE</button>
-        <a href="#probleme" class="btn-secondary">DÉCOUVRIR ↓</a>
+        <button class="btn-primary" onclick="openWaitlist('hero')" data-en="JOIN THE WAITLIST">REJOINDRE LA LISTE</button>
+        <a href="#probleme" class="btn-secondary" data-en="DISCOVER ↓">DÉCOUVRIR ↓</a>
       </div>
-      <span class="wl-note">Scrolle — ça prend 30 secondes.</span>
     </div>
     <div class="hero-visual">
       <img class="hero-logo-mark" src="fav-icon-003.png" alt="Espritum">
@@ -1973,23 +2034,24 @@
         <img src="img/probleme-section.png" alt="Perdu à la salle de sport, sans méthode" loading="lazy">
       </div>
       <div class="split-content">
-        <div class="section-tag">Le problème</div>
-        <h2 class="section-heading">TU VAS À LA SALLE<br><span>MAIS...</span></h2>
-        <p class="pb-sub">La vérité que personne ne te dit :</p>
+        <div class="section-tag" data-en="The problem">Le problème</div>
+        <h2 class="section-heading" data-en="YOU GO TO THE GYM<br><span>BUT...</span>">TU VAS À LA SALLE<br><span>MAIS...</span></h2>
+        <p class="pb-sub" data-en="The truth nobody tells you:">La vérité que personne ne te dit :</p>
         <div class="split-stack">
           <div class="pb-card">
             <span class="pb-dash">—</span>
-            <p class="pb-card-text">Ton programme vient d'un influenceur qui ne te connaît pas. Tu soulèves des charges sans savoir pourquoi.</p>
+            <p class="pb-card-text" data-en="Your program comes from an influencer who doesn't know you. You lift weights without knowing why.">Ton programme vient d'un influenceur qui ne te connaît pas. Tu soulèves des charges sans savoir pourquoi.</p>
           </div>
           <div class="pb-card">
             <span class="pb-dash">—</span>
-            <p class="pb-card-text">Tu manges "sain" mais tu ignores tes calories et tes macros. Tu navigues à l'aveugle.</p>
+            <p class="pb-card-text" data-en="You eat &quot;healthy&quot; but you ignore your calories and macros. You're flying blind.">Tu manges "sain" mais tu ignores tes calories et tes macros. Tu navigues à l'aveugle.</p>
           </div>
           <div class="pb-card">
             <span class="pb-dash">—</span>
-            <p class="pb-card-text">Tu te motives le dimanche. Tu abandonnes le mercredi. Ce cycle tourne depuis des années.</p>
+            <p class="pb-card-text" data-en="You get motivated on Sunday. You quit on Wednesday. This cycle has been spinning for years.">Tu te motives le dimanche. Tu abandonnes le mercredi. Ce cycle tourne depuis des années.</p>
           </div>
         </div>
+        <a class="btn-primary" href="inscription.html" style="margin-top:32px;" data-en="Join the waitlist">Rejoindre la liste</a>
       </div>
     </div>
   </div>
@@ -2003,23 +2065,24 @@
         <img src="img/solution-section.png" alt="En confiance et en contrôle à la salle" loading="lazy">
       </div>
       <div class="split-content">
-        <div class="section-tag">La solution</div>
-        <h2 class="section-heading">CE DONT TU AS<br><span>VRAIMENT BESOIN.</span></h2>
-        <p class="sol-sub">Pas un abonnement de salle. Une méthode :</p>
+        <div class="section-tag" data-en="The solution">La solution</div>
+        <h2 class="section-heading" data-en="WHAT YOU<br><span>REALLY NEED.</span>">CE DONT TU AS<br><span>VRAIMENT BESOIN.</span></h2>
+        <p class="sol-sub" data-en="Not a gym membership. A method:">Pas un abonnement de salle. Une méthode :</p>
         <div class="split-stack">
           <div class="pb-card">
             <span class="pb-dash">—</span>
-            <p class="pb-card-text">Généré par l'IA selon ton corps et ton objectif. Mis à jour chaque semaine.</p>
+            <p class="pb-card-text" data-en="Generated by AI based on your body and your goal. Updated every week.">Généré par l'IA selon ton corps et ton objectif. Mis à jour chaque semaine.</p>
           </div>
           <div class="pb-card">
             <span class="pb-dash">—</span>
-            <p class="pb-card-text">Calories, macros, scan par caméra. Tu sais enfin ce que tu consommes.</p>
+            <p class="pb-card-text" data-en="Calories, macros, camera scan. You finally know what you're eating.">Calories, macros, scan par caméra. Tu sais enfin ce que tu consommes.</p>
           </div>
           <div class="pb-card">
             <span class="pb-dash">—</span>
-            <p class="pb-card-text">Sensei connaît ton historique. Il te parle vrai, sans te ménager.</p>
+            <p class="pb-card-text" data-en="Sensei knows your history. He speaks straight, without sparing you.">Sensei connaît ton historique. Il te parle vrai, sans te ménager.</p>
           </div>
         </div>
+        <a class="btn-primary" href="inscription.html" style="margin-top:32px;" data-en="Join the waitlist">Rejoindre la liste</a>
       </div>
     </div>
   </div>
@@ -2029,17 +2092,17 @@
 <section id="etapes" class="steps-section">
   <div class="steps-inner">
     <div class="steps-head">
-      <span class="steps-free-badge">100% Gratuit</span>
-      <h2 class="section-heading" style="text-align:center">EN <span>3 ÉTAPES.</span></h2>
+      <span class="steps-free-badge" data-en="100% Free">100% Gratuit</span>
+      <h2 class="section-heading" style="text-align:center" data-en="IN <span>3 STEPS.</span>">EN <span>3 ÉTAPES.</span></h2>
     </div>
-    <p class="steps-sub">Avant même de t'abonner, l'IA t'analyse et te dit quoi faire. Gratuitement, sans carte bancaire.</p>
+    <p class="steps-sub" data-en="Before you even subscribe, the AI analyzes you and tells you what to do. Free, no credit card.">Avant même de t'abonner, l'IA t'analyse et te dit quoi faire. Gratuitement, sans carte bancaire.</p>
     <div class="steps-flow">
       <div class="step-item">
         <div class="step-bignum">01</div>
         <div class="step-card">
           <div class="step-icon photo-single"><img src="img/photo-avant.png" alt="Photo de ton corps actuel"></div>
-          <div class="step-title">Photographie ton corps</div>
-          <p class="step-desc">Prends une photo de ton corps aujourd'hui. C'est ton point de départ, ton "avant".</p>
+          <div class="step-title" data-en="Photograph your body">Photographie ton corps</div>
+          <p class="step-desc" data-en="Take a photo of your body today. It's your starting point, your &quot;before&quot;.">Prends une photo de ton corps aujourd'hui. C'est ton point de départ, ton "avant".</p>
         </div>
       </div>
       <div class="step-arrow"><span class="arrow-right">→</span><span class="arrow-down">↓</span></div>
@@ -2047,8 +2110,8 @@
         <div class="step-bignum">02</div>
         <div class="step-card">
           <div class="step-icon photo-single"><img src="img/photo-apres.png" alt="Photo de ton corps de rêve"></div>
-          <div class="step-title">Photo de ton corps de rêve</div>
-          <p class="step-desc">Ajoute la photo du physique que tu veux atteindre. Ton objectif devient concret et visuel.</p>
+          <div class="step-title" data-en="Photo of your dream body">Photo de ton corps de rêve</div>
+          <p class="step-desc" data-en="Add a photo of the physique you want to reach. Your goal becomes concrete and visual.">Ajoute la photo du physique que tu veux atteindre. Ton objectif devient concret et visuel.</p>
         </div>
       </div>
       <div class="step-arrow"><span class="arrow-right">→</span><span class="arrow-down">↓</span></div>
@@ -2056,14 +2119,18 @@
         <div class="step-bignum">03</div>
         <div class="step-card">
           <div class="step-icon photo-duo"><img src="img/photo-avant.png" alt="Avant"><span class="step-duo-arrow">→</span><img src="img/photo-apres.png" alt="Après"></div>
-          <div class="step-title">L'IA analyse & te guide</div>
-          <p class="step-desc">L'IA compare les deux, analyse ta morphologie et te donne les meilleures recommandations : exactement quoi faire pour y arriver.</p>
+          <div class="step-title" data-en="The AI analyzes &amp; guides you">L'IA analyse & te guide</div>
+          <p class="step-desc" data-en="The AI compares the two, analyzes your morphology and gives you the best recommendations: exactly what to do to get there.">L'IA compare les deux, analyse ta morphologie et te donne les meilleures recommandations : exactement quoi faire pour y arriver.</p>
         </div>
       </div>
     </div>
     <div class="steps-cta-wrap">
-      <button class="btn-primary" onclick="openWaitlist('etapes')">ESSAYER GRATUITEMENT</button>
-      <div class="steps-cta-note">Aucune carte bancaire requise</div>
+      <div class="steps-offer">
+        <span class="steps-offer-badge" data-en="Launch offer">Offre de lancement</span>
+        <p class="steps-offer-text" data-en="Join the waitlist and get <strong>5 free body scans</strong>, with personalized AI analysis and recommendations.">Inscris-toi à la liste d'attente et reçois <strong>5 scans corporels gratuits</strong>, avec analyse et recommandations personnalisées de l'IA.</p>
+      </div>
+      <button class="btn-primary" onclick="openWaitlist('etapes')" data-en="JOIN THE WAITLIST">REJOINDRE LA LISTE D'ATTENTE</button>
+      <div class="steps-cta-note" data-en="No credit card required">Aucune carte bancaire requise</div>
     </div>
   </div>
 </section>
@@ -2072,15 +2139,15 @@
 <section id="appli" class="showcase-section">
   <div class="showcase-inner">
     <div class="showcase-text">
-      <div class="section-tag centered">L'application</div>
-      <h2 class="section-heading" style="text-align:center">TOUT DANS TON<br><span>TÉLÉPHONE.</span></h2>
-      <p class="showcase-desc" style="text-align:center">Accessible sur iPhone et Android. Installe-la en 5 secondes depuis ton navigateur — pas d'App Store nécessaire.</p>
+      <div class="section-tag centered" data-en="The app">L'application</div>
+      <h2 class="section-heading" style="text-align:center" data-en="ALL IN YOUR<br><span>PHONE.</span>">TOUT DANS TON<br><span>TÉLÉPHONE.</span></h2>
+      <p class="showcase-desc" style="text-align:center" data-en="Available on iPhone and Android. Install it in 5 seconds from your browser — no App Store needed.">Accessible sur iPhone et Android. Installe-la en 5 secondes depuis ton navigateur — pas d'App Store nécessaire.</p>
       <div style="display:flex;justify-content:center;gap:28px;margin-bottom:36px;flex-wrap:wrap;">
         <span style="font-size:13px;color:rgba(255,255,255,0.4);letter-spacing:1px;">iOS & Android</span>
-        <span style="font-size:13px;color:rgba(255,255,255,0.4);letter-spacing:1px;">Hors connexion</span>
+        <span style="font-size:13px;color:rgba(255,255,255,0.4);letter-spacing:1px;" data-en="Offline">Hors connexion</span>
         <span style="font-size:13px;color:rgba(255,255,255,0.4);letter-spacing:1px;">Notifications</span>
       </div>
-      <button class="btn-primary" onclick="openWaitlist('showcase')" style="display:block;margin:0 auto">REJOINDRE LA LISTE</button>
+      <button class="btn-primary" onclick="openWaitlist('showcase')" style="display:block;margin:0 auto" data-en="JOIN THE WAITLIST">REJOINDRE LA LISTE</button>
     </div>
     <div class="showcase-phone" style="display:flex;justify-content:center;align-items:center;">
       <img src="app-preview.png" alt="Espritum App" style="max-width:260px;width:75%;filter:drop-shadow(0 0 50px rgba(200,40,40,0.25));">
@@ -2091,48 +2158,113 @@
 <!-- FONCTIONNALITÉS -->
 <section id="fonctionnalites">
   <div class="features-header">
-    <div class="section-tag centered" data-i18n="landing_features">Fonctionnalités</div>
-    <h2 class="section-heading">TOUT CE DONT<br>TU AS <span>BESOIN.</span></h2>
+    <div class="section-tag centered" data-i18n="landing_features" data-en="Features">Fonctionnalités</div>
+    <h2 class="section-heading" data-en="EVERYTHING YOU<br><span>NEED.</span>">TOUT CE DONT<br>TU AS <span>BESOIN.</span></h2>
   </div>
   <div class="features-grid">
     <div class="feat-card">
       <div class="feat-num">01</div>
       <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.2"/></svg></div>
-      <div class="feat-title" data-i18n="feat_bodyfat_title">Masse grasse par caméra</div>
-      <p class="feat-desc" data-i18n="feat_bodyfat_desc">L'IA analyse ta silhouette et estime ton taux de masse grasse en quelques secondes. Disponible gratuitement.</p>
+      <div class="feat-title" data-en="Body fat by camera">Masse grasse par caméra</div>
+      <p class="feat-desc" data-en="The AI analyzes your silhouette and estimates your body fat in seconds. Available for free.">L'IA analyse ta silhouette et estime ton taux de masse grasse en quelques secondes. Disponible gratuitement.</p>
     </div>
     <div class="feat-card">
       <div class="feat-num">02</div>
       <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.94c1.5 0 2.75-.67 3.6-1.74 1.9-2.4 2.4-6.2 2.4-8.2 0-3-2-5-4.5-5-1.2 0-2 .5-3 1-.9-.5-1.8-1-3-1-2.5 0-4.5 2-4.5 5 0 2 .5 5.8 2.4 8.2.85 1.07 2.1 1.74 3.6 1.74Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg></div>
-      <div class="feat-title" data-i18n="feat_nutrition_title">Suivi nutrition</div>
-      <p class="feat-desc" data-i18n="feat_nutrition_desc">Calories, macros, scan de code-barre et repas favoris. Tout pour maîtriser ton alimentation au quotidien.</p>
+      <div class="feat-title" data-en="Nutrition tracking">Suivi nutrition</div>
+      <p class="feat-desc" data-en="Calories, macros, barcode scan and favorite meals. Everything to master your diet daily.">Calories, macros, scan de code-barre et repas favoris. Tout pour maîtriser ton alimentation au quotidien.</p>
     </div>
     <div class="feat-card">
       <div class="feat-num">03</div>
       <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/></svg></div>
-      <div class="feat-title" data-i18n="feat_training_title">Plans d'entraînement</div>
-      <p class="feat-desc" data-i18n="feat_training_desc">Des programmes générés selon ton profil, ton objectif et ton niveau. Mis à jour automatiquement chaque semaine.</p>
+      <div class="feat-title" data-en="Training plans">Plans d'entraînement</div>
+      <p class="feat-desc" data-en="Programs generated from your profile, goal and level. Updated automatically every week.">Des programmes générés selon ton profil, ton objectif et ton niveau. Mis à jour automatiquement chaque semaine.</p>
     </div>
     <div class="feat-card">
       <div class="feat-num">04</div>
       <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
-      <div class="feat-title" data-i18n="feat_progress_title">Progression corporelle</div>
-      <p class="feat-desc" data-i18n="feat_progress_desc">Photos avant/après, mensurations, poids — tout est tracé avec des graphiques clairs semaine après semaine.</p>
+      <div class="feat-title" data-en="Body progress">Progression corporelle</div>
+      <p class="feat-desc" data-en="Before/after photos, measurements, weight — all tracked with clear charts week after week.">Photos avant/après, mensurations, poids — tout est tracé avec des graphiques clairs semaine après semaine.</p>
     </div>
     <div class="feat-card">
       <div class="feat-num">05</div>
       <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></div>
-      <div class="feat-title" data-i18n="feat_faith_title">Motivation chrétienne</div>
-      <p class="feat-desc" data-i18n="feat_faith_desc">Un verset biblique chaque matin, des prières avant l'entraînement et des citations de figures bibliques pour tenir le cap.</p>
+      <div class="feat-title" data-en="Christian motivation">Motivation chrétienne</div>
+      <p class="feat-desc" data-en="A Bible verse every morning, prayers before training and quotes from biblical figures to stay the course.">Un verset biblique chaque matin, des prières avant l'entraînement et des citations de figures bibliques pour tenir le cap.</p>
     </div>
     <div class="feat-card">
       <div class="feat-num">06</div>
       <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>
-      <div class="feat-title">Classement global</div>
-      <p class="feat-desc">Compare-toi aux autres guerriers. Streak, séances, points — grimpe dans le classement et prouve que tu es au sommet.</p>
+      <div class="feat-title" data-en="Global leaderboard">Classement global</div>
+      <p class="feat-desc" data-en="Compare yourself to other warriors. Streak, sessions, points — climb the ranking and prove you're at the top.">Compare-toi aux autres guerriers. Streak, séances, points — grimpe dans le classement et prouve que tu es au sommet.</p>
     </div>
   </div>
 </section>
+
+<!-- BLOG CAROUSEL -->
+<section id="blog-carousel">
+  <div class="bc-header">
+    <div class="section-tag centered" data-en="The blog">Le blog</div>
+    <h2 class="section-heading" data-en="OUR LATEST<br><span>ARTICLES.</span>">NOS DERNIERS<br><span>ARTICLES.</span></h2>
+  </div>
+  <div class="bc-wrap">
+    <div class="bc-viewport">
+    <button class="bc-arrow prev" onclick="bcScroll(-1)" aria-label="Précédent">‹</button>
+    <div class="bc-track" id="bc-track">
+      <a class="bc-card" href="comment-perdre-du-ventre-homme.html">
+        <img class="bc-thumb" src="blog-ventre-hero.jpg" alt="Comment perdre du ventre homme" loading="lazy">
+        <div class="bc-body">
+          <div class="bc-cat" data-en="Fat loss">Perte de gras</div>
+          <div class="bc-title" data-en="How to lose belly fat (men)">Comment perdre du ventre (homme)</div>
+          <div class="bc-exc" data-en="The real culprit isn't calories — it's insulin. The complete method.">Le vrai responsable n'est pas les calories — c'est l'insuline. La méthode complète.</div>
+          <div class="bc-more" data-en="Read article →">Lire l'article →</div>
+        </div>
+      </a>
+      <a class="bc-card" href="exercice-pour-perdre-du-ventre-homme.html">
+        <img class="bc-thumb" src="blog-exercice-hero.jpg" alt="Exercice pour perdre du ventre homme" loading="lazy">
+        <div class="bc-body">
+          <div class="bc-cat" data-en="Training">Entraînement</div>
+          <div class="bc-title" data-en="Which exercise to lose belly fat">Quel exercice pour perdre du ventre</div>
+          <div class="bc-exc" data-en="No magic exercise: calorie deficit + strength training. The complete program.">Pas d'exercice magique : déficit calorique + musculation. Le programme complet.</div>
+          <div class="bc-more" data-en="Read article →">Lire l'article →</div>
+        </div>
+      </a>
+      <a class="bc-card" href="quoi-manger-pour-perdre-du-ventre-homme.html">
+        <img class="bc-thumb" src="blog-alimentation-hero.jpg" alt="Quoi manger pour perdre du ventre homme" loading="lazy">
+        <div class="bc-body">
+          <div class="bc-cat" data-en="Nutrition">Nutrition</div>
+          <div class="bc-title" data-en="What to eat to lose belly fat">Quoi manger pour perdre du ventre</div>
+          <div class="bc-exc" data-en="Nutrition is 70–80% of the result. The concrete meal plan.">L'alimentation, c'est 70 à 80 % du résultat. Le plan alimentaire concret.</div>
+          <div class="bc-more" data-en="Read article →">Lire l'article →</div>
+        </div>
+      </a>
+      <a class="bc-card" href="perdre-du-ventre-rapidement-homme.html">
+        <img class="bc-thumb" src="blog-rapide-hero.jpg" alt="Perdre du ventre rapidement homme" loading="lazy">
+        <div class="bc-body">
+          <div class="bc-cat" data-en="Mindset">Mindset</div>
+          <div class="bc-title" data-en="Lose belly fat fast">Perdre du ventre rapidement</div>
+          <div class="bc-exc" data-en="Myth or reality? The truth about the timeline and the method without the yo-yo effect.">Mythe ou réalité ? La vérité sur le délai et la méthode sans effet yoyo.</div>
+          <div class="bc-more" data-en="Read article →">Lire l'article →</div>
+        </div>
+      </a>
+      <a class="bc-card" href="comment-mesurer-sa-graisse-abdominale.html">
+        <img class="bc-thumb" src="blog-mesurer-hero.jpg" alt="Comment mesurer sa graisse abdominale" loading="lazy">
+        <div class="bc-body">
+          <div class="bc-cat" data-en="Body composition">Composition corporelle</div>
+          <div class="bc-title" data-en="Measure your belly fat">Mesurer sa graisse abdominale</div>
+          <div class="bc-exc" data-en="Waist size, body fat %, DEXA, photo analysis: the real methods.">Tour de taille, masse grasse, DEXA, analyse photo : les vraies méthodes.</div>
+          <div class="bc-more" data-en="Read article →">Lire l'article →</div>
+        </div>
+      </a>
+    </div>
+    <button class="bc-arrow next" onclick="bcScroll(1)" aria-label="Suivant">›</button>
+    </div>
+    <div class="bc-bottom"><a class="btn-primary" href="blog.html" data-en="See all articles">Voir tous les articles</a></div>
+  </div>
+</section>
+<script>
+  function bcScroll(dir){ var t = document.getElementById('bc-track'); if(t) t.scrollBy({ left: dir * 320, behavior: 'smooth' }); }
+</script>
 
 <!-- TARIFS -->
 <!-- FAQ -->
@@ -2140,36 +2272,36 @@
   <div class="faq-inner">
     <div class="faq-header">
       <div class="section-tag centered" data-i18n="faq_title">FAQ</div>
-      <h2 class="section-heading">TU AS DES<br><span>QUESTIONS ?</span></h2>
+      <h2 class="section-heading" data-en="GOT<br><span>QUESTIONS?</span>">TU AS DES<br><span>QUESTIONS ?</span></h2>
     </div>
     <div class="faq-list">
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q1b">Comment fonctionne l'estimation de masse grasse par caméra ?</span><span class="faq-arrow">+</span></div>
-        <div class="faq-a" data-i18n="faq_a1b">L'IA analyse ta silhouette via la caméra de ton téléphone et estime ton taux de masse grasse grâce à des algorithmes de vision par ordinateur. Ce n'est pas une mesure médicale, mais une estimation fiable pour suivre ta progression dans le temps. Cette fonctionnalité est disponible gratuitement.</div>
+        <div class="faq-q" onclick="toggleFaq(this)"><span data-en="How does the camera body-fat estimation work?">Comment fonctionne l'estimation de masse grasse par caméra ?</span><span class="faq-arrow">+</span></div>
+        <div class="faq-a" data-en="The AI analyzes your silhouette via your phone's camera and estimates your body fat using computer-vision algorithms. It's not a medical measurement, but a reliable estimate to track your progress over time. This feature is available for free.">L'IA analyse ta silhouette via la caméra de ton téléphone et estime ton taux de masse grasse grâce à des algorithmes de vision par ordinateur. Ce n'est pas une mesure médicale, mais une estimation fiable pour suivre ta progression dans le temps. Cette fonctionnalité est disponible gratuitement.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)"><span>Puis-je annuler à tout moment ?</span><span class="faq-arrow">+</span></div>
-        <div class="faq-a">Oui, l'abonnement est sans engagement. Tu peux annuler à tout moment depuis ton profil, sans frais ni pénalité. L'accès reste actif jusqu'à la fin de la période déjà payée.</div>
+        <div class="faq-q" onclick="toggleFaq(this)"><span data-en="Can I cancel anytime?">Puis-je annuler à tout moment ?</span><span class="faq-arrow">+</span></div>
+        <div class="faq-a" data-en="Yes, the subscription has no commitment. You can cancel anytime from your profile, with no fees or penalty. Access stays active until the end of the period already paid.">Oui, l'abonnement est sans engagement. Tu peux annuler à tout moment depuis ton profil, sans frais ni pénalité. L'accès reste actif jusqu'à la fin de la période déjà payée.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q3b">Le contenu chrétien est-il obligatoire ?</span><span class="faq-arrow">+</span></div>
-        <div class="faq-a" data-i18n="faq_a3b">Non. Le verset du jour, les prières et les citations bibliques sont des fonctionnalités que tu peux activer ou désactiver librement dans les paramètres. Espritum accueille tout le monde, quelle que soit ta foi.</div>
+        <div class="faq-q" onclick="toggleFaq(this)"><span data-en="Is the Christian content mandatory?">Le contenu chrétien est-il obligatoire ?</span><span class="faq-arrow">+</span></div>
+        <div class="faq-a" data-en="No. The verse of the day, prayers and biblical quotes are features you can freely turn on or off in the settings. Espritum welcomes everyone, whatever your faith.">Non. Le verset du jour, les prières et les citations bibliques sont des fonctionnalités que tu peux activer ou désactiver librement dans les paramètres. Espritum accueille tout le monde, quelle que soit ta foi.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q4">Comment fonctionne le Coach IA Sensei ?</span><span class="faq-arrow">+</span></div>
-        <div class="faq-a">Sensei est alimenté par l'IA Groq. Il analyse tes données nutritionnelles, tes performances et te donne des conseils personnalisés dans un style inspiré de l'univers anime — direct, profond et motivant. Inclus dans l'abonnement.</div>
+        <div class="faq-q" onclick="toggleFaq(this)"><span data-en="How does the Sensei AI Coach work?">Comment fonctionne le Coach IA Sensei ?</span><span class="faq-arrow">+</span></div>
+        <div class="faq-a" data-en="Sensei is powered by Groq AI. It analyzes your nutrition data and performance and gives personalized advice in an anime-inspired style — direct, deep and motivating. Included in the subscription.">Sensei est alimenté par l'IA Groq. Il analyse tes données nutritionnelles, tes performances et te donne des conseils personnalisés dans un style inspiré de l'univers anime — direct, profond et motivant. Inclus dans l'abonnement.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q5">L'application est-elle disponible sur iPhone ?</span><span class="faq-arrow">+</span></div>
-        <div class="faq-a" data-i18n="faq_a5">Espritum est une PWA (Progressive Web App), accessible via le navigateur sur iOS et Android. Sur Android, tu peux l'installer depuis le Play Store. Sur iPhone, tu peux l'ajouter à ton écran d'accueil depuis Safari.</div>
+        <div class="faq-q" onclick="toggleFaq(this)"><span data-en="Is the app available on iPhone?">L'application est-elle disponible sur iPhone ?</span><span class="faq-arrow">+</span></div>
+        <div class="faq-a" data-en="Espritum is a PWA (Progressive Web App), accessible via the browser on iOS and Android. On Android you can install it from the Play Store. On iPhone you can add it to your home screen from Safari.">Espritum est une PWA (Progressive Web App), accessible via le navigateur sur iOS et Android. Sur Android, tu peux l'installer depuis le Play Store. Sur iPhone, tu peux l'ajouter à ton écran d'accueil depuis Safari.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q6">Mes données sont-elles sécurisées ?</span><span class="faq-arrow">+</span></div>
-        <div class="faq-a" data-i18n="faq_a6">Oui. Toutes tes données corporelles, nutritionnelles et personnelles sont chiffrées et stockées de manière sécurisée. Nous ne partageons jamais tes informations avec des tiers. Tu peux demander la suppression de ton compte à tout moment.</div>
+        <div class="faq-q" onclick="toggleFaq(this)"><span data-en="Is my data secure?">Mes données sont-elles sécurisées ?</span><span class="faq-arrow">+</span></div>
+        <div class="faq-a" data-en="Yes. All your body, nutrition and personal data is encrypted and stored securely. We never share your information with third parties. You can request deletion of your account at any time.">Oui. Toutes tes données corporelles, nutritionnelles et personnelles sont chiffrées et stockées de manière sécurisée. Nous ne partageons jamais tes informations avec des tiers. Tu peux demander la suppression de ton compte à tout moment.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)"><span data-i18n="faq_q7">Y a-t-il une période d'essai ?</span><span class="faq-arrow">+</span></div>
-        <div class="faq-a">L'abonnement est sans engagement. Tu peux annuler à tout moment depuis ton profil. Nous offrons également une garantie satisfait ou remboursé de 7 jours — si Espritum n'est pas fait pour toi, contacte-nous et nous te remboursons intégralement, sans question.</div>
+        <div class="faq-q" onclick="toggleFaq(this)"><span data-en="Is there a trial period?">Y a-t-il une période d'essai ?</span><span class="faq-arrow">+</span></div>
+        <div class="faq-a" data-en="The subscription has no commitment. You can cancel anytime from your profile. We also offer a 7-day money-back guarantee — if Espritum isn't for you, contact us and we'll refund you in full, no questions asked.">L'abonnement est sans engagement. Tu peux annuler à tout moment depuis ton profil. Nous offrons également une garantie satisfait ou remboursé de 7 jours — si Espritum n'est pas fait pour toi, contacte-nous et nous te remboursons intégralement, sans question.</div>
       </div>
     </div>
   </div>
@@ -2183,23 +2315,23 @@
         <img class="footer-logo" src="fav-icon-003.png" alt="Espritum">
         <span class="footer-name">Espritum</span>
       </div>
-      <p class="footer-tagline">Une application de fitness fondée sur la discipline du corps et la force de l'esprit.</p>
+      <p class="footer-tagline" data-en="A fitness app built on the discipline of the body and the strength of the spirit.">Une application de fitness fondée sur la discipline du corps et la force de l'esprit.</p>
     </div>
     <div class="footer-col">
-      <div class="footer-col-title">Application</div>
-      <a href="#probleme">Le problème</a>
-      <a href="#fonctionnalites">Fonctionnalités</a>
+      <div class="footer-col-title" data-en="App">Application</div>
+      <a href="#probleme" data-en="The problem">Le problème</a>
+      <a href="#fonctionnalites" data-en="Features">Fonctionnalités</a>
       <a href="#faq">FAQ</a>
     </div>
     <div class="footer-col">
-      <div class="footer-col-title">Rejoindre</div>
-      <a href="#hero-waitlist" onclick="event.preventDefault();openWaitlist('footer')">Liste d'attente</a>
-      <a href="#fonctionnalites">Fonctionnalités</a>
+      <div class="footer-col-title" data-en="Join">Rejoindre</div>
+      <a href="#hero-waitlist" onclick="event.preventDefault();openWaitlist('footer')" data-en="Waitlist">Liste d'attente</a>
+      <a href="#fonctionnalites" data-en="Features">Fonctionnalités</a>
     </div>
   </div>
   <div class="footer-bottom">
-    <span class="footer-copy"><span data-i18n="footer_rights">© 2026 Espritum — Tous droits réservés</span></span>
-    <span class="footer-copy">Not just flesh — but spirit.</span>
+    <span class="footer-copy"><span data-en="© 2026 Espritum — All rights reserved">© 2026 Espritum — Tous droits réservés</span></span>
+    <a class="footer-copy" href="inscription.html" style="text-decoration:none;cursor:pointer;" title="Accès membre">Not just flesh — but spirit.</a>
   </div>
 </footer>
 
@@ -2210,19 +2342,19 @@
 
     <!-- Form state -->
     <div id="wl-form-wrap">
-      <div class="wl-modal-eyebrow">Espritum — Accès anticipé</div>
-      <div class="wl-modal-title">REJOINDRE<br><span style="color:var(--red)">LA LISTE</span></div>
-      <p class="wl-modal-sub">Sois parmi les premiers à accéder à l'app. On te prévient dès l'ouverture.</p>
+      <div class="wl-modal-eyebrow" data-en="Espritum — Early access">Espritum — Accès anticipé</div>
+      <div class="wl-modal-title" data-en="JOIN<br><span style='color:var(--red)'>THE LIST</span>">REJOINDRE<br><span style="color:var(--red)">LA LISTE</span></div>
+      <p class="wl-modal-sub" data-en="Be among the first to access the app. We'll let you know as soon as it opens.">Sois parmi les premiers à accéder à l'app. On te prévient dès l'ouverture.</p>
       <form class="wl-form" onsubmit="joinWaitlist(event)">
         <div class="wl-row">
-          <input type="text" id="wl-prenom" class="wl-field" placeholder="Prénom" required autocomplete="given-name">
-          <input type="text" id="wl-nom" class="wl-field" placeholder="Nom" required autocomplete="family-name">
+          <input type="text" id="wl-prenom" class="wl-field" placeholder="Prénom" data-en-ph="First name" required autocomplete="given-name">
+          <input type="text" id="wl-nom" class="wl-field" placeholder="Nom" data-en-ph="Last name" required autocomplete="family-name">
         </div>
-        <input type="email" id="wl-email" class="wl-field" placeholder="ton@email.com" required autocomplete="email">
-        <input type="tel" id="wl-tel" class="wl-field" placeholder="Téléphone (optionnel)" autocomplete="tel">
-        <button type="submit" id="wl-btn" class="wl-btn">REJOINDRE LA LISTE</button>
+        <input type="email" id="wl-email" class="wl-field" placeholder="ton@email.com" data-en-ph="your@email.com" required autocomplete="email">
+        <input type="tel" id="wl-tel" class="wl-field" placeholder="Téléphone (optionnel)" data-en-ph="Phone (optional)" autocomplete="tel">
+        <button type="submit" id="wl-btn" class="wl-btn" data-en="JOIN THE LIST">REJOINDRE LA LISTE</button>
       </form>
-      <p class="wl-modal-note">Gratuit · Pas de spam · Désabonnement en 1 clic</p>
+      <p class="wl-modal-note" data-en="Free · No spam · Unsubscribe in 1 click">Gratuit · Pas de spam · Désabonnement en 1 clic</p>
     </div>
 
     <!-- Success state -->
@@ -2230,9 +2362,9 @@
       <div class="wl-success-icon">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
       </div>
-      <div class="wl-success-title">Tu es sur la liste !</div>
-      <p class="wl-success-msg" id="wl-success-msg">On te prévient en premier dès l'ouverture d'Espritum.<br>Bienvenue dans la communauté des guerriers.</p>
-      <button class="wl-btn" onclick="closeWaitlist()" style="margin-top:8px;max-width:200px;">FERMER</button>
+      <div class="wl-success-title" data-en="You're on the list!">Tu es sur la liste !</div>
+      <p class="wl-success-msg" id="wl-success-msg" data-en="We'll notify you first as soon as Espritum opens.<br>Welcome to the community of warriors.">On te prévient en premier dès l'ouverture d'Espritum.<br>Bienvenue dans la communauté des guerriers.</p>
+      <button class="wl-btn" onclick="closeWaitlist()" style="margin-top:8px;max-width:200px;" data-en="CLOSE">FERMER</button>
     </div>
   </div>
 </div>
@@ -2309,6 +2441,13 @@
     modal.style.display = 'none';
     document.body.style.overflow = '';
   }
+
+  // Ouverture auto de la liste d'attente quand on arrive depuis un blog (?wl=1)
+  (function () {
+    if (/[?&]wl=1/.test(location.search)) {
+      setTimeout(function () { openWaitlist('blog'); }, 400);
+    }
+  })();
 
   // Fermer avec Escape
   document.addEventListener('keydown', function(e) {
