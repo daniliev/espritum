@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /admin.html
-Disallow: /admin_trafic.html
-Disallow: /api/
-
-Sitemap: https://espritum.com/sitemap.xml
