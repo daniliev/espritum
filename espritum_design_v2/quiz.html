@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <script src="page-loader.js"></script>
+<script src="lang.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Test — Découvre ton archétype corporel | Espritum</title>
@@ -26,11 +27,11 @@
   html, body { height: 100%; }
   body { background: var(--bg); color: #e9e9e9; font-family: var(--font-body); min-height: 100vh; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased; }
 
-  .topbar { padding: 16px 22px; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid var(--border); }
+  .topbar { padding: 16px 22px; display: flex; align-items: center; gap: 10px; justify-content: flex-start; position: relative; border-bottom: 1px solid var(--border); }
   .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
   .brand img { width: 30px; height: 30px; object-fit: contain; }
   .brand span { font-family: var(--font-display); font-size: 20px; letter-spacing: 5px; text-transform: uppercase; color: #fff; }
-  .back-btn { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); cursor: pointer; font-size: 24px; line-height: 1; display: none; padding: 6px; }
+  .back-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 24px; line-height: 1; display: none; padding: 0 2px 0 0; }
   .back-btn:hover { color: #fff; }
 
   .progress-wrap { height: 4px; background: var(--bg3); }
@@ -64,6 +65,19 @@
   .btn:hover { background: #d93030; }
   .btn:disabled { background: var(--muted2, #2e2e2e); cursor: not-allowed; opacity: 0.5; }
 
+  /* LEAD (formulaire waitlist avant le test) */
+  .lead-sub { font-size: 15px; color: var(--muted); text-align: center; margin-bottom: 24px; line-height: 1.55; }
+  .lead-form { display: flex; flex-direction: column; gap: 12px; }
+  .lead-row { display: flex; gap: 12px; }
+  .lead-field { flex: 1; width: 100%; padding: 15px 16px; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 10px; color: #fff; font-family: inherit; font-size: 15px; outline: none; transition: border-color 0.2s; }
+  .lead-field:focus { border-color: rgba(200,40,40,0.6); }
+  .lead-field::placeholder { color: #555; }
+  .lead-field.error { border-color: #ef5350; }
+  .lead-msg { font-size: 14px; text-align: center; min-height: 20px; line-height: 1.4; }
+  .lead-msg.err { color: #ef5350; }
+  .lead-msg.ok { color: #3ea66a; }
+  .lead-note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 14px; }
+
   /* LOADING */
   .loader { text-align: center; }
   .loader-ring { width: 70px; height: 70px; border: 4px solid var(--bg3); border-top-color: var(--red); border-radius: 50%; margin: 0 auto 26px; animation: spin 0.9s linear infinite; }
@@ -74,6 +88,7 @@
   /* RESULT */
   .result { width: 100%; text-align: center; animation: fade 0.4s ease; }
   .res-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 8px; }
+  .res-img { display: block; width: 230px; max-width: 64%; height: auto; margin: 6px auto 14px; filter: drop-shadow(0 16px 38px rgba(200,40,40,0.32)); animation: fade 0.5s ease; }
   .res-name { font-family: var(--font-display); font-size: clamp(40px, 10vw, 64px); letter-spacing: 1px; text-transform: uppercase; color: #fff; line-height: 1; margin-bottom: 16px; }
   .res-desc { font-size: 16px; color: #cfcfcf; line-height: 1.6; margin-bottom: 26px; }
   .res-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 26px; }
@@ -96,6 +111,7 @@
 <div class="topbar">
   <button class="back-btn" id="back-btn" onclick="goBack()">‹</button>
   <a class="brand" href="index.html"><img src="fav-icon-003.png" alt="Espritum"><span>Espritum</span></a>
+  <div id="esp-lang" style="margin-left:auto;"></div>
 </div>
 <div class="progress-wrap"><div class="progress-bar" id="progress"></div></div>
 
@@ -126,53 +142,135 @@
     heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z"/>'
   };
 
+  // ── Bilingue FR/EN ──
+  function L(fr, en) { return (window.espLang || (window.espGetLang ? window.espGetLang() : 'fr')) === 'en' ? en : fr; }
+  function T(o) { return (o && typeof o === 'object' && 'fr' in o) ? L(o.fr, o.en) : o; }
+
   const STEPS = [
-    { key:'genre', q:'Tu es…', type:'choice', options:[
-      {v:'homme',l:'Un homme',icon:IC.homme},{v:'femme',l:'Une femme',icon:IC.femme}] },
-    { key:'age', q:'Quel âge as-tu ?', type:'number', unit:'ans', min:14, max:99, ph:'28' },
-    { key:'taille', q:'Quelle est ta taille ?', type:'number', unit:'cm', min:120, max:230, ph:'178' },
-    { key:'poids', q:'Quel est ton poids ?', type:'number', unit:'kg', min:35, max:250, ph:'82' },
-    { key:'stockage', q:'Où stockes-tu la graisse en premier ?', type:'choice', options:[
-      {v:'ventre',l:'Surtout le ventre',icon:IC.ventre},{v:'partout',l:'Un peu partout',icon:IC.partout},{v:'bas',l:'Hanches / cuisses',icon:IC.bas},{v:'mince',l:'Je suis plutôt mince',icon:IC.mince}] },
-    { key:'objectif', q:'Ton objectif principal ?', type:'choice', options:[
-      {v:'perte',l:'Perdre du gras',icon:IC.down},{v:'muscle',l:'Prendre du muscle',icon:IC.up},{v:'recomp',l:'Recomposition (les deux)',icon:IC.repeat},{v:'forme',l:'Rester en forme',icon:IC.heart}] },
-    { key:'activite', q:'Ton niveau d’activité au quotidien ?', type:'choice', options:[
-      {v:'sed',l:'Sédentaire (bureau)',icon:barsIcon(1)},{v:'leger',l:'Léger',icon:barsIcon(2)},{v:'modere',l:'Modéré',icon:barsIcon(3)},{v:'intense',l:'Intense (physique)',icon:barsIcon(4)}] },
-    { key:'seances', q:'Combien de séances de sport par semaine ?', type:'choice', options:[
-      {v:'0',l:'0 à 1',icon:barsIcon(1)},{v:'2',l:'2 à 3',icon:barsIcon(2)},{v:'4',l:'4 à 5',icon:barsIcon(3)},{v:'6',l:'6 et plus',icon:barsIcon(4)}] },
+    { key:'genre', q:{fr:'Tu es…',en:'You are…'}, type:'choice', options:[
+      {v:'homme',l:{fr:'Un homme',en:'A man'},icon:IC.homme},{v:'femme',l:{fr:'Une femme',en:'A woman'},icon:IC.femme}] },
+    { key:'age', q:{fr:'Quel âge as-tu ?',en:'How old are you?'}, type:'number', unit:{fr:'ans',en:'years'}, min:14, max:99, ph:'28' },
+    { key:'taille', q:{fr:'Quelle est ta taille ?',en:'What\'s your height?'}, type:'number', unit:{fr:'cm',en:'cm'}, min:120, max:230, ph:'178' },
+    { key:'poids', q:{fr:'Quel est ton poids ?',en:'What\'s your weight?'}, type:'number', unit:{fr:'kg',en:'kg'}, min:35, max:250, ph:'82' },
+    { key:'stockage', q:{fr:'Où stockes-tu la graisse en premier ?',en:'Where do you store fat first?'}, type:'choice', options:[
+      {v:'ventre',l:{fr:'Surtout le ventre',en:'Mostly the belly'},icon:IC.ventre},{v:'partout',l:{fr:'Un peu partout',en:'A bit everywhere'},icon:IC.partout},{v:'bas',l:{fr:'Hanches / cuisses',en:'Hips / thighs'},icon:IC.bas},{v:'mince',l:{fr:'Je suis plutôt mince',en:'I\'m rather lean'},icon:IC.mince}] },
+    { key:'objectif', q:{fr:'Ton objectif principal ?',en:'Your main goal?'}, type:'choice', options:[
+      {v:'perte',l:{fr:'Perdre du gras',en:'Lose fat'},icon:IC.down},{v:'muscle',l:{fr:'Prendre du muscle',en:'Build muscle'},icon:IC.up},{v:'recomp',l:{fr:'Recomposition (les deux)',en:'Recomposition (both)'},icon:IC.repeat},{v:'forme',l:{fr:'Rester en forme',en:'Stay fit'},icon:IC.heart}] },
+    { key:'activite', q:{fr:'Ton niveau d’activité au quotidien ?',en:'Your daily activity level?'}, type:'choice', options:[
+      {v:'sed',l:{fr:'Sédentaire (bureau)',en:'Sedentary (desk)'},icon:barsIcon(1)},{v:'leger',l:{fr:'Léger',en:'Light'},icon:barsIcon(2)},{v:'modere',l:{fr:'Modéré',en:'Moderate'},icon:barsIcon(3)},{v:'intense',l:{fr:'Intense (physique)',en:'Intense (physical)'},icon:barsIcon(4)}] },
+    { key:'seances', q:{fr:'Combien de séances de sport par semaine ?',en:'How many workouts per week?'}, type:'choice', options:[
+      {v:'0',l:{fr:'0 à 1',en:'0 to 1'},icon:barsIcon(1)},{v:'2',l:{fr:'2 à 3',en:'2 to 3'},icon:barsIcon(2)},{v:'4',l:{fr:'4 à 5',en:'4 to 5'},icon:barsIcon(3)},{v:'6',l:{fr:'6 et plus',en:'6 and more'},icon:barsIcon(4)}] },
   ];
 
   const ARCH = {
-    ecto: { name:'Ectomorphe', desc:"Ossature fine, métabolisme rapide : tu brûles vite les calories et tu as du mal à prendre. Ton levier, c'est construire du muscle avec des charges et assez de calories." },
-    meso: { name:'Mésomorphe', desc:"Ton corps répond vite à l'entraînement : tu prends du muscle et tu perds du gras facilement quand tu es discipliné. La recomposition est ton terrain de jeu." },
-    endo: { name:'Endomorphe', desc:"Tu stockes la graisse facilement mais tu construis un muscle puissant. Ton vrai levier, c'est l'insuline : couper le sucre et tenir un déficit modéré change tout." },
+    ecto: { name:{fr:'Ectomorphe',en:'Ectomorph'}, desc:{fr:"Ossature fine, métabolisme rapide : tu brûles vite les calories et tu as du mal à prendre. Ton levier, c'est construire du muscle avec des charges et assez de calories.",en:"Fine bone structure, fast metabolism: you burn calories quickly and struggle to gain. Your lever is building muscle with heavy loads and enough calories."} },
+    meso: { name:{fr:'Mésomorphe',en:'Mesomorph'}, desc:{fr:"Ton corps répond vite à l'entraînement : tu prends du muscle et tu perds du gras facilement quand tu es discipliné. La recomposition est ton terrain de jeu.",en:"Your body responds fast to training: you build muscle and lose fat easily when you're disciplined. Recomposition is your playground."} },
+    endo: { name:{fr:'Endomorphe',en:'Endomorph'}, desc:{fr:"Tu stockes la graisse facilement mais tu construis un muscle puissant. Ton vrai levier, c'est l'insuline : couper le sucre et tenir un déficit modéré change tout.",en:"You store fat easily but build powerful muscle. Your real lever is insulin: cutting sugar and holding a moderate deficit changes everything."} },
   };
 
   let answers = {};
   let i = 0;
+  let state = 'lead';   // lead | question | loading | result
+  let lastR = null;     // dernier résultat (pour re-render si changement de langue)
+
+  // ── ÉTAPE 0 : inscription liste d'attente (avant le test) ──
+  function renderLead() {
+    state = 'lead';
+    document.getElementById('progress').style.width = '0%';
+    document.getElementById('back-btn').style.display = 'none';
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem('esp_lead') || '{}'); } catch(e) {}
+    const esc = s => (s || '').replace(/"/g, '&quot;');
+    document.getElementById('stage').innerHTML = `
+      <div class="step lead">
+        <div class="q-count">${L('Inscription','Sign-up')}</div>
+        <div class="q-title">${L('Débloque ton test','Unlock your test')}</div>
+        <p class="lead-sub">${L("Inscris-toi à la liste d'attente pour faire le test et recevoir tes recommandations personnalisées.",'Join the waitlist to take the test and get your personalized recommendations.')}</p>
+        <div class="lead-form">
+          <div class="lead-row">
+            <input class="lead-field" id="ld-prenom" placeholder="${L('Prénom','First name')}" autocomplete="given-name" value="${esc(saved.prenom)}">
+            <input class="lead-field" id="ld-nom" placeholder="${L('Nom','Last name')}" autocomplete="family-name" value="${esc(saved.nom)}">
+          </div>
+          <input class="lead-field" id="ld-email" type="email" placeholder="${L('ton@email.com','you@email.com')}" autocomplete="email" value="${esc(saved.email)}">
+          <input class="lead-field" id="ld-tel" type="tel" placeholder="${L('Téléphone (optionnel)','Phone (optional)')}" autocomplete="tel" value="${esc(saved.tel)}">
+          <div class="lead-msg" id="ld-msg"></div>
+          <button class="btn" id="ld-btn" onclick="submitLead()">${L('Commencer le test →','Start the test →')}</button>
+        </div>
+        <p class="lead-note">${L('Gratuit · Pas de spam · Désabonnement en 1 clic','Free · No spam · Unsubscribe in 1 click')}</p>
+      </div>`;
+  }
+
+  async function submitLead() {
+    const g = id => ((document.getElementById(id) || {}).value || '').trim();
+    const prenom = g('ld-prenom'), nom = g('ld-nom'), email = g('ld-email'), tel = g('ld-tel');
+    const msg = document.getElementById('ld-msg');
+    ['ld-prenom','ld-email'].forEach(id => document.getElementById(id).classList.remove('error'));
+    msg.className = 'lead-msg'; msg.textContent = '';
+
+    if (!prenom) { document.getElementById('ld-prenom').classList.add('error'); msg.className = 'lead-msg err'; msg.textContent = L('Entre ton prénom.','Enter your first name.'); return; }
+    if (!email || email.indexOf('@') < 0) { document.getElementById('ld-email').classList.add('error'); msg.className = 'lead-msg err'; msg.textContent = L('Entre un email valide.','Enter a valid email.'); return; }
+
+    const btn = document.getElementById('ld-btn');
+    const orig = btn.textContent;
+    btn.disabled = true; btn.textContent = '...';
+
+    try { localStorage.setItem('esp_lead', JSON.stringify({ prenom, nom, email, tel })); } catch(e) {}
+
+    try {
+      const resp = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prenom, nom, email, telephone: tel, lang: (window.espGetLang ? window.espGetLang() : 'fr'), source: 'quiz' })
+      });
+      if (resp.status === 409) {
+        msg.className = 'lead-msg ok';
+        msg.textContent = L('✓ Tu es déjà inscrit — on lance ton test !','✓ You\'re already signed up — starting your test!');
+        setTimeout(startQuestions, 1500);
+        return;
+      }
+      if (resp.status === 200 || resp.status === 201) {
+        msg.className = 'lead-msg ok';
+        msg.textContent = L('✓ Inscrit ! On lance ton test…','✓ Signed up! Starting your test…');
+        setTimeout(startQuestions, 900);
+        return;
+      }
+      throw new Error('HTTP ' + resp.status);
+    } catch(err) {
+      console.error('lead error', err);
+      btn.disabled = false; btn.textContent = orig;
+      msg.className = 'lead-msg err';
+      msg.textContent = L('Connexion impossible — réessaie.','Connection failed — try again.');
+    }
+  }
+
+  function startQuestions() {
+    i = 0;
+    render();
+  }
 
   function render() {
+    state = 'question';
     document.getElementById('progress').style.width = ((i) / STEPS.length * 100) + '%';
     document.getElementById('back-btn').style.display = i > 0 ? 'block' : 'none';
     const s = STEPS[i];
     const stage = document.getElementById('stage');
 
-    let html = `<div class="step"><div class="q-count">Question ${i+1} / ${STEPS.length}</div><div class="q-title">${s.q}</div>`;
+    let html = `<div class="step"><div class="q-count">${L('Question','Question')} ${i+1} / ${STEPS.length}</div><div class="q-title">${T(s.q)}</div>`;
 
     if (s.type === 'choice') {
       html += '<div class="options">';
       s.options.forEach(o => {
-        html += `<button class="opt" onclick="choose('${s.key}','${o.v}')"><span class="opt-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${o.icon || ''}</svg></span><span class="opt-label">${o.l}</span></button>`;
+        html += `<button class="opt" onclick="choose('${s.key}','${o.v}')"><span class="opt-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${o.icon || ''}</svg></span><span class="opt-label">${T(o.l)}</span></button>`;
       });
       html += '</div>';
     } else {
       const cur = answers[s.key] || '';
       html += `<div class="num-wrap">
         <input class="num-input" id="num" type="number" inputmode="numeric" placeholder="${s.ph}" value="${cur}" min="${s.min}" max="${s.max}">
-        <div class="num-unit">${s.unit}</div>
+        <div class="num-unit">${T(s.unit)}</div>
         <div class="num-err" id="num-err"></div>
       </div>
-      <button class="btn" onclick="submitNum()">Continuer →</button>`;
+      <button class="btn" onclick="submitNum()">${L('Continuer →','Continue →')}</button>`;
     }
     html += '</div>';
     stage.innerHTML = html;
@@ -192,7 +290,7 @@
     const val = parseInt(inp.value, 10);
     const err = document.getElementById('num-err');
     if (isNaN(val) || val < s.min || val > s.max) {
-      err.textContent = `Entre une valeur entre ${s.min} et ${s.max}.`;
+      err.textContent = L(`Entre une valeur entre ${s.min} et ${s.max}.`, `Enter a value between ${s.min} and ${s.max}.`);
       return;
     }
     answers[s.key] = val;
@@ -243,25 +341,26 @@
   function recosFor(arch, objectif) {
     const base = {
       ecto: [
-        'Mange en léger surplus calorique : ton corps brûle vite, il faut le nourrir.',
-        'Priorise les charges lourdes et les exercices polyarticulaires (squat, deadlift).',
-        'Limite le cardio intense et vise 1,8 g de protéines par kilo.'
+        L('Mange en léger surplus calorique : ton corps brûle vite, il faut le nourrir.','Eat in a slight calorie surplus: your body burns fast, you need to feed it.'),
+        L('Priorise les charges lourdes et les exercices polyarticulaires (squat, deadlift).','Prioritize heavy loads and compound lifts (squat, deadlift).'),
+        L('Limite le cardio intense et vise 1,8 g de protéines par kilo.','Limit intense cardio and aim for 1.8g of protein per kilo.')
       ],
       meso: [
-        'La recomposition est possible : muscle + perte de gras en même temps.',
-        'Muscu 4×/semaine, déficit ou surplus léger selon ton objectif.',
-        'Ta régularité est ton super-pouvoir : ne casse pas la chaîne.'
+        L('La recomposition est possible : muscle + perte de gras en même temps.','Recomposition is possible: build muscle and lose fat at the same time.'),
+        L('Muscu 4×/semaine, déficit ou surplus léger selon ton objectif.','Strength training 4×/week, slight deficit or surplus depending on your goal.'),
+        L('Ta régularité est ton super-pouvoir : ne casse pas la chaîne.','Your consistency is your superpower: don\'t break the chain.')
       ],
       endo: [
-        'Coupe le sucre ajouté : c’est ton levier n°1 sur l’insuline.',
-        'Déficit modéré (−400 kcal) + musculation + marche quotidienne.',
-        'Protéines élevées à chaque repas pour préserver ton muscle.'
+        L('Coupe le sucre ajouté : c’est ton levier n°1 sur l’insuline.','Cut added sugar: it\'s your #1 lever on insulin.'),
+        L('Déficit modéré (−400 kcal) + musculation + marche quotidienne.','Moderate deficit (−400 kcal) + strength training + daily walking.'),
+        L('Protéines élevées à chaque repas pour préserver ton muscle.','High protein at every meal to preserve your muscle.')
       ]
     };
     return base[arch];
   }
 
   function finish() {
+    state = 'loading';
     document.getElementById('progress').style.width = '100%';
     document.getElementById('back-btn').style.display = 'none';
     const stage = document.getElementById('stage');
@@ -269,11 +368,12 @@
     // Écran de calcul
     stage.innerHTML = `<div class="loader">
       <div class="loader-ring"></div>
-      <h2>Analyse de ton corps…</h2>
-      <p>On calcule ton archétype et tes recommandations.</p>
+      <h2>${L('Analyse de ton corps…','Analyzing your body…')}</h2>
+      <p>${L('On calcule ton archétype et tes recommandations.','Calculating your archetype and recommendations.')}</p>
     </div>`;
 
     const r = compute();
+    lastR = r;
     const a = ARCH[r.arch];
     const recos = recosFor(r.arch, answers.objectif);
 
@@ -286,29 +386,46 @@
   }
 
   function showResult(r, a, recos) {
+    state = 'result';
     const stage = document.getElementById('stage');
     const check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
     let recoHtml = recos.map(t => `<div class="reco-item"><span class="reco-ico">${check}</span><span class="t">${t}</span></div>`).join('');
 
+    const f = (answers.genre === 'femme') ? '-f' : '';
+    const archImg = { ecto:'ecto'+f+'.webp', meso:'meso'+f+'.webp', endo:'endo'+f+'.webp' }[r.arch];
     stage.innerHTML = `<div class="result">
-      <div class="res-label">Ton archétype corporel</div>
-      <div class="res-name">${a.name}</div>
-      <div class="res-desc">${a.desc}</div>
+      <div class="res-label">${L('Ton archétype corporel','Your body archetype')}</div>
+      <img class="res-img" src="${archImg}" alt="${T(a.name)}">
+      <div class="res-name">${T(a.name)}</div>
+      <div class="res-desc">${T(a.desc)}</div>
       <div class="res-stats">
-        <div class="res-stat"><div class="v">${r.imc}</div><div class="l">IMC</div></div>
-        <div class="res-stat"><div class="v">${r.bf}</div><div class="l">Masse grasse est.</div></div>
-        <div class="res-stat"><div class="v">${r.cal}</div><div class="l">Kcal / jour cible</div></div>
+        <div class="res-stat"><div class="v">${r.imc}</div><div class="l">${L('IMC','BMI')}</div></div>
+        <div class="res-stat"><div class="v">${r.bf}</div><div class="l">${L('Masse grasse est.','Est. body fat')}</div></div>
+        <div class="res-stat"><div class="v">${r.cal}</div><div class="l">${L('Kcal / jour cible','Target kcal / day')}</div></div>
       </div>
       <div class="res-reco">
-        <div class="rtitle">Tes 3 priorités</div>
+        <div class="rtitle">${L('Tes 3 priorités','Your 3 priorities')}</div>
         ${recoHtml}
       </div>
-      <div class="res-teaser">🔓 Ton <b>plan complet</b> — nutrition + entraînement semaine par semaine, adapté à ton archétype — t'attend sur Espritum.</div>
-      <a class="btn" id="cta" href="index.html?from=quiz&archetype=${r.arch}">Découvrir la méthode →</a>
+      <div class="res-teaser">🔓 ${L("Ton <b>plan complet</b> — nutrition + entraînement semaine par semaine, adapté à ton archétype — t'attend sur Espritum.",'Your <b>complete plan</b> — nutrition + training week by week, tailored to your archetype — is waiting on Espritum.')}</div>
+      <a class="btn" id="cta" href="index.html?from=quiz&archetype=${r.arch}">${L('Découvrir la méthode →','Discover the method →')}</a>
     </div>`;
   }
 
-  render();
+  // ── Re-render au changement de langue (FR/EN) ──
+  window.onEspLangChange = function () {
+    if (state === 'lead') {
+      const g = id => ((document.getElementById(id) || {}).value) || '';
+      try { localStorage.setItem('esp_lead', JSON.stringify({ prenom:g('ld-prenom'), nom:g('ld-nom'), email:g('ld-email'), tel:g('ld-tel') })); } catch(e) {}
+      renderLead();
+    } else if (state === 'question') {
+      render();
+    } else if (state === 'result' && lastR) {
+      showResult(lastR, ARCH[lastR.arch], recosFor(lastR.arch, answers.objectif));
+    }
+  };
+
+  renderLead();
 </script>
 </body>
 </html>
