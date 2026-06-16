@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <script src="page-loader.js"></script>
+<script src="lang.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Blog Espritum — Fitness, nutrition & discipline</title>
@@ -64,72 +65,75 @@
 <header class="site-head">
   <div class="site-head-in">
     <a class="brand" href="index.html"><img src="fav-icon-003.png" alt="Logo Espritum"><span>Espritum</span></a>
-    <a class="head-cta" href="inscription.html">Rejoindre</a>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div id="esp-lang"></div>
+      <a class="head-cta" href="index.html?wl=1" data-en="Waitlist">Liste d'attente</a>
+    </div>
   </div>
 </header>
 
 <section class="hero">
-  <div class="badge">Le Blog</div>
-  <h1>Corps & Esprit</h1>
-  <p>Des conseils concrets sur la perte de gras, l'entraînement et la discipline. Sans bullshit.</p>
+  <div class="badge" data-en="The Blog">Le Blog</div>
+  <h1 data-en="Body &amp; Spirit">Corps & Esprit</h1>
+  <p data-en="Straight-up advice on fat loss, training and discipline. No bullshit.">Des conseils concrets sur la perte de gras, l'entraînement et la discipline. Sans bullshit.</p>
 </section>
 
 <main class="posts">
   <a class="post-card" href="comment-perdre-du-ventre-homme.html">
     <img class="post-thumb" src="blog-ventre-hero.jpg" alt="Comment perdre du ventre homme" loading="lazy">
     <div class="post-body">
-      <div class="post-cat">Perte de gras</div>
-      <div class="post-title">Comment perdre du ventre (homme) : ce que personne ne t'explique</div>
-      <div class="post-excerpt">Tu fais du cardio et des abdos mais ton ventre ne bouge pas ? Le vrai responsable n'est pas les calories — c'est l'insuline. Voici la méthode complète.</div>
-      <div class="post-meta"><span>13 juin 2026</span><span class="dot"></span><span>7 min de lecture</span></div>
-      <div class="post-arrow">Lire l'article →</div>
+      <div class="post-cat" data-en="Fat loss">Perte de gras</div>
+      <div class="post-title" data-en="How to lose belly fat (men): what nobody tells you">Comment perdre du ventre (homme) : ce que personne ne t'explique</div>
+      <div class="post-excerpt" data-en="Doing cardio and abs but your belly won't budge? The real culprit isn't calories — it's insulin. Here's the full method.">Tu fais du cardio et des abdos mais ton ventre ne bouge pas ? Le vrai responsable n'est pas les calories — c'est l'insuline. Voici la méthode complète.</div>
+      <div class="post-meta"><span data-en="Jun 13, 2026">13 juin 2026</span><span class="dot"></span><span data-en="7 min read">7 min de lecture</span></div>
+      <div class="post-arrow" data-en="Read article →">Lire l'article →</div>
     </div>
   </a>
   <a class="post-card" href="exercice-pour-perdre-du-ventre-homme.html">
     <img class="post-thumb" src="blog-exercice-hero.jpg" alt="Exercice pour perdre du ventre homme" loading="lazy">
     <div class="post-body">
-      <div class="post-cat">Entraînement</div>
-      <div class="post-title">Quel exercice pour perdre du ventre (homme) : la vraie réponse</div>
-      <div class="post-excerpt">Pas d'exercice magique. La vraie réponse tient en deux mots : déficit calorique et musculation. Voici le programme complet qui fait disparaître le ventre.</div>
-      <div class="post-meta"><span>13 juin 2026</span><span class="dot"></span><span>7 min de lecture</span></div>
-      <div class="post-arrow">Lire l'article →</div>
+      <div class="post-cat" data-en="Training">Entraînement</div>
+      <div class="post-title" data-en="Which exercise to lose belly fat (men): the real answer">Quel exercice pour perdre du ventre (homme) : la vraie réponse</div>
+      <div class="post-excerpt" data-en="No magic exercise. The real answer is two words: calorie deficit and strength training. Here's the complete program that melts belly fat.">Pas d'exercice magique. La vraie réponse tient en deux mots : déficit calorique et musculation. Voici le programme complet qui fait disparaître le ventre.</div>
+      <div class="post-meta"><span data-en="Jun 13, 2026">13 juin 2026</span><span class="dot"></span><span data-en="7 min read">7 min de lecture</span></div>
+      <div class="post-arrow" data-en="Read article →">Lire l'article →</div>
     </div>
   </a>
   <a class="post-card" href="quoi-manger-pour-perdre-du-ventre-homme.html">
     <img class="post-thumb" src="blog-alimentation-hero.jpg" alt="Quoi manger pour perdre du ventre homme" loading="lazy">
     <div class="post-body">
-      <div class="post-cat">Nutrition</div>
-      <div class="post-title">Quoi manger pour perdre du ventre (homme) : le plan complet</div>
-      <div class="post-excerpt">L'alimentation, c'est 70 à 80 % du résultat. Protéines, bons glucides, légumes, sucre à bannir : le plan alimentaire concret qui fait fondre le ventre.</div>
-      <div class="post-meta"><span>13 juin 2026</span><span class="dot"></span><span>8 min de lecture</span></div>
-      <div class="post-arrow">Lire l'article →</div>
+      <div class="post-cat" data-en="Nutrition">Nutrition</div>
+      <div class="post-title" data-en="What to eat to lose belly fat (men): the complete plan">Quoi manger pour perdre du ventre (homme) : le plan complet</div>
+      <div class="post-excerpt" data-en="Nutrition is 70–80% of the result. Protein, smart carbs, vegetables, no added sugar: the concrete meal plan that melts belly fat.">L'alimentation, c'est 70 à 80 % du résultat. Protéines, bons glucides, légumes, sucre à bannir : le plan alimentaire concret qui fait fondre le ventre.</div>
+      <div class="post-meta"><span data-en="Jun 13, 2026">13 juin 2026</span><span class="dot"></span><span data-en="8 min read">8 min de lecture</span></div>
+      <div class="post-arrow" data-en="Read article →">Lire l'article →</div>
     </div>
   </a>
   <a class="post-card" href="perdre-du-ventre-rapidement-homme.html">
     <img class="post-thumb" src="blog-rapide-hero.jpg" alt="Perdre du ventre rapidement homme" loading="lazy">
     <div class="post-body">
-      <div class="post-cat">Mindset</div>
-      <div class="post-title">Perdre du ventre rapidement (homme) : mythe ou réalité ?</div>
-      <div class="post-excerpt">« Ventre plat en 2 semaines » ? La vérité sur la rapidité, le vrai délai (3 à 6 mois) et la méthode pour aller vite sans effet yoyo.</div>
-      <div class="post-meta"><span>13 juin 2026</span><span class="dot"></span><span>8 min de lecture</span></div>
-      <div class="post-arrow">Lire l'article →</div>
+      <div class="post-cat" data-en="Mindset">Mindset</div>
+      <div class="post-title" data-en="Lose belly fat fast (men): myth or reality?">Perdre du ventre rapidement (homme) : mythe ou réalité ?</div>
+      <div class="post-excerpt" data-en="“Flat belly in 2 weeks”? The truth about speed, the real timeline (3–6 months) and how to go fast without the yo-yo effect.">« Ventre plat en 2 semaines » ? La vérité sur la rapidité, le vrai délai (3 à 6 mois) et la méthode pour aller vite sans effet yoyo.</div>
+      <div class="post-meta"><span data-en="Jun 13, 2026">13 juin 2026</span><span class="dot"></span><span data-en="8 min read">8 min de lecture</span></div>
+      <div class="post-arrow" data-en="Read article →">Lire l'article →</div>
     </div>
   </a>
   <a class="post-card" href="comment-mesurer-sa-graisse-abdominale.html">
     <img class="post-thumb" src="blog-mesurer-hero.jpg" alt="Comment mesurer sa graisse abdominale" loading="lazy">
     <div class="post-body">
-      <div class="post-cat">Composition corporelle</div>
-      <div class="post-title">Comment mesurer sa graisse abdominale : les vraies méthodes</div>
-      <div class="post-excerpt">La balance ne dit pas tout. Tour de taille, taux de masse grasse, DEXA, analyse photo : comment mesurer ta graisse abdominale et lire les chiffres.</div>
-      <div class="post-meta"><span>13 juin 2026</span><span class="dot"></span><span>8 min de lecture</span></div>
-      <div class="post-arrow">Lire l'article →</div>
+      <div class="post-cat" data-en="Body composition">Composition corporelle</div>
+      <div class="post-title" data-en="How to measure your belly fat: the real methods">Comment mesurer sa graisse abdominale : les vraies méthodes</div>
+      <div class="post-excerpt" data-en="The scale doesn't tell the whole story. Waist size, body fat %, DEXA, photo analysis: how to measure your belly fat and read the numbers.">La balance ne dit pas tout. Tour de taille, taux de masse grasse, DEXA, analyse photo : comment mesurer ta graisse abdominale et lire les chiffres.</div>
+      <div class="post-meta"><span data-en="Jun 13, 2026">13 juin 2026</span><span class="dot"></span><span data-en="8 min read">8 min de lecture</span></div>
+      <div class="post-arrow" data-en="Read article →">Lire l'article →</div>
     </div>
   </a>
 </main>
 
 <footer>
   <div class="foot-tag">Espritum</div>
-  <a href="index.html">← Retour à l'accueil</a>
+  <a href="index.html" data-en="← Back to home">← Retour à l'accueil</a>
 </footer>
 
 </body>
