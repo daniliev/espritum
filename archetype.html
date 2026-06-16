@@ -7,11 +7,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Find your body archetype | Espritum</title>
-<meta name="description" content="In 30 seconds, discover your body archetype, your estimated body fat and your personalized recommendations. Free Espritum test.">
+<meta name="description" content="In 30 seconds, discover your body archetype and your personalized recommendations. Free Espritum test.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://espritum.com/archetype.html">
 <meta property="og:title" content="Find your body archetype in 30 seconds">
-<meta property="og:description" content="Height, weight, goal: get your archetype, estimated body fat and personalized recommendations.">
+<meta property="og:description" content="Height, weight, goal: get your archetype and personalized recommendations.">
 <meta property="og:image" content="https://espritum.com/felins.webp">
 <meta property="og:url" content="https://espritum.com/archetype.html">
 <link rel="icon" href="fav-icon-003.png">
@@ -99,7 +99,7 @@
   .res-img { display: block; width: 230px; max-width: 64%; height: auto; margin: 6px auto 14px; filter: drop-shadow(0 16px 38px rgba(200,40,40,0.32)); animation: fade 0.5s ease; }
   .res-name { font-family: var(--font-display); font-size: clamp(40px, 10vw, 64px); letter-spacing: 1px; text-transform: uppercase; color: #fff; line-height: 1; margin-bottom: 16px; }
   .res-desc { font-size: 16px; color: #cfcfcf; line-height: 1.6; margin-bottom: 26px; }
-  .res-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 26px; }
+  .res-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 26px; }
   .res-stat { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 16px 10px; }
   .res-stat .v { font-family: var(--font-display); font-size: 28px; color: var(--red); line-height: 1; }
   .res-stat .l { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
@@ -191,7 +191,7 @@
       <div class="intro">
         <img class="intro-felins" src="felins.webp" alt="">
         <div class="intro-title">${L('Trouve ton','Find your')}<span>${L('archétype corporel','body archetype')}</span></div>
-        <p class="intro-sub">${L('30 secondes pour découvrir ton type de corps, ta masse grasse estimée et ton plan sur-mesure.','30 seconds to discover your body type, your estimated body fat and your tailored plan.')}</p>
+        <p class="intro-sub">${L('30 secondes pour découvrir ton type de corps et ton plan sur-mesure.','30 seconds to discover your body type and your tailored plan.')}</p>
         <button class="btn" onclick="startQuestions()">${L('Faire le test →','Take the test →')}</button>
       </div>`;
   }
@@ -423,7 +423,6 @@
       <div class="res-desc">${T(a.desc)}</div>
       <div class="res-stats">
         <div class="res-stat"><div class="v">${r.imc}</div><div class="l">${L('IMC','BMI')}</div></div>
-        <div class="res-stat"><div class="v">${r.bf}</div><div class="l">${L('Masse grasse est.','Est. body fat')}</div></div>
         <div class="res-stat"><div class="v">${r.cal}</div><div class="l">${L('Kcal / jour cible','Target kcal / day')}</div></div>
       </div>
       <div class="res-reco">
