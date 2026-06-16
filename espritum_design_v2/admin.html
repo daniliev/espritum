@@ -36,8 +36,9 @@
   .topbar-link:hover { color: #fff; }
 
   /* TABS */
-  .tab-bar { display: flex; gap: 0; border-bottom: 1px solid var(--border); background: var(--bg2); padding: 0 28px; }
-  .tab { padding: 15px 22px; font-size: 12px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; margin-bottom: -1px; }
+  .tab-bar { display: flex; gap: 0; border-bottom: 1px solid var(--border); background: var(--bg2); padding: 0 28px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab { padding: 15px 22px; font-size: 12px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; margin-bottom: -1px; white-space: nowrap; flex-shrink: 0; }
   .tab:hover { color: #ccc; }
   .tab.active { color: #fff; border-bottom-color: var(--red); }
 
@@ -155,7 +156,41 @@
   .toast.error { background: rgba(200,40,40,0.92); color: #ef9a9a; }
 
   @media (max-width: 1000px) { .kpi-grid { grid-template-columns: repeat(2,1fr); } .grid-2 { grid-template-columns: 1fr; } }
-  @media (max-width: 560px) { .panel { padding: 20px 16px; } .topbar { padding: 16px; } .tab { padding: 14px; } }
+
+  @media (max-width: 700px) {
+    /* Topbar compacte */
+    .topbar { padding: 14px 16px; }
+    .topbar-name { font-size: 19px; letter-spacing: 3px; }
+    .topbar-logo { width: 28px; height: 28px; }
+    .topbar-right { gap: 10px; }
+    .topbar-update { font-size: 10px; line-height: 1.2; max-width: 88px; }
+    .topbar-link { font-size: 10px; }
+    .admin-tag { font-size: 8px; padding: 2px 6px; letter-spacing: 2px; }
+
+    /* Onglets */
+    .tab { padding: 14px 16px; font-size: 11px; letter-spacing: 1px; }
+
+    /* Panels + KPI */
+    .panel { padding: 18px 13px; }
+    .kpi-grid { gap: 10px; }
+    .kpi-card { padding: 15px 14px; }
+    .kpi-val { font-size: 34px; }
+    .card { padding: 16px 14px; }
+    .section-label { margin: 20px 2px 11px; }
+
+    /* TABLEAUX -> CARTES */
+    table, tbody, tr, td { display: block; width: 100%; }
+    thead { display: none; }
+    tbody tr { border: 1px solid var(--border); border-radius: 11px; margin-bottom: 11px; background: var(--bg3); padding: 4px 2px; }
+    tbody tr:hover { background: var(--bg3); }
+    tbody td { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 14px; text-align: right; border: none; }
+    tbody td::before { content: attr(data-label); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); font-weight: 700; flex-shrink: 0; text-align: left; }
+    tbody td.cell-main { padding-bottom: 6px; }
+    tbody td.cell-main::before { display: none; }
+    tbody td.cell-empty { justify-content: center; text-align: center; }
+    tbody td.cell-empty::before { display: none; }
+    .pagination { flex-direction: column; gap: 12px; align-items: stretch; }
+  }
 </style>
 </head>
 <body>
@@ -400,18 +435,18 @@
 
     const tbody = document.getElementById('users-table');
     tbody.innerHTML = page.length === 0
-      ? `<tr><td colspan="2" style="text-align:center;padding:40px;color:var(--muted);">Aucun utilisateur trouvé</td></tr>`
+      ? `<tr><td colspan="2" class="cell-empty" style="text-align:center;padding:40px;color:var(--muted);">Aucun utilisateur trouvé</td></tr>`
       : page.map(u => {
           const plan = (u.plan === 'premium') ? 'premium' : 'gratuit';
           const color = colors[plan];
           const initiale = (u.prenom || u.email || '?')[0].toUpperCase();
           const nm = (u.prenom || u.email || '').replace(/'/g, "\\'");
           return `<tr class="row-click" onclick="openSheet('${u.id}')">
-            <td><div class="user-cell">
+            <td class="cell-main"><div class="user-cell">
               <div class="u-avatar" style="background:${color}18;border:1px solid ${color}33;color:${color};">${initiale}</div>
               <div><div class="u-name">${u.prenom || '—'} ${u.nom || ''}</div><div class="u-email">${u.email || '—'}</div></div>
             </div></td>
-            <td><span class="plan-pill ${pillClass[plan]} pill-btn" onclick="event.stopPropagation(); askToggle('${u.id}','${plan}','${nm}')" title="Cliquer pour changer le plan">${PLAN_LABEL[plan]}</span></td>
+            <td data-label="Plan"><span class="plan-pill ${pillClass[plan]} pill-btn" onclick="event.stopPropagation(); askToggle('${u.id}','${plan}','${nm}')" title="Cliquer pour changer le plan">${PLAN_LABEL[plan]}</span></td>
           </tr>`;
         }).join('');
 
@@ -677,20 +712,20 @@
 
     const tbody = document.getElementById('wl-table');
     tbody.innerHTML = page.length === 0
-      ? `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Aucune inscription pour le moment.</td></tr>`
+      ? `<tr><td colspan="5" class="cell-empty" style="text-align:center;padding:40px;color:var(--muted);">Aucune inscription pour le moment.</td></tr>`
       : page.map(w => {
           const name = `${w.prenom || ''} ${w.nom || ''}`.trim() || '—';
           const initiale = (w.prenom || w.email || '?')[0].toUpperCase();
           const date = w.created_at ? new Date(w.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
           return `<tr>
-            <td><div class="user-cell">
+            <td class="cell-main"><div class="user-cell">
               <div class="u-avatar" style="background:rgba(200,40,40,0.1);border:1px solid rgba(200,40,40,0.25);color:var(--red);">${initiale}</div>
               <div class="u-name">${name}</div>
             </div></td>
-            <td style="font-size:12px;color:#bbb;">${w.email || '—'}</td>
-            <td style="font-size:12px;">${w.telephone || '—'}</td>
-            <td style="font-size:11px;"><span class="plan-pill pill-gratuit">${w.source || '—'}</span></td>
-            <td style="font-size:12px;color:#666;">${date}</td>
+            <td data-label="Email" style="font-size:12px;color:#bbb;">${w.email || '—'}</td>
+            <td data-label="Téléphone" style="font-size:12px;">${w.telephone || '—'}</td>
+            <td data-label="Source" style="font-size:11px;"><span class="plan-pill pill-gratuit">${w.source || '—'}</span></td>
+            <td data-label="Date" style="font-size:12px;color:#666;">${date}</td>
           </tr>`;
         }).join('');
 
