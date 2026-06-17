@@ -23,11 +23,12 @@ export default async function handler(req, res) {
   const url = process.env.SUPABASE_URL || FALLBACK_URL;
   const headers = { 'apikey': key, 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' };
 
-  const { action, user_id, plan } = req.body || {};
-  if (!action || !user_id) return res.status(400).json({ error: 'action et user_id requis' });
+  const { action, user_id, plan, id } = req.body || {};
+  if (!action) return res.status(400).json({ error: 'action requise' });
 
   try {
     if (action === 'set-plan') {
+      if (!user_id) return res.status(400).json({ error: 'user_id requis' });
       const newPlan = plan === 'premium' ? 'premium' : 'gratuit';
       const r = await fetch(url + '/rest/v1/users?id=eq.' + encodeURIComponent(user_id), {
         method: 'PATCH',
@@ -40,6 +41,20 @@ export default async function handler(req, res) {
       }
       return res.status(200).json({ ok: true, plan: newPlan });
     }
+
+    if (action === 'delete-waitlist') {
+      if (!id) return res.status(400).json({ error: 'id requis' });
+      const r = await fetch(url + '/rest/v1/waitlist?id=eq.' + encodeURIComponent(id), {
+        method: 'DELETE',
+        headers: Object.assign({}, headers, { 'Prefer': 'return=minimal' })
+      });
+      if (!r.ok) {
+        const t = await r.text().catch(() => '');
+        return res.status(502).json({ error: 'Suppression impossible (' + r.status + ') ' + t });
+      }
+      return res.status(200).json({ ok: true });
+    }
+
     return res.status(400).json({ error: 'Action inconnue : ' + action });
   } catch (e) {
     return res.status(500).json({ error: e.message });
