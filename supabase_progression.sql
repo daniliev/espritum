@@ -9,5 +9,9 @@ ALTER TABLE public.users
 ALTER TABLE public.users
   ADD COLUMN IF NOT EXISTS goal_weeks integer NOT NULL DEFAULT 13;
 
+-- Photo "corps de rêve" (objectif) — affichée en permanence sur le dashboard
+ALTER TABLE public.users
+  ADD COLUMN IF NOT EXISTS dream_body_url text;
+
 -- Les photos vont dans le bucket Storage "instant-photos" (déjà utilisé par l'app).
 -- Si le bucket n'existe pas : Supabase → Storage → New bucket → nom "instant-photos" → Public.

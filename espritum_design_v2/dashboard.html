@@ -998,7 +998,7 @@
       renderBodyStats(profile);
 
       // Body photos + goal
-      loadBodyPhotos();
+      loadBodyPhotos(profile);
 
       // Charts fusionnés
       await loadWeekProgressCalories(userId, profile?.calories_objectif || 2400);
@@ -1242,15 +1242,21 @@
     });
   }
 
-  function loadBodyPhotos() {
-    const currentSrc = localStorage.getItem('espritum_last_scan_photo');
+  function loadBodyPhotos(profile) {
+    // Mon corps actuel = DERNIER scan de la progression (semaine la plus récente)
+    let currentSrc = null;
+    const pp = (profile && profile.progress_photos) ? profile.progress_photos : {};
+    const weeks = Object.keys(pp).filter(k => pp[k]).map(Number).sort((a, b) => b - a);
+    if (weeks.length) currentSrc = pp[weeks[0]];
+    if (!currentSrc) currentSrc = localStorage.getItem('espritum_last_scan_photo');
     if (currentSrc) {
       const img = document.getElementById('current-body-img');
       img.src = currentSrc;
       img.style.display = 'block';
       document.getElementById('current-body-empty').style.display = 'none';
     }
-    const dreamSrc = localStorage.getItem('espritum_dream_body');
+    // Mon corps de rêve = photo objectif (persistée en base, toujours affichée)
+    const dreamSrc = (profile && profile.dream_body_url) ? profile.dream_body_url : localStorage.getItem('espritum_dream_body');
     if (dreamSrc) {
       const img = document.getElementById('dream-body-img');
       img.src = dreamSrc;
@@ -1273,9 +1279,10 @@
     if (!checkPhotosAndShowMessage()) { /* message affiché */ } else { generateAIPlan(sliderKey); }
   }
 
-  function handleDreamUpload(input) {
+  async function handleDreamUpload(input) {
     const file = input.files[0];
     if (!file) return;
+    // Aperçu instantané
     const reader = new FileReader();
     reader.onload = e => {
       const src = e.target.result;
@@ -1284,11 +1291,24 @@
       img.src = src;
       img.style.display = 'block';
       document.getElementById('dream-body-empty').style.display = 'none';
-      // Re-déclencher le plan IA maintenant que les 2 photos sont peut-être là
       const idx = parseInt(document.getElementById('goal-slider').value);
       generateAIPlan(SLIDER_KEYS[idx]);
     };
     reader.readAsDataURL(file);
+
+    // Persistance Supabase (photo objectif toujours disponible, même sur un autre appareil)
+    try {
+      const uid = (window._espritumUser && window._espritumUser.id) || (typeof userId !== 'undefined' ? userId : null);
+      if (uid && sb) {
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const path = `${uid}/dream-${Date.now()}.${ext}`;
+        const { error: upErr } = await sb.storage.from('instant-photos').upload(path, file, { upsert: true, contentType: file.type });
+        if (!upErr) {
+          const { data: { publicUrl } } = sb.storage.from('instant-photos').getPublicUrl(path);
+          await sb.from('users').update({ dream_body_url: publicUrl }).eq('id', uid);
+        }
+      }
+    } catch (e) { console.warn('dream upload', e); }
   }
 
   const SLIDER_KEYS  = ['2sem', '1m', '3m', '6m', '12m', '24m', '36m'];
