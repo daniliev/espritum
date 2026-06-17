@@ -160,12 +160,13 @@
   @media (max-width: 700px) {
     /* Topbar compacte */
     .topbar { padding: 14px 16px; }
-    .topbar-name { font-size: 19px; letter-spacing: 3px; }
+    .topbar-brand { gap: 9px; }
+    .topbar-name { font-size: 20px; letter-spacing: 3px; }
     .topbar-logo { width: 28px; height: 28px; }
-    .topbar-right { gap: 10px; }
-    .topbar-update { font-size: 10px; line-height: 1.2; max-width: 88px; }
-    .topbar-link { font-size: 10px; }
-    .admin-tag { font-size: 8px; padding: 2px 6px; letter-spacing: 2px; }
+    .topbar-right { gap: 12px; }
+    .topbar-update { display: none; }          /* horodatage masqué sur mobile (trop tassé) */
+    .topbar-link { font-size: 11px; letter-spacing: 1px; white-space: nowrap; }
+    .admin-tag { font-size: 8px; padding: 3px 7px; letter-spacing: 2px; }
 
     /* Onglets */
     .tab { padding: 14px 16px; font-size: 11px; letter-spacing: 1px; }
@@ -284,7 +285,7 @@
         <canvas id="plansChart" height="120"></canvas>
       </div>
       <div class="card">
-        <div class="card-header"><div class="card-title">Trafic du site</div><span class="card-meta">7 derniers jours</span></div>
+        <div class="card-header"><div class="card-title">Trafic du site</div><span class="card-meta">30 derniers jours</span></div>
         <div class="bar-list" id="traffic-mini"><div class="empty-hint">Chargement…</div></div>
         <a href="admin_trafic.html" style="display:inline-block;margin-top:16px;font-size:12px;letter-spacing:1px;font-weight:600;color:var(--red);text-decoration:none;">Voir le trafic détaillé →</a>
       </div>
