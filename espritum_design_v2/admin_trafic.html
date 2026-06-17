@@ -245,10 +245,10 @@
   }
 
   function showEmpty() {
-    const msg = `<div class="empty-hint">Le suivi du trafic n'est pas encore activé.<br>Crée la table <code>page_views</code> dans Supabase pour démarrer.</div>`;
+    const msg = `<div class="empty-hint">Données indisponibles.<br>Vérifie que <code>api/admin-data.js</code> est déployé et que <code>SUPABASE_SERVICE_ROLE_KEY</code> est sur Vercel.</div>`;
     document.getElementById('sources-list').innerHTML = msg;
     document.getElementById('pages-list').innerHTML = msg;
-    document.getElementById('recent-table').innerHTML = `<tr><td colspan="3" style="text-align:center;padding:30px;color:var(--muted);">En attente de la table <code style="color:var(--red);">page_views</code></td></tr>`;
+    document.getElementById('recent-table').innerHTML = `<tr><td colspan="3" style="text-align:center;padding:30px;color:var(--muted);">Données indisponibles</td></tr>`;
     ['kpi-visits','kpi-uniques','kpi-pages'].forEach(id => document.getElementById(id).textContent = '0');
     document.getElementById('kpi-topsrc').textContent = '—';
     document.getElementById('kpi-visits-sub').textContent = 'tracking inactif';
@@ -257,15 +257,25 @@
     if (visitsChart) { visitsChart.destroy(); visitsChart = null; }
   }
 
+  let ALL_PV = null;  // cache des visites (lues une fois via l'endpoint serveur)
+
   async function load() {
     const since = new Date(Date.now() - rangeDays*86400000);
-    let data, error;
-    try {
-      const res = await sb.from('page_views').select('path,referrer,visitor_id,created_at').gte('created_at', since.toISOString()).order('created_at', { ascending: false }).limit(20000);
-      data = res.data; error = res.error;
-    } catch(e) { error = e; }
 
-    if (error || !data) { showEmpty(); return; }
+    // Lecture sécurisée côté serveur (clé service) — le RLS bloque la lecture publique
+    if (ALL_PV === null) {
+      try {
+        const resp = await fetch('/api/admin-data');
+        if (!resp.ok) { showEmpty(); return; }
+        const j = await resp.json();
+        if (!j || !j.meta || !j.meta.pageviews_ok) { showEmpty(); return; }
+        ALL_PV = j.pageviews || [];
+      } catch(e) { showEmpty(); return; }
+    }
+
+    const data = ALL_PV
+      .filter(d => new Date(d.created_at) >= since)
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     const total = data.length;
     const uniques = new Set(data.map(d => d.visitor_id).filter(Boolean)).size;
