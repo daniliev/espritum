@@ -83,6 +83,7 @@
   .body-photos-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .body-photo-item { display: flex; flex-direction: column; gap: 8px; }
   .body-photo-lbl { font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
+  .dash-sec-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin: 6px 2px 12px; }
   .body-photo-frame { width: 100%; aspect-ratio: 3/4; background: var(--bg3); border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
   .body-photo-frame img { width: 100%; height: 100%; object-fit: cover; display: none; }
   .body-photo-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px; text-align: center; }
@@ -621,6 +622,7 @@
     </div>
 
     <!-- BODY PHOTOS + TIME GOAL -->
+    <div class="dash-sec-label">Mon évolution</div>
     <div class="body-photos-card">
       <div class="body-photos-row">
         <div class="body-photo-item">
@@ -658,6 +660,7 @@
     </div>
 
     <!-- COMPOSITION CORPORELLE -->
+    <div class="dash-sec-label">Ma composition</div>
     <div class="body-stats-card">
       <div class="body-stats-grid4">
         <div class="body-stat-box">
