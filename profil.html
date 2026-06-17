@@ -838,7 +838,7 @@ var safetyTimeout = 0;
       document.getElementById('sidebar-name').textContent = 'Kaito';
       document.getElementById('sidebar-plan').textContent = '⚔️ Guerrier';
       const streakEl = document.getElementById('topbar-streak');
-      if (streakEl) streakEl.textContent = '<img class="si" src="icons/streak-icon.png"> 21';
+      if (streakEl) streakEl.innerHTML = '<img class="si" src="icons/streak-icon.png"> 21';
       const avatarPill = document.getElementById('topbar-avatar');
       if (avatarPill) avatarPill.textContent = initiale;
       const statSessions = document.getElementById('stat-total-sessions');
@@ -846,7 +846,7 @@ var safetyTimeout = 0;
       const statStreak = document.getElementById('stat-best-streak');
       if (statSessions) statSessions.textContent = '28';
       if (statVol) { statVol.innerHTML = '24<span style="font-size:14px;color:var(--red);">k</span>'; }
-      if (statStreak) statStreak.textContent = '<img class="si" src="icons/streak-icon.png">21';
+      if (statStreak) statStreak.innerHTML = '<img class="si" src="icons/streak-icon.png">21';
       if (MOMENTS_DATA && MOMENTS_DATA.you) MOMENTS_DATA.you.avatar = initiale;
       initFreemium('guerrier');
       return;
