@@ -160,12 +160,13 @@
   @media (max-width: 700px) {
     /* Topbar compacte */
     .topbar { padding: 14px 16px; }
-    .topbar-name { font-size: 19px; letter-spacing: 3px; }
+    .topbar-brand { gap: 9px; }
+    .topbar-name { font-size: 20px; letter-spacing: 3px; }
     .topbar-logo { width: 28px; height: 28px; }
-    .topbar-right { gap: 10px; }
-    .topbar-update { font-size: 10px; line-height: 1.2; max-width: 88px; }
-    .topbar-link { font-size: 10px; }
-    .admin-tag { font-size: 8px; padding: 2px 6px; letter-spacing: 2px; }
+    .topbar-right { gap: 12px; }
+    .topbar-update { display: none; }          /* horodatage masqué sur mobile (trop tassé) */
+    .topbar-link { font-size: 11px; letter-spacing: 1px; white-space: nowrap; }
+    .admin-tag { font-size: 8px; padding: 3px 7px; letter-spacing: 2px; }
 
     /* Onglets */
     .tab { padding: 14px 16px; font-size: 11px; letter-spacing: 1px; }
@@ -262,7 +263,7 @@
       <div class="kpi-card">
         <div class="kpi-top">
           <span class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>
-          <span class="kpi-label">Abonnés Premium</span>
+          <span class="kpi-label">Abonnés payants</span>
         </div>
         <div class="kpi-val" id="kpi-paid">—</div>
         <div class="kpi-sub" id="kpi-paid-sub">—</div>
@@ -270,7 +271,7 @@
       <div class="kpi-card">
         <div class="kpi-top">
           <span class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
-          <span class="kpi-label">Visites (7 j)</span>
+          <span class="kpi-label">Visites (30 j)</span>
         </div>
         <div class="kpi-val" id="kpi-visits">—</div>
         <div class="kpi-sub" id="kpi-visits-sub">—</div>
@@ -284,7 +285,7 @@
         <canvas id="plansChart" height="120"></canvas>
       </div>
       <div class="card">
-        <div class="card-header"><div class="card-title">Trafic du site</div><span class="card-meta">7 derniers jours</span></div>
+        <div class="card-header"><div class="card-title">Trafic du site</div><span class="card-meta">30 derniers jours</span></div>
         <div class="bar-list" id="traffic-mini"><div class="empty-hint">Chargement…</div></div>
         <a href="admin_trafic.html" style="display:inline-block;margin-top:16px;font-size:12px;letter-spacing:1px;font-weight:600;color:var(--red);text-decoration:none;">Voir le trafic détaillé →</a>
       </div>
@@ -374,15 +375,44 @@
   const PER_PAGE = 10;
   let currentUserId = null;
   let allWaitlist = [], filteredWaitlist = [], wlPage = 1;
+  let ADMIN = { users: [], waitlist: [], subscriptions: [], pageviews: [], meta: {} };
+  const ADMIN_API_KEY = ''; // laisser vide sauf si tu actives ADMIN_API_KEY sur Vercel
 
-  // ── INIT ──
+  // ── INIT : une seule requête serveur sécurisée (clé service) ──
   async function init() {
     try {
-      await Promise.all([loadUsers(), loadAnalytics(), loadWaitlist()]);
-    } catch(e) { console.error(e); }
-    finally {
+      const resp = await fetch('/api/admin-data', {
+        headers: ADMIN_API_KEY ? { 'x-admin-key': ADMIN_API_KEY } : {}
+      });
+      if (!resp.ok) {
+        const d = await resp.json().catch(() => ({}));
+        throw new Error(d.error || ('HTTP ' + resp.status));
+      }
+      ADMIN = await resp.json();
+      allUsers = ADMIN.users || [];
+      filteredUsers = [...allUsers];
+      allWaitlist = ADMIN.waitlist || [];
+      filteredWaitlist = [...allWaitlist];
+      renderKpis();
+      renderTable();
+      renderAnalytics();
+      renderWaitlist();
+    } catch (e) {
+      console.error('admin-data error', e);
+      showDataError(e.message);
+    } finally {
       document.getElementById('last-update').textContent = 'Mis à jour : ' + new Date().toLocaleTimeString('fr-FR');
     }
+  }
+
+  function showDataError(msg) {
+    const hint = `<div class="empty-hint">Impossible de charger les données.<br><code>${msg || ''}</code><br>Vérifie que <code>SUPABASE_SERVICE_ROLE_KEY</code> est sur Vercel et que <code>api/admin-data.js</code> est déployé.</div>`;
+    const wl = document.getElementById('wl-table');
+    if (wl) wl.innerHTML = `<tr><td colspan="5" class="cell-empty">${hint}</td></tr>`;
+    const um = document.getElementById('users-table');
+    if (um) um.innerHTML = `<tr><td colspan="2" class="cell-empty">${hint}</td></tr>`;
+    const tm = document.getElementById('traffic-mini');
+    if (tm) tm.innerHTML = hint;
   }
 
   function showTab(tab) {
@@ -394,33 +424,45 @@
   if (location.hash === '#users') showTab('users');
   if (location.hash === '#waitlist') showTab('waitlist');
 
-  // ── USERS + KPI plans ──
-  async function loadUsers() {
-    const { data: users, error } = await sb.from('users').select('*').order('created_at', { ascending: false });
-    if (error) throw error;
-    allUsers = users || [];
-    filteredUsers = [...allUsers];
-
+  // ── KPI : sépare VRAIS paiements (abonnements Stripe) et premium OFFERTS ──
+  function renderKpis() {
     const total = allUsers.length;
-    const premium = allUsers.filter(u => u.plan === 'premium').length;
-    const gratuit = total - premium;
-    const mrr = premium * PREMIUM_PRICE;
+    const premiumAll = allUsers.filter(u => u.plan === 'premium').length;  // payants + offerts
+    const gratuit = total - premiumAll;
+
+    // Vrais abonnés payants = lignes dans `subscriptions` avec un statut actif
+    const ACTIVE = ['active', 'trialing', 'past_due'];
+    const activeSubs = (ADMIN.subscriptions || []).filter(s =>
+      ACTIVE.includes(String(s.statut || s.status || '').toLowerCase())
+    );
+    const paying = activeSubs.length;
+    const offerts = Math.max(0, premiumAll - paying);
+
+    // MRR = somme des montants réels (fallback prix unitaire si montant absent)
+    let mrr = activeSubs.reduce((sum, s) => sum + (Number(s.montant) || 0), 0);
+    if (!mrr && paying) mrr = paying * PREMIUM_PRICE;
 
     document.getElementById('kpi-users').textContent = total;
-    document.getElementById('kpi-users-sub').innerHTML = `<b>${gratuit}</b> gratuits · <b>${premium}</b> premium`;
-    document.getElementById('kpi-paid').textContent = premium;
-    document.getElementById('kpi-paid-sub').innerHTML = `<b>${total > 0 ? Math.round((premium/total)*100) : 0}%</b> de conversion`;
-    document.getElementById('kpi-mrr').textContent = mrr.toLocaleString('fr-FR', {minimumFractionDigits: mrr % 1 ? 2 : 0, maximumFractionDigits: 2}) + '€';
-    document.getElementById('kpi-mrr-sub').innerHTML = `ARR estimé : <b>${(mrr*12).toLocaleString('fr-FR', {maximumFractionDigits:0})}€</b>`;
+    document.getElementById('kpi-users-sub').innerHTML = `<b>${gratuit}</b> gratuits · <b>${premiumAll}</b> premium`;
+
+    // KPI "Abonnés payants" = UNIQUEMENT les vrais paiements
+    document.getElementById('kpi-paid').textContent = paying;
+    document.getElementById('kpi-paid-sub').innerHTML = offerts > 0
+      ? `<b>${offerts}</b> premium offert${offerts > 1 ? 's' : ''} (non comptés)`
+      : `<b>${total > 0 ? Math.round((paying / total) * 100) : 0}%</b> de conversion`;
+
+    document.getElementById('kpi-mrr').textContent = mrr.toLocaleString('fr-FR', { minimumFractionDigits: mrr % 1 ? 2 : 0, maximumFractionDigits: 2 }) + '€';
+    document.getElementById('kpi-mrr-sub').innerHTML = `Revenu réel · ARR <b>${(mrr * 12).toLocaleString('fr-FR', { maximumFractionDigits: 0 })}€</b>`;
 
     if (plansChart) plansChart.destroy();
     plansChart = new Chart(document.getElementById('plansChart').getContext('2d'), {
       type: 'doughnut',
-      data: { labels: ['Gratuit', 'Premium'], datasets: [{ data: [gratuit, premium], backgroundColor: ['#2a2a2a', '#c82828'], borderColor: '#0a0a0a', borderWidth: 3 }] },
-      options: { cutout: '62%', plugins: { legend: { position: 'bottom', labels: { color: '#999', font: { size: 12 }, padding: 16 } } } }
+      data: {
+        labels: ['Gratuit', 'Premium payant', 'Premium offert'],
+        datasets: [{ data: [gratuit, paying, offerts], backgroundColor: ['#2a2a2a', '#c82828', '#6a2020'], borderColor: '#0a0a0a', borderWidth: 3 }]
+      },
+      options: { cutout: '62%', plugins: { legend: { position: 'bottom', labels: { color: '#999', font: { size: 12 }, padding: 14 } } } }
     });
-
-    renderTable();
   }
 
   function renderTable() {
@@ -507,30 +549,42 @@
       </div>`).join('');
   }
 
-  async function loadAnalytics() {
-    const since = new Date(Date.now() - 7*86400000);
-    let data, error;
-    try {
-      const res = await sb.from('page_views').select('referrer,visitor_id').gte('created_at', since.toISOString()).limit(10000);
-      data = res.data; error = res.error;
-    } catch(e) { error = e; }
+  // Catégorise un referrer : Direct / Organique (moteurs) / Réseaux / Interne
+  function trafficCategory(ref) {
+    if (!ref) return 'Direct';
+    let host = '';
+    try { host = new URL(ref).hostname.replace(/^www\./, ''); } catch (e) { return 'Autre'; }
+    if (host.includes('espritum')) return 'Navigation interne';
+    if (/google|bing|duckduckgo|yahoo|ecosia|qwant/.test(host)) return 'Organique (Google…)';
+    if (/instagram|facebook|fb\.|tiktok|youtube|youtu\.be|twitter|t\.co|x\.com|linkedin|snapchat|reddit|whatsapp|telegram|pinterest/.test(host)) return 'Réseaux sociaux';
+    return 'Autres sites';
+  }
 
-    if (error || !data) {
-      document.getElementById('traffic-mini').innerHTML = `<div class="empty-hint">Le suivi du trafic n'est pas encore activé.<br>Crée la table <code>page_views</code> dans Supabase pour démarrer.</div>`;
+  function renderAnalytics() {
+    const data = ADMIN.pageviews || [];
+    const pvOk = !ADMIN.meta || ADMIN.meta.pageviews_ok !== false;
+
+    if (!pvOk) {
+      document.getElementById('traffic-mini').innerHTML = `<div class="empty-hint">Le suivi du trafic n'est pas encore activé.<br>Lance le script <code>supabase_page_views_table.sql</code> dans Supabase pour créer la table <code>page_views</code>.</div>`;
       document.getElementById('kpi-visits').textContent = '0';
-      document.getElementById('kpi-visits-sub').textContent = 'tracking inactif';
+      document.getElementById('kpi-visits-sub').textContent = 'table page_views à créer';
       return;
     }
 
     const total = data.length;
     const uniques = new Set(data.map(d => d.visitor_id).filter(Boolean)).size;
     document.getElementById('kpi-visits').textContent = total.toLocaleString('fr-FR');
-    document.getElementById('kpi-visits-sub').innerHTML = `<b>${uniques.toLocaleString('fr-FR')}</b> visiteurs uniques`;
+    document.getElementById('kpi-visits-sub').innerHTML = `<b>${uniques.toLocaleString('fr-FR')}</b> visiteurs uniques · 30 j`;
 
-    const srcMap = {};
-    data.forEach(d => { const s = deriveSource(d.referrer); srcMap[s] = (srcMap[s]||0)+1; });
-    const sources = Object.entries(srcMap).sort((a,b)=>b[1]-a[1]).slice(0,4);
-    renderBarList('traffic-mini', sources, true);
+    // Répartition par canal (direct / organique / réseaux / interne)
+    const catMap = {};
+    data.forEach(d => { const c = trafficCategory(d.referrer); catMap[c] = (catMap[c] || 0) + 1; });
+    const cats = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
+    if (!cats.length) {
+      document.getElementById('traffic-mini').innerHTML = `<div class="empty-hint">Aucune visite enregistrée pour l'instant.<br>Le tracking est actif — reviens après quelques visites.</div>`;
+      return;
+    }
+    renderBarList('traffic-mini', cats, true);
   }
 
   // ── Bottom sheet : détails utilisateur ──
@@ -616,13 +670,25 @@
   }
 
   async function doToggle(userId, newPlan, name) {
-    const { error } = await sb.from('users').update({ plan: newPlan }).eq('id', userId);
     closeConfirm();
-    if (error) { showToast('error', 'Erreur lors de la mise à jour.'); return; }
-    showToast('success', `${name} → ${PLAN_LABEL[newPlan]}`);
-    await loadUsers();
-    // Rafraîchir le sheet s'il est ouvert sur cet utilisateur
-    if (currentSheetId && String(currentSheetId) === String(userId)) openSheet(userId);
+    try {
+      const resp = await fetch('/api/admin-action', {
+        method: 'POST',
+        headers: Object.assign({ 'Content-Type': 'application/json' }, ADMIN_API_KEY ? { 'x-admin-key': ADMIN_API_KEY } : {}),
+        body: JSON.stringify({ action: 'set-plan', user_id: userId, plan: newPlan })
+      });
+      const d = await resp.json().catch(() => ({}));
+      if (!resp.ok) { showToast('error', d.error || ('Maj impossible (HTTP ' + resp.status + ')')); return; }
+      // Mise à jour locale immédiate
+      const u = allUsers.find(x => String(x.id) === String(userId));
+      if (u) u.plan = newPlan;
+      filterUsers();
+      renderKpis();
+      showToast('success', `${name} → ${PLAN_LABEL[newPlan]}`);
+      if (currentSheetId && String(currentSheetId) === String(userId)) openSheet(userId);
+    } catch (e) {
+      showToast('error', 'Erreur réseau lors de la mise à jour.');
+    }
   }
 
   // ── Suppression complète du compte ──
@@ -653,7 +719,9 @@
       }
       showToast('success', `Compte de ${name} supprimé`);
       closeSheet();
-      await loadUsers();
+      allUsers = allUsers.filter(x => String(x.id) !== String(userId));
+      filterUsers();
+      renderKpis();
     } catch (e) {
       closeConfirm();
       showToast('error', 'Erreur réseau lors de la suppression.');
@@ -669,30 +737,6 @@
   }
 
   // ── LISTE D'ATTENTE ──
-  async function loadWaitlist() {
-    let data, error;
-    try {
-      const res = await sb.from('waitlist').select('*');
-      data = res.data; error = res.error;
-    } catch(e) { error = e; }
-
-    const tbody = document.getElementById('wl-table');
-    if (error || !data) {
-      document.getElementById('wl-count').textContent = '—';
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Impossible de lire la table <code style="color:var(--red);">waitlist</code>.<br>Vérifie qu'une règle RLS autorise la lecture (SELECT) pour la clé publique.</td></tr>`;
-      return;
-    }
-    // Tri du plus récent au plus ancien (created_at si présent)
-    data.sort((a, b) => {
-      const da = a.created_at ? new Date(a.created_at).getTime() : 0;
-      const db = b.created_at ? new Date(b.created_at).getTime() : 0;
-      return db - da;
-    });
-    allWaitlist = data;
-    filteredWaitlist = [...allWaitlist];
-    renderWaitlist();
-  }
-
   function filterWaitlist() {
     wlPage = 1;
     const q = (document.getElementById('wl-search').value || '').toLowerCase();
