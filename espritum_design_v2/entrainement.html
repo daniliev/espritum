@@ -124,14 +124,14 @@
   .session-detail { display: none; flex-direction: column; gap: 14px; }
   .session-detail.visible { display: flex; }
 
-  .session-header-card { background: #131313; border-radius: 14px; padding: 20px 22px; border: 1px solid rgba(200,40,40,0.15); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .session-header-card { background: #131313; border-radius: 14px; padding: 20px 22px; border: 1px solid rgba(200,40,40,0.15); display: flex; align-items: center; justify-content: center; gap: 48px; }
   .session-hdr-left { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; }
   .session-day-title { font-family: var(--font-display); font-size: 22px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; text-align: center; }
   .session-muscle-img { width: 96px; height: 96px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 6px 16px rgba(200,40,40,0.3)); }
   /* Anneau de progression (dégradé rouge) */
-  .session-ring { position: relative; width: 92px; height: 92px; flex-shrink: 0; }
+  .session-ring { position: relative; width: 112px; height: 112px; flex-shrink: 0; }
   .session-ring svg { width: 100%; height: 100%; display: block; }
-  .session-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 24px; color: #fff; letter-spacing: 1px; }
+  .session-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 28px; color: #fff; letter-spacing: 1px; }
   .btn-back { padding: 9px 16px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
   .btn-back:hover { border-color: #333; color: #aaa; }
   .progress-bar { height: 4px; background: var(--muted2); border-radius: 2px; overflow: hidden; }
@@ -362,8 +362,8 @@
                 <stop offset="100%" stop-color="#7a1010"/>
               </linearGradient>
             </defs>
-            <circle cx="50" cy="50" r="42" fill="none" stroke="#262626" stroke-width="8"/>
-            <circle id="session-ring-fg" cx="50" cy="50" r="42" fill="none" stroke="url(#ringGrad)" stroke-width="8" stroke-linecap="round" transform="rotate(-90 50 50)" stroke-dasharray="263.9" stroke-dashoffset="263.9" style="transition:stroke-dashoffset .5s ease"/>
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#262626" stroke-width="11"/>
+            <circle id="session-ring-fg" cx="50" cy="50" r="42" fill="none" stroke="url(#ringGrad)" stroke-width="11" stroke-linecap="round" transform="rotate(-90 50 50)" stroke-dasharray="263.9" stroke-dashoffset="263.9" style="transition:stroke-dashoffset .5s ease"/>
           </svg>
           <div class="session-pct" id="session-pct">0%</div>
         </div>
