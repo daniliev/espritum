@@ -147,9 +147,10 @@
   .ex-row-header {
     display: flex; align-items: stretch; gap: 0; cursor: pointer;
   }
-  /* Photo de l'exercice : collée à gauche, pleine hauteur, sans padding */
+  /* Photo de l'exercice : carrée, collée à gauche, sans padding */
   .ex-thumb {
-    width: 78px; align-self: stretch; object-fit: cover; flex-shrink: 0;
+    width: 96px; height: 96px; object-fit: cover; flex-shrink: 0;
+    align-self: flex-start;
     background: #fff; border: none; border-radius: 0;
   }
   .ex-row.done-ex .ex-thumb { opacity: 0.45; }
