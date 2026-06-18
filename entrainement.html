@@ -125,8 +125,8 @@
   .session-detail.visible { display: flex; }
 
   .session-header-card { background: #131313; border-radius: 14px; padding: 20px 22px; border: 1px solid rgba(200,40,40,0.15); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-  .session-hdr-left { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; min-width: 0; }
-  .session-day-title { font-family: var(--font-display); font-size: 30px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; }
+  .session-hdr-left { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; }
+  .session-day-title { font-family: var(--font-display); font-size: 22px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; text-align: center; }
   .session-muscle-img { width: 96px; height: 96px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 6px 16px rgba(200,40,40,0.3)); }
   /* Anneau de progression (dégradé rouge) */
   .session-ring { position: relative; width: 92px; height: 92px; flex-shrink: 0; }
@@ -869,7 +869,7 @@
 
     const detail = document.getElementById('session-detail');
     detail.classList.add('visible');
-    document.getElementById('session-day-title').textContent = currentProgram.name.toUpperCase() + ' DAY.';
+    document.getElementById('session-day-title').textContent = currentProgram.name.toUpperCase();
     document.getElementById('session-pct').textContent = '0%';
     setSessionRing(0);
 
