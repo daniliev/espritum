@@ -106,6 +106,17 @@
   .preset-btn.active { border-color: var(--red); color: var(--red); background: rgba(200,40,40,0.15); }
 
   /* ── MUSCLE GRID ── */
+  /* RECOMMANDÉ AUJOURD'HUI */
+  .today-reco { background: linear-gradient(150deg, #1a0606, var(--bg2)); border: 1px solid rgba(200,40,40,0.3); border-radius: 16px; padding: 20px; margin-bottom: 18px; }
+  .today-reco-top { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 8px; }
+  .today-reco-title { font-family: var(--font-display); font-size: 30px; letter-spacing: 1px; text-transform: uppercase; color: #fff; line-height: 1; }
+  .today-reco-sub { font-size: 12px; color: var(--muted); margin: 7px 0 16px; }
+  .today-reco-exos { display: flex; flex-direction: column; gap: 9px; margin-bottom: 18px; }
+  .today-reco-exo { display: flex; align-items: center; gap: 11px; font-size: 13px; color: #d0d0d0; }
+  .today-reco-exo .rdot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+  .today-reco-btn { width: 100%; padding: 15px; background: var(--red); border: none; border-radius: 10px; color: #fff; font-family: var(--font-body); font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+  .today-reco-btn:hover { background: #d93030; }
+
   .muscle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   .muscle-card {
     background: #131313; border-radius: 14px; padding: 20px 12px 16px;
@@ -333,19 +344,15 @@
           <button class="timer-btn primary" id="timer-btn" onclick="toggleTimer()">START</button>
           <button class="timer-btn" id="btn-plus30" onclick="addSeconds(30)">+30S</button>
         </div>
-        <div class="timer-presets" id="timer-presets">
-          <div class="preset-btn" onclick="setPreset(30)">30s</div>
-          <div class="preset-btn" onclick="setPreset(60)">1min</div>
-          <div class="preset-btn active" onclick="setPreset(90)">90s</div>
-          <div class="preset-btn" onclick="setPreset(120)">2min</div>
-          <div class="preset-btn" onclick="setPreset(180)">3min</div>
-        </div>
       </div>
     </div>
 
+    <!-- ① RECOMMANDÉ AUJOURD'HUI (lié à l'analyse IA) -->
+    <div class="today-reco" id="today-reco"></div>
+
     <!-- ② CHOOSE YOUR SESSION -->
     <div id="programs-section">
-      <div class="section-header" data-i18n="train_choose_session">CHOOSE YOUR SESSION.</div>
+      <div class="section-header"><span data-i18n="train_choose_session">CHOOSE YOUR SESSION.</span></div>
       <div class="muscle-grid">
         <div class="muscle-card" id="card-bras" onclick="selectSession('bras')">
           <img src="body/bras.png" class="muscle-img" alt="Arms"
@@ -807,7 +814,8 @@
       document.getElementById('sidebar-plan').textContent = '⚔️ Guerrier';
       document.getElementById('topbar-streak').textContent = '<img class="si" src="icons/streak-icon.png"> 12';
       document.getElementById('topbar-avatar').textContent = 'Y';
-      renderWeek(); renderTimerNum(90); initFreemium('guerrier');
+      userObjectif = 'prise_masse';
+      renderWeek(); renderTimerNum(90); initFreemium('guerrier'); renderTodayReco();
       return;
     }
 
@@ -824,7 +832,8 @@
       document.getElementById('sidebar-plan').textContent = PLAN_LABEL[profile?.plan || 'gratuit'];
       document.getElementById('topbar-streak').innerHTML = '<img class="si" src="icons/streak-icon.png"> ' + (profile?.streak || 0);
       document.getElementById('topbar-avatar').textContent = prenom[0].toUpperCase();
-      renderWeek(); renderTimerNum(90); initFreemium(profile?.plan || 'gratuit');
+      userObjectif = profile?.objectif || 'prise_masse';
+      renderWeek(); renderTimerNum(90); initFreemium(profile?.plan || 'gratuit'); renderTodayReco();
       loadWeekProgressTrain();
       // Vérifier si le streak a déjà été donné aujourd'hui via localStorage
       const _streakKey = 'esp_streak_' + userId;
@@ -833,6 +842,42 @@
       }
     } catch(e) { console.error(e); }
     finally {}
+  }
+
+  /* ── RECOMMANDÉ AUJOURD'HUI (split lié à l'objectif / analyse) ── */
+  let userObjectif = 'prise_masse';
+  // Mon → Sun. 'rest' = jour de repos
+  const WEEKLY_SPLIT = {
+    perte_gras:    ['fullbody','cardio','jambes','fullbody','cardio','abdos','rest'],
+    prise_masse:   ['pecs','dos','jambes','epaules','bras','abdos','rest'],
+    endurance:     ['cardio','jambes','fullbody','cardio','dos','abdos','rest'],
+    reequilibrage: ['fullbody','cardio','jambes','dos','pecs','abdos','rest'],
+  };
+
+  function renderTodayReco() {
+    const el = document.getElementById('today-reco');
+    if (!el) return;
+    const dow = new Date().getDay();
+    const idx = dow === 0 ? 6 : dow - 1;             // Lun=0 … Dim=6
+    const split = WEEKLY_SPLIT[userObjectif] || WEEKLY_SPLIT.prise_masse;
+    const key = split[idx];
+
+    if (key === 'rest' || !PROGRAMS[key]) {
+      el.innerHTML =
+        `<div class="today-reco-top">Recommandé aujourd'hui</div>
+         <div class="today-reco-title">Jour de repos</div>
+         <div class="today-reco-sub">Récupération active : marche, étirements, sommeil. Ton corps se construit pendant le repos.</div>`;
+      return;
+    }
+    const prog = PROGRAMS[key];
+    const exos = prog.exercises.slice(0, 3).map(e =>
+      `<div class="today-reco-exo"><span class="rdot"></span>${e.name}</div>`).join('');
+    el.innerHTML =
+      `<div class="today-reco-top">Recommandé aujourd'hui · d'après ton analyse</div>
+       <div class="today-reco-title">${prog.name} day</div>
+       <div class="today-reco-sub">${prog.exercises.length} exercices ciblés pour ton objectif</div>
+       <div class="today-reco-exos">${exos}</div>
+       <button class="today-reco-btn" onclick="selectSession('${key}')">Commencer la séance →</button>`;
   }
 
   /* ── WEEKLY STRIP ── */
@@ -1195,7 +1240,7 @@
     document.getElementById('timer-btn').className = 'timer-btn primary';
     document.getElementById('tab-rest').classList.toggle('active', mode === 'rest');
     document.getElementById('tab-exercise').classList.toggle('active', mode === 'exercise');
-    document.getElementById('timer-presets').style.display = mode === 'rest' ? 'flex' : 'none';
+    var _tp = document.getElementById('timer-presets'); if (_tp) _tp.style.display = mode === 'rest' ? 'flex' : 'none';
     document.getElementById('btn-plus30').style.display = mode === 'rest' ? 'block' : 'none';
     if (mode === 'rest') {
       document.getElementById('timer-label-top').textContent = 'REST TIME';

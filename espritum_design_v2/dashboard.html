@@ -176,6 +176,7 @@
   .body-stat-val { font-family: var(--font-display); font-size: 34px; line-height: 1; color: #fff; }
   .body-stat-val sup { font-size: 14px; color: var(--muted); font-family: var(--font-body); font-weight: 400; vertical-align: super; line-height: 0; }
   .body-stat-label { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
+  .body-stat-label .stat-unit { color: var(--red); font-weight: 700; }
   .body-comp-wrap { background: var(--bg3); border-radius: 8px; padding: 10px 14px; }
   .body-comp-bar-outer { height: 6px; background: #1a1a1a; border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
   .body-comp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--red), #ff6b35); border-radius: 3px; transition: width 0.8s ease; }
@@ -662,23 +663,23 @@
     <div class="body-stats-card">
       <div class="body-stats-grid4">
         <div class="body-stat-box">
-          <div class="body-stat-val"><span id="bstat-poids">—</span><sup>kg</sup></div>
-          <div class="body-stat-label" data-i18n="dash_poids_label">Poids</div>
+          <div class="body-stat-val"><span id="bstat-poids">—</span></div>
+          <div class="body-stat-label"><span class="stat-unit">kg</span> · <span data-i18n="dash_poids_label">Poids</span></div>
           <div class="body-stat-delta" id="bdelta-poids"></div>
         </div>
         <div class="body-stat-box">
-          <div class="body-stat-val"><span id="bstat-mg">—</span><sup>%</sup></div>
-          <div class="body-stat-label" data-i18n="dash_masse_grasse_label">Masse grasse</div>
+          <div class="body-stat-val"><span id="bstat-mg">—</span></div>
+          <div class="body-stat-label"><span class="stat-unit">%</span> · <span data-i18n="dash_masse_grasse_label">Masse grasse</span></div>
           <div class="body-stat-delta" id="bdelta-mg"></div>
         </div>
         <div class="body-stat-box">
-          <div class="body-stat-val"><span id="bstat-mg-kg">—</span><sup>kg</sup></div>
-          <div class="body-stat-label" data-i18n="dash_graisse_kg">Graisse (kg)</div>
+          <div class="body-stat-val"><span id="bstat-mg-kg">—</span></div>
+          <div class="body-stat-label"><span class="stat-unit">kg</span> · <span>Graisse</span></div>
           <div class="body-stat-delta" id="bdelta-mg-kg"></div>
         </div>
         <div class="body-stat-box">
-          <div class="body-stat-val"><span id="bstat-mm-kg">—</span><sup>kg</sup></div>
-          <div class="body-stat-label" data-i18n="dash_muscle_kg">Muscle (kg)</div>
+          <div class="body-stat-val"><span id="bstat-mm-kg">—</span></div>
+          <div class="body-stat-label"><span class="stat-unit">kg</span> · <span>Muscle</span></div>
           <div class="body-stat-delta" id="bdelta-mm-kg"></div>
         </div>
       </div>
