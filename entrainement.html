@@ -151,6 +151,19 @@
   .ms-card:hover { border-color: var(--red); background: rgba(200,40,40,0.06); }
   .ms-card span { font-family: var(--font-display); font-size: 19px; letter-spacing: 1px; text-transform: uppercase; color: #fff; }
   .ms-img { width: 54px; height: 54px; object-fit: contain; }
+
+  /* Galerie d'exercices (sections par muscle) */
+  .gal-section { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); margin: 18px 2px 10px; }
+  .gal-section:first-child { margin-top: 0; }
+  .gal-row { display: flex; align-items: center; gap: 0; background: #141414; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 8px; cursor: pointer; transition: border-color .15s; }
+  .gal-row:hover { border-color: rgba(200,40,40,0.5); }
+  .gal-row.added { border-color: #3ea66a; }
+  .gal-thumb { width: 60px; height: 60px; object-fit: cover; flex-shrink: 0; background: #fff; }
+  .gal-info { flex: 1; min-width: 0; padding: 10px 8px 10px 14px; }
+  .gal-name { font-size: 14px; color: #eee; font-weight: 500; }
+  .gal-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .gal-add { width: 34px; height: 34px; flex-shrink: 0; margin-right: 12px; border-radius: 8px; border: 1px solid rgba(200,40,40,0.4); color: var(--red); font-size: 18px; display: flex; align-items: center; justify-content: center; }
+  .gal-row.added .gal-add { border-color: #3ea66a; color: #3ea66a; }
   .btn-back { padding: 9px 16px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
   .btn-back:hover { border-color: #333; color: #aaa; }
   .progress-bar { height: 4px; background: var(--muted2); border-radius: 2px; overflow: hidden; }
@@ -392,7 +405,7 @@
       <!-- Exercise list: flat rows with weight +/- and expandable series checklist -->
       <div class="exercise-list-card">
         <div id="exercise-list"></div>
-        <button class="add-ex-btn" onclick="openMuscleSheet('add')">
+        <button class="add-ex-btn" onclick="openExGallery()">
           <span class="add-ex-plus">+</span> Ajouter un exercice
         </button>
       </div>
@@ -414,6 +427,15 @@
           <div class="ms-card" onclick="pickMuscle('fullbody')"><img src="body/full-body.png" class="ms-img" alt="" onerror="this.style.display='none'"><span>Full body</span></div>
           <div class="ms-card" onclick="pickMuscle('cardio')"><img src="body/cardio.png" class="ms-img" alt="" onerror="this.style.display='none'"><span>Cardio</span></div>
         </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM-SHEET : galerie d'exercices (par muscle) -->
+    <div class="ms-overlay" id="ex-gallery" onclick="if(event.target===this)closeExGallery()">
+      <div class="ms-sheet">
+        <div class="ms-handle"></div>
+        <div class="ms-title">Ajouter un exercice</div>
+        <div id="ex-gallery-list"></div>
       </div>
     </div>
 
@@ -935,6 +957,48 @@
     closeMuscleSheet();
     if (sheetMode === 'add') addMuscleBlock(key);
     else selectSession(key);
+  }
+
+  // ── Galerie d'exercices : sections par muscle, tap pour ajouter ──
+  const MUSCLE_LABELS = { bras: 'Bras', pecs: 'Pecs', dos: 'Dos', jambes: 'Jambes', epaules: 'Épaules', abdos: 'Abdos', fullbody: 'Full body', cardio: 'Cardio' };
+
+  function renderExerciseGallery() {
+    let html = '';
+    Object.keys(PROGRAMS).forEach(key => {
+      const prog = PROGRAMS[key];
+      html += `<div class="gal-section">${MUSCLE_LABELS[key] || prog.name}</div>`;
+      prog.exercises.forEach((ex, idx) => {
+        const img = 'exercices/' + encodeURIComponent(ex.name) + '.webp';
+        const sub = ex.series + ' séries · ' + (ex.poids > 0 ? ex.poids + ' kg' : 'poids du corps');
+        html += `<div class="gal-row" onclick="addOneExercise('${key}',${idx},this)">
+          <img class="gal-thumb" src="${img}" alt="" onerror="if(this.src.endsWith('.webp')){this.src=this.src.replace('.webp','.png')}else{this.style.visibility='hidden'}">
+          <div class="gal-info"><div class="gal-name">${ex.name}</div><div class="gal-sub">${sub}</div></div>
+          <div class="gal-add">+</div>
+        </div>`;
+      });
+    });
+    document.getElementById('ex-gallery-list').innerHTML = html;
+  }
+
+  function openExGallery() { renderExerciseGallery(); document.getElementById('ex-gallery').classList.add('open'); }
+  function closeExGallery() { document.getElementById('ex-gallery').classList.remove('open'); }
+
+  function addOneExercise(key, idx, rowEl) {
+    if (!currentProgram || !PROGRAMS[key]) return;
+    const ex = PROGRAMS[key].exercises[idx];
+    const i = currentProgram.exercises.length;
+    currentProgram.exercises.push({ ...ex });
+    seriesState[i] = {};
+    for (let s = 0; s < ex.series; s++) seriesState[i][s] = { reps: ex.reps, poids: ex.poids, done: false };
+    renderExercises();
+    updateGlobalStats();
+    // Feedback : la ligne passe en "ajouté"
+    if (rowEl) {
+      rowEl.classList.add('added');
+      const add = rowEl.querySelector('.gal-add');
+      if (add) add.textContent = '✓';
+      setTimeout(() => { rowEl.classList.remove('added'); if (add) add.textContent = '+'; }, 1100);
+    }
   }
 
   // Ajoute les exercices d'un muscle à la séance en cours
