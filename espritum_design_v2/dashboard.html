@@ -79,7 +79,7 @@
   .wod-ref { font-size: 12px; color: #666; font-style: italic; }
 
   /* ── BODY PHOTOS ── */
-  .body-photos-card { background: transparent; border: none; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+  .body-photos-card { background: var(--bg2); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
   .body-photos-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .body-photo-item { display: flex; flex-direction: column; gap: 8px; }
   .body-photo-lbl { font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
@@ -161,10 +161,10 @@
 
   /* ── BODY STATS ── */
   .body-stats-card {
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    padding: 0;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 14px;
@@ -601,8 +601,9 @@
 
   <div class="content">
 
-    <!-- VERSET DU JOUR -->
+    <!-- WORD OF THE DAY -->
     <div class="wod-card">
+      <div class="wod-label" data-i18n="dash_word_day">Word of the day</div>
       <div class="wod-quote" id="wod-quote">"Je puis tout par celui qui me fortifie."</div>
       <div class="wod-ref" id="wod-ref">Philippiens 4:13</div>
     </div>
@@ -613,6 +614,7 @@
         <canvas id="ringChart"></canvas>
         <div class="ring-center">
           <div class="ring-pct" id="ring-pct">0%</div>
+          <div class="ring-pct-label">complete</div>
         </div>
       </div>
       <div class="ring-week-row">
@@ -622,7 +624,6 @@
     </div>
 
     <!-- BODY PHOTOS + TIME GOAL -->
-    <div class="dash-sec-label">Mon évolution</div>
     <div class="body-photos-card">
       <div class="body-photos-row">
         <div class="body-photo-item">
@@ -660,7 +661,6 @@
     </div>
 
     <!-- COMPOSITION CORPORELLE -->
-    <div class="dash-sec-label">Ma composition</div>
     <div class="body-stats-card">
       <div class="body-stats-grid4">
         <div class="body-stat-box">
