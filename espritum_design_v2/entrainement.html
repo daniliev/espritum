@@ -137,20 +137,19 @@
   .progress-fill { height: 100%; background: var(--red); border-radius: 2px; transition: width 0.4s ease; }
 
   /* ── EXERCISE LIST ── */
-  .exercise-list-card { background: #131313; border-radius: 14px; padding: 20px 22px; }
-  .ex-list-title { font-size: 9px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; font-weight: 600; margin-bottom: 14px; }
+  .exercise-list-card { background: transparent; padding: 0; }
 
-  .ex-row { border-bottom: 1px solid var(--border); }
-  .ex-row:last-child { border-bottom: none; }
+  /* Chaque exercice = carte séparée */
+  .ex-row { background: #141414; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 10px; }
+  .ex-row:last-child { margin-bottom: 0; }
 
   .ex-row-header {
-    display: flex; align-items: center; gap: 12px;
-    padding: 13px 0; cursor: pointer;
+    display: flex; align-items: stretch; gap: 0; cursor: pointer;
   }
-  /* Photo de l'exercice (à gauche) */
+  /* Photo de l'exercice : collée à gauche, pleine hauteur, sans padding */
   .ex-thumb {
-    width: 52px; height: 52px; border-radius: 10px; flex-shrink: 0;
-    object-fit: cover; background: #161616; border: 1px solid var(--border);
+    width: 78px; align-self: stretch; object-fit: cover; flex-shrink: 0;
+    background: #fff; border: none; border-radius: 0;
   }
   .ex-row.done-ex .ex-thumb { opacity: 0.45; }
   /* Main check (validate all) */
@@ -163,13 +162,13 @@
   .ex-main-check:hover { border-color: var(--red); }
   .ex-main-check.done { background: rgba(46,125,50,0.15); border-color: #4caf50; color: #4caf50; }
 
-  .ex-row-info { flex: 1; min-width: 0; }
+  .ex-row-info { flex: 1; min-width: 0; padding: 15px 8px 15px 16px; align-self: center; }
   .ex-row-name { font-size: 14px; color: #ddd; font-weight: 500; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .ex-row-sub { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
   .ex-row.done-ex .ex-row-name { color: var(--muted); text-decoration: line-through; }
 
   /* Weight controls */
-  .weight-ctrl { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .weight-ctrl { display: flex; align-items: center; gap: 6px; flex-shrink: 0; margin-right: 16px; align-self: center; }
   .weight-btn {
     width: 26px; height: 26px; border-radius: 6px;
     background: #1a1a1a; border: 1px solid var(--border);
@@ -185,7 +184,7 @@
   .ex-row.open .ex-arrow { transform: rotate(180deg); }
 
   /* Series checklist */
-  .series-checklist { display: none; padding: 0 0 14px 0; }
+  .series-checklist { display: none; padding: 4px 16px 14px 16px; border-top: 1px solid var(--border); margin-top: 2px; }
   .ex-row.open .series-checklist { display: block; }
 
   /* Exercise image (shown when expanded) */
@@ -194,7 +193,7 @@
     border-radius: 12px; margin-bottom: 14px;
     display: block;
   }
-  .series-checklist-rows { padding-left: 64px; }
+  .series-checklist-rows { padding-left: 0; }
 
   /* Exercise image inside expanded row */
   .ex-img-wrap {
@@ -363,7 +362,6 @@
 
       <!-- Exercise list: flat rows with weight +/- and expandable series checklist -->
       <div class="exercise-list-card">
-        <div class="ex-list-title" data-i18n="train_exercices">EXERCICES</div>
         <div id="exercise-list"></div>
       </div>
 
@@ -955,7 +953,6 @@
               <div class="ex-row-sub" id="ex-sub-${i}">${seriesDone}/${ex.series} ${typeof t === 'function' ? t('train_sets_label') : 'séries'}</div>
             </div>
             ${weightCtrl}
-            <div class="ex-arrow">▾</div>
           </div>
           <div class="series-checklist">
             <div class="series-checklist-rows">${seriesHTML}</div>
