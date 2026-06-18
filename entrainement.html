@@ -153,17 +153,16 @@
   .ms-img { width: 54px; height: 54px; object-fit: contain; }
 
   /* Galerie d'exercices (sections par muscle) */
-  .gal-section { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); margin: 18px 2px 10px; }
+  .gal-section { display: flex; align-items: center; gap: 9px; font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); margin: 18px 2px 10px; }
   .gal-section:first-child { margin-top: 0; }
+  .gal-section-img { width: 30px; height: 30px; object-fit: contain; flex-shrink: 0; }
   .gal-row { display: flex; align-items: center; gap: 0; background: #141414; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 8px; cursor: pointer; transition: border-color .15s; }
   .gal-row:hover { border-color: rgba(200,40,40,0.5); }
   .gal-row.added { border-color: #3ea66a; }
   .gal-thumb { width: 60px; height: 60px; object-fit: cover; flex-shrink: 0; background: #fff; }
-  .gal-info { flex: 1; min-width: 0; padding: 10px 8px 10px 14px; }
+  .gal-info { flex: 1; min-width: 0; padding: 10px 16px 10px 14px; }
   .gal-name { font-size: 14px; color: #eee; font-weight: 500; }
   .gal-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
-  .gal-add { width: 34px; height: 34px; flex-shrink: 0; margin-right: 12px; border-radius: 8px; border: 1px solid rgba(200,40,40,0.4); color: var(--red); font-size: 18px; display: flex; align-items: center; justify-content: center; }
-  .gal-row.added .gal-add { border-color: #3ea66a; color: #3ea66a; }
   .btn-back { padding: 9px 16px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
   .btn-back:hover { border-color: #333; color: #aaa; }
   .progress-bar { height: 4px; background: var(--muted2); border-radius: 2px; overflow: hidden; }
@@ -966,14 +965,14 @@
     let html = '';
     Object.keys(PROGRAMS).forEach(key => {
       const prog = PROGRAMS[key];
-      html += `<div class="gal-section">${MUSCLE_LABELS[key] || prog.name}</div>`;
+      const mImg = PROGRAM_IMG[key] ? `<img class="gal-section-img" src="${PROGRAM_IMG[key]}" alt="" onerror="this.style.display='none'">` : '';
+      html += `<div class="gal-section">${mImg}<span>${MUSCLE_LABELS[key] || prog.name}</span></div>`;
       prog.exercises.forEach((ex, idx) => {
         const img = 'exercices/' + encodeURIComponent(ex.name) + '.webp';
         const sub = ex.series + ' séries · ' + (ex.poids > 0 ? ex.poids + ' kg' : 'poids du corps');
         html += `<div class="gal-row" onclick="addOneExercise('${key}',${idx},this)">
           <img class="gal-thumb" src="${img}" alt="" onerror="if(this.src.endsWith('.webp')){this.src=this.src.replace('.webp','.png')}else{this.style.visibility='hidden'}">
           <div class="gal-info"><div class="gal-name">${ex.name}</div><div class="gal-sub">${sub}</div></div>
-          <div class="gal-add">+</div>
         </div>`;
       });
     });
