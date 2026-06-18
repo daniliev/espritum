@@ -127,6 +127,7 @@
   .session-header-card { background: #131313; border-radius: 14px; padding: 20px 22px; border: 1px solid rgba(200,40,40,0.15); }
   .session-hdr-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
   .session-day-title { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; }
+  .session-muscle-img { width: 54px; height: 54px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 4px 12px rgba(200,40,40,0.25)); }
   .btn-back { padding: 9px 16px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
   .btn-back:hover { border-color: #333; color: #aaa; }
   .session-progress-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
@@ -342,59 +343,13 @@
       </div>
     </div>
 
-    <!-- ② CHOOSE YOUR SESSION -->
-    <div id="programs-section">
-      <div class="section-header"><span data-i18n="train_choose_session">CHOOSE YOUR SESSION.</span></div>
-      <div class="muscle-grid">
-        <div class="muscle-card" id="card-bras" onclick="selectSession('bras')">
-          <img src="body/bras.png" class="muscle-img" alt="Arms"
-               onerror="this.outerHTML='<div class=muscle-icon-fallback>💪</div>'">
-          <div class="muscle-name">ARMS</div>
-        </div>
-        <div class="muscle-card" id="card-pecs" onclick="selectSession('pecs')">
-          <img src="body/pectoraux.png" class="muscle-img" alt="Chest"
-               onerror="this.outerHTML='<div class=muscle-icon-fallback>🫁</div>'">
-          <div class="muscle-name">CHEST</div>
-        </div>
-        <div class="muscle-card" id="card-dos" onclick="selectSession('dos')">
-          <img src="body/dos.png" class="muscle-img" alt="Back"
-               onerror="this.outerHTML='<div class=muscle-icon-fallback>🔙</div>'">
-          <div class="muscle-name">BACK</div>
-        </div>
-        <div class="muscle-card" id="card-jambes" onclick="selectSession('jambes')">
-          <img src="body/jambes.png" class="muscle-img" alt="Legs"
-               onerror="this.outerHTML='<div class=muscle-icon-fallback>🦵</div>'">
-          <div class="muscle-name">LEGS</div>
-        </div>
-        <div class="muscle-card" id="card-epaules" onclick="selectSession('epaules')">
-          <img src="body/epaule.png" class="muscle-img" alt="Shoulders"
-               onerror="this.outerHTML='<div class=muscle-icon-fallback>🏋️</div>'">
-          <div class="muscle-name">SHOULDERS</div>
-        </div>
-        <div class="muscle-card" id="card-abdos" onclick="selectSession('abdos')">
-          <img src="body/abdos.png" class="muscle-img" alt="Core"
-               onerror="this.outerHTML='<div class=muscle-icon-fallback>🎯</div>'">
-          <div class="muscle-name">CORE</div>
-        </div>
-        <div class="muscle-card" id="card-fullbody" onclick="selectSession('fullbody')">
-          <img src="body/full-body.png" class="muscle-img" alt="Full Body"
-               onerror="this.outerHTML='<div class=muscle-icon-fallback>🏆</div>'">
-          <div class="muscle-name">FULL BODY</div>
-        </div>
-        <div class="muscle-card" id="card-cardio" onclick="selectSession('cardio')">
-          <img src="body/cardio.png" class="muscle-img" alt="Cardio"
-               onerror="this.outerHTML='<div class=muscle-icon-fallback>🏃</div>'">
-          <div class="muscle-name">CARDIO</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ③ SESSION DETAIL (shown below grid when selected) -->
+    <!-- ② SESSION DETAIL (séance du jour, affichée directement) -->
     <div class="session-detail" id="session-detail">
 
       <!-- Header: title + back + progress -->
       <div class="session-header-card">
-        <div class="session-hdr-top">
+        <div class="session-hdr-top" style="display:flex;align-items:center;gap:14px;">
+          <img id="session-muscle-img" class="session-muscle-img" alt="" style="display:none">
           <div class="session-day-title" id="session-day-title">—</div>
         </div>
         <div class="session-progress-row">
@@ -878,9 +833,22 @@
   }
 
   /* ── SESSION SELECTION ── */
+  const PROGRAM_IMG = {
+    bras: 'body/bras.png', pecs: 'body/pectoraux.png', dos: 'body/dos.png',
+    jambes: 'body/jambes.png', epaules: 'body/epaule.png', abdos: 'body/abdos.png',
+    fullbody: 'body/full-body.png', cardio: 'body/cardio.png'
+  };
+
   function selectSession(key, noScroll) {
     document.querySelectorAll('.muscle-card').forEach(c => c.classList.remove('active'));
-    document.getElementById('card-' + key).classList.add('active');
+    const _card = document.getElementById('card-' + key);
+    if (_card) _card.classList.add('active');
+    // Image du groupe musculaire dans l'en-tête (réutilise les photos des cartes)
+    const _mi = document.getElementById('session-muscle-img');
+    if (_mi) {
+      if (PROGRAM_IMG[key]) { _mi.src = PROGRAM_IMG[key]; _mi.style.display = 'block'; }
+      else { _mi.style.display = 'none'; }
+    }
 
     currentProgramKey = key;
     currentProgram = PROGRAMS[key];
