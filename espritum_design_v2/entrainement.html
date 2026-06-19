@@ -163,6 +163,9 @@
   .gal-info { flex: 1; min-width: 0; padding: 10px 16px 10px 14px; }
   .gal-name { font-size: 14px; color: #eee; font-weight: 500; }
   .gal-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .gal-row.added { background: rgba(62,166,106,0.08); }
+  .gal-check { display: none; width: 30px; height: 30px; flex-shrink: 0; margin-right: 12px; border-radius: 50%; background: rgba(62,166,106,0.15); border: 1px solid #3ea66a; color: #3ea66a; font-size: 14px; align-items: center; justify-content: center; }
+  .gal-row.added .gal-check { display: flex; }
   .btn-back { padding: 9px 16px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
   .btn-back:hover { border-color: #333; color: #aaa; }
   .progress-bar { height: 4px; background: var(--muted2); border-radius: 2px; overflow: hidden; }
@@ -924,6 +927,7 @@
     currentProgram = { name: PROGRAMS[key].name, exercises: PROGRAMS[key].exercises.map(e => ({ ...e })) };
     seriesState = {};
     openExercises.clear();
+    addedGallery.clear();
 
     currentProgram.exercises.forEach((ex, i) => {
       seriesState[i] = {};
@@ -960,6 +964,7 @@
 
   // ── Galerie d'exercices : sections par muscle, tap pour ajouter ──
   const MUSCLE_LABELS = { bras: 'Bras', pecs: 'Pecs', dos: 'Dos', jambes: 'Jambes', epaules: 'Épaules', abdos: 'Abdos', fullbody: 'Full body', cardio: 'Cardio' };
+  let addedGallery = new Set();  // exercices ajoutés (restent en vert)
 
   function renderExerciseGallery() {
     let html = '';
@@ -970,9 +975,11 @@
       prog.exercises.forEach((ex, idx) => {
         const img = 'exercices/' + encodeURIComponent(ex.name) + '.webp';
         const sub = ex.series + ' séries · ' + (ex.poids > 0 ? ex.poids + ' kg' : 'poids du corps');
-        html += `<div class="gal-row" onclick="addOneExercise('${key}',${idx},this)">
+        const isAdded = addedGallery.has(key + '_' + idx) ? ' added' : '';
+        html += `<div class="gal-row${isAdded}" onclick="addOneExercise('${key}',${idx},this)">
           <img class="gal-thumb" src="${img}" alt="" onerror="if(this.src.endsWith('.webp')){this.src=this.src.replace('.webp','.png')}else{this.style.visibility='hidden'}">
           <div class="gal-info"><div class="gal-name">${ex.name}</div><div class="gal-sub">${sub}</div></div>
+          <div class="gal-check">✓</div>
         </div>`;
       });
     });
@@ -991,13 +998,9 @@
     for (let s = 0; s < ex.series; s++) seriesState[i][s] = { reps: ex.reps, poids: ex.poids, done: false };
     renderExercises();
     updateGlobalStats();
-    // Feedback : la ligne passe en "ajouté"
-    if (rowEl) {
-      rowEl.classList.add('added');
-      const add = rowEl.querySelector('.gal-add');
-      if (add) add.textContent = '✓';
-      setTimeout(() => { rowEl.classList.remove('added'); if (add) add.textContent = '+'; }, 1100);
-    }
+    // Reste vert (ajouté à la séance)
+    addedGallery.add(key + '_' + idx);
+    if (rowEl) rowEl.classList.add('added');
   }
 
   // Ajoute les exercices d'un muscle à la séance en cours
