@@ -834,6 +834,15 @@
       document.getElementById('topbar-streak').textContent = '<img class="si" src="icons/streak-icon.png"> 12';
       document.getElementById('topbar-avatar').textContent = 'Y';
       renderWeek(); renderTimerNum(90); initFreemium('guerrier'); autoOpenDefaultSession();
+      // Démo : graphique calories brûlées (7 jours)
+      (function () {
+        const today = new Date(), lbl = [];
+        for (let i = 6; i >= 0; i--) { const d = new Date(today); d.setDate(d.getDate() - i); lbl.push(getDayShortTrain(d.getDay()) + ' ' + d.getDate()); }
+        const data = [0, 340, 420, 0, 300, 470, 390];
+        renderWeekChartTrain(lbl, data);
+        const act = data.filter(v => v > 0);
+        document.getElementById('prog-avg-train').textContent = Math.round(act.reduce((a, b) => a + b, 0) / act.length).toLocaleString('fr-FR');
+      })();
       return;
     }
 
