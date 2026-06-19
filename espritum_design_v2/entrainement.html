@@ -964,7 +964,7 @@
 
   // ── Galerie d'exercices : sections par muscle, tap pour ajouter ──
   const MUSCLE_LABELS = { bras: 'Bras', pecs: 'Pecs', dos: 'Dos', jambes: 'Jambes', epaules: 'Épaules', abdos: 'Abdos', fullbody: 'Full body', cardio: 'Cardio' };
-  let addedGallery = new Set();  // exercices ajoutés (restent en vert)
+  let addedGallery = new Map();  // gKey -> objet exercice ajouté (pour pouvoir le retirer)
 
   function renderExerciseGallery() {
     let html = '';
@@ -991,16 +991,38 @@
 
   function addOneExercise(key, idx, rowEl) {
     if (!currentProgram || !PROGRAMS[key]) return;
-    const ex = PROGRAMS[key].exercises[idx];
-    const i = currentProgram.exercises.length;
-    currentProgram.exercises.push({ ...ex });
-    seriesState[i] = {};
-    for (let s = 0; s < ex.series; s++) seriesState[i][s] = { reps: ex.reps, poids: ex.poids, done: false };
+    const gKey = key + '_' + idx;
+
+    // Snapshot des séries par objet (pour préserver ce qui est déjà coché)
+    const snap = new Map();
+    currentProgram.exercises.forEach((ex, i) => snap.set(ex, seriesState[i]));
+
+    if (addedGallery.has(gKey)) {
+      // RE-CLIC : retirer l'exercice de la séance
+      const obj = addedGallery.get(gKey);
+      const pos = currentProgram.exercises.indexOf(obj);
+      if (pos !== -1) currentProgram.exercises.splice(pos, 1);
+      addedGallery.delete(gKey);
+      if (rowEl) rowEl.classList.remove('added');
+    } else {
+      // AJOUTER
+      const obj = { ...PROGRAMS[key].exercises[idx] };
+      currentProgram.exercises.push(obj);
+      addedGallery.set(gKey, obj);
+      if (rowEl) rowEl.classList.add('added');
+    }
+
+    // Reconstruire seriesState (réindexé) en préservant les états existants
+    const ns = {};
+    currentProgram.exercises.forEach((ex, i) => {
+      let st = snap.get(ex);
+      if (!st) { st = {}; for (let s = 0; s < ex.series; s++) st[s] = { reps: ex.reps, poids: ex.poids, done: false }; }
+      ns[i] = st;
+    });
+    seriesState = ns;
+
     renderExercises();
     updateGlobalStats();
-    // Reste vert (ajouté à la séance)
-    addedGallery.add(key + '_' + idx);
-    if (rowEl) rowEl.classList.add('added');
   }
 
   // Ajoute les exercices d'un muscle à la séance en cours
