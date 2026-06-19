@@ -78,10 +78,14 @@
   .week-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: #131313; border-radius: 16px; padding: 14px 12px; }
   .wsd { text-align: center; }
   .wsd-label { font-size: 8px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 7px; }
-  .wsd-dot { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 12px; color: var(--muted); border: 1px solid var(--border); }
-  .wsd.today .wsd-dot { background: var(--red); border-color: var(--red); color: #fff; font-family: var(--font-display); font-size: 17px; border: none; }
-  .wsd.done .wsd-dot { font-size: 16px; border-color: transparent; }
-  .wsd.future .wsd-dot { color: var(--muted2); border-color: var(--muted2); font-size: 12px; }
+  .wsd-dot { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 13px; line-height: 1; color: var(--muted); border: 1px solid var(--border); }
+  .wsd.today .wsd-dot { background: var(--red); border-color: var(--red); color: #fff; font-family: var(--font-display); font-size: 18px; border: none; }
+  .wsd.future .wsd-dot { color: var(--muted2); border-color: var(--muted2); }
+  /* Jour d'entraînement : icône feu dans le rond + image muscle dessous */
+  .wsd.training .wsd-dot { border-color: rgba(200,40,40,0.35); }
+  .wsd-fire { height: 19px; width: auto; display: block; }
+  .wsd-muscle { width: 24px; height: 24px; object-fit: contain; margin: 6px auto 0; display: block; }
+  .wsd-muscle-spacer { height: 24px; margin-top: 6px; }
 
   /* ── CONTENT ── */
   .content { padding: 20px 40px 60px; display: flex; flex-direction: column; gap: 24px; }
@@ -913,15 +917,28 @@
     const weekStart = new Date(today);
     weekStart.setDate(today.getDate() - todayIdx);
 
+    const split = WEEKLY_SPLIT[userObjectif] || WEEKLY_SPLIT.prise_masse;
+
     document.getElementById('week-strip').innerHTML = days.map((d, i) => {
       const dayDate = new Date(weekStart);
       dayDate.setDate(weekStart.getDate() + i);
       const dayNum = dayDate.getDate();
       const state = i === todayIdx ? 'today' : i < todayIdx ? 'done' : 'future';
+      const muscle = split[i];
+      const isTraining = muscle && muscle !== 'rest' && PROGRAM_IMG[muscle];
+      // Le rond : aujourd'hui = numéro (rouge) ; jour d'entraînement = feu ; repos = numéro
+      const dotInner = (state !== 'today' && isTraining)
+        ? '<img class="wsd-fire" src="icons/streak-icon.png" alt="">'
+        : dayNum;
+      // Sous le rond : petite image du muscle à travailler ce jour
+      const below = isTraining
+        ? `<img class="wsd-muscle" src="${PROGRAM_IMG[muscle]}" alt="">`
+        : '<div class="wsd-muscle-spacer"></div>';
       return `
-        <div class="wsd ${state}">
+        <div class="wsd ${state} ${isTraining ? 'training' : 'rest'}">
           <div class="wsd-label">${d}</div>
-          <div class="wsd-dot">${state === 'done' ? '<img class="si" src="icons/streak-icon.png">' : dayNum}</div>
+          <div class="wsd-dot">${dotInner}</div>
+          ${below}
         </div>`;
     }).join('');
   }
