@@ -978,6 +978,7 @@
   function renderExerciseGallery() {
     let html = '';
     Object.keys(PROGRAMS).forEach(key => {
+      if (key === 'fullbody') return; // exclu : ses exercices sont déjà dans les autres sections
       const prog = PROGRAMS[key];
       const mImg = PROGRAM_IMG[key] ? `<img class="gal-section-img" src="${PROGRAM_IMG[key]}" alt="" onerror="this.style.display='none'">` : '';
       html += `<div class="gal-section">${mImg}<span>${MUSCLE_LABELS[key] || prog.name}</span></div>`;
