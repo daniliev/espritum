@@ -743,9 +743,17 @@
   /* ── 7-DAY CALORIES BRÛLÉES ── */
   // DAY_SHORT_TRAIN — bilingual via getDayShortTrain()
   let weekChartTrain = null;
+  let _previewMode = false, _demoCals = null, _demoLabels = null;  // démo réactive (kcal qui montent)
 
   function localDateTrain(d) {
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function refreshDemoCalories() {
+    if (!_demoCals) return;
+    renderWeekChartTrain(_demoLabels, _demoCals);
+    const act = _demoCals.filter(v => v > 0);
+    document.getElementById('prog-avg-train').textContent = act.length ? Math.round(act.reduce((a, b) => a + b, 0) / act.length).toLocaleString('fr-FR') : '—';
   }
 
   async function loadWeekProgressTrain() {
@@ -839,14 +847,14 @@
       document.getElementById('topbar-streak').textContent = '<img class="si" src="icons/streak-icon.png"> 12';
       document.getElementById('topbar-avatar').textContent = 'Y';
       renderWeek(); renderTimerNum(90); initFreemium('guerrier'); autoOpenDefaultSession();
-      // Démo : graphique calories brûlées (7 jours)
+      // Démo : graphique calories brûlées (7 jours) — réactif aux séries validées
+      _previewMode = true;
+      userWeightKg = 78;
       (function () {
-        const today = new Date(), lbl = [];
-        for (let i = 6; i >= 0; i--) { const d = new Date(today); d.setDate(d.getDate() - i); lbl.push(getDayShortTrain(d.getDay()) + ' ' + d.getDate()); }
-        const data = [0, 340, 420, 0, 300, 470, 390];
-        renderWeekChartTrain(lbl, data);
-        const act = data.filter(v => v > 0);
-        document.getElementById('prog-avg-train').textContent = Math.round(act.reduce((a, b) => a + b, 0) / act.length).toLocaleString('fr-FR');
+        const today = new Date(); _demoLabels = [];
+        for (let i = 6; i >= 0; i--) { const d = new Date(today); d.setDate(d.getDate() - i); _demoLabels.push(getDayShortTrain(d.getDay()) + ' ' + d.getDate()); }
+        _demoCals = [0, 340, 420, 0, 300, 470, 220];  // aujourd'hui (dernier) part bas et montera
+        refreshDemoCalories();
       })();
       return;
     }
@@ -1242,6 +1250,13 @@
       localStorage.setItem('esp_chart_refresh', Date.now());
       showToast('success', `✓ ${_isEN() ? 'Set' : 'Série'} ${serieIdx + 1} — ~${kcalSerie} kcal ${_isEN() ? 'burned' : 'brûlées'} 🔥`);
       loadWeekProgressTrain(); // refresh chart
+    } else if (_previewMode) {
+      // Démo : les kcal d'aujourd'hui montent/descendent avec les séries validées
+      const ex = currentProgram.exercises[exIdx];
+      const kcalSerie = calcSerieKcal(ex.name, state.reps, userWeightKg);
+      _demoCals[_demoCals.length - 1] = Math.max(0, _demoCals[_demoCals.length - 1] + (state.done ? kcalSerie : -kcalSerie));
+      refreshDemoCalories();
+      if (state.done) showToast('success', `✓ Série ${serieIdx + 1} — ~${kcalSerie} kcal brûlées 🔥`);
     }
 
     // Update the serie row
