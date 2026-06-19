@@ -629,6 +629,11 @@
     // reps uniquement
     'Burpees':                   'reps_only',
   };
+  // Les exercices de distance (course, vélo…) = effort continu → 1 seule série
+  Object.values(PROGRAMS).forEach(prog => prog.exercises.forEach(ex => {
+    if ((EXERCISE_TYPE[ex.name] || '') === 'distance_km') ex.series = 1;
+  }));
+
   function getExType(name) {
     return EXERCISE_TYPE[name] || 'weighted';
   }
