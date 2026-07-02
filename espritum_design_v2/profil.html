@@ -506,6 +506,37 @@
     cursor: pointer; z-index: 2;
   }
   .my-post-slot.filled:active .post-delete-btn { display: flex; }
+
+  /* ── MA PROGRESSION ── */
+  .prog-card { transition: border-color 0.2s; }
+  .prog-card:active { border-color: rgba(200,40,40,0.4); }
+  .prog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .prog-count { font-family: var(--font-display); font-size: 22px; color: var(--red); letter-spacing: 1px; white-space: nowrap; }
+  .prog-preview { display: flex; gap: 6px; margin: 16px 0 12px; overflow: hidden; }
+  .prog-pv-slot { flex: 1; aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: #161616; border: 1px solid #232323; position: relative; }
+  .prog-pv-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .prog-pv-empty { display: flex; align-items: center; justify-content: center; color: #333; font-size: 18px; }
+  .prog-pv-wk { position: absolute; bottom: 4px; left: 5px; font-size: 9px; font-weight: 700; letter-spacing: 1px; color: #fff; text-shadow: 0 1px 3px #000; text-transform: uppercase; }
+  .prog-cta { font-size: 12px; font-weight: 600; letter-spacing: 1px; color: var(--red); text-transform: uppercase; }
+
+  .prog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 300; align-items: flex-end; justify-content: center; }
+  .prog-overlay.open { display: flex; }
+  .prog-sheet { background: #0c0c0c; border-top: 1px solid #1e1e1e; border-radius: 22px 22px 0 0; width: 100%; max-width: 640px; max-height: 88vh; display: flex; flex-direction: column; animation: progUp 0.32s cubic-bezier(0.22,1,0.36,1); }
+  @keyframes progUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .prog-sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 22px 22px 16px; border-bottom: 1px solid #1a1a1a; flex-shrink: 0; }
+  .prog-sheet-title { font-family: var(--font-display); font-size: 26px; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
+  .prog-sheet-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .prog-close { width: 36px; height: 36px; border-radius: 50%; background: #181818; border: none; color: #aaa; font-size: 14px; cursor: pointer; }
+  .prog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 18px 22px 34px; overflow-y: auto; }
+  .prog-slot { position: relative; border-radius: 12px; overflow: hidden; background: #141414; border: 1px solid #232323; cursor: pointer; transition: transform 0.12s; }
+  .prog-slot::before { content: ''; display: block; padding-bottom: 125%; }  /* ratio 0.8 (portrait) */
+  .prog-slot:active { transform: scale(0.96); }
+  .prog-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .prog-slot.empty { border: 1px dashed #2a2a2a; }
+  .prog-slot.empty .prog-plus { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #3a3a3a; font-size: 26px; font-weight: 300; }
+  .prog-slot.locked { opacity: 0.5; cursor: default; }
+  .prog-wk-label { position: absolute; bottom: 0; left: 0; right: 0; padding: 7px 8px; background: linear-gradient(transparent, rgba(0,0,0,0.85)); font-size: 10px; font-weight: 700; letter-spacing: 1px; color: #fff; text-transform: uppercase; }
+  .prog-slot.empty .prog-wk-label { color: #555; background: none; }
 </style>
 <script src="site-config.js"></script>
 </head>
@@ -605,17 +636,32 @@
       </div>
     </div>
 
-    <!-- ===== MES POSTS (3 permanents) ===== -->
-    <div class="card" style="border-radius:18px;padding:20px;">
-      <div class="badges-section-title" data-i18n="profil_mes_posts">MES <span>POSTS</span></div>
-      <div style="font-size:11px;color:var(--muted);margin-top:-10px;margin-bottom:12px;letter-spacing:0.5px;" data-i18n="profil_photos_resultats">Prenez des photos de vos résultats physiques !</div>
-      <div class="my-posts-grid" id="my-posts-grid">
-        <!-- filled by JS -->
-        <div class="my-post-slot empty" onclick="triggerPostUpload(0)"><div class="post-add-icon">+</div></div>
-        <div class="my-post-slot empty" onclick="triggerPostUpload(1)"><div class="post-add-icon">+</div></div>
-        <div class="my-post-slot empty" onclick="triggerPostUpload(2)"><div class="post-add-icon">+</div></div>
+    <!-- ===== MA PROGRESSION (scan hebdomadaire) ===== -->
+    <div class="card prog-card" style="border-radius:18px;padding:20px;cursor:pointer;" onclick="openProgressPopup()">
+      <div class="prog-head">
+        <div>
+          <div class="badges-section-title">MA <span>PROGRESSION</span></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:-8px;letter-spacing:0.5px;">Tes photos semaine après semaine</div>
+        </div>
+        <div class="prog-count" id="prog-count">0 / 0</div>
       </div>
-      <input type="file" id="post-file-input" accept="image/*" style="display:none" onchange="handlePostUpload(event)">
+      <div class="prog-preview" id="prog-preview"><!-- filled by JS --></div>
+      <div class="prog-cta">Voir toute ma progression →</div>
+    </div>
+    <input type="file" id="post-file-input" accept="image/*" style="display:none" onchange="handleWeekUpload(event)">
+
+    <!-- POPUP PROGRESSION -->
+    <div class="prog-overlay" id="prog-overlay" onclick="if(event.target===this)closeProgressPopup()">
+      <div class="prog-sheet">
+        <div class="prog-sheet-head">
+          <div>
+            <div class="prog-sheet-title">MA PROGRESSION</div>
+            <div class="prog-sheet-sub" id="prog-sheet-sub">—</div>
+          </div>
+          <button class="prog-close" onclick="closeProgressPopup()">✕</button>
+        </div>
+        <div class="prog-grid" id="prog-grid"><!-- filled by JS --></div>
+      </div>
     </div>
 
     <!-- ===== MY BADGES ===== -->
@@ -792,7 +838,7 @@ var safetyTimeout = 0;
       document.getElementById('sidebar-name').textContent = 'Kaito';
       document.getElementById('sidebar-plan').textContent = '⚔️ Guerrier';
       const streakEl = document.getElementById('topbar-streak');
-      if (streakEl) streakEl.textContent = '<img class="si" src="icons/streak-icon.png"> 21';
+      if (streakEl) streakEl.innerHTML = '<img class="si" src="icons/streak-icon.png"> 21';
       const avatarPill = document.getElementById('topbar-avatar');
       if (avatarPill) avatarPill.textContent = initiale;
       const statSessions = document.getElementById('stat-total-sessions');
@@ -800,7 +846,7 @@ var safetyTimeout = 0;
       const statStreak = document.getElementById('stat-best-streak');
       if (statSessions) statSessions.textContent = '28';
       if (statVol) { statVol.innerHTML = '24<span style="font-size:14px;color:var(--red);">k</span>'; }
-      if (statStreak) statStreak.textContent = '<img class="si" src="icons/streak-icon.png">21';
+      if (statStreak) statStreak.innerHTML = '<img class="si" src="icons/streak-icon.png">21';
       if (MOMENTS_DATA && MOMENTS_DATA.you) MOMENTS_DATA.you.avatar = initiale;
       initFreemium('guerrier');
       return;
@@ -885,8 +931,10 @@ var safetyTimeout = 0;
     calcIndicateurs();
 
     // Posts permanents
-    myPosts = [p?.post1_url || null, p?.post2_url || null, p?.post3_url || null];
-    _renderMyPosts();
+    progressPhotos = (p && p.progress_photos) ? p.progress_photos : {};
+    goalWeeks = (p && p.goal_weeks) ? p.goal_weeks : 13;
+    currentWeek = (p && p.semaine_programme) ? p.semaine_programme : 1;
+    renderProgressPreview();
 
     // Moments
     loadMyMoments();
@@ -1167,46 +1215,75 @@ var safetyTimeout = 0;
   /* ===== MOMENTS — UPLOAD & LOAD ===== */
   let viewerTimeout = null;
 
-  /* ===== MES POSTS — 3 permanents ===== */
-  let myPosts = [null, null, null]; // [post1_url, post2_url, post3_url]
-  let pendingPostIndex = null;
+  /* ===== MA PROGRESSION — scan hebdomadaire ===== */
+  let progressPhotos = {};   // { "1": url, "2": url, ... } indexé par semaine
+  let goalWeeks = 13;        // nombre total de semaines (selon la durée d'objectif)
+  let currentWeek = 1;       // semaine actuelle (semaine_programme)
+  let pendingWeek = null;    // semaine en cours d'upload
 
-  function _renderMyPosts() {
-    const grid = document.getElementById('my-posts-grid');
-    if (!grid) return;
-    grid.innerHTML = myPosts.map((url, i) => {
-      if (url) {
-        return `<div class="my-post-slot filled" onclick="confirmDeletePost(${i})">
-          <img src="${url}" alt="post ${i+1}" loading="lazy">
-          <button class="post-delete-btn" onclick="event.stopPropagation();confirmDeletePost(${i})">✕</button>
-        </div>`;
-      }
-      return `<div class="my-post-slot empty" onclick="triggerPostUpload(${i})">
-        <div class="post-add-icon">+</div>
-      </div>`;
-    }).join('');
+  function filledCount() { return Object.keys(progressPhotos).filter(k => progressPhotos[k]).length; }
+
+  // Aperçu dans la carte du profil : 3 dernières semaines remplies (ou placeholders)
+  function renderProgressPreview() {
+    const pv = document.getElementById('prog-preview');
+    const cnt = document.getElementById('prog-count');
+    if (!pv) return;
+    if (cnt) cnt.textContent = `${filledCount()} / ${goalWeeks}`;
+
+    const weeks = Object.keys(progressPhotos).filter(k => progressPhotos[k]).map(Number).sort((a,b)=>b-a).slice(0,3).reverse();
+    if (weeks.length === 0) {
+      pv.innerHTML = [1,2,3].map(w => `<div class="prog-pv-slot prog-pv-empty">+<div class="prog-pv-wk">S${w}</div></div>`).join('');
+      return;
+    }
+    pv.innerHTML = weeks.map(w => `<div class="prog-pv-slot"><img src="${progressPhotos[w]}" loading="lazy"><div class="prog-pv-wk">S${w}</div></div>`).join('');
   }
 
-  function triggerPostUpload(slotIndex) {
-    pendingPostIndex = slotIndex;
+  function openProgressPopup() {
+    document.getElementById('prog-sheet-sub').textContent = `${filledCount()} / ${goalWeeks} semaines · objectif`;
+    renderProgressGrid();
+    document.getElementById('prog-overlay').classList.add('open');
+  }
+  function closeProgressPopup() {
+    document.getElementById('prog-overlay').classList.remove('open');
+  }
+
+  function renderProgressGrid() {
+    const grid = document.getElementById('prog-grid');
+    if (!grid) return;
+    let html = '';
+    for (let w = 1; w <= goalWeeks; w++) {
+      const url = progressPhotos[w];
+      if (url) {
+        html += `<div class="prog-slot filled" onclick="triggerWeekUpload(${w})">
+          <img src="${url}" loading="lazy">
+          <div class="prog-wk-label">Semaine ${w}</div>
+        </div>`;
+      } else {
+        html += `<div class="prog-slot empty" onclick="triggerWeekUpload(${w})">
+          <div class="prog-plus">+</div>
+          <div class="prog-wk-label">Semaine ${w}</div>
+        </div>`;
+      }
+    }
+    grid.innerHTML = html;
+  }
+
+  function triggerWeekUpload(week) {
+    pendingWeek = week;
     document.getElementById('post-file-input').click();
   }
 
-  async function handlePostUpload(event) {
+  async function handleWeekUpload(event) {
     const file = event.target.files[0];
-    if (!file || !userId || pendingPostIndex === null) return;
+    if (!file || !userId || pendingWeek === null) return;
     event.target.value = '';
-    const slot = pendingPostIndex;
-    pendingPostIndex = null;
+    const week = pendingWeek;
+    pendingWeek = null;
 
-    // Optimistic: show loading indicator on slot
-    const grid = document.getElementById('my-posts-grid');
-    const slots = grid.querySelectorAll('.my-post-slot');
-    if (slots[slot]) slots[slot].style.opacity = '0.4';
-
+    showToast('Envoi de la photo…', 'info');
     try {
       const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-      const path = `${userId}/post${slot + 1}-${Date.now()}.${ext}`;
+      const path = `${userId}/week${week}-${Date.now()}.${ext}`;
       const { error: upErr } = await sb.storage.from('instant-photos').upload(path, file, { upsert: true, contentType: file.type });
       if (upErr) {
         if (upErr.message && upErr.message.includes('Bucket not found')) showToast('Crée le bucket "instant-photos" dans Supabase Storage !', 'error');
@@ -1215,41 +1292,16 @@ var safetyTimeout = 0;
       }
       const { data: { publicUrl } } = sb.storage.from('instant-photos').getPublicUrl(path);
 
-      // Supprimer l'ancienne si elle existait (best-effort)
-      myPosts[slot] = publicUrl;
-      const col = `post${slot + 1}_url`;
-      await sb.from('users').update({ [col]: publicUrl }).eq('id', userId);
+      progressPhotos[week] = publicUrl;
+      await sb.from('users').update({ progress_photos: progressPhotos }).eq('id', userId);
 
-      _renderMyPosts();
-      showToast('Post mis à jour ✓', 'success');
+      renderProgressGrid();
+      renderProgressPreview();
+      showToast(`Semaine ${week} ajoutée ✓`, 'success');
     } catch(e) {
       console.error(e);
       showToast('Erreur upload', 'error');
-      _renderMyPosts();
     }
-  }
-
-  async function confirmDeletePost(slotIndex) {
-    if (!myPosts[slotIndex]) return;
-    // Simple confirm via toast-style (no native confirm on mobile)
-    if (!window._postDeleteConfirm) {
-      window._postDeleteConfirm = slotIndex;
-      showToast('Appuie à nouveau pour supprimer', 'info');
-      setTimeout(() => { window._postDeleteConfirm = null; }, 3000);
-      return;
-    }
-    if (window._postDeleteConfirm !== slotIndex) {
-      window._postDeleteConfirm = slotIndex;
-      return;
-    }
-    window._postDeleteConfirm = null;
-    myPosts[slotIndex] = null;
-    const col = `post${slotIndex + 1}_url`;
-    try {
-      await sb.from('users').update({ [col]: null }).eq('id', userId);
-      _renderMyPosts();
-      showToast('Post supprimé', 'success');
-    } catch(e) { showToast('Erreur', 'error'); }
   }
 
   function triggerMomentUpload() {

@@ -79,10 +79,11 @@
   .wod-ref { font-size: 12px; color: #666; font-style: italic; }
 
   /* ── BODY PHOTOS ── */
-  .body-photos-card { background: var(--bg2); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .body-photos-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
   .body-photos-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .body-photo-item { display: flex; flex-direction: column; gap: 8px; }
   .body-photo-lbl { font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
+  .dash-sec-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin: 6px 2px 12px; }
   .body-photo-frame { width: 100%; aspect-ratio: 3/4; background: var(--bg3); border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
   .body-photo-frame img { width: 100%; height: 100%; object-fit: cover; display: none; }
   .body-photo-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px; text-align: center; }
@@ -175,6 +176,7 @@
   .body-stat-val { font-family: var(--font-display); font-size: 34px; line-height: 1; color: #fff; }
   .body-stat-val sup { font-size: 14px; color: var(--muted); font-family: var(--font-body); font-weight: 400; vertical-align: super; line-height: 0; }
   .body-stat-label { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
+  .body-stat-label .stat-unit { color: var(--red); font-weight: 700; }
   .body-comp-wrap { background: var(--bg3); border-radius: 8px; padding: 10px 14px; }
   .body-comp-bar-outer { height: 6px; background: #1a1a1a; border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
   .body-comp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--red), #ff6b35); border-radius: 3px; transition: width 0.8s ease; }
@@ -185,7 +187,7 @@
 
   /* ── CALENDAR ── */
   /* ── PROGRESSION CHARTS ── */
-  .progression-card { background: var(--bg2); border-radius: 16px; padding: 20px 22px 16px; }
+  .progression-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px 16px; }
   .progression-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
   .progression-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; }
   .progression-sub { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
@@ -602,7 +604,6 @@
 
     <!-- WORD OF THE DAY -->
     <div class="wod-card">
-      <div class="wod-label" data-i18n="dash_word_day">Word of the day</div>
       <div class="wod-quote" id="wod-quote">"Je puis tout par celui qui me fortifie."</div>
       <div class="wod-ref" id="wod-ref">Philippiens 4:13</div>
     </div>
@@ -613,7 +614,6 @@
         <canvas id="ringChart"></canvas>
         <div class="ring-center">
           <div class="ring-pct" id="ring-pct">0%</div>
-          <div class="ring-pct-label">complete</div>
         </div>
       </div>
       <div class="ring-week-row">
@@ -663,23 +663,23 @@
     <div class="body-stats-card">
       <div class="body-stats-grid4">
         <div class="body-stat-box">
-          <div class="body-stat-val"><span id="bstat-poids">—</span><sup>kg</sup></div>
-          <div class="body-stat-label" data-i18n="dash_poids_label">Poids</div>
+          <div class="body-stat-val"><span id="bstat-poids">—</span></div>
+          <div class="body-stat-label"><span class="stat-unit">kg</span> · <span data-i18n="dash_poids_label">Poids</span></div>
           <div class="body-stat-delta" id="bdelta-poids"></div>
         </div>
         <div class="body-stat-box">
-          <div class="body-stat-val"><span id="bstat-mg">—</span><sup>%</sup></div>
-          <div class="body-stat-label" data-i18n="dash_masse_grasse_label">Masse grasse</div>
+          <div class="body-stat-val"><span id="bstat-mg">—</span></div>
+          <div class="body-stat-label"><span class="stat-unit">%</span> · <span data-i18n="dash_masse_grasse_label">Masse grasse</span></div>
           <div class="body-stat-delta" id="bdelta-mg"></div>
         </div>
         <div class="body-stat-box">
-          <div class="body-stat-val"><span id="bstat-mg-kg">—</span><sup>kg</sup></div>
-          <div class="body-stat-label" data-i18n="dash_graisse_kg">Graisse (kg)</div>
+          <div class="body-stat-val"><span id="bstat-mg-kg">—</span></div>
+          <div class="body-stat-label"><span class="stat-unit">kg</span> · <span>Graisse</span></div>
           <div class="body-stat-delta" id="bdelta-mg-kg"></div>
         </div>
         <div class="body-stat-box">
-          <div class="body-stat-val"><span id="bstat-mm-kg">—</span><sup>kg</sup></div>
-          <div class="body-stat-label" data-i18n="dash_muscle_kg">Muscle (kg)</div>
+          <div class="body-stat-val"><span id="bstat-mm-kg">—</span></div>
+          <div class="body-stat-label"><span class="stat-unit">kg</span> · <span>Muscle</span></div>
           <div class="body-stat-delta" id="bdelta-mm-kg"></div>
         </div>
       </div>
@@ -998,7 +998,7 @@
       renderBodyStats(profile);
 
       // Body photos + goal
-      loadBodyPhotos();
+      loadBodyPhotos(profile);
 
       // Charts fusionnés
       await loadWeekProgressCalories(userId, profile?.calories_objectif || 2400);
@@ -1242,15 +1242,21 @@
     });
   }
 
-  function loadBodyPhotos() {
-    const currentSrc = localStorage.getItem('espritum_last_scan_photo');
+  function loadBodyPhotos(profile) {
+    // Mon corps actuel = DERNIER scan de la progression (semaine la plus récente)
+    let currentSrc = null;
+    const pp = (profile && profile.progress_photos) ? profile.progress_photos : {};
+    const weeks = Object.keys(pp).filter(k => pp[k]).map(Number).sort((a, b) => b - a);
+    if (weeks.length) currentSrc = pp[weeks[0]];
+    if (!currentSrc) currentSrc = localStorage.getItem('espritum_last_scan_photo');
     if (currentSrc) {
       const img = document.getElementById('current-body-img');
       img.src = currentSrc;
       img.style.display = 'block';
       document.getElementById('current-body-empty').style.display = 'none';
     }
-    const dreamSrc = localStorage.getItem('espritum_dream_body');
+    // Mon corps de rêve = photo objectif (persistée en base, toujours affichée)
+    const dreamSrc = (profile && profile.dream_body_url) ? profile.dream_body_url : localStorage.getItem('espritum_dream_body');
     if (dreamSrc) {
       const img = document.getElementById('dream-body-img');
       img.src = dreamSrc;
@@ -1273,9 +1279,10 @@
     if (!checkPhotosAndShowMessage()) { /* message affiché */ } else { generateAIPlan(sliderKey); }
   }
 
-  function handleDreamUpload(input) {
+  async function handleDreamUpload(input) {
     const file = input.files[0];
     if (!file) return;
+    // Aperçu instantané
     const reader = new FileReader();
     reader.onload = e => {
       const src = e.target.result;
@@ -1284,11 +1291,24 @@
       img.src = src;
       img.style.display = 'block';
       document.getElementById('dream-body-empty').style.display = 'none';
-      // Re-déclencher le plan IA maintenant que les 2 photos sont peut-être là
       const idx = parseInt(document.getElementById('goal-slider').value);
       generateAIPlan(SLIDER_KEYS[idx]);
     };
     reader.readAsDataURL(file);
+
+    // Persistance Supabase (photo objectif toujours disponible, même sur un autre appareil)
+    try {
+      const uid = (window._espritumUser && window._espritumUser.id) || (typeof userId !== 'undefined' ? userId : null);
+      if (uid && sb) {
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const path = `${uid}/dream-${Date.now()}.${ext}`;
+        const { error: upErr } = await sb.storage.from('instant-photos').upload(path, file, { upsert: true, contentType: file.type });
+        if (!upErr) {
+          const { data: { publicUrl } } = sb.storage.from('instant-photos').getPublicUrl(path);
+          await sb.from('users').update({ dream_body_url: publicUrl }).eq('id', uid);
+        }
+      }
+    } catch (e) { console.warn('dream upload', e); }
   }
 
   const SLIDER_KEYS  = ['2sem', '1m', '3m', '6m', '12m', '24m', '36m'];
