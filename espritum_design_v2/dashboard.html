@@ -947,7 +947,8 @@
     try {
       const { data: { session }, error: sessErr } = await sb.auth.getSession();
       if (sessErr || !session) {
-        /* PREVIEW DEMO — à retirer avant déploiement (avec la redirection ci-dessous) */
+        // Pas de session → inscription (sauf mode démo ?preview=1)
+        if (!/[?&]preview=1/.test(location.search)) { window.location.href = 'inscription.html'; return; }
         const demo = { prenom: 'Daniel', plan: 'gratuit', semaine_programme: 4, poids: 82, masse_grasse: 22, genre: 'homme', streak: 5, mg_kg: 18, mm_kg: 35 };
         try {
           renderProgressRing(demo);
@@ -1994,7 +1995,7 @@ function wizPrev() {
   if (wizStep > 1) wizGoStep(wizStep - 1);
 }
 
-function wizFinish() {
+async function wizFinish() {
   if (wizPhotos[1]) localStorage.setItem('espritum_last_scan_photo', wizPhotos[1]);
   if (wizPhotos[2]) localStorage.setItem('espritum_dream_body', wizPhotos[2]);
   var idx = parseInt(document.getElementById('wiz-slider').value);
@@ -2007,6 +2008,29 @@ function wizFinish() {
     setEl('bstat-mg-kg', wizResults.mgkg);
     setEl('bstat-mm-kg', wizResults.mmkg);
   }
+
+  // ── Persistance Supabase : durée d'objectif (goal_weeks) + mesures ──
+  try {
+    var uid = (window._espritumUser && window._espritumUser.id);
+    if (uid && window.sb) {
+      var WEEKS_MAP = { '2sem': 2, '1m': 4, '3m': 13, '6m': 26, '12m': 52, '24m': 104, '36m': 156 };
+      var upd = { goal_weeks: WEEKS_MAP[WIZ_TIME_KEYS[idx]] || 13 };
+      var poidsN = wizResults ? parseFloat(wizResults.poids) : NaN;
+      var mgN = wizResults ? parseFloat(wizResults.bf) : NaN;
+      if (!isNaN(poidsN)) upd.poids = poidsN;
+      if (!isNaN(mgN)) upd.masse_grasse = mgN;
+      await sb.from('users').update(upd).eq('id', uid);
+      if (!isNaN(poidsN) || !isNaN(mgN)) {
+        await sb.from('measurements').insert({
+          user_id: uid,
+          poids: isNaN(poidsN) ? null : poidsN,
+          masse_grasse: isNaN(mgN) ? null : mgN,
+          date: new Date().toISOString().split('T')[0]
+        });
+      }
+    }
+  } catch (e) { console.warn('wizFinish save', e); }
+
   closeAnalysisWizard();
   if (typeof loadBodyPhotos === 'function') loadBodyPhotos();
 }

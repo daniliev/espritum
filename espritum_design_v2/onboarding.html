@@ -4,572 +4,539 @@
 <script src="page-loader.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Espritum — Bienvenue</title>
+<title>Espritum — Crée ton plan</title>
+<meta name="description" content="Réponds à quelques questions et reçois ton plan d'entraînement et de nutrition personnalisé.">
+<link rel="icon" href="fav-icon-003.png">
 <link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-client.js"></script>
 <style>
   :root {
-    --red: #c82828;
-    --bg: #080808;
-    --bg2: #0d0d0d;
-    --bg3: #111111;
-    --border: #1e1e1e;
-    --muted: #555;
+    --red: #c82828; --bg: #080808; --bg2: #0d0d0d; --bg3: #111; --border: #1e1e1e; --muted: #888;
+    --green: #3ea66a; --gold: #f5c518;
     --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
     --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; }
-  body {
-    background: var(--bg); color: #fff;
-    font-family: var(--font-body);
-    min-height: 100vh;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 32px 20px;
-  }
+  html { -webkit-text-size-adjust: 100%; }
+  body { background: var(--bg); color: #e9e9e9; font-family: var(--font-body); min-height: 100vh; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased; }
+  input { font-size: 16px; } /* anti-zoom iOS */
 
-  /* ── PROGRESS BAR ── */
-  .progress-wrap { width: 100%; max-width: 520px; margin-bottom: 40px; }
+  .topbar { padding: 16px 22px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .brand img { width: 30px; height: 30px; object-fit: contain; }
+  .brand span { font-family: var(--font-display); font-size: 20px; letter-spacing: 5px; text-transform: uppercase; color: #fff; }
+  .back-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 26px; line-height: 1; display: none; padding: 0 6px 0 0; }
+  .back-btn:hover { color: #fff; }
 
-  .progress-steps { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 12px; }
+  .progress-wrap { height: 4px; background: var(--bg3); }
+  .progress-bar { height: 100%; width: 0; background: linear-gradient(90deg, var(--red), #ff5a5a); transition: width 0.4s ease; }
 
-  .step-dot {
-    width: 32px; height: 32px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 600; transition: all 0.4s;
-    border: 2px solid var(--border); color: var(--muted); background: var(--bg2);
-    flex-shrink: 0;
-  }
+  .stage { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px 22px 50px; max-width: 560px; width: 100%; margin: 0 auto; }
+  .step { width: 100%; animation: fade 0.35s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 
-  .step-dot.active { border-color: var(--red); color: var(--red); background: rgba(200,40,40,0.1); }
-  .step-dot.done { border-color: var(--red); background: var(--red); color: #fff; }
+  .q-count { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--red); font-weight: 700; text-align: center; margin-bottom: 12px; }
+  .q-title { font-family: var(--font-display); font-size: clamp(30px, 7vw, 44px); letter-spacing: 1px; text-transform: uppercase; color: #fff; text-align: center; line-height: 1.05; margin-bottom: 30px; }
 
-  .step-line { flex: 1; height: 2px; background: var(--border); transition: background 0.4s; max-width: 80px; }
-  .step-line.done { background: var(--red); }
+  .options { display: flex; flex-direction: column; gap: 12px; }
+  .opt { display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.18s; color: #eee; font-size: 17px; text-align: left; font-family: inherit; }
+  .opt:hover { border-color: rgba(200,40,40,0.55); background: rgba(200,40,40,0.06); transform: translateX(3px); }
+  .opt-ico { width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(200,40,40,0.4); background: rgba(200,40,40,0.12); color: var(--red); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.18s; }
+  .opt-ico svg { width: 21px; height: 21px; }
+  .opt:hover .opt-ico { background: rgba(200,40,40,0.2); border-color: var(--red); }
+  .opt-label { flex: 1; }
 
-  .progress-labels { display: flex; justify-content: space-between; padding: 0 4px; }
-  .progress-label { font-size: 10px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; text-align: center; flex: 1; }
-  .progress-label.active { color: var(--red); }
+  .num-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .num-input { width: 100%; max-width: 280px; text-align: center; font-family: var(--font-display); font-size: 56px; letter-spacing: 1px; color: #fff; background: transparent; border: none; border-bottom: 2px solid var(--border); outline: none; padding: 6px 0; -moz-appearance: textfield; appearance: textfield; }
+  .num-input::-webkit-outer-spin-button, .num-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .num-input:focus { border-bottom-color: var(--red); }
+  .num-input::placeholder { color: #333; }
+  .num-unit { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+  .num-err { color: #ef5350; font-size: 13px; min-height: 18px; margin-top: 4px; }
 
-  /* ── CARDS ── */
-  .step-card {
-    width: 100%; max-width: 520px;
-    background: var(--bg2);
-    border-radius: 12px; padding: 40px; display: none;
-  }
+  .btn { width: 100%; max-width: 340px; margin: 28px auto 0; display: block; padding: 16px; background: var(--red); border: none; border-radius: 8px; color: #fff; font-family: var(--font-body); font-size: 14px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; text-decoration: none; text-align: center; }
+  .btn:hover { background: #d93030; }
+  .btn:disabled { background: #2e2e2e; cursor: not-allowed; opacity: 0.6; }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .btn-ghost:hover { background: transparent; border-color: #333; color: #ccc; }
 
-  .step-card.active { display: block; animation: fadeIn 0.35s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  /* INTRO */
+  .intro { text-align: center; }
+  .intro-badge { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 16px; }
+  .intro h1 { font-family: var(--font-display); font-size: clamp(40px, 10vw, 62px); letter-spacing: 1px; text-transform: uppercase; color: #fff; line-height: 0.98; margin-bottom: 18px; }
+  .intro h1 .accent { color: var(--red); }
+  .intro p { font-size: 16px; color: #cfcfcf; line-height: 1.6; margin-bottom: 8px; max-width: 420px; margin-left: auto; margin-right: auto; }
+  .intro .mini { font-size: 13px; color: var(--muted); margin-top: 14px; }
 
-  .step-tag { font-size: 10px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; font-weight: 600; margin-bottom: 10px; }
-  .step-title { font-family: var(--font-display); font-size: 42px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; margin-bottom: 28px; text-align: center; }
-  .step-sub { font-size: 14px; color: var(--muted); font-weight: 300; line-height: 1.6; margin-bottom: 32px; }
+  /* LOADING */
+  .loader { text-align: center; }
+  .loader-ring { width: 70px; height: 70px; border: 4px solid var(--bg3); border-top-color: var(--red); border-radius: 50%; margin: 0 auto 26px; animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loader h2 { font-family: var(--font-display); font-size: 30px; letter-spacing: 1px; text-transform: uppercase; color: #fff; margin-bottom: 8px; }
+  .loader p { font-size: 15px; color: var(--muted); }
 
-  /* ── CHOIX GENRE ── */
-  .genre-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 28px; }
+  /* PLAN REVEAL */
+  .reveal { width: 100%; text-align: center; }
+  .reveal-badge { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--green); font-weight: 700; background: rgba(62,166,106,0.1); border: 1px solid rgba(62,166,106,0.3); border-radius: 30px; padding: 6px 14px; margin-bottom: 16px; }
+  .reveal-badge svg { width: 14px; height: 14px; }
+  .reveal-title { font-family: var(--font-display); font-size: clamp(34px, 8vw, 50px); letter-spacing: 1px; text-transform: uppercase; color: #fff; line-height: 1; margin-bottom: 4px; }
+  .reveal-sub { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+  .res-img { display: block; width: 210px; max-width: 60%; height: auto; margin: 0 auto 8px; filter: drop-shadow(0 16px 38px rgba(200,40,40,0.32)); }
+  .res-arch-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--red); font-weight: 700; }
+  .res-arch-name { font-family: var(--font-display); font-size: clamp(30px, 7vw, 42px); letter-spacing: 1px; text-transform: uppercase; color: #fff; line-height: 1; margin: 2px 0 12px; }
+  .res-desc { font-size: 15px; color: #cfcfcf; line-height: 1.55; margin-bottom: 22px; }
+  .res-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+  .res-stat { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 15px 8px; }
+  .res-stat .v { font-family: var(--font-display); font-size: 26px; color: var(--red); line-height: 1; }
+  .res-stat .l { font-size: 9.5px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+  .plan-incl { text-align: left; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px 8px; margin-bottom: 20px; }
+  .plan-incl .rtitle { font-family: var(--font-display); font-size: 18px; letter-spacing: 1px; text-transform: uppercase; color: #fff; margin-bottom: 14px; }
+  .incl-item { display: flex; align-items: flex-start; gap: 12px; padding-bottom: 15px; }
+  .incl-ico { width: 26px; height: 26px; border-radius: 50%; background: rgba(200,40,40,0.12); border: 1px solid rgba(200,40,40,0.4); color: var(--red); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .incl-ico svg { width: 14px; height: 14px; }
+  .incl-item span.t { font-size: 15px; color: #d4d4d4; line-height: 1.45; }
 
-  .choice-card {
-    padding: 28px 20px; border: 2px solid transparent;
-    border-radius: 8px; text-align: center; cursor: pointer;
-    transition: all 0.2s; background: var(--bg3);
-    display: flex; flex-direction: column; align-items: center; gap: 12px;
-  }
+  /* ACCOUNT */
+  .form { width: 100%; }
+  .form-title { font-family: var(--font-display); font-size: clamp(30px, 7vw, 42px); letter-spacing: 1px; text-transform: uppercase; color: #fff; text-align: center; line-height: 1; margin-bottom: 8px; }
+  .form-sub { font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 26px; line-height: 1.5; }
+  .field { margin-bottom: 14px; }
+  .field-row { display: flex; gap: 12px; }
+  .field-row .field { flex: 1; }
+  .field label { display: block; font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; font-weight: 600; margin-bottom: 7px; }
+  .field input { width: 100%; padding: 14px 16px; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 10px; color: #fff; font-family: inherit; font-size: 16px; outline: none; transition: border-color 0.2s; }
+  .field input:focus { border-color: rgba(200,40,40,0.6); }
+  .field input::placeholder { color: #555; }
+  .field input.error { border-color: #ef5350; }
+  .form-msg { font-size: 14px; text-align: center; min-height: 20px; line-height: 1.4; margin-top: 4px; }
+  .form-msg.err { color: #ef5350; }
+  .form-msg.ok { color: var(--green); }
+  .form-foot { font-size: 13px; color: var(--muted); text-align: center; margin-top: 16px; }
+  .form-foot a { color: var(--red); text-decoration: none; cursor: pointer; }
 
-  .choice-card:hover { border-color: rgba(200,40,40,0.4); background: rgba(200,40,40,0.04); }
-  .choice-card.selected { border-color: var(--red); background: rgba(200,40,40,0.08); }
-
-  .choice-icon { width: 54px; height: 54px; border-radius: 50%; border: 1.5px solid var(--red); background: rgba(200,40,40,0.30); display: flex; align-items: center; justify-content: center; color: var(--red); }
-  .choice-icon svg { width: 26px; height: 26px; }
-  .choice-card.selected .choice-icon { color: var(--red); }
-  .choice-name { font-family: var(--font-display); font-size: 24px; letter-spacing: 2px; text-transform: uppercase; }
-  .choice-card.selected .choice-name { color: var(--red); }
-
-  /* ── CHOIX OBJECTIF ── */
-  .objectif-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
-
-  .obj-card {
-    padding: 22px 16px; border: 2px solid transparent;
-    border-radius: 8px; cursor: pointer;
-    transition: all 0.2s; background: var(--bg3);
-    display: flex; flex-direction: column; gap: 8px;
-  }
-
-  .obj-card:hover { border-color: rgba(200,40,40,0.4); background: rgba(200,40,40,0.04); }
-  .obj-card.selected { border-color: var(--red); background: rgba(200,40,40,0.08); }
-
-  .obj-icon { width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid var(--red); background: rgba(200,40,40,0.30); display: flex; align-items: center; justify-content: center; color: var(--red); margin-bottom: 4px; }
-  .obj-icon svg { width: 22px; height: 22px; }
-  .obj-card.selected .obj-icon { color: var(--red); }
-  .obj-name { font-family: var(--font-display); font-size: 20px; letter-spacing: 1px; text-transform: uppercase; }
-  .obj-card.selected .obj-name { color: var(--red); }
-  .obj-desc { font-size: 12px; color: var(--muted); font-weight: 300; line-height: 1.5; }
-
-  /* ── PLANS ── */
-  .plans-list { display: flex; flex-direction: column; gap: 38px; margin-bottom: 38px; }
-
-  .plan-card {
-    display: flex; align-items: center; gap: 16px;
-    padding: 18px 20px; border: 2px solid transparent;
-    border-radius: 8px; cursor: pointer;
-    transition: all 0.2s; background: var(--bg3);
-    position: relative;
-  }
-
-  .plan-card:hover { border-color: rgba(200,40,40,0.4); }
-  .plan-card.selected { border-color: var(--red); background: rgba(200,40,40,0.06); }
-  .plan-card.popular { border-color: rgba(200,40,40,0.3); }
-
-  .popular-tag {
-    position: absolute; top: -10px; right: 16px;
-    padding: 2px 12px; background: var(--red); border-radius: 10px;
-    font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-  }
-
-  .plan-icon { flex-shrink: 0; color: var(--red); display: flex; }
-  .plan-icon svg { width: 26px; height: 26px; }
-
-  .plan-info { flex: 1; }
-  .plan-name { font-family: var(--font-display); font-size: 22px; letter-spacing: 1px; text-transform: uppercase; color: #fff; }
-  .plan-card.selected .plan-name { color: var(--red); }
-  .plan-features { font-size: 12px; color: var(--muted); margin-top: 3px; font-weight: 300; }
-
-  .plan-price { text-align: right; flex-shrink: 0; }
-  .plan-amount { font-family: var(--font-display); font-size: 28px; color: #fff; }
-  .plan-card.selected .plan-amount { color: var(--red); }
-  .plan-period { font-size: 11px; color: var(--muted); }
-
-  .plan-check {
-    width: 22px; height: 22px; border-radius: 50%;
-    border: 2px solid var(--border); flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; transition: all 0.2s;
-  }
-
-  .plan-card.selected .plan-check { background: var(--red); border-color: var(--red); color: #fff; }
-
-  /* ── BOUTONS ── */
-  .btn-next {
-    width: 100%; padding: 17px; background: var(--red); border: none;
-    border-radius: 6px; color: #fff; font-family: var(--font-body);
-    font-size: 14px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
-    cursor: pointer; transition: background 0.2s;
-  }
-
-  .btn-next:hover { background: #d93030; }
-  .btn-next:disabled { background: var(--muted); cursor: not-allowed; }
-
-  .btn-back {
-    width: 100%; padding: 13px; background: transparent;
-    border: 1px solid var(--border); border-radius: 6px;
-    color: var(--muted); font-family: var(--font-body);
-    font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
-    cursor: pointer; transition: all 0.2s; margin-top: 10px;
-  }
-
-  .btn-back:hover { border-color: #333; color: #aaa; }
-  /* ligne Retour (flèche) + Continuer côte à côte */
-  .btn-row { display: flex; gap: 10px; }
-  .btn-row .btn-next { flex: 1; margin-top: 0; }
-  .btn-row .btn-back { width: auto; margin-top: 0; padding: 13px 22px; display: flex; align-items: center; justify-content: center; }
-  .btn-back svg { width: 20px; height: 20px; display: block; }
-
-  /* ── CONFIRMATION ── */
-  .confirm-card {
-    width: 100%; max-width: 520px;
-    background: var(--bg2);
-    border-radius: 12px; padding: 48px 40px;
-    text-align: center; display: none;
-  }
-
-  .confirm-card.active { display: block; animation: fadeIn 0.35s ease; }
-
-  .confirm-icon { margin-bottom: 20px; color: var(--red); display: flex; align-items: center; justify-content: center; width: 72px; height: 72px; border-radius: 50%; border: 2px solid var(--red); background: rgba(200,40,40,0.08); }
-  .confirm-title { font-family: var(--font-display); font-size: 52px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
-  .confirm-sub { font-size: 14px; color: var(--muted); line-height: 1.7; font-weight: 300; margin-bottom: 28px; }
-
-  .confirm-summary {
-    background: var(--bg3);
-    border-radius: 8px; padding: 16px 20px; margin-bottom: 24px; text-align: left;
-    display: flex; flex-direction: column; gap: 10px;
-  }
-
-  .confirm-row { display: flex; justify-content: space-between; align-items: center; }
-  .confirm-label { font-size: 12px; color: var(--muted); }
-  .confirm-val { font-family: var(--font-display); font-size: 18px; color: #fff; }
-
-  /* Loading */
-40%{opacity:1;} }
-
-  @media (max-width: 600px) {
-    .step-card { padding: 28px 20px; }
-    .genre-grid { grid-template-columns: 1fr 1fr; }
-    .objectif-grid { grid-template-columns: 1fr; }
-    .step-title { font-size: 34px; }
-  }
-/* ── BULGARIAN FONT ── */
-  html[lang="bg"] * {
-    font-family: 'Sofia Sans Condensed', var(--font-body, sans-serif) !important;
-  }
-  html[lang="bg"] .topbar-title,
-  html[lang="bg"] .sidebar-name,
-  html[lang="bg"] .card-title,
-  html[lang="bg"] .stat-val,
-  html[lang="bg"] .nav-item {
-    font-family: 'Sofia Sans Condensed', var(--font-display, sans-serif) !important;
-  }
+  /* SUBSCRIPTION */
+  .subs { width: 100%; }
+  .subs-title { font-family: var(--font-display); font-size: clamp(30px, 7vw, 42px); letter-spacing: 1px; text-transform: uppercase; color: #fff; text-align: center; line-height: 1; margin-bottom: 8px; }
+  .subs-sub { font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 24px; }
+  .subs-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 8px; }
+  .subcard { position: relative; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 14px; padding: 22px 22px; }
+  .subcard.gold { border-color: rgba(245,197,24,0.45); }
+  .subcard-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 14px; }
+  .subcard-name { font-family: var(--font-display); font-size: 26px; letter-spacing: 1px; text-transform: uppercase; color: #fff; }
+  .subcard-price { text-align: right; }
+  .subcard-price .amt { font-family: var(--font-display); font-size: 32px; color: #fff; line-height: 1; }
+  .subcard.gold .subcard-price .amt { color: var(--gold); }
+  .subcard-price .per { font-size: 11px; color: var(--muted); }
+  .subcard-tag { position: absolute; top: -11px; left: 22px; padding: 3px 12px; border-radius: 10px; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; background: var(--gold); color: #000; }
+  .subcard-feats { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+  .subcard-feat { font-size: 13.5px; color: #cfcfcf; display: flex; align-items: center; gap: 9px; }
+  .subcard-feat svg { width: 15px; height: 15px; color: var(--red); flex-shrink: 0; }
+  .subcard.gold .subcard-feat svg { color: var(--gold); }
+  .subcard-feat.off { color: var(--muted); }
+  .subcard-feat.off svg { color: #444; }
+  .btn-sub { width: 100%; padding: 14px; border-radius: 8px; font-family: var(--font-body); font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; border: none; transition: all 0.2s; }
+  .btn-sub.free { background: #1f1f1f; color: #eee; }
+  .btn-sub.free:hover { background: #262626; }
+  .btn-sub.gold { background: var(--gold); color: #000; }
+  .btn-sub.gold:hover { filter: brightness(1.08); }
 </style>
 </head>
 <body>
-<!-- Progress -->
-<div class="progress-wrap">
-  <div class="progress-steps">
-    <div class="step-dot active" id="dot1">1</div>
-    <div class="step-line" id="line1"></div>
-    <div class="step-dot" id="dot2">2</div>
-    <div class="step-line" id="line2"></div>
-    <div class="step-dot" id="dot3">3</div>
-  </div>
-  <div class="progress-labels">
-    <span class="progress-label active" id="lbl1">Genre</span>
-    <span class="progress-label" id="lbl2">Objectif</span>
-    <span class="progress-label" id="lbl3">Plan</span>
-  </div>
+
+<div class="topbar">
+  <button class="back-btn" id="back-btn" onclick="goBack()">‹</button>
+  <a class="brand" href="index.html"><img src="fav-icon-003.png" alt="Espritum"><span>Espritum</span></a>
 </div>
+<div class="progress-wrap"><div class="progress-bar" id="progress"></div></div>
 
-<!-- ÉTAPE 1 — Genre -->
-<div class="step-card active" id="step1">
-  
-  <div class="step-title">Définis<br>ton profil.</div>
-
-  <div class="genre-grid">
-    <div class="choice-card" id="genre-homme" onclick="selectGenre('homme')">
-      <span class="choice-icon">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="7" r="4"/>
-          <path d="M6 21v-2a6 6 0 0 1 12 0v2"/>
-        </svg>
-      </span>
-      <span class="choice-name">Homme</span>
-    </div>
-    <div class="choice-card" id="genre-femme" onclick="selectGenre('femme')">
-      <span class="choice-icon">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="7" r="4"/>
-          <path d="M6 21v-2a6 6 0 0 1 12 0v2"/>
-          <path d="M9 14l1.5 2h3L15 14"/>
-        </svg>
-      </span>
-      <span class="choice-name">Femme</span>
-    </div>
-  </div>
-
-  <button class="btn-next" id="btn1" onclick="goTo(2)" disabled>Continuer →</button>
-</div>
-
-<!-- ÉTAPE 2 — Objectif -->
-<div class="step-card" id="step2">
-  
-  <div class="step-title">Ton<br>objectif.</div>
-
-  <div class="objectif-grid">
-    <div class="obj-card" id="obj-perte_gras" onclick="selectObj('perte_gras')">
-      <span class="obj-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2c0 0-5 5-5 10a5 5 0 0 0 10 0c0-5-5-10-5-10z"/>
-          <path d="M9 14c0 0 1-2 3-2s3 2 3 2"/>
-        </svg>
-      </span>
-      <div class="obj-name">Perte de gras</div>
-    </div>
-    <div class="obj-card" id="obj-prise_masse" onclick="selectObj('prise_masse')">
-      <span class="obj-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="10" width="3" height="4" rx="1"/>
-          <rect x="19" y="10" width="3" height="4" rx="1"/>
-          <rect x="5" y="8" width="2" height="8" rx="1"/>
-          <rect x="17" y="8" width="2" height="8" rx="1"/>
-          <rect x="7" y="11" width="10" height="2" rx="1"/>
-        </svg>
-      </span>
-      <div class="obj-name">Prise de masse</div>
-    </div>
-    <div class="obj-card" id="obj-endurance" onclick="selectObj('endurance')">
-      <span class="obj-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-        </svg>
-      </span>
-      <div class="obj-name">Endurance</div>
-    </div>
-    <div class="obj-card" id="obj-reequilibrage" onclick="selectObj('reequilibrage')">
-      <span class="obj-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="12" y1="3" x2="12" y2="21"/>
-          <path d="M4 9l8-6 8 6"/>
-          <path d="M4 15l3 3 3-3"/>
-          <path d="M20 15l-3 3-3-3"/>
-        </svg>
-      </span>
-      <div class="obj-name">Rééquilibrage</div>
-    </div>
-  </div>
-
-  <div class="btn-row">
-    <button class="btn-back" onclick="goTo(1)" aria-label="Retour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
-    <button class="btn-next" id="btn2" onclick="goTo(3)" disabled>Continuer →</button>
-  </div>
-</div>
-
-<!-- ÉTAPE 3 — Plan -->
-<div class="step-card" id="step3">
-  
-  <div class="step-title">Choisis<br>ton plan.</div>
-
-  <div class="plans-list">
-
-    <div class="plan-card selected" id="plan-gratuit" onclick="selectPlan('gratuit')">
-      <span class="plan-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
-      <div class="plan-info">
-        <div class="plan-name">Gratuit</div>
-      </div>
-      <div class="plan-price">
-        <div class="plan-amount">0€</div>
-        <div class="plan-period">pour toujours</div>
-      </div>
-      <div class="plan-check">✓</div>
-    </div>
-
-    <div class="plan-card popular" id="plan-premium" onclick="selectPlan('premium')">
-      <div class="popular-tag">Accès complet</div>
-      <span class="plan-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.52l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5 21h14"/></svg></span>
-      <div class="plan-info">
-        <div class="plan-name">Premium</div>
-      </div>
-      <div class="plan-price">
-        <div class="plan-amount">11,99€</div>
-        <div class="plan-period">par mois</div>
-      </div>
-      <div class="plan-check"></div>
-    </div>
-
-  </div>
-
-  <div class="btn-row">
-    <button class="btn-back" onclick="goTo(2)" aria-label="Retour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
-    <button class="btn-next" id="btn3" onclick="finish()">Commencer →</button>
-  </div>
-</div>
-
-<!-- CONFIRMATION -->
-<div class="confirm-card" id="confirm">
-  <div class="confirm-icon">
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="20 6 9 17 4 12"/>
-    </svg>
-  </div>
-  <div class="confirm-title">C'est parti,<br><span id="confirm-prenom" style="color:var(--red);">Guerrier</span> !</div>
-  <div class="confirm-sub">Ton profil est prêt. Forger ton corps commence maintenant.<br>Philippiens 4:13 — "Je puis tout par celui qui me fortifie."</div>
-
-  <div class="confirm-summary">
-    <div class="confirm-row">
-      <span class="confirm-label">Genre</span>
-      <span class="confirm-val" id="sum-genre">—</span>
-    </div>
-    <div class="confirm-row">
-      <span class="confirm-label">Objectif</span>
-      <span class="confirm-val" id="sum-obj">—</span>
-    </div>
-    <div class="confirm-row">
-      <span class="confirm-label">Plan</span>
-      <span class="confirm-val" id="sum-plan">—</span>
-    </div>
-  </div>
-
-  <button class="btn-next" onclick="goToDashboard()">Accéder au dashboard →</button>
-</div>
+<main class="stage" id="stage"></main>
 
 <script>
   const sb = window.sb;
 
-  let currentStep = 1;
-  let selectedGenre = null;
-  let selectedObj = null;
-  let selectedPlan = 'gratuit';
-  let userId = null;
-  let userPrenom = 'Guerrier';
+  // ── Icônes SVG ──
+  function barsIcon(n) {
+    const h = [7, 11, 15, 19]; let out = '';
+    for (let k = 0; k < 4; k++) {
+      const op = k < n ? '1' : '0.22';
+      out += '<rect x="' + (2.5 + k * 5.2) + '" y="' + (21 - h[k]) + '" width="3.2" height="' + h[k] + '" rx="1.2" fill="currentColor" stroke="none" opacity="' + op + '"/>';
+    }
+    return out;
+  }
+  const IC = {
+    homme: '<circle cx="10" cy="14" r="5.5"/><line x1="14" y1="10" x2="20.5" y2="3.5"/><polyline points="15 3.5 20.5 3.5 20.5 9"/>',
+    femme: '<circle cx="12" cy="8.5" r="5.5"/><line x1="12" y1="14" x2="12" y2="21.5"/><line x1="8.5" y1="18.5" x2="15.5" y2="18.5"/>',
+    ventre: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/>',
+    partout: '<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>',
+    bas: '<circle cx="12" cy="12" r="9"/><line x1="12" y1="7.5" x2="12" y2="15"/><polyline points="8.5 11.5 12 15.5 15.5 11.5"/>',
+    mince: '<circle cx="12" cy="12" r="9"/><line x1="8" y1="12" x2="16" y2="12"/>',
+    down: '<polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/>',
+    up: '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+    repeat: '<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+    heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z"/>',
+    bolt: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+    cal: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>',
+  };
+  const check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
 
-  const OBJ_LABEL = {
-    perte_gras: 'Perte de gras',
-    prise_masse: 'Prise de masse',
-    endurance: 'Endurance',
-    reequilibrage: 'Rééquilibrage'
+  // ── Questionnaire ──
+  const STEPS = [
+    { key:'genre', q:'Tu es…', type:'choice', options:[
+      {v:'homme',l:'Un homme',icon:IC.homme},{v:'femme',l:'Une femme',icon:IC.femme}] },
+    { key:'age', q:'Quel âge as-tu ?', type:'number', unit:'ans', min:14, max:99, ph:'28' },
+    { key:'taille', q:'Quelle est ta taille ?', type:'number', unit:'cm', min:120, max:230, ph:'178' },
+    { key:'poids', q:'Quel est ton poids ?', type:'number', unit:'kg', min:35, max:250, ph:'82' },
+    { key:'stockage', q:'Où stockes-tu la graisse en premier ?', type:'choice', options:[
+      {v:'ventre',l:'Surtout le ventre',icon:IC.ventre},{v:'partout',l:'Un peu partout',icon:IC.partout},{v:'bas',l:'Hanches / cuisses',icon:IC.bas},{v:'mince',l:'Je suis plutôt mince',icon:IC.mince}] },
+    { key:'objectif', q:'Ton objectif principal ?', type:'choice', options:[
+      {v:'perte',l:'Perdre du gras',icon:IC.down},{v:'muscle',l:'Prendre du muscle',icon:IC.up},{v:'recomp',l:'Recomposition (les deux)',icon:IC.repeat},{v:'forme',l:'Rester en forme',icon:IC.heart}] },
+    { key:'activite', q:'Ton niveau d’activité au quotidien ?', type:'choice', options:[
+      {v:'sed',l:'Sédentaire (bureau)',icon:barsIcon(1)},{v:'leger',l:'Léger',icon:barsIcon(2)},{v:'modere',l:'Modéré',icon:barsIcon(3)},{v:'intense',l:'Intense (physique)',icon:barsIcon(4)}] },
+    { key:'delai', q:'En combien de temps veux-tu ton résultat ?', type:'choice', options:[
+      {v:2,l:'2 semaines — défi éclair',icon:IC.bolt},{v:4,l:'1 mois',icon:IC.clock},{v:13,l:'3 mois',icon:IC.clock},{v:26,l:'6 mois',icon:IC.clock},{v:52,l:'1 an — transformation',icon:IC.heart}] },
+  ];
+
+  const ARCH = {
+    ecto: { name:'Ectomorphe', desc:"Ossature fine, métabolisme rapide : tu brûles vite et tu as du mal à prendre. Ton levier : construire du muscle avec des charges et assez de calories." },
+    meso: { name:'Mésomorphe', desc:"Ton corps répond vite à l'entraînement : tu prends du muscle et perds du gras facilement quand tu es discipliné. La recomposition est ton terrain." },
+    endo: { name:'Endomorphe', desc:"Tu stockes la graisse facilement mais tu construis un muscle puissant. Ton vrai levier : couper le sucre et tenir un déficit modéré." },
   };
 
-  const PLAN_LABEL = {
-    gratuit: 'Gratuit',
-    premium: 'Premium — 11,99€/mois'
-  };
+  // durée lisible pour l'affichage
+  const DELAI_LABEL = { 2:'2 SEM', 4:'1 MOIS', 13:'3 MOIS', 26:'6 MOIS', 52:'1 AN' };
+  // mapping vers le vocabulaire de l'app
+  const OBJ_MAP = { perte:'perte_gras', muscle:'prise_masse', recomp:'reequilibrage', forme:'endurance' };
+  const ACT_MAP = { sed:'sedentaire', leger:'leger', modere:'modere', intense:'intense' };
 
+  let answers = {};
+  let i = 0;
+  let screen = 'intro';
+  let planData = null;      // { imc, cal, arch }
+  let existingUid = null;   // si l'user est déjà connecté en arrivant
+  let existingEmail = null;
+
+  // ══ INIT ══
   async function init() {
-    const safetyTimeout = setTimeout(() => {}, 1500);
-
     try {
       const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        existingUid = session.user.id;
+        existingEmail = session.user.email;
+        const { data: profile } = await sb.from('users').select('objectif, poids').eq('id', existingUid).single();
+        // déjà onboardé → dashboard
+        if (profile && profile.objectif && profile.poids) { window.location.href = 'dashboard.html'; return; }
+      }
+    } catch (e) { /* pas connecté — flux normal */ }
+    renderIntro();
+  }
 
-      // Si pas connecté → retour inscription
+  function setProgress(pct) { document.getElementById('progress').style.width = pct + '%'; }
+  function showBack(v) { document.getElementById('back-btn').style.display = v ? 'block' : 'none'; }
+
+  // ══ INTRO ══
+  function renderIntro() {
+    screen = 'intro'; setProgress(0); showBack(false);
+    document.getElementById('stage').innerHTML = `
+      <div class="step intro">
+        <div class="intro-badge">Bienvenue chez Espritum</div>
+        <h1>Crée ton plan<br><span class="accent">en 1 minute.</span></h1>
+        <p>Réponds à 8 questions rapides. On analyse ton corps et on te construit ton <b style="color:#fff">plan d'entraînement + nutrition</b> sur mesure.</p>
+        <button class="btn" onclick="startQuestions()">Commencer →</button>
+        <div class="mini">Déjà un compte ? <a href="inscription.html?tab=connexion" style="color:var(--red);text-decoration:none;">Se connecter</a></div>
+      </div>`;
+  }
+
+  function startQuestions() { i = 0; renderQuestion(); }
+
+  // ══ QUESTIONS ══
+  function renderQuestion() {
+    screen = 'question';
+    setProgress((i / STEPS.length) * 100);
+    showBack(true);
+    const s = STEPS[i];
+    let html = `<div class="step"><div class="q-count">Question ${i+1} / ${STEPS.length}</div><div class="q-title">${s.q}</div>`;
+    if (s.type === 'choice') {
+      html += '<div class="options">';
+      s.options.forEach(o => {
+        html += `<button class="opt" onclick="choose('${s.key}', ${typeof o.v==='number'?o.v:`'${o.v}'`})"><span class="opt-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${o.icon||''}</svg></span><span class="opt-label">${o.l}</span></button>`;
+      });
+      html += '</div>';
+    } else {
+      const cur = answers[s.key] != null ? answers[s.key] : '';
+      html += `<div class="num-wrap">
+        <input class="num-input" id="num" type="number" inputmode="numeric" placeholder="${s.ph}" value="${cur}" min="${s.min}" max="${s.max}">
+        <div class="num-unit">${s.unit}</div>
+        <div class="num-err" id="num-err"></div>
+      </div>
+      <button class="btn" onclick="submitNum()">Continuer →</button>`;
+    }
+    html += '</div>';
+    document.getElementById('stage').innerHTML = html;
+    if (s.type === 'number') {
+      const inp = document.getElementById('num');
+      inp.focus();
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') submitNum(); });
+    }
+  }
+
+  function choose(key, val) { answers[key] = val; nextQuestion(); }
+
+  function submitNum() {
+    const s = STEPS[i];
+    const val = parseInt(document.getElementById('num').value, 10);
+    if (isNaN(val) || val < s.min || val > s.max) {
+      document.getElementById('num-err').textContent = `Entre une valeur entre ${s.min} et ${s.max}.`;
+      return;
+    }
+    answers[s.key] = val;
+    nextQuestion();
+  }
+
+  function nextQuestion() { i++; if (i >= STEPS.length) buildPlan(); else renderQuestion(); }
+
+  function goBack() {
+    if (screen === 'question') {
+      if (i === 0) { renderIntro(); }
+      else { i--; renderQuestion(); }
+    } else if (screen === 'account') {
+      renderPlan();
+    } else if (screen === 'plan') {
+      i = STEPS.length - 1; renderQuestion();
+    } else if (screen === 'subscription') {
+      renderAccount();
+    }
+  }
+
+  // ══ CALCUL ══
+  function round10(n) { return Math.round(n / 10) * 10; }
+  function compute() {
+    const poids = answers.poids, taille = answers.taille, age = answers.age;
+    const homme = answers.genre === 'homme';
+    const imc = poids / Math.pow(taille / 100, 2);
+    let bmr = 10 * poids + 6.25 * taille - 5 * age + (homme ? 5 : -161);
+    const af = { sed: 1.2, leger: 1.375, modere: 1.55, intense: 1.725 }[answers.activite] || 1.375;
+    let tdee = bmr * af;
+    let cal = tdee;
+    if (answers.objectif === 'perte') cal = tdee - 450;
+    else if (answers.objectif === 'muscle') cal = tdee + 250;
+    else if (answers.objectif === 'recomp') cal = tdee - 200;
+    cal = round10(Math.max(1300, cal));
+    let arch;
+    if (answers.stockage === 'mince' || imc < 20) arch = 'ecto';
+    else if ((answers.stockage === 'ventre' || answers.stockage === 'partout') && imc >= 26) arch = 'endo';
+    else if (imc >= 28) arch = 'endo';
+    else arch = 'meso';
+    return { imc: imc.toFixed(1), cal, arch };
+  }
+
+  // ══ LOADING → PLAN ══
+  function buildPlan() {
+    screen = 'loading'; setProgress(100); showBack(false);
+    document.getElementById('stage').innerHTML = `<div class="loader">
+      <div class="loader-ring"></div>
+      <h2>On construit ton plan…</h2>
+      <p>Analyse de ton corps et de ton objectif.</p>
+    </div>`;
+    planData = compute();
+    // sauvegarde locale (filet, réutilisé par le dashboard si besoin)
+    try { localStorage.setItem('esp_onboarding', JSON.stringify({ ...answers, ...planData, ts: Date.now() })); } catch (e) {}
+    setTimeout(renderPlan, 2000);
+  }
+
+  function renderPlan() {
+    screen = 'plan'; setProgress(100); showBack(true);
+    const cal = Number.isFinite(planData.cal) ? planData.cal : '—';
+    const imc = (planData.imc && planData.imc !== 'NaN') ? planData.imc : '—';
+    document.getElementById('stage').innerHTML = `
+      <div class="step reveal">
+        <div class="reveal-badge">${check} C'est tout bon</div>
+        <div class="reveal-title">Ton plan<br>d'entraînement<br>& nutrition est prêt !</div>
+        <div class="reveal-sub">Personnalisé selon tes réponses.</div>
+        <div class="res-stats">
+          <div class="res-stat"><div class="v">${cal}</div><div class="l">Kcal / jour</div></div>
+          <div class="res-stat"><div class="v">${imc}</div><div class="l">IMC</div></div>
+          <div class="res-stat"><div class="v">${DELAI_LABEL[answers.delai]||'—'}</div><div class="l">Objectif</div></div>
+        </div>
+        <div class="plan-incl">
+          <div class="rtitle">Ce qui t'attend</div>
+          <div class="incl-item"><span class="incl-ico">${check}</span><span class="t">Un programme d'entraînement adapté à ton objectif</span></div>
+          <div class="incl-item"><span class="incl-ico">${check}</span><span class="t">Ta nutrition calée sur ${cal} kcal / jour</span></div>
+          <div class="incl-item"><span class="incl-ico">${check}</span><span class="t">Ton suivi corporel semaine par semaine</span></div>
+        </div>
+        <button class="btn" onclick="renderAccount()">Créer mon compte pour y accéder →</button>
+      </div>`;
+  }
+
+  // ══ COMPTE ══
+  function renderAccount() {
+    screen = 'account'; setProgress(100); showBack(true);
+    if (existingUid) {
+      // déjà connecté → pas besoin de recréer un compte
+      document.getElementById('stage').innerHTML = `
+        <div class="step form">
+          <div class="form-title">Enregistre ton plan</div>
+          <div class="form-sub">Connecté en tant que <b style="color:#fff">${existingEmail || ''}</b></div>
+          <button class="btn" id="acc-btn" onclick="saveExisting()">Enregistrer mon plan →</button>
+          <div class="form-msg" id="acc-msg"></div>
+        </div>`;
+      return;
+    }
+    document.getElementById('stage').innerHTML = `
+      <div class="step form">
+        <div class="form-title">Crée ton compte</div>
+        <div class="form-sub">Pour débloquer et sauvegarder ton plan.</div>
+        <div class="field-row">
+          <div class="field"><label>Prénom</label><input id="ac-prenom" placeholder="Kaito" autocomplete="given-name"></div>
+          <div class="field"><label>Nom</label><input id="ac-nom" placeholder="Dupont" autocomplete="family-name"></div>
+        </div>
+        <div class="field"><label>Adresse email</label><input id="ac-email" type="email" placeholder="ton@email.com" autocomplete="email"></div>
+        <div class="field"><label>Mot de passe</label><input id="ac-pwd" type="password" placeholder="8 caractères minimum" autocomplete="new-password"></div>
+        <div class="form-msg" id="acc-msg"></div>
+        <button class="btn" id="acc-btn" onclick="createAccount()">Créer mon compte →</button>
+        <div class="form-foot">Déjà un compte ? <a href="inscription.html?tab=connexion">Se connecter</a></div>
+      </div>`;
+    document.getElementById('ac-prenom').focus();
+  }
+
+  function accMsg(type, txt) {
+    const m = document.getElementById('acc-msg');
+    m.className = 'form-msg ' + (type || '');
+    m.textContent = txt || '';
+  }
+
+  async function saveExisting() {
+    const btn = document.getElementById('acc-btn');
+    btn.disabled = true; btn.textContent = '...';
+    await saveProfile(existingUid, existingEmail, null, null);
+    renderSubscription();
+  }
+
+  async function createAccount() {
+    const g = id => (document.getElementById(id).value || '').trim();
+    const prenom = g('ac-prenom'), nom = g('ac-nom'), email = g('ac-email');
+    const pwd = document.getElementById('ac-pwd').value;
+    ['ac-prenom','ac-email','ac-pwd'].forEach(id => document.getElementById(id).classList.remove('error'));
+
+    if (!prenom) { document.getElementById('ac-prenom').classList.add('error'); accMsg('err','Entre ton prénom.'); return; }
+    if (!email || email.indexOf('@') < 0) { document.getElementById('ac-email').classList.add('error'); accMsg('err','Entre un email valide.'); return; }
+    if (!pwd || pwd.length < 8) { document.getElementById('ac-pwd').classList.add('error'); accMsg('err','Mot de passe : 8 caractères minimum.'); return; }
+
+    const btn = document.getElementById('acc-btn');
+    btn.disabled = true; btn.textContent = 'Création…'; accMsg('', '');
+
+    try {
+      const { data, error } = await sb.auth.signUp({ email, password: pwd, options: { data: { prenom, full_name: prenom } } });
+      if (error) {
+        accMsg('err', traduireErreur(error.message));
+        btn.disabled = false; btn.textContent = 'Créer mon compte →';
+        return;
+      }
+      let session = data.session;
+      const uid = (data.user && data.user.id) || (session && session.user.id);
+
+      // Enregistre le profil (RLS désactivée → écrit avec la clé anon même sans session)
+      if (uid) await saveProfile(uid, email, prenom, nom);
+
+      // Si la confirmation email est activée, pas de session → on tente une connexion directe
       if (!session) {
-        window.location.href = 'inscription.html';
+        const { data: d2 } = await sb.auth.signInWithPassword({ email, password: pwd });
+        session = d2 && d2.session;
+      }
+
+      if (!session) {
+        // confirmation email obligatoire : le compte + le plan sont créés, mais accès bloqué
+        accMsg('ok', '✓ Compte créé ! Vérifie ton email pour l\'activer, puis connecte-toi.');
+        btn.textContent = 'Aller à la connexion →';
+        btn.disabled = false;
+        btn.onclick = () => { window.location.href = 'inscription.html?tab=connexion'; };
         return;
       }
 
-      userId = session.user.id;
-
-      const { data: profile } = await sb.from('users').select('*').eq('id', userId).single();
-      userPrenom = profile?.prenom || session.user.user_metadata?.prenom || 'Guerrier';
-
-      // Si profil déjà configuré → dashboard directement
-      if (profile?.objectif && profile?.genre) {
-        window.location.href = 'dashboard.html';
-        return;
-      }
-
-    } catch(e) {
-      console.error(e);
-    } finally {
+      renderSubscription();
+    } catch (err) {
+      console.error(err);
+      accMsg('err', 'Connexion impossible — réessaie.');
+      btn.disabled = false; btn.textContent = 'Créer mon compte →';
     }
   }
 
-  // ── NAVIGATION ──
-  function goTo(step) {
-    // Masquer TOUTES les étapes (robuste — jamais deux écrans affichés en même temps)
-    document.querySelectorAll('.step-card, .confirm-card').forEach(function (s) { s.classList.remove('active'); });
-
-    // Mettre à jour progress
-    updateProgress(step);
-
-    currentStep = step;
-    document.getElementById(`step${step}`).classList.add('active');
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  async function saveProfile(uid, email, prenom, nom) {
+    const cal = planData.cal;
+    const payload = {
+      id: uid, email,
+      poids: answers.poids, taille: answers.taille,
+      objectif: OBJ_MAP[answers.objectif] || 'perte_gras',
+      niveau_activite: ACT_MAP[answers.activite] || 'modere',
+      calories_objectif: cal,
+      proteines_objectif: Math.round(answers.poids * 2),
+      glucides_objectif: Math.round(cal * 0.4 / 4),
+      lipides_objectif: Math.round(cal * 0.25 / 9),
+    };
+    if (prenom) payload.prenom = prenom;
+    if (nom) payload.nom = nom;
+    try { await sb.from('users').upsert(payload, { onConflict: 'id' }); } catch (e) { console.warn('profil', e); }
+    // Colonne optionnelle (existe seulement si supabase_fixes.sql a été lancé) — appel isolé
+    try { await sb.from('users').update({ goal_weeks: answers.delai }).eq('id', uid); } catch (e) {}
+    // Point de mesure initial
+    try { await sb.from('measurements').insert({ user_id: uid, poids: answers.poids }); } catch (e) {}
+    // Extras conservés en local (genre/âge/archétype non stockés en base)
+    try { localStorage.setItem('esp_profile_extra', JSON.stringify({ genre: answers.genre, age: answers.age, archetype: planData.arch, goal_weeks: answers.delai })); } catch (e) {}
   }
 
-  function updateProgress(targetStep) {
-    for (let i = 1; i <= 3; i++) {
-      const dot = document.getElementById(`dot${i}`);
-      const lbl = document.getElementById(`lbl${i}`);
-
-      if (i < targetStep) {
-        dot.className = 'step-dot done';
-        dot.textContent = '✓';
-        lbl.className = 'progress-label';
-      } else if (i === targetStep) {
-        dot.className = 'step-dot active';
-        dot.textContent = i;
-        lbl.className = 'progress-label active';
-      } else {
-        dot.className = 'step-dot';
-        dot.textContent = i;
-        lbl.className = 'progress-label';
-      }
-
-      if (i < 3) {
-        document.getElementById(`line${i}`).className = i < targetStep ? 'step-line done' : 'step-line';
-      }
-    }
+  // ══ ABONNEMENT ══
+  function renderSubscription() {
+    screen = 'subscription'; setProgress(100); showBack(true);
+    document.getElementById('stage').innerHTML = `
+      <div class="step subs">
+        <div class="subs-title">Choisis<br>ton accès</div>
+        <div class="subs-sub">Ton plan t'attend. Comment veux-tu démarrer ?</div>
+        <div class="subs-list">
+          <div class="subcard">
+            <div class="subcard-top">
+              <div class="subcard-name">Gratuit</div>
+              <div class="subcard-price"><div class="amt">0€</div><div class="per">pour toujours</div></div>
+            </div>
+            <div class="subcard-feats">
+              <div class="subcard-feat">${check} Ton dashboard personnalisé</div>
+              <div class="subcard-feat">${check} Estimation des calories</div>
+              <div class="subcard-feat off">${check} Programme &amp; nutrition complets</div>
+              <div class="subcard-feat off">${check} Coach IA &amp; suivi corporel</div>
+            </div>
+            <button class="btn-sub free" onclick="finishFree()">Commencer gratuitement</button>
+          </div>
+          <div class="subcard gold">
+            <div class="subcard-tag">Accès complet</div>
+            <div class="subcard-top">
+              <div class="subcard-name">Premium</div>
+              <div class="subcard-price"><div class="amt">11,99€</div><div class="per">par mois</div></div>
+            </div>
+            <div class="subcard-feats">
+              <div class="subcard-feat">${check} Programme d'entraînement complet</div>
+              <div class="subcard-feat">${check} Nutrition + scan de repas</div>
+              <div class="subcard-feat">${check} Coach Sensei IA illimité</div>
+              <div class="subcard-feat">${check} Suivi corporel semaine par semaine</div>
+            </div>
+            <button class="btn-sub gold" onclick="finishPremium()">Débloquer tout — 11,99€/mois</button>
+          </div>
+        </div>
+      </div>`;
   }
 
-  // ── SÉLECTIONS ──
-  function selectGenre(genre) {
-    selectedGenre = genre;
-    document.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
-    document.getElementById(`genre-${genre}`).classList.add('selected');
-    document.getElementById('btn1').disabled = false;
-  }
+  function finishFree() { window.location.href = 'dashboard.html'; }
+  function finishPremium() { window.location.href = 'paiement.html?plan=premium'; }
 
-  function selectObj(obj) {
-    selectedObj = obj;
-    document.querySelectorAll('.obj-card').forEach(c => c.classList.remove('selected'));
-    document.getElementById(`obj-${obj}`).classList.add('selected');
-    document.getElementById('btn2').disabled = false;
-  }
-
-  function selectPlan(plan) {
-    selectedPlan = plan;
-    document.querySelectorAll('.plan-card').forEach(c => {
-      c.classList.remove('selected');
-      c.querySelector('.plan-check').textContent = '';
-    });
-    const card = document.getElementById(`plan-${plan}`);
-    card.classList.add('selected');
-    card.querySelector('.plan-check').textContent = '✓';
-  }
-
-  // ── FINISH ──
-  async function finish() {
-    const btn = document.getElementById('btn3');
-    btn.disabled = true;
-    btn.textContent = 'Sauvegarde...';
-
-    try {
-      // Calculer objectifs nutritionnels selon genre et objectif
-      const cal = selectedObj === 'perte_gras' ? 2000 :
-                  selectedObj === 'prise_masse' ? 2800 :
-                  selectedObj === 'endurance' ? 2400 : 2200;
-
-      const prot = selectedObj === 'prise_masse' ? 180 : 150;
-      const carb = selectedObj === 'perte_gras' ? 200 : 300;
-      const fat = 70;
-
-      // Récupérer email pour l'upsert (au cas où la ligne n'existerait pas encore)
-      const { data: { session } } = await sb.auth.getSession();
-      if (!session) { window.location.href = 'inscription.html'; return; }
-
-      // UPDATE simple — la ligne existe toujours (créée par le trigger handle_new_user)
-      const { error: saveErr } = await sb.from('users').update({
-        prenom: userPrenom,
-        genre: selectedGenre,
-        objectif: selectedObj,
-        calories_objectif: cal,
-        proteines_objectif: prot,
-        glucides_objectif: carb,
-        lipides_objectif: fat,
-      }).eq('id', userId);
-
-      // On log l'erreur mais on continue quand même — le profil peut être complété plus tard
-      if (saveErr) console.warn('Onboarding save warning:', saveErr.message || saveErr.code);
-
-      // Si plan payant → checkout Stripe (le compte reste gratuit tant que le paiement n'est pas validé)
-      if (selectedPlan !== 'gratuit') {
-        window.location.href = 'paiement.html?plan=premium';
-        return;
-      }
-
-      // Plan gratuit → confirmation
-      document.getElementById(`step3`).classList.remove('active');
-      document.getElementById('confirm').classList.add('active');
-      document.getElementById('confirm-prenom').textContent = userPrenom;
-      document.getElementById('sum-genre').textContent = selectedGenre === 'homme' ? 'Homme' : 'Femme';
-      document.getElementById('sum-obj').textContent = OBJ_LABEL[selectedObj];
-      document.getElementById('sum-plan').textContent = PLAN_LABEL[selectedPlan];
-
-      updateProgress(4);
-
-    } catch(e) {
-      console.error(e);
-      alert('Une erreur est survenue. Réessaie.');
-      btn.disabled = false;
-      btn.textContent = 'Commencer →';
-    }
-  }
-
-  function goToDashboard() {
-    window.location.href = 'dashboard.html';
+  // ── Erreurs auth traduites ──
+  function traduireErreur(msg) {
+    msg = msg || '';
+    if (msg.includes('already registered') || msg.includes('already been registered')) return 'Cet email a déjà un compte. Connecte-toi à la place.';
+    if (msg.includes('Password should be')) return 'Mot de passe trop court — 8 caractères minimum.';
+    if (msg.includes('rate limit') || msg.includes('For security')) return 'Trop de tentatives. Attends une minute.';
+    if (msg.includes('Unable to validate email')) return 'Adresse email invalide.';
+    return 'Erreur : ' + msg;
   }
 
   init();
