@@ -3,8 +3,10 @@
 // La clé secrète Stripe n'est JAMAIS exposée au navigateur.
 //
 // Variables d'environnement (Vercel → Settings → Environment Variables) :
-//   STRIPE_SECRET_KEY     → Stripe → Developers → API keys (sk_test_... ou sk_live_...)
-//   STRIPE_PRICE_PREMIUM  → l'ID du tarif 11,99€ (price_...)  [optionnel, sinon fallback ci-dessous]
+//   STRIPE_SECRET_KEY          → Stripe → Developers → API keys (sk_test_... ou sk_live_...)
+//   STRIPE_PRICE_PREMIUM       → l'ID du tarif 11,99€ (price_...)  [optionnel, sinon fallback ci-dessous]
+//   SUPABASE_SERVICE_ROLE_KEY  → pour enregistrer l'abonnement + passer l'user en premium (déjà utilisée par l'admin)
+//   SUPABASE_URL               → optionnel (fallback ci-dessous)
 
 const FALLBACK_PRICE = 'price_1Th2O2CiYumIwbBJHD0rKq'; // tarif Premium 11,99€ (test)
 
@@ -64,10 +66,43 @@ export default async function handler(req, res) {
     if (sub.error) return res.status(400).json({ error: sub.error.message });
 
     const pi = sub.latest_invoice && sub.latest_invoice.payment_intent;
+    const status = (pi && pi.status) || sub.status;
+
+    // 4) Persister côté Supabase (service_role) — filet en attendant le webhook Stripe
+    //    Le webhook (Edge Function) reste la source de vérité pour renouvellements/annulations.
+    const svcKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const sbUrl = process.env.SUPABASE_URL || 'https://lbxlvrtujzwlcnloheyh.supabase.co';
+    const paid = ['succeeded', 'active', 'trialing'].includes(status);
+    if (svcKey && user_id) {
+      const h = { 'apikey': svcKey, 'Authorization': 'Bearer ' + svcKey, 'Content-Type': 'application/json' };
+      try {
+        await fetch(sbUrl + '/rest/v1/subscriptions?on_conflict=stripe_subscription_id', {
+          method: 'POST',
+          headers: Object.assign({}, h, { 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
+          body: JSON.stringify({
+            user_id: user_id,
+            stripe_subscription_id: sub.id,
+            stripe_customer_id: customer.id,
+            plan: 'premium',
+            statut: paid ? 'active' : (sub.status || 'incomplete'),
+            montant: 11.99,
+            debut: new Date().toISOString()
+          })
+        });
+        const upd = { stripe_customer_id: customer.id };
+        if (paid) upd.plan = 'premium';
+        await fetch(sbUrl + '/rest/v1/users?id=eq.' + encodeURIComponent(user_id), {
+          method: 'PATCH',
+          headers: Object.assign({}, h, { 'Prefer': 'return=minimal' }),
+          body: JSON.stringify(upd)
+        });
+      } catch (e) { /* ne bloque pas la réponse paiement */ }
+    }
+
     return res.status(200).json({
       subscription_id: sub.id,
       customer_id: customer.id,
-      status: (pi && pi.status) || sub.status,
+      status: status,
       client_secret: (pi && pi.client_secret) || null,
     });
   } catch (e) {
