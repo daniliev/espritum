@@ -14,7 +14,9 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://espritum.com/physique-toji-endomorphe.html">
 <meta property="og:image" content="https://espritum.com/endo.webp">
-<link rel="icon" href="fav-icon-003.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <script type="application/ld+json">
@@ -155,11 +157,26 @@
   /* LEAD MAGNET (identique au site) */
   .cta-box { background: linear-gradient(140deg, #160505, var(--surface)); border: 1px solid rgba(200,40,40,0.3); border-radius: 16px; padding: 40px 30px; margin: 56px 0 10px; text-align: center; position: relative; overflow: hidden; }
   .cta-felins { display: block; width: 210px; max-width: 62%; height: auto; margin: 2px auto 18px; filter: drop-shadow(0 10px 26px rgba(200,40,40,0.28)); }
-  .cta-box h2 { font-family: var(--font-display); font-size: 34px; letter-spacing: 1px; margin-bottom: 10px; text-transform: uppercase; }
+  .cta-box h2 { display: block; font-family: var(--font-display); font-size: 34px; letter-spacing: 1px; margin-bottom: 10px; text-transform: uppercase; }
   .cta-box h2 span { color: var(--red); }
   .cta-box p { color: var(--text-mid); font-size: 15px; margin-bottom: 24px; }
   .cta-btn { display: inline-flex; align-items: center; gap: 10px; background: var(--red); color: white; font-family: var(--font-display); font-size: 18px; letter-spacing: 3px; padding: 15px 38px; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 30px var(--red-glow); transition: background 0.2s; }
   .cta-btn:hover { background: #d93030; }
+  .cta-hook { font-size: 15px; color: var(--text-mid); line-height: 1.55; max-width: 470px; margin: 0 auto 22px; }
+  .cta-hook strong { color: var(--red); font-weight: 600; }
+
+  /* À LIRE AUSSI */
+  .related { max-width: 780px; margin: 0 auto; padding: 10px 24px 60px; }
+  .related-title { font-family: var(--font-display); font-size: clamp(24px, 4vw, 34px); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px; }
+  .related-title span { color: var(--red); }
+  .related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .rel-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; text-decoration: none; display: flex; flex-direction: column; transition: border-color 0.2s, transform 0.2s; }
+  .rel-card:hover { border-color: rgba(200,40,40,0.5); transform: translateY(-3px); }
+  .rel-thumb { width: 100%; aspect-ratio: 16/10; object-fit: cover; display: block; border-bottom: 1px solid var(--border); }
+  .rel-body { padding: 13px 15px 16px; }
+  .rel-cat { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); font-weight: 700; font-family: var(--font-cond); margin-bottom: 7px; }
+  .rel-name { font-family: var(--font-cond); font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.25; }
+  @media (max-width: 640px) { .related-grid { grid-template-columns: 1fr; } }
 
   /* FOOTER (identique au site) */
   footer { border-top: 1px solid var(--border); padding: 34px 22px; text-align: center; }
@@ -403,13 +420,33 @@
 
   <!-- LEAD MAGNET -->
   <div class="cta-box">
+    <div class="cta-hook">Cet article ne te correspond pas vraiment ? Alors <strong>ta morphologie est sûrement différente</strong> — découvre la tienne en 30 secondes.</div>
     <img class="cta-felins" src="felins.webp?v=221" alt="Espritum">
     <h2>Trouve ton <span>archétype corporel</span></h2>
-    <p>30 secondes pour connaître ton type de corps et débloquer ton plan sur-mesure — nutrition + entraînement.</p>
+    <p>Fais le test et débloque ton plan sur-mesure — nutrition + entraînement, adaptés à TON corps.</p>
     <a class="cta-btn" href="quiz.html">Faire le test →</a>
   </div>
 
 </article>
+
+<!-- À LIRE AUSSI -->
+<section class="related">
+  <h2 class="related-title">À lire <span>aussi</span></h2>
+  <div class="related-grid">
+    <a class="rel-card" href="comment-perdre-du-ventre-homme.html">
+      <img class="rel-thumb" src="blog-ventre-hero.jpg" alt="Comment perdre du ventre homme" loading="lazy">
+      <div class="rel-body"><div class="rel-cat">Perte de gras</div><div class="rel-name">Comment perdre du ventre (homme)</div></div>
+    </a>
+    <a class="rel-card" href="exercice-pour-perdre-du-ventre-homme.html">
+      <img class="rel-thumb" src="blog-exercice-hero.jpg" alt="Exercice pour perdre du ventre homme" loading="lazy">
+      <div class="rel-body"><div class="rel-cat">Entraînement</div><div class="rel-name">Quel exercice pour perdre du ventre</div></div>
+    </a>
+    <a class="rel-card" href="quoi-manger-pour-perdre-du-ventre-homme.html">
+      <img class="rel-thumb" src="blog-alimentation-hero.jpg" alt="Quoi manger pour perdre du ventre homme" loading="lazy">
+      <div class="rel-body"><div class="rel-cat">Nutrition</div><div class="rel-name">Quoi manger pour perdre du ventre</div></div>
+    </a>
+  </div>
+</section>
 
 <!-- FOOTER -->
 <footer>
