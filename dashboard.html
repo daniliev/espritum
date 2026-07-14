@@ -1,0 +1,2406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-63PTD9QNBV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-63PTD9QNBV');
+</script>
+
+<script src="page-loader.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+<title>Espritum — Dashboard</title>
+<link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="supabase-client.js"></script>
+<script src="api-config2.js"></script>
+<style>
+  :root {
+    --red: #c82828;
+    --bg: #080808;
+    --bg2: #0d0d0d;
+    --bg3: #111111;
+    --border: #1e1e1e;
+    --muted: #555;
+    --muted2: #333;
+    --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
+    --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
+    --sidebar: 80px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: #fff; font-family: var(--font-body); display: flex; }
+
+  /* SIDEBAR */
+  .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 50; align-items: center; }
+  .sidebar-brand { display: flex; align-items: center; justify-content: center; padding: 22px 0 26px; text-decoration: none; }
+  .sidebar-logo { width: 38px; height: 38px; object-fit: contain; border-radius: 8px; }
+  .sidebar-name { display: none; }
+  .sidebar-nav { flex: 1; padding: 8px 0; display: flex; flex-direction: column; gap: 6px; align-items: center; width: 100%; }
+  .nav-section-label { display: none; }
+  .nav-item { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 10px; text-decoration: none; transition: background 0.2s; color: transparent; font-size: 0; flex-shrink: 0; }
+  .nav-item span:not(.nav-icon):not(.nav-lock) { display: none; }
+  .nav-item:hover { background: rgba(255,255,255,0.04); }
+  .nav-item.active { background: rgba(255,255,255,0.06); }
+  .nav-icon { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; flex-shrink: 0; }
+  .nav-icon img { width: 26px; height: 26px; object-fit: contain; display: block; opacity: 0.45; transition: opacity 0.2s; }
+  .nav-item:hover .nav-icon img { opacity: 0.85; }
+  .nav-item.active .nav-icon img { opacity: 1; }
+  .nav-lock { display: none; }
+  .sidebar-bottom { padding: 12px 0 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .user-card { display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; cursor: pointer; transition: opacity 0.2s; }
+  .user-card > div:not(.user-avatar) { display: none; }
+  .user-card:hover { opacity: 0.8; }
+  .user-avatar { width: 38px; height: 38px; border-radius: 50%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; color: #ddd; flex-shrink: 0; }
+  .user-name, .user-plan { display: none; }
+  .nav-item.locked { opacity: 0.4; cursor: not-allowed; }
+  .nav-item.locked:hover { background: transparent; }
+
+  /* MAIN */
+  .main { margin-left: var(--sidebar); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+  .topbar { padding: 16px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 40; }
+  .topbar-title { font-family: var(--font-display); font-size: 26px; letter-spacing: 3px; text-transform: uppercase; line-height: 1; }
+  .topbar-title span { color: var(--red); }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .topbar-streak-pill { background: #111; border: 2px solid var(--red); border-radius: 99px; padding: 6px 14px; font-family: var(--font-display); font-size: 17px; letter-spacing: 1px; color: #fff; }
+  .topbar-avatar-pill { width: 40px; height: 40px; border-radius: 50%; background: rgba(200,40,40,0.1); border: 2px solid var(--red); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 14px; color: var(--red); flex-shrink: 0; }
+
+  .content { padding: 24px 32px; display: flex; flex-direction: column; gap: 18px; }
+
+  /* ── WORD OF THE DAY ── */
+  .wod-card {
+    background: linear-gradient(135deg, rgba(15,4,4,0.95), rgba(22,6,6,0.98));
+    border: 1px solid rgba(200,40,40,0.2);
+    border-radius: 14px;
+    padding: 22px 24px;
+  }
+  .wod-label { font-size: 9px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; font-weight: 700; margin-bottom: 10px; }
+  .wod-quote { font-family: var(--font-display); font-size: 22px; letter-spacing: 1px; text-transform: uppercase; color: #fff; line-height: 1.2; margin-bottom: 8px; }
+  .wod-ref { font-size: 12px; color: #666; font-style: italic; }
+
+  /* ── BODY PHOTOS ── */
+  .body-photos-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .body-photos-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .body-photo-item { display: flex; flex-direction: column; gap: 8px; }
+  .body-photo-lbl { font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
+  .dash-sec-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin: 6px 2px 12px; }
+  .body-photo-frame { width: 100%; aspect-ratio: 3/4; background: var(--bg3); border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
+  .body-photo-frame img { width: 100%; height: 100%; object-fit: cover; display: none; }
+  .body-photo-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px; text-align: center; }
+  .body-photo-empty-icon { font-size: 28px; opacity: 0.3; }
+  .body-photo-empty-text { font-size: 11px; color: var(--muted); line-height: 1.4; }
+  .body-photo-link { font-size: 10px; color: var(--red); letter-spacing: 1px; text-decoration: none; font-weight: 600; }
+  .body-photo-add { width: 36px; height: 36px; border-radius: 50%; background: rgba(200,40,40,0.12); border: 1px solid rgba(200,40,40,0.3); display: flex; align-items: center; justify-content: center; }
+  .body-photo-add-icon { width: 16px; height: 16px; stroke: var(--red); fill: none; stroke-width: 2; }
+
+  /* ── TIME GOAL SLIDER ── */
+  .time-goal-lbl { font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; font-weight: 700; margin-bottom: 14px; }
+  .slider-wrap { padding: 0 4px; }
+  .goal-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 3px; background: #2a2a2a; border-radius: 2px; outline: none; cursor: pointer; }
+  .goal-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--red); cursor: pointer; border: 3px solid #0d0d0d; box-shadow: 0 0 0 1px var(--red); transition: transform 0.15s; }
+  .goal-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  .goal-slider::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--red); cursor: pointer; border: 3px solid #0d0d0d; box-shadow: 0 0 0 1px var(--red); }
+  .slider-ticks { display: flex; justify-content: space-between; margin-top: 10px; }
+  .slider-ticks span { font-size: 11px; color: var(--muted); letter-spacing: 0.5px; transition: color 0.2s; }
+  .slider-ticks span.active { color: #fff; font-weight: 600; }
+  .planning-box { display: none !important; }
+  .planning-box.show { display: none !important; }
+  .planning-title { font-family: var(--font-display); font-size: 14px; letter-spacing: 1px; color: var(--red); text-transform: uppercase; margin-bottom: 8px; }
+  .planning-items { display: flex; flex-direction: column; gap: 5px; }
+  .planning-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #aaa; line-height: 1.4; }
+  .planning-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+
+  /* ── PROGRESS RING ── */
+  .ring-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .ring-chart-wrap { position: relative; width: 140px; height: 140px; }
+  .ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+  .ring-pct { font-family: var(--font-display); font-size: 38px; color: #fff; line-height: 1; }
+  .ring-pct-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+  .ring-week-row { display: flex; align-items: baseline; gap: 6px; }
+  .ring-week-text { font-family: var(--font-display); font-size: 28px; letter-spacing: 3px; text-transform: uppercase; color: #fff; }
+  .ring-week-text .ring-week-num { color: var(--red); }
+  .ring-remaining { font-size: 13px; color: #888; text-align: center; line-height: 1.5; }
+  .ring-remaining span { color: var(--red); font-weight: 600; }
+
+  /* ── PROGRESS BAR (jalons) ── */
+  .goalbar-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 24px 22px 20px; }
+  .goalbar-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 22px; }
+  .goalbar-week { font-family: var(--font-display); font-size: 26px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; }
+  .goalbar-week .gb-num { color: var(--red); }
+  .goalbar-pct { font-family: var(--font-display); font-size: 32px; color: #fff; line-height: 1; }
+  .goalbar-pct .gb-pct-sign { font-size: 16px; color: var(--muted); }
+  .goalbar-track-wrap { position: relative; padding: 0 2px; }
+  .goalbar-track { height: 8px; background: #1a1a1a; border-radius: 4px; overflow: hidden; }
+  .goalbar-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--red), #ff6b35); border-radius: 4px; transition: width 0.9s ease; }
+  .goalbar-nodes { position: absolute; inset: 0; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+  .goalbar-node { width: 13px; height: 13px; border-radius: 50%; background: #161616; border: 2px solid #2a2a2a; transition: all 0.3s; }
+  .goalbar-node.reached { background: var(--red); border-color: var(--red); box-shadow: 0 0 8px rgba(200,40,40,0.55); }
+  .goalbar-labels { display: flex; justify-content: space-between; margin-top: 12px; }
+  .goalbar-labels span { font-size: 9px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; font-weight: 700; transition: color 0.3s; }
+  .goalbar-labels span.reached { color: #fff; }
+  .goalbar-remaining { font-size: 13px; color: #888; text-align: center; margin-top: 18px; }
+  .goalbar-remaining span { color: var(--red); font-weight: 600; }
+
+  /* ── NOUVELLE ANALYSE button + deltas ── */
+  .new-analysis-btn { width: 100%; padding: 15px; background: var(--red); border: none; border-radius: 10px; color: #fff; font-family: var(--font-display); font-size: 19px; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .new-analysis-btn:hover { background: #d93030; }
+  .new-analysis-btn svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 2; }
+  .body-stat-delta { font-size: 10px; letter-spacing: 0.5px; margin-top: 4px; font-weight: 600; min-height: 12px; }
+  .body-stat-delta.down { color: #4caf50; }
+  .body-stat-delta.up { color: #ff6b35; }
+  .body-stat-delta.flat { color: var(--muted); }
+
+  /* ── BODY STATS ── */
+  .body-stats-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .body-stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+  .body-stats-row2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+  .body-stats-grid4 { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+  .body-stat-box { background: var(--bg3); border-radius: 12px; padding: 16px 10px 12px; text-align: center; }
+  .body-stat-val { font-family: var(--font-display); font-size: 34px; line-height: 1; color: #fff; }
+  .body-stat-val sup { font-size: 14px; color: var(--muted); font-family: var(--font-body); font-weight: 400; vertical-align: super; line-height: 0; }
+  .body-stat-label { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
+  .body-stat-label .stat-unit { color: var(--red); font-weight: 700; }
+  .body-comp-wrap { background: var(--bg3); border-radius: 8px; padding: 10px 14px; }
+  .body-comp-bar-outer { height: 6px; background: #1a1a1a; border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+  .body-comp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--red), #ff6b35); border-radius: 3px; transition: width 0.8s ease; }
+  .body-comp-labels { display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+  .body-comp-labels strong { color: var(--red); }
+  .scan-btn { width: 100%; padding: 14px; background: var(--red); border: none; border-radius: 10px; color: #fff; font-family: var(--font-display); font-size: 18px; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+  .scan-btn:hover { background: #d93030; }
+
+  /* ── CALENDAR ── */
+  /* ── PROGRESSION CHARTS ── */
+  .progression-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px 16px; }
+  .progression-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+  .progression-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; }
+  .progression-sub { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+  .progression-avg { font-family: var(--font-display); font-size: 22px; color: var(--red); }
+  .progression-avg-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .chart-wrap { position: relative; height: 160px; }
+
+  /* Loading */
+
+  /* Upgrade modal */
+  .upgrade-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center; }
+  .upgrade-modal.open { display: flex; }
+  .upgrade-box { background: #0d0d0d; border: 1px solid #1e1e1e; border-radius: 10px; padding: 36px; width: 420px; max-width: 95vw; text-align: center; }
+  .upgrade-icon { font-size: 48px; margin-bottom: 16px; }
+  .upgrade-title { font-family: var(--font-display); font-size: 32px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .upgrade-desc { font-size: 14px; color: #666; line-height: 1.7; font-weight: 300; margin-bottom: 24px; }
+  .upgrade-btn { width: 100%; padding: 15px; background: #c82828; border: none; border-radius: 4px; color: #fff; font-family: var(--font-body); font-size: 13px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; margin-bottom: 10px; }
+  .upgrade-btn:hover { background: #d93030; }
+  .upgrade-cancel { font-size: 12px; color: #555; cursor: pointer; letter-spacing: 1px; }
+  .upgrade-cancel:hover { color: #888; }
+
+  /* Locked nav */
+  .nav-item.locked { opacity: 0.4; cursor: not-allowed; }
+  .nav-item.locked:hover { background: transparent; color: var(--muted); }
+  .nav-lock { font-size: 11px; margin-left: auto; opacity: 0.6; }
+
+  /* MOBILE NAV */
+  .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #111111; border-top: 1px solid #1e1e1e; padding: 8px 0 max(8px, env(safe-area-inset-bottom)); z-index: 100; grid-template-columns: repeat(5, 1fr);  border-radius: 20px 20px 0 0; box-shadow: 0 -6px 24px rgba(0,0,0,0.7); }
+  .mobile-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 4px; text-decoration: none; transition: all 0.2s; color: #555; cursor: pointer; }
+  .mobile-nav-item.active { color: #c82828; }
+  .mobile-nav-item:hover { color: #aaa; }
+  .mobile-nav-icon { font-size: 20px; display: flex; }
+  .mobile-nav-label { font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 600; }
+
+  /* NAV ICONS */
+  .nav-icon img { width: 18px; height: 18px; object-fit: contain; opacity: 0.5; transition: opacity 0.2s; }
+  .nav-item:hover .nav-icon img { opacity: 0.85; }
+  .nav-item.active .nav-icon img { opacity: 1; }
+  .mobile-nav-icon img { width: 26px; height: 26px; object-fit: contain; display: block; opacity: 0.45; transition: opacity 0.2s; }
+  .mobile-nav-item.active .mobile-nav-icon img { opacity: 1; }
+  .mobile-nav-item:hover .mobile-nav-icon img { opacity: 0.8; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .sidebar { display: none !important; }
+    .main { margin-left: 0; padding-bottom: 72px; overflow-x: hidden; width: 100%; }
+    .mobile-nav { display: grid;  border-radius: 20px 20px 0 0; box-shadow: 0 -6px 24px rgba(0,0,0,0.7); }
+    .topbar { padding: 12px 16px; margin-top: 44px; }
+    .topbar-title { font-size: 22px; }
+    .content { padding: 14px 14px; gap: 14px; }
+    body { overflow-x: hidden; }
+    * { max-width: 100%; }
+  }
+
+  /* ANTI-ZOOM */
+  html { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; touch-action: pan-x pan-y; }
+  input, select, textarea { font-size: 16px !important; }
+  * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+
+  /* ── BODY SCAN BOTTOM SHEET ── */
+  .scan-sheet-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 150;
+    opacity: 0; pointer-events: none; transition: opacity 0.35s ease;
+  }
+  .scan-sheet-overlay.open { opacity: 1; pointer-events: all; }
+  .scan-sheet {
+    position: fixed; bottom: 0; left: 0; right: 0; height: 92vh;
+    background: #0d0d0d; border-radius: 20px 20px 0 0;
+    border-top: 1px solid #1e1e1e; z-index: 160;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .scan-sheet.open { transform: translateY(0); }
+  .scan-sheet-handle {
+    width: 36px; height: 4px; background: #2a2a2a; border-radius: 2px;
+    margin: 10px auto 0; flex-shrink: 0;
+  }
+  .scan-sheet-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; border-bottom: 1px solid #1a1a1a; flex-shrink: 0;
+  }
+  .scan-sheet-close {
+    width: 36px; height: 36px; border-radius: 50%; background: #1a1a1a;
+    border: none; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; color: #777; transition: all 0.2s; flex-shrink: 0;
+  }
+  .scan-sheet-close:hover { background: #222; color: #fff; }
+  .scan-sheet-close svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .scan-sheet-title {
+    font-family: var(--font-display); font-size: 20px;
+    letter-spacing: 3px; text-transform: uppercase;
+  }
+  .scan-sheet-body {
+    flex: 1; overflow-y: auto; padding: 20px 20px 48px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Description */
+  .ss-field-group { margin-bottom: 18px; }
+  .ss-label {
+    font-size: 9px; letter-spacing: 2px; color: var(--muted);
+    text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 8px;
+  }
+  .ss-textarea {
+    width: 100%; background: #131313; border: 1px solid var(--border);
+    border-radius: 8px; color: #fff; font-family: var(--font-body);
+    font-size: 14px; padding: 12px 14px; resize: none; min-height: 72px;
+    outline: none; transition: border-color 0.2s;
+  }
+  .ss-textarea:focus { border-color: rgba(200,40,40,0.4); }
+  .ss-textarea::placeholder { color: #2a2a2a; }
+
+  /* Upload zone */
+  .ss-upload-zone {
+    border: 1px dashed #2a2a2a; border-radius: 12px; padding: 32px 20px;
+    text-align: center; cursor: pointer; transition: all 0.2s;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    margin-bottom: 12px; background: #0a0a0a;
+  }
+  .ss-upload-zone:hover { border-color: var(--red); background: rgba(200,40,40,0.02); }
+  .ss-upload-zone.has-image { border-style: solid; border-color: rgba(200,40,40,0.4); padding: 0; overflow: hidden; }
+  .ss-upload-camera-icon {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(200,40,40,0.08); border: 1px solid rgba(200,40,40,0.2);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ss-upload-camera-icon svg { width: 24px; height: 24px; stroke: var(--red); fill: none; stroke-width: 1.5; }
+  .ss-upload-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 1px; text-transform: uppercase; }
+  .ss-upload-sub { font-size: 12px; color: var(--muted); }
+  .ss-preview-img { width: 100%; max-height: 300px; object-fit: contain; display: block; background: #0a0a0a; }
+
+  .ss-upload-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+  .ss-upload-opt {
+    padding: 12px 10px; background: #131313; border: 1px solid var(--border);
+    border-radius: 8px; color: #888; font-family: var(--font-body);
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.2s;
+  }
+  .ss-upload-opt:hover { border-color: #333; color: #fff; }
+  .ss-upload-opt svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.5; flex-shrink: 0; }
+
+  /* Camera */
+  #ss-camera-video { width: 100%; max-height: 280px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; }
+  .ss-camera-btns { display: flex; gap: 10px; margin-bottom: 16px; }
+  .ss-btn-capture { flex: 1; padding: 12px; background: var(--red); border: none; border-radius: 6px; color: #fff; font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
+  .ss-btn-stopcam { padding: 12px 16px; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-family: var(--font-body); font-size: 12px; cursor: pointer; }
+
+  /* Info grid */
+  .ss-info-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .ss-genre-section { margin-bottom: 18px; }
+  .ss-genre-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .ss-genre-btn {
+    padding: 13px 10px; background: #0f0f0f; border: 1px solid var(--border);
+    border-radius: 8px; color: #555; font-family: var(--font-display);
+    font-size: 17px; letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .ss-genre-btn:hover { border-color: #2a2a2a; color: #888; }
+  .ss-genre-btn.active { background: rgba(200,40,40,0.08); border-color: var(--red); color: #fff; }
+  .ss-field { display: flex; flex-direction: column; gap: 6px; }
+  .ss-field label { font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
+  .ss-field input, .ss-field select {
+    padding: 11px 12px; background: #131313; border: 1px solid var(--border);
+    border-radius: 6px; color: #fff; font-family: var(--font-body);
+    font-size: 14px; outline: none; transition: border-color 0.2s;
+  }
+  .ss-field input:focus, .ss-field select:focus { border-color: rgba(200,40,40,0.4); }
+  .ss-field input::placeholder { color: #2a2a2a; }
+  .ss-field select option { background: #131313; }
+
+  /* Morphotype */
+  .ss-morphotype-section { margin-bottom: 20px; }
+  .ss-morphotype-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+  .ss-morph-card {
+    background: #0f0f0f; border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 8px; text-align: center; cursor: pointer; transition: all 0.2s;
+  }
+  .ss-morph-card:hover { border-color: #2a2a2a; }
+  .ss-morph-card.active { background: rgba(200,40,40,0.07); border-color: var(--red); }
+  .ss-morph-letter {
+    font-family: var(--font-display); font-size: 28px; color: #2a2a2a;
+    line-height: 1; margin-bottom: 4px; transition: color 0.2s;
+  }
+  .ss-morph-card.active .ss-morph-letter { color: var(--red); }
+  .ss-morph-name { font-size: 11px; font-weight: 700; color: #999; letter-spacing: 0.5px; margin-bottom: 3px; transition: color 0.2s; }
+  .ss-morph-card.active .ss-morph-name { color: #fff; }
+  .ss-morph-desc { font-size: 9px; color: #444; line-height: 1.3; }
+
+  /* Analyze button */
+  .ss-btn-analyze {
+    width: 100%; padding: 16px; background: var(--red); border: none;
+    border-radius: 10px; color: #fff; font-family: var(--font-display);
+    font-size: 20px; letter-spacing: 3px; text-transform: uppercase;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .ss-btn-analyze:hover { background: #d93030; }
+  .ss-btn-analyze:disabled { background: #1a1a1a; color: #333; cursor: not-allowed; }
+
+  /* Analyzing */
+  .ss-analyzing { text-align: center; padding: 40px 20px; background: #212121; border-radius: 14px; }
+  .ss-analyzing-gif {
+    width: 160px; height: 160px; object-fit: contain; margin: 0 auto 20px; display: block;
+  }
+  .ss-analyzing-title { font-family: var(--font-display); font-size: 26px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .ss-analyzing-sub { font-size: 12px; color: var(--muted); margin-bottom: 24px; }
+  .ss-steps { display: flex; flex-direction: column; gap: 8px; max-width: 280px; margin: 0 auto; }
+  .ss-step {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    background: #131313; border-radius: 8px; font-size: 12px; color: #333; transition: all 0.3s;
+  }
+  .ss-step.active { color: #bbb; }
+  .ss-step.done { color: #4caf50; }
+  .ss-step-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #1a1a1a; flex-shrink: 0; transition: all 0.3s;
+  }
+  .ss-step.active .ss-step-dot { background: var(--red); animation: ss-pulse-dot 1s infinite; }
+  .ss-step.done .ss-step-dot { background: #4caf50; }
+  @keyframes ss-pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+  /* Results */
+  .ss-result-hero {
+    background: linear-gradient(135deg, #0f0404, #100808); border: 1px solid rgba(200,40,40,0.2);
+    border-radius: 12px; padding: 28px 20px; text-align: center; margin-bottom: 12px;
+  }
+  .ss-result-pct { font-family: var(--font-display); font-size: 80px; line-height: 1; color: var(--red); }
+  .ss-result-pct-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
+  .ss-morph-badge {
+    display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px;
+    border-radius: 20px; font-family: var(--font-display); font-size: 15px;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .morph-endo { background: rgba(200,40,40,0.1); border: 1px solid rgba(200,40,40,0.35); color: #ef9a9a; }
+  .morph-meso { background: rgba(46,125,50,0.1); border: 1px solid rgba(46,125,50,0.35); color: #a5d6a7; }
+  .morph-ecto { background: rgba(33,150,243,0.1); border: 1px solid rgba(33,150,243,0.35); color: #90caf9; }
+  .ss-disclaimer { font-size: 10px; color: #444; font-style: italic; margin-top: 4px; }
+
+  /* Ref bar */
+  .ss-ref-wrap { background: #131313; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+  .ss-ref-label { font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; }
+  .ss-ref-bar { height: 10px; border-radius: 5px; background: linear-gradient(to right, #4caf50 0%, #2196f3 25%, #ffd54f 60%, #c82828 100%); position: relative; margin-bottom: 8px; }
+  .ss-ref-marker { position: absolute; top: -4px; width: 4px; height: 18px; background: #fff; border-radius: 2px; transform: translateX(-50%); box-shadow: 0 0 6px rgba(255,255,255,0.3); transition: left 0.8s ease; }
+  .ss-ref-labels { display: flex; justify-content: space-between; font-size: 9px; color: #333; }
+
+  /* Stats */
+  .ss-result-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
+  .ss-res-stat { background: #131313; border-radius: 10px; padding: 14px 12px; text-align: center; }
+  .ss-res-stat-val { font-family: var(--font-display); font-size: 28px; color: #fff; line-height: 1; margin-bottom: 4px; }
+  .ss-res-stat-label { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+
+  /* Sensei */
+  .ss-sensei-card { background: #131313; border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+  .ss-sensei-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .ss-sensei-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(200,40,40,0.08); border: 1px solid rgba(200,40,40,0.25);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .ss-sensei-avatar svg { width: 16px; height: 16px; stroke: var(--red); fill: none; stroke-width: 1.5; }
+  .ss-sensei-name { font-family: var(--font-display); font-size: 15px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); }
+  .ss-sensei-sub { font-size: 10px; color: var(--muted); }
+  .ss-sensei-text { font-size: 13px; color: #aaa; line-height: 1.7; font-weight: 300; }
+
+  /* Paywall */
+  .ss-paywall-wrap { position: relative; background: #131313; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 14px; }
+  .ss-paywall-blur { padding: 16px; filter: blur(4px); pointer-events: none; user-select: none; font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .ss-paywall-overlay { position: absolute; inset: 0; background: rgba(8,8,8,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 20px; text-align: center; }
+  .ss-paywall-title { font-family: var(--font-display); font-size: 20px; letter-spacing: 2px; text-transform: uppercase; }
+  .ss-paywall-desc { font-size: 12px; color: var(--muted); line-height: 1.6; max-width: 280px; font-weight: 300; }
+  .ss-paywall-btn { padding: 11px 26px; background: var(--red); border: none; border-radius: 6px; color: #fff; font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
+  .ss-paywall-btn:hover { background: #d93030; }
+
+  /* Recommendations */
+  .ss-rec-card { background: #131313; border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+  .ss-rec-morph-label { font-family: var(--font-display); font-size: 16px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .ss-rec-desc { font-size: 12px; color: #888; line-height: 1.5; margin-bottom: 12px; font-style: italic; }
+  .ss-rec-list { display: flex; flex-direction: column; gap: 8px; }
+  .ss-rec-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: #0f0f0f; border-radius: 8px; font-size: 12px; color: #bbb; line-height: 1.4; }
+  .ss-rec-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); flex-shrink: 0; margin-top: 4px; }
+
+  /* Retry */
+  .ss-btn-retry { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .ss-btn-retry:hover { border-color: #2a2a2a; color: #777; }
+  .ss-btn-validate { width: 100%; padding: 16px; background: var(--red); border: none; border-radius: 8px; color: #fff; font-family: var(--font-body); font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .ss-btn-validate:hover { background: #d93030; }
+  .ss-btn-validate:disabled { background: var(--muted2); cursor: not-allowed; }
+  .ss-btn-validate.saved { background: #2e7d32; }
+  .ss-btn-voir-progres { width: 100%; padding: 12px; background: transparent; border: 1px solid rgba(46,125,50,0.4); border-radius: 8px; color: #4caf50; font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; text-decoration: none; display: none; align-items: center; justify-content: center; gap: 6px; }
+  .ss-btn-voir-progres:hover { background: rgba(46,125,50,0.1); }
+
+
+  /* ── STREAK ICON ── */
+  .si { height: 0.8em; width: auto; vertical-align: -0.15em; display: inline-block; margin-right: 5px; }
+
+  /* ── WIZARD ANALYSE (3 étapes) ── */
+  .wiz-steps { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 20px 24px 10px; flex-shrink: 0; }
+  .wiz-seg { flex: 1; height: 4px; border-radius: 2px; background: #2a2a2a; transition: background 0.35s; }
+  .wiz-seg.active { background: var(--red); }
+  .wiz-step-num { font-size: 10px; letter-spacing: 2px; color: var(--red); text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
+  .wiz-step-title { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; margin-bottom: 8px; }
+  .wiz-step-sub { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 20px; }
+  .wiz-zone { min-height: 300px; }
+  /* Step 3 — slider objectif */
+  .wiz-time-display { text-align: center; margin: 30px 0 24px; }
+  .wiz-time-val { font-family: var(--font-display); font-size: 52px; color: var(--red); line-height: 1; }
+  .wiz-slider-wrap { padding: 0 6px; }
+  .wiz-advice { background: #131313; border: 1px solid var(--border); border-left: 3px solid var(--red); border-radius: 10px; padding: 16px 18px; margin-top: 26px; }
+  .wiz-advice-title { font-family: var(--font-display); font-size: 15px; letter-spacing: 1px; text-transform: uppercase; color: var(--red); margin-bottom: 6px; }
+  .wiz-advice-text { font-size: 13px; color: #aaa; line-height: 1.6; }
+  /* Footer nav */
+  .wiz-footer { display: flex; gap: 12px; padding: 14px 20px max(16px, env(safe-area-inset-bottom)); border-top: 1px solid #1a1a1a; flex-shrink: 0; }
+  .wiz-back { padding: 13px 20px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+  .wiz-back:hover { border-color: #333; color: #fff; }
+  .wiz-back svg { width: 20px; height: 20px; display: block; }
+  .wiz-next { flex: 1; padding: 14px; background: var(--red); border: none; border-radius: 10px; color: #fff; font-family: var(--font-display); font-size: 19px; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+  .wiz-next:hover { background: #d93030; }
+  .wiz-next:disabled { background: #1a1a1a; color: #444; cursor: not-allowed; }
+  .wiz-next.valid { background: #2e7d32; }
+  .wiz-next.valid:hover { background: #388e3c; }
+  /* centrage + épuration des slides */
+  .wiz-line { max-width: 48px; }
+  .scan-sheet-body .wiz-step { text-align: center; }
+  .wiz-step-num { margin-top: 6px; }
+  .wiz-step-sub { max-width: 340px; margin-left: auto; margin-right: auto; margin-bottom: 26px; }
+  .wiz-step .ss-upload-zone { text-align: center; }
+  /* slide résultats */
+  .wiz-result-hero { background: linear-gradient(135deg, #0f0404, #100808); border: 1px solid rgba(200,40,40,0.2); border-radius: 14px; padding: 26px 20px 22px; margin: 8px 0 14px; }
+  .wiz-result-pct { font-family: var(--font-display); font-size: 76px; line-height: 1; color: var(--red); }
+  .wiz-result-pct-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
+  .wiz-result-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .wiz-res-stat { background: #131313; border-radius: 12px; padding: 16px 12px; }
+  .wiz-res-stat-val { font-family: var(--font-display); font-size: 32px; color: #fff; line-height: 1; margin-bottom: 5px; }
+  .wiz-res-stat-label { font-size: 9px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
+  /* étapes 1 & 2 : la zone photo remplit l'espace jusqu'au bouton (zéro vide) */
+  #wiz-sheet .scan-sheet-body { display: flex; flex-direction: column; min-height: 0; }
+  #wiz-sheet .wiz-step { flex: 1; display: flex; flex-direction: column; }
+  #wiz-sheet .wiz-step .ss-upload-zone { flex: 1; margin-bottom: 0; }
+  #wiz-sheet .wiz-step .ss-upload-zone.has-image { background: #0a0a0a; }
+  #wiz-sheet .wiz-step .ss-upload-zone.has-image .ss-preview-img { width: 100%; height: 100%; max-height: none; object-fit: cover; }
+  /* étapes photo : la zone se réduit pour tenir dans l'écran (photo entière visible, sans scroll) */
+  #wiz-sheet #wiz-step-1, #wiz-sheet #wiz-step-2 { min-height: 0; }
+  #wiz-sheet #wiz-step-1 .ss-upload-zone, #wiz-sheet #wiz-step-2 .ss-upload-zone { min-height: 0; }
+  /* slide 4 — chargement IA */
+  .wiz-loading { text-align: center; padding: 50px 20px; }
+  .wiz-loading-gif { width: 110px; height: 110px; object-fit: contain; margin: 0 auto 18px; display: block; }
+  .wiz-loading-text { font-family: var(--font-display); font-size: 22px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .wiz-loading-sub { font-size: 12px; color: var(--muted); }
+  /* verdict faisabilité */
+  .wiz-verdict { border-radius: 12px; padding: 15px 16px; margin: 4px 0 14px; display: flex; align-items: center; gap: 12px; text-align: left; }
+  .wiz-verdict.ok { background: rgba(46,125,50,0.1); border: 1px solid rgba(46,125,50,0.4); }
+  .wiz-verdict.warn { background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.4); }
+  .wiz-verdict-icon { font-family: var(--font-display); font-size: 30px; line-height: 1; flex-shrink: 0; width: 30px; text-align: center; }
+  .wiz-verdict.ok .wiz-verdict-icon { color: #4caf50; }
+  .wiz-verdict.warn .wiz-verdict-icon { color: #ff6b35; }
+  .wiz-verdict-text { font-size: 13px; line-height: 1.5; color: #ddd; }
+  /* recommandations */
+  .wiz-recos { margin-top: 16px; text-align: left; }
+  .wiz-recos-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; text-align: center; }
+  .wiz-reco-item { display: flex; gap: 12px; align-items: flex-start; padding: 13px 14px; background: #131313; border-radius: 10px; margin-bottom: 8px; }
+  .wiz-reco-num { font-family: var(--font-display); font-size: 19px; color: var(--red); line-height: 1.1; flex-shrink: 0; min-width: 16px; }
+  .wiz-reco-text { font-size: 13px; color: #bbb; line-height: 1.5; }
+  /* paywall plan complet */
+  .wiz-paywall { position: relative; border-radius: 14px; overflow: hidden; margin-top: 18px; border: 1px solid rgba(200,40,40,0.3); min-height: 340px; }
+  .wiz-paywall-blur { padding: 18px; filter: blur(6px); opacity: 0.9; pointer-events: none; user-select: none; text-align: left; }
+  .wiz-pw-h { font-family: var(--font-display); font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #cfcfcf; margin: 14px 0 7px; }
+  .wiz-pw-h:first-child { margin-top: 0; }
+  .wiz-pw-line { font-size: 12px; color: #9a9a9a; line-height: 1.5; margin-bottom: 8px; }
+  .wiz-paywall-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,8,8,0.55) 0%, rgba(8,8,8,0.80) 45%, rgba(8,8,8,0.94) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 42px 22px; text-align: center; }
+  .wiz-paywall-lock svg { width: 26px; height: 26px; stroke: var(--red); fill: none; stroke-width: 2; }
+  .wiz-paywall-title { font-family: var(--font-display); font-size: 24px; letter-spacing: 2px; text-transform: uppercase; }
+  .wiz-paywall-desc { font-size: 12px; color: var(--muted); line-height: 1.6; max-width: 300px; }
+  .wiz-paywall-btn { margin-top: 6px; padding: 14px 22px; background: var(--red); border: none; border-radius: 10px; color: #fff; font-family: var(--font-display); font-size: 17px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; }
+  .wiz-paywall-btn:hover { background: #d93030; }
+</style>
+<script src="site-config.js"></script>
+</head>
+<body>
+
+
+<aside class="sidebar">
+  <a class="sidebar-brand" href="dashboard.html">
+    <img class="sidebar-logo" src="fav-icon-003.png" alt="Espritum">
+    <span class="sidebar-name">Espritum</span>
+  </a>
+  <nav class="sidebar-nav">
+    <a class="nav-item active" href="dashboard.html"><span class="nav-icon"><img src="icons/dashboard.svg" alt="Dashboard"></span> Dashboard</a>
+    <a class="nav-item nav-freemium" href="nutrition.html" data-feature="Nutrition"><span class="nav-icon"><img src="icons/nutrition.svg" alt="Nutrition"></span> Nutrition<span class="nav-lock" id="lock-nutrition"></span></a>
+    <a class="nav-item nav-freemium" href="entrainement.html" data-feature="Entraînement"><span class="nav-icon"><img src="icons/entrainement.svg" alt="Training"></span> Training<span class="nav-lock" id="lock-entrainement"></span></a>
+    <a class="nav-item nav-freemium" href="classement.html" data-feature="Classement"><span class="nav-icon"><img src="icons/classement.svg" alt="Classement"></span> Classement<span class="nav-lock" id="lock-classement"></span></a>
+    <a class="nav-item" href="profil.html"><span class="nav-icon"><img src="icons/profil.svg" alt="Profil"></span> Profil</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="user-card" onclick="window.location.href='profil.html'">
+      <div class="user-avatar" id="sidebar-avatar">?</div>
+      <div>
+        <div class="user-name" id="sidebar-name">—</div>
+        <div class="user-plan" id="sidebar-plan">—</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title">NO DAYS <span>OFF.</span></div>
+    <div class="topbar-right">
+      <div class="topbar-streak-pill" id="topbar-streak"><img class="si" src="icons/streak-icon.png"> <span class="si-num">0</span></div>
+      <div class="topbar-avatar-pill" id="topbar-avatar" onclick="window.location.href='profil.html'" style="cursor:pointer;">?</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- WORD OF THE DAY -->
+    <div class="wod-card">
+      <div class="wod-quote" id="wod-quote">"Je puis tout par celui qui me fortifie."</div>
+      <div class="wod-ref" id="wod-ref">Philippiens 4:13</div>
+    </div>
+
+    <!-- PROGRESS RING -->
+    <div class="ring-card">
+      <div class="ring-chart-wrap">
+        <canvas id="ringChart"></canvas>
+        <div class="ring-center">
+          <div class="ring-pct" id="ring-pct">0%</div>
+        </div>
+      </div>
+      <div class="ring-week-row">
+        <div class="ring-week-text">WEEK <span class="ring-week-num" id="ring-week">1</span> / <span id="ring-total">12</span></div>
+      </div>
+      <div class="ring-remaining" id="ring-remaining"><span>11 semaines</span> restantes — continue.</div>
+    </div>
+
+    <!-- BODY PHOTOS + TIME GOAL -->
+    <div class="body-photos-card">
+      <div class="body-photos-row">
+        <div class="body-photo-item">
+          <div class="body-photo-frame" id="current-body-frame">
+            <img id="current-body-img" alt="Corps actuel">
+            <div class="body-photo-empty" id="current-body-empty">
+              <div class="body-photo-add">
+                <svg class="body-photo-add-icon" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </div>
+              <div class="body-photo-empty-text">Mon corps actuel</div>
+            </div>
+          </div>
+        </div>
+        <div class="body-photo-item">
+          <div class="body-photo-frame" id="dream-body-frame">
+            <img id="dream-body-img" alt="Corps de rêve">
+            <div class="body-photo-empty" id="dream-body-empty">
+              <div class="body-photo-add">
+                <svg class="body-photo-add-icon" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </div>
+              <div class="body-photo-empty-text">Mon corps de rêve</div>
+            </div>
+          </div>
+          <input type="file" id="dream-upload" accept="image/*" style="display:none" onchange="handleDreamUpload(this)">
+        </div>
+      </div>
+      <button class="new-analysis-btn" onclick="openAnalysisWizard()">
+        Nouvelle analyse
+      </button>
+      <input type="range" id="goal-slider" min="0" max="6" step="1" value="2" oninput="onSliderChange(this.value)" style="display:none">
+      <div class="planning-box" id="planning-box">
+        <div class="planning-title" id="planning-title"></div>
+        <div class="planning-items" id="planning-items"></div>
+      </div>
+    </div>
+
+    <!-- COMPOSITION CORPORELLE -->
+    <div class="body-stats-card">
+      <div class="body-stats-grid4">
+        <div class="body-stat-box">
+          <div class="body-stat-val"><span id="bstat-poids">—</span></div>
+          <div class="body-stat-label"><span class="stat-unit">kg</span> · <span data-i18n="dash_poids_label">Poids</span></div>
+          <div class="body-stat-delta" id="bdelta-poids"></div>
+        </div>
+        <div class="body-stat-box">
+          <div class="body-stat-val"><span id="bstat-mg">—</span></div>
+          <div class="body-stat-label"><span class="stat-unit">%</span> · <span data-i18n="dash_masse_grasse_label">Masse grasse</span></div>
+          <div class="body-stat-delta" id="bdelta-mg"></div>
+        </div>
+        <div class="body-stat-box">
+          <div class="body-stat-val"><span id="bstat-mg-kg">—</span></div>
+          <div class="body-stat-label"><span class="stat-unit">kg</span> · <span>Graisse</span></div>
+          <div class="body-stat-delta" id="bdelta-mg-kg"></div>
+        </div>
+        <div class="body-stat-box">
+          <div class="body-stat-val"><span id="bstat-mm-kg">—</span></div>
+          <div class="body-stat-label"><span class="stat-unit">kg</span> · <span>Muscle</span></div>
+          <div class="body-stat-delta" id="bdelta-mm-kg"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALORIES CONSOMMÉES vs BRÛLÉES -->
+    <div class="progression-card">
+      <div class="progression-header">
+        <div>
+          <div class="progression-title" data-i18n="dash_calories">Calories</div>
+          <div class="progression-sub" data-i18n="dash_7_jours">7 derniers jours</div>
+        </div>
+        <div style="display:flex;gap:18px;align-items:flex-start">
+          <div style="text-align:right">
+            <div class="progression-avg" id="prog-avg-consumed" style="color:#c82828">—</div>
+            <div class="progression-avg-label"><span style="color:#c82828">●</span> <span data-i18n="dash_consommees">consommées</span></div>
+          </div>
+          <div style="text-align:right">
+            <div class="progression-avg" id="prog-avg-burned" style="color:#fff">—</div>
+            <div class="progression-avg-label"><span style="color:#fff">●</span> <span data-i18n="dash_brulees">brûlées</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:180px"><canvas id="chartCalories"></canvas></div>
+    </div>
+
+  </div>
+</main>
+
+<!-- WIZARD ANALYSE (3 étapes) -->
+<div class="scan-sheet-overlay" id="wiz-overlay" onclick="closeAnalysisWizard(event)"></div>
+<div class="scan-sheet" id="wiz-sheet">
+  <div class="scan-sheet-handle"></div>
+  <div class="scan-sheet-header">
+    <button class="scan-sheet-close" onclick="closeAnalysisWizard()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div class="scan-sheet-title">Nouvelle analyse</div>
+    <div style="width:36px"></div>
+  </div>
+  <div class="wiz-steps">
+    <div class="wiz-seg active" id="wiz-seg-1"></div>
+    <div class="wiz-seg" id="wiz-seg-2"></div>
+    <div class="wiz-seg" id="wiz-seg-3"></div>
+    <div class="wiz-seg" id="wiz-seg-4"></div>
+  </div>
+  <div class="scan-sheet-body">
+    <!-- ÉTAPE 1 : photo corps actuel -->
+    <div class="wiz-step" id="wiz-step-1">
+      <div class="wiz-step-num">Étape 1 / 4</div>
+      <div class="wiz-step-title">Ta photo actuelle</div>
+      <div class="wiz-step-sub">Prends ou choisis une photo de ton corps aujourd'hui. C'est ton point de départ.</div>
+      <div class="ss-upload-zone wiz-zone" id="wiz-zone-1" onclick="document.getElementById('wiz-file-1').click()">
+        <div class="ss-upload-camera-icon"><svg viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.2"/></svg></div>
+        <div class="ss-upload-title">Photo de ton corps</div>
+        <div class="ss-upload-sub">Corps entier visible · Bonne lumière</div>
+      </div>
+      <input type="file" id="wiz-file-1" accept="image/*" style="display:none" onchange="wizHandleFile(this,1)">
+    </div>
+    <!-- ÉTAPE 2 : photo corps de rêve -->
+    <div class="wiz-step" id="wiz-step-2" style="display:none">
+      <div class="wiz-step-num">Étape 2 / 4</div>
+      <div class="wiz-step-title">Ton corps de rêve</div>
+      <div class="wiz-step-sub">Ajoute la photo du physique que tu veux atteindre. Ton objectif devient concret.</div>
+      <div class="ss-upload-zone wiz-zone" id="wiz-zone-2" onclick="document.getElementById('wiz-file-2').click()">
+        <div class="ss-upload-camera-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="1.6"/></svg></div>
+        <div class="ss-upload-title">Photo du corps de rêve</div>
+        <div class="ss-upload-sub">Choisis une référence inspirante et réaliste</div>
+      </div>
+      <input type="file" id="wiz-file-2" accept="image/*" style="display:none" onchange="wizHandleFile(this,2)">
+    </div>
+    <!-- ÉTAPE 3 : objectif en combien de temps -->
+    <div class="wiz-step" id="wiz-step-3" style="display:none">
+      <div class="wiz-step-num">Étape 3 / 4</div>
+      <div class="wiz-step-title">En combien de temps ?</div>
+      <div class="wiz-step-sub">Choisis le délai pour atteindre ton objectif.</div>
+      <div class="wiz-time-display"><span class="wiz-time-val" id="wiz-time-val">3 mois</span></div>
+      <div class="wiz-slider-wrap">
+        <input type="range" id="wiz-slider" class="goal-slider" min="0" max="6" step="1" value="2" oninput="wizSliderChange(this.value)">
+        <div class="slider-ticks">
+          <span>2 sem</span><span>1 mois</span><span>3 mois</span><span>6 mois</span><span>1 an</span><span>2 ans</span><span>3 ans</span>
+        </div>
+      </div>
+    </div>
+    <!-- ÉTAPE 4 : analyse IA + recommandations + plan -->
+    <div class="wiz-step" id="wiz-step-4" style="display:none">
+      <div class="wiz-step-num">Étape 4 / 4 · Ton plan</div>
+      <div class="wiz-step-title">Ton analyse</div>
+
+      <!-- chargement IA -->
+      <div id="wiz-loading" class="wiz-loading">
+        <img src="espritum-loader.gif" class="wiz-loading-gif" alt="">
+        <div class="wiz-loading-text">L'IA compare tes 2 photos…</div>
+        <div class="wiz-loading-sub">Analyse de ta morphologie et de ton objectif</div>
+      </div>
+
+      <!-- résultats -->
+      <div id="wiz-results" style="display:none">
+        <div class="wiz-verdict" id="wiz-verdict"></div>
+
+        <div class="wiz-result-hero">
+          <div class="wiz-result-pct"><span id="wiz-res-bf">20</span>%</div>
+          <div class="wiz-result-pct-label">Masse grasse estimée</div>
+          <span class="ss-morph-badge morph-meso" id="wiz-res-morph">Mésomorphe</span>
+        </div>
+        <div class="wiz-result-stats">
+          <div class="wiz-res-stat"><div class="wiz-res-stat-val" id="wiz-res-poids">78</div><div class="wiz-res-stat-label">Poids (kg)</div></div>
+          <div class="wiz-res-stat"><div class="wiz-res-stat-val" id="wiz-res-mgkg">15.6</div><div class="wiz-res-stat-label">Graisse (kg)</div></div>
+          <div class="wiz-res-stat"><div class="wiz-res-stat-val" id="wiz-res-mmkg">34</div><div class="wiz-res-stat-label">Muscle (kg)</div></div>
+          <div class="wiz-res-stat"><div class="wiz-res-stat-val" id="wiz-res-delai">3 mois</div><div class="wiz-res-stat-label">Objectif</div></div>
+        </div>
+
+        <div class="wiz-recos">
+          <div class="wiz-recos-title">Tes recommandations</div>
+          <div id="wiz-recos-list"></div>
+        </div>
+
+        <div class="wiz-paywall">
+          <div class="wiz-paywall-blur">
+            <div class="wiz-pw-h">Semaine 1 — Push / Pull / Legs</div>
+            <div class="wiz-pw-line">Lundi · Pectoraux + Triceps · 5 exercices · 18 séries</div>
+            <div class="wiz-pw-line">Mardi · Dos + Biceps · 5 exercices · 17 séries</div>
+            <div class="wiz-pw-line">Mercredi · Jambes complètes · 6 exercices · 20 séries</div>
+            <div class="wiz-pw-line">Jeudi · Épaules + Abdos · 5 exercices · 16 séries</div>
+            <div class="wiz-pw-h">Nutrition — 2 100 kcal / jour</div>
+            <div class="wiz-pw-line">Protéines 180g · Glucides 210g · Lipides 60g</div>
+            <div class="wiz-pw-line">5 repas · liste de courses · recettes adaptées</div>
+            <div class="wiz-pw-h">Suivi & coaching</div>
+            <div class="wiz-pw-line">Photos hebdo · ajustement auto du plan · coach IA 24/7</div>
+            <div class="wiz-pw-line">Calendrier jusqu'à ton objectif avec jalons et rappels</div>
+          </div>
+          <div class="wiz-paywall-overlay">
+            <div class="wiz-paywall-lock"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <div class="wiz-paywall-title">Plan &amp; suivi complet</div>
+            <div class="wiz-paywall-desc">Programme détaillé semaine par semaine, nutrition sur-mesure, suivi photo et coach IA illimité pour atteindre ton objectif.</div>
+            <button class="wiz-paywall-btn" onclick="window.location.href='paiement.html?plan=premium'">Avoir un plan complet — 11,99€/mois</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wiz-footer">
+    <button class="wiz-back" id="wiz-back" onclick="wizPrev()" aria-label="Retour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="wiz-next" id="wiz-next" onclick="wizNext()" disabled>Suivant</button>
+  </div>
+</div>
+
+<!-- MOBILE NAV -->
+<nav class="mobile-nav">
+  <a class="mobile-nav-item active" href="dashboard.html"><span class="mobile-nav-icon"><img src="icons/dashboard.svg" alt="Home"></span></a>
+  <a class="mobile-nav-item" href="nutrition.html"><span class="mobile-nav-icon"><img src="icons/nutrition.svg" alt="Nutrition"></span></a>
+  <a class="mobile-nav-item" href="entrainement.html"><span class="mobile-nav-icon"><img src="icons/entrainement.svg" alt="Training"></span></a>
+  <a class="mobile-nav-item" href="classement.html"><span class="mobile-nav-icon"><img src="icons/classement.svg" alt="Classement"></span></a>
+  <a class="mobile-nav-item" href="profil.html"><span class="mobile-nav-icon"><img src="icons/profil.svg" alt="Profil"></span></a>
+</nav>
+
+<script>
+  const sb = window.sb;
+
+  const VERSETS_FR = [
+    { text: '"Ne tremble pas, ne t\'effraie pas."', ref: 'Josué 1:9' },
+    { text: '"Il donne de la force à celui qui est fatigué."', ref: 'Ésaïe 40:29' },
+    { text: '"Sois fort et courageux ! L\'Éternel est avec toi."', ref: 'Josué 1:9' },
+    { text: '"L\'Éternel est ma force et mon bouclier."', ref: 'Psaumes 28:7' },
+    { text: '"Commets ton sort à l\'Éternel, mets en lui ta confiance."', ref: 'Psaumes 37:5' },
+    { text: '"Je connais les projets que j\'ai formés sur vous."', ref: 'Jérémie 29:11' },
+    { text: '"Je puis tout par celui qui me fortifie."', ref: 'Philippiens 4:13' },
+  ];
+  const VERSETS_EN = [
+    { text: '"Do not be afraid, do not be dismayed."', ref: 'Joshua 1:9' },
+    { text: '"He gives strength to the weary."', ref: 'Isaiah 40:29' },
+    { text: '"Be strong and courageous! The Lord is with you."', ref: 'Joshua 1:9' },
+    { text: '"The Lord is my strength and my shield."', ref: 'Psalm 28:7' },
+    { text: '"Commit your way to the Lord; trust in him."', ref: 'Psalm 37:5' },
+    { text: '"I know the plans I have for you."', ref: 'Jeremiah 29:11' },
+    { text: '"I can do all things through him who strengthens me."', ref: 'Philippians 4:13' },
+  ];
+  function getVerset(dayIdx) {
+    const lang = (typeof getLang === 'function') ? getLang() : 'fr';
+    return (lang === 'en' ? VERSETS_EN : VERSETS_FR)[dayIdx];
+  }
+
+  const PLAN_LABEL = { gratuit: 'Gratuit', guerrier: '⚔️ Guerrier', champion: '🛡️ Champion', elite: '👑 Élite' };
+  const DAY_SHORT_FR = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const DAY_SHORT_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const MONTH_NAMES_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const MONTH_NAMES_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  function getDayShort() { return (typeof getLang==='function' && getLang()==='en') ? DAY_SHORT_EN : DAY_SHORT_FR; }
+  function getMonthNames() { return (typeof getLang==='function' && getLang()==='en') ? MONTH_NAMES_EN : MONTH_NAMES_FR; }
+
+  let ringChartInst = null;
+  let chartCaloriesInst = null;
+
+  /* ── CALORIES PAR EXERCICE — copie exacte de entrainement.html ── */
+  let userWeightKg = 70; // mis à jour depuis profil dans init()
+
+  const EXERCISE_MET = {
+    // ── Jambes / Compound lourd
+    'Squat barre':                     { met: 5.0, secs: 4 },
+    'Soulevé de terre':                { met: 5.0, secs: 4 },
+    'Soulevé de terre jambes tendues': { met: 4.5, secs: 4 },
+    'Presse à cuisses':                { met: 4.0, secs: 4 },
+    'Fentes avant haltères':           { met: 4.5, secs: 3.5 },
+    'Leg curl allongé':                { met: 3.5, secs: 3.5 },
+    'Mollets debout':                  { met: 3.0, secs: 2 },
+    // ── Dos
+    'Traction pronation':              { met: 5.0, secs: 4 },
+    'Rowing barre':                    { met: 4.5, secs: 3.5 },
+    'Rowing haltère unilatéral':       { met: 4.0, secs: 3.5 },
+    'Rowing haltère unilatéra':        { met: 4.0, secs: 3.5 },
+    'Tirage poulie haute':             { met: 4.0, secs: 3.5 },
+    'Tirage poulie basse':             { met: 4.0, secs: 3.5 },
+    'Shrugs haltères':                 { met: 3.0, secs: 2 },
+    // ── Poitrine
+    'Développé couché':                { met: 4.5, secs: 3.5 },
+    'Développé incliné haltères':      { met: 4.5, secs: 3.5 },
+    'Écarté haltères plat':            { met: 3.5, secs: 3 },
+    'Dips poitrine':                   { met: 5.0, secs: 3.5 },
+    'Poulie croisée haute':            { met: 3.5, secs: 3 },
+    'Pompes lestées':                  { met: 4.0, secs: 3 },
+    // ── Épaules
+    'Développé militaire barre':       { met: 4.5, secs: 3.5 },
+    'Élévations latérales':            { met: 3.0, secs: 2.5 },
+    'Élévations frontales':            { met: 3.0, secs: 2.5 },
+    'Oiseau haltères (rear delt)':     { met: 3.0, secs: 2.5 },
+    'Upright row barre':               { met: 4.0, secs: 3 },
+    // ── Bras
+    'Curl barre droite':               { met: 3.5, secs: 3 },
+    'Curl haltères alterné':           { met: 3.5, secs: 3 },
+    'Curl marteau':                    { met: 3.5, secs: 3 },
+    'Extension triceps poulie':        { met: 3.5, secs: 3 },
+    'Barre au front (Skull crusher)':  { met: 3.5, secs: 3 },
+    'Dips banc triceps':               { met: 4.0, secs: 3 },
+    // ── Core
+    'Crunch classique':                { met: 3.0, secs: 2 },
+    'Crunch oblique':                  { met: 3.0, secs: 2 },
+    'Planche':                         { met: 3.5, secs: 1, direct: true }, // reps = secondes
+    'Relevé de jambes suspendu':       { met: 4.0, secs: 3 },
+    'Russian twist':                   { met: 3.5, secs: 1.5 },
+    // ── Cardio
+    'Course à pied':                   { met: 9.0, secs: 360, direct: true }, // reps = km (≈6min/km) // reps = minutes
+    'Corde à sauter':                  { met: 11.0, secs: 1, direct: true }, // reps = secondes
+    'Burpees':                         { met: 8.0, secs: 4 },
+  };
+  function calcSerieKcal(nomExercice, reps, kg) {
+    // Extraire le nom propre si format "Nom (série X)"
+    const name = (nomExercice || '').replace(/ \(série \d+\)$/, '').trim();
+    const cfg  = EXERCISE_MET[name] || { met: 3.8, secs: 3 };
+    const w    = kg || 70;
+    const secs = cfg.direct ? reps * cfg.secs : reps * cfg.secs;
+    return Math.max(1, Math.round(cfg.met * w * secs / 3600));
+  }
+
+  function setEl(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  function localDate(d) {
+    return d.getFullYear() + '-' +
+      String(d.getMonth()+1).padStart(2,'0') + '-' +
+      String(d.getDate()).padStart(2,'0');
+  }
+
+  async function init() {
+    const safetyTimeout = setTimeout(function(){}, 1500);
+    try {
+      const { data: { session }, error: sessErr } = await sb.auth.getSession();
+      if (sessErr || !session) {
+        // Pas de session → inscription (sauf mode démo ?preview=1)
+        if (!/[?&]preview=1/.test(location.search)) { window.location.href = 'inscription.html'; return; }
+        const demo = { prenom: 'Daniel', plan: 'gratuit', semaine_programme: 4, poids: 82, masse_grasse: 22, genre: 'homme', streak: 5, mg_kg: 18, mm_kg: 35 };
+        try {
+          renderProgressRing(demo);
+          renderBodyStats(demo);
+          const _sp = document.getElementById('topbar-streak');
+          if (_sp) _sp.innerHTML = '<img class="si" src="icons/streak-icon.png" alt="streak"> 5';
+          setEl('topbar-avatar', 'D');
+          const lbl = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+          renderChartCalories(lbl, [2100,1850,2300,1950,2200,2600,2050], [420,510,380,600,470,650,300]);
+          setEl('prog-avg-consumed', '2 150'); setEl('prog-avg-burned', '476');
+          setStatDelta('bdelta-poids', -2.1, 'kg', true);
+          setStatDelta('bdelta-mg', -1.5, '%', true);
+          setStatDelta('bdelta-mg-kg', -2.3, 'kg', true);
+          setStatDelta('bdelta-mm-kg', 0.8, 'kg', false);
+        } catch(e) { console.warn('demo render', e); }
+        return;
+      }
+      /* PREVIEW: redirection désactivée temporairement — REMETTRE: window.location.href = 'inscription.html'; */
+
+      const userId = session.user.id;
+      const { data: profile } = await sb.from('users').select('*').eq('id', userId).single();
+
+      const prenom = profile?.prenom || session.user.user_metadata?.prenom || 'Guerrier';
+      const nom = profile?.nom || '';
+      const initiale = (prenom[0] || '?').toUpperCase();
+
+      setEl('sidebar-avatar', initiale);
+      setEl('sidebar-name', `${prenom} ${nom}`.trim());
+      setEl('sidebar-plan', PLAN_LABEL[profile?.plan || 'gratuit']);
+      initFreemium(profile?.plan || 'gratuit');
+      window._espritumUser = { id: userId, plan: profile?.plan || 'gratuit', semaine_programme: profile?.semaine_programme || 1, poids: profile?.poids, masse_grasse: profile?.masse_grasse, genre: profile?.genre || 'homme' };
+      userWeightKg = profile?.poids || 70; // identique à entrainement.html
+
+      const _sp = document.getElementById('topbar-streak');
+      if (_sp) _sp.innerHTML = '<img class="si" src="icons/streak-icon.png" alt="streak"> ' + (profile?.streak || 0);
+      setEl('topbar-avatar', initiale);
+
+      // Word of the day
+      const now = new Date();
+      const v = getVerset(now.getDay());
+      setEl('wod-quote', v.text);
+      setEl('wod-ref', v.ref);
+
+      // Progress ring
+      renderProgressRing(profile);
+
+      // Body stats
+      renderBodyStats(profile);
+
+      // Body photos + goal
+      loadBodyPhotos(profile);
+
+      // Charts fusionnés
+      await loadWeekProgressCalories(userId, profile?.calories_objectif || 2400);
+
+      // Rafraîchissement temps réel quand repas/séance validé depuis une autre page
+      const _calObj = profile?.calories_objectif || 2400;
+      let _refreshTimeout = null;
+      function _scheduleRefresh() {
+        clearTimeout(_refreshTimeout);
+        _refreshTimeout = setTimeout(() => loadWeekProgressCalories(userId, _calObj), 300);
+      }
+      try {
+        const bc = new BroadcastChannel('esp_refresh');
+        bc.onmessage = _scheduleRefresh;
+      } catch(e) {}
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'esp_chart_refresh') _scheduleRefresh();
+      });
+
+    } catch (err) {
+      console.error('Dashboard error:', err);
+    } finally {
+    }
+  }
+
+  function getSliderTotal() {
+    const sliderEl = document.getElementById('goal-slider');
+    const idx = sliderEl ? parseInt(sliderEl.value) : 2;
+    const key = SLIDER_KEYS[idx] || '3m';
+    return SLIDER_WEEKS[key] || 13;
+  }
+
+  function renderProgressBar(profile) {
+    const total = getSliderTotal();
+    const week = Math.min(total, Math.max(1, profile?.semaine_programme || 1));
+    const pct = Math.round((week / total) * 100);
+    const remaining = total - week;
+    setEl('gb-week', week);
+    setEl('gb-total', total);
+    setEl('gb-pct', pct);
+    const fill = document.getElementById('gb-fill');
+    if (fill) fill.style.width = pct + '%';
+    const nodes = document.querySelectorAll('#gb-nodes .goalbar-node');
+    const labels = document.querySelectorAll('#gb-labels span');
+    [0, 25, 50, 75, 100].forEach((m, i) => {
+      const reached = pct >= m;
+      if (nodes[i]) nodes[i].classList.toggle('reached', reached);
+      if (labels[i]) labels[i].classList.toggle('reached', reached);
+    });
+    const remEl = document.getElementById('gb-remaining');
+    if (remEl) remEl.innerHTML = `<span>${remaining} semaine${remaining !== 1 ? 's' : ''}</span> restantes — continue.`;
+  }
+
+  function renderProgressRing(profile) {
+    const total = getSliderTotal();
+    const week = Math.min(total, Math.max(1, profile?.semaine_programme || 1));
+    const pct = Math.round((week / total) * 100);
+    const remaining = total - week;
+
+    setEl('ring-week', week);
+    setEl('ring-total', total);
+    setEl('ring-pct', pct + '%');
+    document.getElementById('ring-remaining').innerHTML =
+      `<span>${remaining} week${remaining !== 1 ? 's' : ''}</span> remaining — keep going.`;
+
+    const canvas = document.getElementById('ringChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (ringChartInst) ringChartInst.destroy();
+    const ringGrad = ctx.createLinearGradient(0, 0, 140, 140);
+    ringGrad.addColorStop(0, '#c82828');
+    ringGrad.addColorStop(1, '#ff6b35');
+    ringChartInst = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [pct, 100 - pct],
+          backgroundColor: [ringGrad, '#1a1a1a'],
+          borderWidth: 0,
+          borderRadius: pct > 0 && pct < 100 ? 4 : 0,
+        }]
+      },
+      options: {
+        cutout: '80%',
+        responsive: true,
+        maintainAspectRatio: false,
+        rotation: -90,
+        plugins: { legend: { display: false }, tooltip: { enabled: false } }
+      }
+    });
+  }
+
+  function setStatDelta(id, delta, unit, lowerIsBetter) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (delta === null || delta === undefined || delta === 0) { el.textContent = ''; el.className = 'body-stat-delta'; return; }
+    const sign = delta > 0 ? '+' : '−';
+    const good = lowerIsBetter ? delta < 0 : delta > 0;
+    el.textContent = sign + Math.abs(delta) + (unit ? ' ' + unit : '');
+    el.className = 'body-stat-delta ' + (good ? 'down' : 'up');
+  }
+
+  function renderBodyStats(profile) {
+    const poids = profile?.poids;
+    const mg = profile?.masse_grasse;
+    const tour = profile?.tour_de_taille;
+
+    setEl('bstat-poids', poids !== undefined && poids !== null ? poids : '—');
+    setEl('bstat-mg', mg !== undefined && mg !== null ? mg : '—');
+    setEl('bstat-tour', tour !== undefined && tour !== null ? tour : '—');
+
+    // Masse grasse kg + Masse musculaire kg
+    const mgKgVal = profile?.mg_kg;
+    const mmKgVal = profile?.mm_kg;
+    if (mgKgVal !== undefined && mgKgVal !== null) setEl('bstat-mg-kg', mgKgVal);
+    else if (poids && mg) setEl('bstat-mg-kg', parseFloat((poids * mg / 100).toFixed(1)));
+    else setEl('bstat-mg-kg', '—');
+
+    if (mmKgVal !== undefined && mmKgVal !== null) setEl('bstat-mm-kg', mmKgVal);
+    else if (poids && mg) setEl('bstat-mm-kg', parseFloat(((poids - poids * mg / 100) * 0.55).toFixed(1)));
+    else setEl('bstat-mm-kg', '—');
+
+    if (mg) {
+      const bar = document.getElementById('body-comp-bar');
+      if (bar) bar.style.width = Math.min(100, mg) + '%';
+      setEl('body-comp-pct', mg + '%');
+    } else {
+      setEl('body-comp-pct', '—%');
+    }
+  }
+
+  async function loadWeekProgressCalories(userId, calObj) {
+    const now = new Date();
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(now.getDate() - i);
+      days.push(d);
+    }
+    const from = localDate(days[0]);
+    const to   = localDate(days[6]);
+    const labels = days.map(d => getDayShort()[d.getDay()]);
+
+    // --- Calories consommées ---
+    const { data: meals } = await sb.from('meals')
+      .select('date, calories')
+      .eq('user_id', userId)
+      .gte('date', from).lte('date', to);
+
+    const byDay = {};
+    (meals || []).forEach(m => { byDay[m.date] = (byDay[m.date] || 0) + (m.calories || 0); });
+    const consumedData = days.map(d => byDay[localDate(d)] || 0);
+    const avgC = consumedData.filter(v=>v>0).reduce((a,b)=>a+b,0) / (consumedData.filter(v=>v>0).length || 1);
+    setEl('prog-avg-consumed', consumedData.some(v=>v>0) ? Math.round(avgC).toLocaleString('fr-FR') : '—');
+
+    // --- Calories brûlées ---
+    const dayStrs = days.map(d => localDate(d));
+    const { data: rows } = await sb.from('workouts')
+      .select('date, nom, reps')
+      .eq('user_id', userId).eq('termine', true)
+      .gte('date', from).lte('date', to);
+
+    const calsByDay = {};
+    dayStrs.forEach(d => calsByDay[d] = 0);
+    (rows || []).forEach(r => {
+      if (calsByDay[r.date] !== undefined)
+        calsByDay[r.date] += calcSerieKcal(r.nom, r.reps || 8, userWeightKg);
+    });
+    const burnedData = dayStrs.map(d => calsByDay[d]);
+    const avgB = burnedData.filter(v=>v>0).reduce((a,b)=>a+b,0) / (burnedData.filter(v=>v>0).length || 1);
+    setEl('prog-avg-burned', burnedData.some(v=>v>0) ? Math.round(avgB).toLocaleString('fr-FR') : '—');
+
+    renderChartCalories(labels, consumedData, burnedData);
+  }
+
+  function renderChartCalories(labels, consumedData, burnedData) {
+    const canvas = document.getElementById('chartCalories');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (chartCaloriesInst) chartCaloriesInst.destroy();
+
+    const gradRed = ctx.createLinearGradient(0, 0, 0, 180);
+    gradRed.addColorStop(0, 'rgba(200,40,40,0.22)');
+    gradRed.addColorStop(1, 'rgba(200,40,40,0)');
+
+    const gradWhite = ctx.createLinearGradient(0, 0, 0, 180);
+    gradWhite.addColorStop(0, 'rgba(255,255,255,0.10)');
+    gradWhite.addColorStop(1, 'rgba(255,255,255,0)');
+
+    chartCaloriesInst = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Consommées',
+            data: consumedData,
+            borderColor: '#c82828',
+            borderWidth: 2,
+            backgroundColor: gradRed,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: consumedData.map(v => v > 0 ? '#c82828' : 'transparent'),
+            pointBorderColor: 'transparent',
+            pointRadius: consumedData.map(v => v > 0 ? 4 : 0),
+          },
+          {
+            label: 'Brûlées',
+            data: burnedData,
+            borderColor: '#ffffff',
+            borderWidth: 2,
+            backgroundColor: gradWhite,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: burnedData.map(v => v > 0 ? '#ffffff' : 'transparent'),
+            pointBorderColor: 'transparent',
+            pointRadius: burnedData.map(v => v > 0 ? 4 : 0),
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          x: { grid: { color: '#151515' }, ticks: { color: '#555', font: { size: 11 } } },
+          y: { grid: { color: '#151515' }, ticks: { color: '#555', font: { size: 11 } }, beginAtZero: true }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#111',
+            titleColor: '#888',
+            bodyColor: '#fff',
+            callbacks: {
+              label: ctx => (ctx.dataset.label === 'Consommées' ? '🔴 ' : '⚪ ') + ctx.parsed.y.toLocaleString('fr-FR') + ' kcal'
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function loadBodyPhotos(profile) {
+    // Mon corps actuel = DERNIER scan de la progression (semaine la plus récente)
+    let currentSrc = null;
+    const pp = (profile && profile.progress_photos) ? profile.progress_photos : {};
+    const weeks = Object.keys(pp).filter(k => pp[k]).map(Number).sort((a, b) => b - a);
+    if (weeks.length) currentSrc = pp[weeks[0]];
+    if (!currentSrc) currentSrc = localStorage.getItem('espritum_last_scan_photo');
+    if (currentSrc) {
+      const img = document.getElementById('current-body-img');
+      img.src = currentSrc;
+      img.style.display = 'block';
+      document.getElementById('current-body-empty').style.display = 'none';
+    }
+    // Mon corps de rêve = photo objectif (persistée en base, toujours affichée)
+    const dreamSrc = (profile && profile.dream_body_url) ? profile.dream_body_url : localStorage.getItem('espritum_dream_body');
+    if (dreamSrc) {
+      const img = document.getElementById('dream-body-img');
+      img.src = dreamSrc;
+      img.style.display = 'block';
+      document.getElementById('dream-body-empty').style.display = 'none';
+    }
+    const savedTime = localStorage.getItem('espritum_goal_time');
+    const keyMap = { '2sem': 0, '1m': 1, '3m': 2, '6m': 3, '12m': 4, '24m': 5, '36m': 6 };
+    if (savedTime && keyMap[savedTime] !== undefined) {
+      document.getElementById('goal-slider').value = keyMap[savedTime];
+    } else {
+      document.getElementById('goal-slider').value = 2;
+    }
+    // Afficher message photos manquantes OU générer le plan IA
+    const sliderIdx = parseInt(document.getElementById('goal-slider').value);
+    const sliderKey = SLIDER_KEYS[sliderIdx];
+    const pct2 = (sliderIdx / 6) * 100;
+    document.getElementById('goal-slider').style.background = `linear-gradient(to right, var(--red) ${pct2}%, #2a2a2a ${pct2}%)`;
+    document.querySelectorAll('.slider-ticks span').forEach((s, i) => s.classList.toggle('active', i === sliderIdx));
+    if (!checkPhotosAndShowMessage()) { /* message affiché */ } else { generateAIPlan(sliderKey); }
+  }
+
+  async function handleDreamUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    // Aperçu instantané
+    const reader = new FileReader();
+    reader.onload = e => {
+      const src = e.target.result;
+      localStorage.setItem('espritum_dream_body', src);
+      const img = document.getElementById('dream-body-img');
+      img.src = src;
+      img.style.display = 'block';
+      document.getElementById('dream-body-empty').style.display = 'none';
+      const idx = parseInt(document.getElementById('goal-slider').value);
+      generateAIPlan(SLIDER_KEYS[idx]);
+    };
+    reader.readAsDataURL(file);
+
+    // Persistance Supabase (photo objectif toujours disponible, même sur un autre appareil)
+    try {
+      const uid = (window._espritumUser && window._espritumUser.id) || (typeof userId !== 'undefined' ? userId : null);
+      if (uid && sb) {
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const path = `${uid}/dream-${Date.now()}.${ext}`;
+        const { error: upErr } = await sb.storage.from('instant-photos').upload(path, file, { upsert: true, contentType: file.type });
+        if (!upErr) {
+          const { data: { publicUrl } } = sb.storage.from('instant-photos').getPublicUrl(path);
+          await sb.from('users').update({ dream_body_url: publicUrl }).eq('id', uid);
+        }
+      }
+    } catch (e) { console.warn('dream upload', e); }
+  }
+
+  const SLIDER_KEYS  = ['2sem', '1m', '3m', '6m', '12m', '24m', '36m'];
+  const SLIDER_LABELS = { '2sem': '2 semaines', '1m': '1 mois', '3m': '3 mois', '6m': '6 mois', '12m': '1 an', '24m': '2 ans', '36m': '3 ans' };
+  const SLIDER_WEEKS  = { '2sem': 2, '1m': 4, '3m': 13, '6m': 26, '12m': 52, '24m': 104, '36m': 156 };
+
+  var _aiPlanTimeout = null;
+
+  function onSliderChange(idx) {
+    idx = parseInt(idx);
+    const key = SLIDER_KEYS[idx];
+    localStorage.setItem('espritum_goal_time', key);
+
+    // Highlight active tick label
+    document.querySelectorAll('.slider-ticks span').forEach((s, i) => {
+      s.classList.toggle('active', i === idx);
+    });
+
+    // Update slider fill
+    const pct = (idx / 6) * 100;
+    const slider = document.getElementById('goal-slider');
+    if (slider) slider.style.background = `linear-gradient(to right, var(--red) ${pct}%, #2a2a2a ${pct}%)`;
+
+    // Mettre à jour le ring immédiatement avec le nouveau total
+    renderProgressRing(window._espritumUser || {});
+
+    // Debounce AI call — attend 600ms après que l'user arrête de bouger le slider
+    clearTimeout(_aiPlanTimeout);
+    _aiPlanTimeout = setTimeout(() => generateAIPlan(key), 600);
+  }
+
+  function checkPhotosAndShowMessage() {
+    const hasCurrentPhoto = !!localStorage.getItem('espritum_last_scan_photo');
+    const hasDreamPhoto   = !!localStorage.getItem('espritum_dream_body');
+    const box = document.getElementById('planning-box');
+    const titleEl = document.getElementById('planning-title');
+    const itemsEl = document.getElementById('planning-items');
+
+    if (!hasCurrentPhoto || !hasDreamPhoto) {
+      titleEl.innerHTML = '';
+      itemsEl.innerHTML = `
+        <div style="text-align:center;padding:16px 8px;">
+          <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:rgba(200,40,40,0.12);border:1px solid rgba(200,40,40,0.3);margin-bottom:12px;">
+            <svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#c82828;fill:none;stroke-width:2;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+          <div style="font-family:var(--font-display);font-size:16px;letter-spacing:2px;text-transform:uppercase;color:#fff;margin-bottom:8px;">2 photos requises</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px;">
+            ${!hasCurrentPhoto ? '→ <span style="color:#c82828;">Ta photo actuelle</span> (clique sur "Scanner mon corps")<br>' : ''}
+            ${!hasDreamPhoto   ? '→ <span style="color:#c82828;">Ton corps de rêve</span> (clique sur "Ajouter une photo")' : ''}
+          </div>
+          <div style="font-size:11px;color:#333;font-style:italic;">L\'IA a besoin de voir ton corps actuel et ta vision pour générer un programme vraiment personnalisé.</div>
+        </div>`;
+      box.classList.add('show');
+      return false;
+    }
+    return true;
+  }
+
+  async function generateAIPlan(key) {
+    // Vérifier que les 2 photos sont présentes
+    if (!checkPhotosAndShowMessage()) return;
+
+    const box = document.getElementById('planning-box');
+    const titleEl = document.getElementById('planning-title');
+    const itemsEl = document.getElementById('planning-items');
+    const label = SLIDER_LABELS[key] || key;
+
+    // Récupérer les données corporelles disponibles
+    const user = window._espritumUser || {};
+    const lastResult = window._ssLastResult || {};
+    const poids  = lastResult.poids  || user.poids  || null;
+    const mgPct  = lastResult.mgPct  || user.masse_grasse || null;
+    const mmKg   = lastResult.mmKg   || null;
+    const genre  = user.genre || 'homme';
+    const morph  = window._ssLastMorph || null;
+    const morphLabels = { endo: 'Endomorphe', meso: 'Mésomorphe', ecto: 'Ectomorphe' };
+    const morphLabel = morph ? (morphLabels[morph] || morph) : null;
+
+    // Afficher état chargement
+    titleEl.innerHTML = `<span style="color:var(--red);">⚡</span> Programme IA — ${label}`;
+    itemsEl.innerHTML = `<div class="planning-item"><div class="planning-dot" style="background:#444;"></div><span style="color:var(--muted);">Génération IA en cours...</span></div>`;
+    box.classList.add('show');
+
+    // Si pas de données corporelles → inviter à scanner
+    if (!poids && !mgPct) {
+      itemsEl.innerHTML = `<div class="planning-item"><div class="planning-dot"></div>Lance ton analyse corporelle (SCAN MY BODY) pour recevoir un programme 100% personnalisé avec tes vraies données.</div>`;
+      return;
+    }
+
+    try {
+      // 1. Analyser la photo du corps de rêve avec Gemini Vision
+      let dreamBodyDescription = null;
+      const dreamPhotoData = localStorage.getItem('espritum_dream_body');
+      if (dreamPhotoData) {
+        try {
+          itemsEl.innerHTML = `<div class="planning-item"><div class="planning-dot" style="background:#444;"></div><span style="color:var(--muted);">Analyse de ton corps de rêve...</span></div>`;
+          const base64 = dreamPhotoData.split(',')[1];
+          const mime = (dreamPhotoData.split(';')[0].split(':')[1]) || 'image/jpeg';
+          dreamBodyDescription = await window.EspritumAPI.geminiVision(
+            base64, mime,
+            `Décris ce physique en 2-3 phrases courtes et factuelles : estime le pourcentage de masse grasse, le niveau de développement musculaire, et la morphologie générale.`,
+            120
+          );
+        } catch(e) { dreamBodyDescription = null; }
+      }
+
+      const _pgLang = (typeof getLang === 'function') ? getLang() : 'fr';
+      const _isEngPG = _pgLang === 'en';
+      itemsEl.innerHTML = `<div class="planning-item"><div class="planning-dot" style="background:#444;"></div><span style="color:var(--muted);">${_isEngPG ? 'Evaluating feasibility...' : 'Évaluation de la faisabilité...'}</span></div>`;
+
+      // 2. Groq évalue faisabilité + génère programme OU message impossible
+      const systemPrompt = _isEngPG
+        ? `You are Coach Sensei, an expert Christian fitness coach. You generate personalized and realistic programs. By default, you ALWAYS generate a program (feasible: true). You only say "impossible" in extreme and obvious cases. Respond ONLY in valid JSON, no extra text. All program content MUST be in English.`
+        : `Tu es Coach Sensei, coach fitness chrétien expert. Tu génères des programmes personnalisés et réalistes. Par défaut, tu génères TOUJOURS un programme (feasible: true). Tu ne dis "impossible" QUE dans les cas extrêmes et évidents. Réponds UNIQUEMENT en JSON valide, sans texte supplémentaire.`;
+
+      const dreamCtx = dreamBodyDescription
+        ? `- Corps de rêve (photo analysée) : "${dreamBodyDescription}"`
+        : '';
+
+      // Calcul du delta MG estimé pour guider l'IA
+      const mgDelta = mgPct ? Math.round(mgPct - 12) : null; // delta vs physique athlétique standard
+      const weeksMap = { '2sem': 2, '1m': 4, '3m': 13, '6m': 26, '12m': 52, '24m': 104, '36m': 156 };
+      const weeks = weeksMap[key] || 13;
+      const maxFatLossKg = (weeks * 0.75).toFixed(1); // 0.75kg/semaine moyenne réaliste
+
+      const userMsg = _isEngPG ? `Generate a program or explain why it is impossible.
+
+CURRENT PROFILE:
+- Weight: ${poids || '?'} kg
+- Body fat: ${mgPct || '?'}%
+- Muscle mass: ${mmKg || '?'} kg
+- Gender: ${genre === 'homme' ? 'Male' : genre === 'femme' ? 'Female' : genre}
+- Body type: ${morphLabel || 'not specified'}
+${dreamCtx}
+- Desired duration: ${label} (${weeks} weeks)
+- Max realistic fat loss for this duration: ~${maxFatLossKg} kg
+
+RULE for "impossible" — only block if ALL these conditions are true simultaneously:
+• Duration ≤ 1 month AND very significant transformation required (>8% BF to lose or competition physique)
+• OR duration = 2 weeks AND dream physique is elite athlete (BF <10%, very developed muscles)
+
+In ALL other cases (duration ≥ 3 months, or moderate transformation) → feasible: true is mandatory.
+
+If IMPOSSIBLE (extreme cases only):
+{
+  "feasible": false,
+  "titre_impossible": "Short title",
+  "message": "Honest and kind explanation in 2 sentences",
+  "duree_realiste": "realistic timeframe (e.g. 6 months)"
+}
+
+If FEASIBLE (default) — ultra-personalized program:
+{
+  "feasible": true,
+  "titre": "Program title adapted to duration and profile",
+  "items": [
+    "tip 1 very concrete with precise numbers (calories, sessions, kg)",
+    "tip 2 very concrete with precise numbers",
+    "tip 3 very concrete with precise numbers",
+    "tip 4 very concrete with precise numbers",
+    "tip 5 short motivating Bible verse in English"
+  ]
+}` : `Génère un programme ou dis pourquoi c'est impossible.
+
+PROFIL ACTUEL :
+- Poids : ${poids || '?'} kg
+- Masse grasse : ${mgPct || '?'}%
+- Masse musculaire : ${mmKg || '?'} kg
+- Genre : ${genre}
+- Morphologie : ${morphLabel || 'non précisée'}
+${dreamCtx}
+- Durée souhaitée : ${label} (${weeks} semaines)
+- Perte de gras max réaliste sur cette durée : ~${maxFatLossKg} kg
+
+RÈGLE UNIQUE pour "impossible" — ne bloque QUE si toutes ces conditions sont vraies en même temps :
+• Durée ≤ 1 mois ET transformation demandée très importante (>8% MG à perdre ou physique de compétition)
+• OU durée = 2 semaines ET physique de rêve est celui d'un athlète élite (MG <10%, musculature très développée)
+
+Dans TOUS les autres cas (durée ≥ 3 mois, ou transformation modérée) → feasible: true obligatoirement.
+
+Si IMPOSSIBLE (cas extrêmes seulement) :
+{
+  "feasible": false,
+  "titre_impossible": "Titre court",
+  "message": "Explication honnête et bienveillante en 2 phrases",
+  "duree_realiste": "délai réaliste (ex: 6 mois)"
+}
+
+Si FAISABLE (par défaut) — programme ultra-personnalisé :
+{
+  "feasible": true,
+  "titre": "Titre du programme adapté à la durée et au profil",
+  "items": [
+    "conseil 1 très concret avec chiffres précis (calories, séances, kg)",
+    "conseil 2 très concret avec chiffres précis",
+    "conseil 3 très concret avec chiffres précis",
+    "conseil 4 très concret avec chiffres précis",
+    "conseil 5 verset biblique motivant court"
+  ]
+}`;
+
+      const resp = await window.EspritumAPI.groq(systemPrompt, [{ role: 'user', content: userMsg }], 500);
+      const jsonMatch = resp.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error('No JSON');
+      const parsed = JSON.parse(jsonMatch[0]);
+
+      if (parsed.feasible === false) {
+        // Transformation impossible → avertissement honnête
+        titleEl.innerHTML = `<span style="color:#ff6b35;">⚠</span> ${parsed.titre_impossible || 'Objectif irréaliste'}`;
+        itemsEl.innerHTML = `
+          <div style="text-align:center;padding:14px 8px 8px;">
+            <div style="font-size:13px;color:#ff9058;line-height:1.7;margin-bottom:14px;">${parsed.message || ''}</div>
+            <div style="background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);border-radius:8px;padding:12px 14px;margin-bottom:12px;">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;">${_isEngPG ? 'Realistic timeframe' : 'Délai réaliste'}</div>
+              <div style="font-size:20px;font-family:var(--font-display);color:#fff;letter-spacing:2px;">${parsed.duree_realiste || '?'}</div>
+            </div>
+            <div style="font-size:11px;color:#333;font-style:italic;">${_isEngPG ? '"Perseverance builds champions. Choose a realistic timeframe."' : '"La persévérance forge les champions. Choisis un délai réaliste."'}</div>
+          </div>`;
+      } else {
+        titleEl.innerHTML = `<span style="color:var(--red);">🤖</span> ${parsed.titre}`;
+        itemsEl.innerHTML = parsed.items.map(item =>
+          `<div class="planning-item"><div class="planning-dot"></div>${item}</div>`
+        ).join('');
+      }
+
+    } catch(e) {
+      // Fallback statique si API indispo
+      const fallbacks = _isEngPG ? {
+        '2sem': { titre: 'Metabolic Shock — 2 weeks', items: ['7 intense sessions over 14 days', '600 kcal/day caloric deficit', 'HIIT cardio 25 min × 5/week', 'Zero refined sugar, zero alcohol', '"Whatever you do, do it with all your heart" — Col 3:23'] },
+        '1m':   { titre: 'Launchpad — 1 month', items: ['6 sessions/week: 4 strength + 2 cardio', '500 kcal/day caloric deficit', 'Protein: 2g × ' + (poids||'your weight') + 'kg/day', 'Hydration: 3L of water/day', '"Be strong and courageous" — Joshua 1:9'] },
+        '3m':   { titre: 'Transformation — 3 months', items: ['5 sessions/week alternating strength + cardio', '400 kcal/day caloric deficit', 'Monthly body recomposition check', 'Minimum 8h sleep — recovery priority', '"I can do all things through him who strengthens me" — Phil 4:13'] },
+        '6m':   { titre: 'Recomposition — 6 months', items: ['4 progressive sessions/week', 'Moderate 250 kcal/day deficit', 'Focus on movement quality', 'Monthly body fat/muscle checkup', '"Hope does not disappoint" — Rom 5:5'] },
+        '12m':  { titre: 'Lifestyle — 1 year', items: ['3-4 consistent sessions/week', 'Intuitive eating + weekly checkup', 'Progressive overload every month', 'Write monthly goals', '"The Lord has entrusted me, and I will do it" — 1 Sam 3:18'] },
+        '24m':  { titre: 'Athlete — 2 years', items: ['Periodization: bulking / cutting phases', '3-5 sessions/week depending on phase', 'Annual blood work follow-up', 'Annual competition or personal challenge', '"Run with perseverance" — Heb 12:1'] },
+        '36m':  { titre: 'Total Transformation — 3 years', items: ['3-month phase program', 'Goal: -' + (mgPct ? Math.max(5, Math.round(mgPct * 0.4)) : 8) + '% body fat over 3 years', 'Progressive muscle building', 'Healthy lifestyle anchored in routine', '"The path of the righteous is like the morning sun" — Prov 4:18'] }
+      } : {
+        '2sem': { titre: 'Choc Métabolique — 2 semaines', items: ['7 séances intensives sur 14 jours', 'Déficit calorique 600 kcal/jour', 'Cardio HIIT 25 min × 5/semaine', 'Zéro sucre raffiné, zéro alcool', '"Tout ce que tu fais, fais-le de tout ton cœur" — Col 3:23'] },
+        '1m':   { titre: 'Décollage — 1 mois', items: ['6 séances/semaine : 4 muscu + 2 cardio', 'Déficit calorique 500 kcal/jour', 'Protéines : 2g × ' + (poids||'ton poids') + 'kg/jour', 'Hydratation : 3L d\'eau/jour', '"Sois fort et courageux" — Josué 1:9'] },
+        '3m':   { titre: 'Transformation — 3 mois', items: ['5 séances/semaine alternant force + cardio', 'Déficit calorique 400 kcal/jour', 'Réévaluation corporelle chaque mois', 'Sommeil 8h minimum — priorité récupération', '"Je puis tout par celui qui me fortifie" — Phil 4:13'] },
+        '6m':   { titre: 'Recomposition — 6 mois', items: ['4 séances/semaine progressives', 'Déficit modéré 250 kcal/jour', 'Focus qualité des mouvements', 'Bilan mensuel masse grasse/muscle', '"L\'espoir ne déçoit pas" — Rom 5:5'] },
+        '12m':  { titre: 'Style de Vie — 1 an', items: ['3-4 séances/semaine constantes', 'Alimentation intuitive + bilan hebdo', 'Progression des charges chaque mois', 'Objectifs mensuels écrits', '"Tout ce que l\'Éternel m\'a confié, je le ferai" — 1 Sam 3:18'] },
+        '24m':  { titre: 'Athlète — 2 ans', items: ['Périodisation : phases prise de masse / sèche', '3-5 séances/semaine selon la phase', 'Suivi biologique (prise de sang annuelle)', 'Compétition ou défi personnel annuel', '"Courons avec persévérance" — Hébreux 12:1'] },
+        '36m':  { titre: 'Transformation Totale — 3 ans', items: ['Programme par phases de 3 mois', 'Objectif -' + (mgPct ? Math.max(5, Math.round(mgPct * 0.4)) : 8) + '% de masse grasse sur 3 ans', 'Construction musculaire progressive', 'Mode de vie sain ancré dans la routine', '"Le chemin du juste est comme la lumière de l\'aurore" — Prov 4:18'] }
+      };
+      const fb = fallbacks[key] || fallbacks['3m'];
+      titleEl.innerHTML = fb.titre;
+      itemsEl.innerHTML = fb.items.map(item =>
+        `<div class="planning-item"><div class="planning-dot"></div>${item}</div>`
+      ).join('');
+    }
+  }
+
+  async function logout() {
+    await sb.auth.signOut();
+    window.location.href = 'inscription.html';
+  }
+
+  init();
+</script>
+
+<script>
+  function initFreemium(plan) { /* désactivé temporairement */ }
+
+  function openUpgrade(feature) {
+    setEl('upgrade-feature', feature || 'Cette fonctionnalité');
+    document.getElementById('upgrade-modal').classList.add('open');
+  }
+
+  function closeUpgrade() {
+    document.getElementById('upgrade-modal').classList.remove('open');
+  }
+</script>
+
+
+<!-- BODY SCAN BOTTOM SHEET OVERLAY -->
+<div class="scan-sheet-overlay" id="scan-overlay" onclick="closeScanSheet(event)"></div>
+
+<!-- BODY SCAN BOTTOM SHEET -->
+<div class="scan-sheet" id="scan-sheet">
+  <div class="scan-sheet-handle"></div>
+  <div class="scan-sheet-header">
+    <button class="scan-sheet-close" onclick="closeScanSheet()" aria-label="Fermer">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="scan-sheet-title">Analyse Corporelle</div>
+    <div style="width:36px"></div>
+  </div>
+  <div class="scan-sheet-body">
+
+    <!-- SECTION UPLOAD -->
+    <div id="ss-section-upload">
+
+      <!-- Description -->
+      <div class="ss-field-group">
+        <label class="ss-label">Comment je me sens dans mon corps</label>
+        <textarea id="ss-description" class="ss-textarea" rows="3" placeholder="Décris ton ressenti actuel, tes zones à améliorer, ton niveau de confiance dans ton corps..."></textarea>
+      </div>
+
+      <!-- Photo zone -->
+      <div class="ss-upload-zone" id="ss-upload-zone" onclick="document.getElementById('ss-file-input').click()">
+        <div class="ss-upload-camera-icon">
+          <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <div class="ss-upload-title">Photo de ton corps</div>
+        <div class="ss-upload-sub">Corps entier visible · Bonne lumière · Tenue légère</div>
+      </div>
+
+      <input type="file" id="ss-file-input" accept="image/*" style="display:none" onchange="ssHandleFile(event)">
+      <canvas id="ss-cam-canvas" style="display:none"></canvas>
+      <video id="ss-camera-video" autoplay playsinline style="display:none; width:100%; max-height:280px; object-fit:cover; border-radius:10px; margin-bottom:10px;"></video>
+      <div id="ss-camera-btns" class="ss-camera-btns" style="display:none">
+        <button class="ss-btn-capture" onclick="ssCapturePhoto()">Prendre la photo</button>
+        <button class="ss-btn-stopcam" onclick="ssStopCamera()">Annuler</button>
+      </div>
+
+      <div class="ss-upload-options">
+        <button class="ss-upload-opt" onclick="document.getElementById('ss-file-input').click()">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Galerie
+        </button>
+        <button class="ss-upload-opt" onclick="ssOpenCamera()">
+          <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Caméra
+        </button>
+      </div>
+
+      <!-- Body info -->
+      <div class="ss-info-grid-2">
+        <div class="ss-field">
+          <label>Poids (kg)</label>
+          <input type="number" id="ss-poids" placeholder="75">
+        </div>
+        <div class="ss-field">
+          <label>Taille (cm)</label>
+          <input type="number" id="ss-taille" placeholder="175">
+        </div>
+      </div>
+      <div class="ss-genre-section">
+        <label class="ss-label">Genre</label>
+        <div class="ss-genre-buttons">
+          <button class="ss-genre-btn active" id="ss-genre-homme" data-genre="homme" onclick="ssSelectGenre(this)">Homme</button>
+          <button class="ss-genre-btn" id="ss-genre-femme" data-genre="femme" onclick="ssSelectGenre(this)">Femme</button>
+        </div>
+      </div>
+
+      <!-- Morphotype (optional) -->
+      <div class="ss-morphotype-section">
+        <label class="ss-label">Morphologie <span style="color:#333;font-size:9px;letter-spacing:1px;">— Optionnel · L'IA détecte automatiquement</span></label>
+        <div class="ss-morphotype-grid">
+          <div class="ss-morph-card" id="ss-morph-endo" onclick="ssSelectMorph(this,'endomorphe')">
+            <div class="ss-morph-letter">E</div>
+            <div class="ss-morph-name">Endomorphe</div>
+            <div class="ss-morph-desc">Stocke facilement les graisses</div>
+          </div>
+          <div class="ss-morph-card" id="ss-morph-meso" onclick="ssSelectMorph(this,'mésomorphe')">
+            <div class="ss-morph-letter">M</div>
+            <div class="ss-morph-name">Mésomorphe</div>
+            <div class="ss-morph-desc">Musclé naturellement</div>
+          </div>
+          <div class="ss-morph-card" id="ss-morph-ecto" onclick="ssSelectMorph(this,'ectomorphe')">
+            <div class="ss-morph-letter">E</div>
+            <div class="ss-morph-name">Ectomorphe</div>
+            <div class="ss-morph-desc">Mince, métabolisme rapide</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="ss-btn-analyze" id="ss-btn-analyze" onclick="ssStartAnalysis()" disabled>
+        Analyser ma composition
+      </button>
+
+    </div>
+
+    <!-- SECTION ANALYZING -->
+    <div id="ss-section-analyzing" style="display:none">
+      <div class="ss-analyzing">
+        <img src="loading.gif" alt="" class="ss-analyzing-gif">
+        <div class="ss-analyzing-title">Analyse en cours</div>
+        <div class="ss-analyzing-sub">L'IA examine ta photo et calcule ta composition corporelle.</div>
+        <div class="ss-steps">
+          <div class="ss-step done" id="ss-step1"><div class="ss-step-dot"></div><span>Photo reçue</span></div>
+          <div class="ss-step" id="ss-step2"><div class="ss-step-dot"></div><span>Analyse de la silhouette...</span></div>
+          <div class="ss-step" id="ss-step3"><div class="ss-step-dot"></div><span>Calcul masse grasse...</span></div>
+          <div class="ss-step" id="ss-step4"><div class="ss-step-dot"></div><span>Génération du rapport...</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION RESULTS -->
+    <div id="ss-section-results" style="display:none">
+
+      <div class="ss-result-hero">
+        <div class="ss-result-pct" id="ss-r-pct">—%</div>
+        <div class="ss-result-pct-label">Taux de masse grasse estimé</div>
+        <div><span class="ss-morph-badge" id="ss-r-morph-badge"></span></div>
+        <div class="ss-disclaimer" id="ss-r-disclaimer">Tous les calculs sont approximatifs (±3-5%) — indicatif uniquement, non médical</div>
+      </div>
+
+      <div class="ss-ref-wrap">
+        <div class="ss-ref-label">Échelle de référence</div>
+        <div class="ss-ref-bar">
+          <div class="ss-ref-marker" id="ss-r-marker" style="left:30%"></div>
+        </div>
+        <div class="ss-ref-labels">
+          <span>Athlète</span><span>Normal</span><span>Élevé</span><span>Très élevé</span>
+        </div>
+      </div>
+
+      <div class="ss-result-stats">
+        <div class="ss-res-stat">
+          <div class="ss-res-stat-val" id="ss-r-mg-pct">—%</div>
+          <div class="ss-res-stat-label">Masse grasse</div>
+        </div>
+        <div class="ss-res-stat">
+          <div class="ss-res-stat-val" id="ss-r-mg-kg">— kg</div>
+          <div class="ss-res-stat-label">kg de graisse</div>
+        </div>
+        <div class="ss-res-stat">
+          <div class="ss-res-stat-val" id="ss-r-mm-kg">— kg</div>
+          <div class="ss-res-stat-label">Masse musculaire</div>
+        </div>
+        <div class="ss-res-stat">
+          <div class="ss-res-stat-val" id="ss-r-imc">—</div>
+          <div class="ss-res-stat-label">IMC</div>
+        </div>
+      </div>
+
+      <div class="ss-sensei-card">
+        <div class="ss-sensei-header">
+          <div class="ss-sensei-avatar">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <div>
+            <div class="ss-sensei-name">Coach Sensei</div>
+            <div class="ss-sensei-sub">Analyse personnalisée · Gratuit</div>
+          </div>
+        </div>
+        <div class="ss-sensei-text" id="ss-r-analyse">—</div>
+      </div>
+
+      <div class="ss-rec-card" id="ss-rec-card" style="display:none">
+        <div class="ss-label" style="margin-bottom:6px;">Recommandations — <span id="ss-rec-morph-name" style="color:#fff;"></span></div>
+        <div class="ss-rec-desc" id="ss-rec-desc"></div>
+        <div class="ss-rec-list" id="ss-rec-list"></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:0;">
+        <button class="ss-btn-validate" id="ss-btn-validate" onclick="ssValidateResults()">✓ Valider &amp; Enregistrer dans mes progrès</button>
+      </div>
+
+      <button class="ss-btn-retry" style="margin-top:16px;" onclick="ssResetAll()">↺ Nouvelle analyse</button>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── BODY SCAN BOTTOM SHEET ──
+var ssHasImage = false;
+var ssCamStream = null;
+var ssSelectedGenre = 'homme';
+var ssSelectedMorph = null;
+
+/* ── WIZARD ANALYSE (3 étapes) ── */
+let wizStep = 1;
+let wizPhotos = { 1: null, 2: null };
+const WIZ_TIME_LABELS = ['2 semaines', '1 mois', '3 mois', '6 mois', '1 an', '2 ans', '3 ans'];
+const WIZ_TIME_KEYS = ['2sem', '1m', '3m', '6m', '12m', '24m', '36m'];
+const WIZ_ADVICE = [
+  { t: 'Objectif très court', d: "En 2 semaines, vise surtout la définition et un coup de boost. Résultats visibles mais modestes — parfait pour un événement proche." },
+  { t: 'Bon départ', d: "Un mois suffit pour amorcer un vrai changement : premières pertes de gras et gain de tonus avec de la discipline." },
+  { t: 'Délai idéal', d: "3 mois, c'est le sweet spot : transformation nette et durable, sans te brusquer. Le délai recommandé pour la plupart des objectifs." },
+  { t: 'Recomposition complète', d: "6 mois te laissent une vraie marge pour perdre du gras ET gagner du muscle, à un rythme tenable." },
+  { t: 'Objectif ambitieux', d: "En 1 an, une transformation profonde est possible : physique redessiné, muscle et définition. La régularité fera tout." },
+  { t: 'Vision long terme', d: "2 ans pour viser un physique d'athlète, avec une progression maîtrisée et sans frustration." },
+  { t: 'Marathon, pas un sprint', d: "3 ans : tu construis un physique d'exception, brique par brique. Patience et constance = résultats spectaculaires." },
+];
+
+function openAnalysisWizard() {
+  wizStep = 1;
+  wizPhotos = { 1: null, 2: null };
+  wizAnalysisDone = false;
+  const cur = localStorage.getItem('espritum_last_scan_photo');
+  const dream = localStorage.getItem('espritum_dream_body');
+  ['1', '2'].forEach(function (s) {
+    var zone = document.getElementById('wiz-zone-' + s);
+    if (zone) { zone.classList.remove('has-image'); }
+  });
+  if (cur) { wizPhotos[1] = cur; wizSetPreview(1, cur); }
+  if (dream) { wizPhotos[2] = dream; wizSetPreview(2, dream); }
+  var savedTime = localStorage.getItem('espritum_goal_time');
+  var idx = WIZ_TIME_KEYS.indexOf(savedTime);
+  document.getElementById('wiz-slider').value = idx >= 0 ? idx : 2;
+  wizSliderChange(document.getElementById('wiz-slider').value);
+  wizGoStep(1);
+  document.getElementById('wiz-sheet').classList.add('open');
+  document.getElementById('wiz-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAnalysisWizard(e) {
+  if (e && e.currentTarget !== e.target) return;
+  document.getElementById('wiz-sheet').classList.remove('open');
+  document.getElementById('wiz-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function wizHandleFile(input, step) {
+  var file = input.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  var reader = new FileReader();
+  reader.onload = function (ev) {
+    wizPhotos[step] = ev.target.result;
+    wizSetPreview(step, ev.target.result);
+    wizUpdateNav();
+  };
+  reader.readAsDataURL(file);
+}
+
+function wizSetPreview(step, dataUrl) {
+  var zone = document.getElementById('wiz-zone-' + step);
+  if (!zone) return;
+  zone.innerHTML = '<img class="ss-preview-img" src="' + dataUrl + '" alt="Photo">';
+  zone.classList.add('has-image');
+  zone.onclick = function () { document.getElementById('wiz-file-' + step).click(); };
+}
+
+function wizSliderChange(val) {
+  var idx = parseInt(val);
+  setEl('wiz-time-val', WIZ_TIME_LABELS[idx]);
+  var a = WIZ_ADVICE[idx];
+  setEl('wiz-advice-title', a.t);
+  setEl('wiz-advice-text', a.d);
+}
+
+let wizResults = null;
+
+function wizGoStep(n) {
+  wizStep = n;
+  [1, 2, 3, 4].forEach(function (s) {
+    var el = document.getElementById('wiz-step-' + s);
+    if (el) el.style.display = (s === n) ? '' : 'none';
+    var seg = document.getElementById('wiz-seg-' + s);
+    if (seg) seg.classList.toggle('active', s <= n);
+  });
+  if (n === 4) { wizComputeResults(); wizAnalyze(); }
+  document.getElementById('wiz-back').style.display = (n > 1) ? '' : 'none';
+  var next = document.getElementById('wiz-next');
+  next.textContent = (n === 4) ? 'Valider les résultats' : 'Suivant';
+  next.classList.toggle('valid', n === 4);
+  document.querySelector('.scan-sheet-body').scrollTop = 0;
+  wizUpdateNav();
+}
+
+function wizUpdateNav() {
+  var next = document.getElementById('wiz-next');
+  if (wizStep === 1) next.disabled = !wizPhotos[1];
+  else if (wizStep === 2) next.disabled = !wizPhotos[2];
+  else next.disabled = false;
+}
+
+function wizComputeResults() {
+  var u = window._espritumUser || {};
+  var poids = u.poids || 78;
+  var bf = u.masse_grasse || 20;
+  var mgkg = +(poids * bf / 100).toFixed(1);
+  var mmkg = +((poids - mgkg) * 0.55).toFixed(1);
+  var idx = parseInt(document.getElementById('wiz-slider').value);
+  var morph = bf >= 22 ? { name: 'Endomorphe', cls: 'morph-endo' }
+            : (bf <= 13 ? { name: 'Ectomorphe', cls: 'morph-ecto' }
+            : { name: 'Mésomorphe', cls: 'morph-meso' });
+  setEl('wiz-res-bf', bf);
+  setEl('wiz-res-poids', poids);
+  setEl('wiz-res-mgkg', mgkg);
+  setEl('wiz-res-mmkg', mmkg);
+  setEl('wiz-res-delai', WIZ_TIME_LABELS[idx]);
+  var badge = document.getElementById('wiz-res-morph');
+  if (badge) { badge.textContent = morph.name; badge.className = 'ss-morph-badge ' + morph.cls; }
+  wizResults = { poids: poids, bf: bf, mgkg: mgkg, mmkg: mmkg };
+}
+
+var wizAnalysisDone = false;
+
+async function wizAnalyze() {
+  if (wizAnalysisDone) return; // déjà analysé pour cette ouverture
+  var loading = document.getElementById('wiz-loading');
+  var results = document.getElementById('wiz-results');
+  var nextBtn = document.getElementById('wiz-next');
+  loading.style.display = 'block';
+  results.style.display = 'none';
+  nextBtn.disabled = true;
+  var delai = WIZ_TIME_LABELS[parseInt(document.getElementById('wiz-slider').value)];
+  var data;
+  try {
+    data = await wizGroqCompare(wizPhotos[1], wizPhotos[2], delai);
+    if (!data || !data.recommendations || !data.recommendations.length) throw new Error('réponse vide');
+  } catch (e) {
+    console.warn('Analyse Groq échouée, fallback utilisé:', e.message);
+    data = wizFallbackAnalysis(delai);
+  }
+  wizRenderAnalysis(data);
+  wizAnalysisDone = true;
+  loading.style.display = 'none';
+  results.style.display = 'block';
+  nextBtn.disabled = false;
+  var body = document.querySelector('#wiz-sheet .scan-sheet-body');
+  if (body) body.scrollTop = 0;
+}
+
+async function wizGroqCompare(currentUrl, dreamUrl, delai) {
+  if (!currentUrl || !dreamUrl) throw new Error('2 photos requises');
+  var instruction = "Tu es un coach sportif et nutritionniste expert. Image 1 = corps ACTUEL de la personne. Image 2 = corps OBJECTIF qu'elle veut atteindre. Elle veut y arriver en : " + delai + ". " +
+    "Compare les deux physiques et réponds STRICTEMENT en JSON valide, sans aucun texte autour, au format : " +
+    '{"feasible": true ou false, "verdict": "une phrase qui dit clairement si le délai de ' + delai + ' est réaliste ou non, et pourquoi", ' +
+    '"recommendations": ["exactement 5 recommandations concrètes et actionnables pour passer du corps actuel au corps objectif (entrainement, nutrition, cardio, récupération...), chacune en une phrase précise"]}. ' +
+    "Réponds en français, sois direct et motivant.";
+  // Appel via le proxy serveur sécurisé (/api/ai) — la clé reste côté serveur, jamais dans la page
+  var resp = await fetch('/api/ai', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      service: 'groq',
+      model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'text', text: instruction },
+          { type: 'image_url', image_url: { url: currentUrl } },
+          { type: 'image_url', image_url: { url: dreamUrl } }
+        ]
+      }],
+      temperature: 0.6,
+      maxTokens: 900,
+      responseFormat: { type: 'json_object' }
+    })
+  });
+  if (!resp.ok) throw new Error('Proxy HTTP ' + resp.status);
+  var json = await resp.json();
+  var content = json.choices && json.choices[0] && json.choices[0].message.content;
+  if (!content) throw new Error('pas de contenu');
+  var match = content.match(/\{[\s\S]*\}/);
+  return JSON.parse(match ? match[0] : content);
+}
+
+function wizFallbackAnalysis(delai) {
+  return {
+    feasible: true,
+    verdict: "Avec de la constance, ton objectif est atteignable en " + delai + ". Le vrai défi sera la régularité sur toute la durée.",
+    recommendations: [
+      "Entraîne-toi 4x par semaine en priorisant les exercices polyarticulaires (squat, développé couché, tractions, soulevé de terre).",
+      "Garde un léger déficit calorique (~300-400 kcal) avec 1,8 à 2 g de protéines par kg de poids de corps.",
+      "Ajoute 2 séances de cardio de 25 min pour brûler du gras sans perdre de muscle.",
+      "Dors 7 à 8h par nuit : la récupération construit autant de muscle que l'entraînement.",
+      "Bois au moins 2L d'eau par jour et limite sucres rapides, alcool et aliments transformés."
+    ]
+  };
+}
+
+function wizEscape(s) {
+  return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; });
+}
+
+function wizRenderAnalysis(data) {
+  var v = document.getElementById('wiz-verdict');
+  var ok = data.feasible !== false;
+  v.className = 'wiz-verdict ' + (ok ? 'ok' : 'warn');
+  v.innerHTML = '<div class="wiz-verdict-icon">' + (ok ? '✓' : '!') + '</div>' +
+    '<div class="wiz-verdict-text">' + wizEscape(data.verdict || '') + '</div>';
+  var list = document.getElementById('wiz-recos-list');
+  var recos = (data.recommendations || []).slice(0, 5);
+  list.innerHTML = recos.map(function (r, i) {
+    return '<div class="wiz-reco-item"><div class="wiz-reco-num">' + (i + 1) + '</div><div class="wiz-reco-text">' + wizEscape(r) + '</div></div>';
+  }).join('');
+}
+
+function wizNext() {
+  if (wizStep < 4) { wizGoStep(wizStep + 1); return; }
+  wizFinish();
+}
+
+function wizPrev() {
+  if (wizStep > 1) wizGoStep(wizStep - 1);
+}
+
+async function wizFinish() {
+  if (wizPhotos[1]) localStorage.setItem('espritum_last_scan_photo', wizPhotos[1]);
+  if (wizPhotos[2]) localStorage.setItem('espritum_dream_body', wizPhotos[2]);
+  var idx = parseInt(document.getElementById('wiz-slider').value);
+  localStorage.setItem('espritum_goal_time', WIZ_TIME_KEYS[idx]);
+  var ds = document.getElementById('goal-slider');
+  if (ds) ds.value = idx;
+  if (wizResults) {
+    setEl('bstat-poids', wizResults.poids);
+    setEl('bstat-mg', wizResults.bf);
+    setEl('bstat-mg-kg', wizResults.mgkg);
+    setEl('bstat-mm-kg', wizResults.mmkg);
+  }
+
+  // ── Persistance Supabase : durée d'objectif (goal_weeks) + mesures ──
+  try {
+    var uid = (window._espritumUser && window._espritumUser.id);
+    if (uid && window.sb) {
+      var WEEKS_MAP = { '2sem': 2, '1m': 4, '3m': 13, '6m': 26, '12m': 52, '24m': 104, '36m': 156 };
+      var upd = { goal_weeks: WEEKS_MAP[WIZ_TIME_KEYS[idx]] || 13 };
+      var poidsN = wizResults ? parseFloat(wizResults.poids) : NaN;
+      var mgN = wizResults ? parseFloat(wizResults.bf) : NaN;
+      if (!isNaN(poidsN)) upd.poids = poidsN;
+      if (!isNaN(mgN)) upd.masse_grasse = mgN;
+      await sb.from('users').update(upd).eq('id', uid);
+      if (!isNaN(poidsN) || !isNaN(mgN)) {
+        await sb.from('measurements').insert({
+          user_id: uid,
+          poids: isNaN(poidsN) ? null : poidsN,
+          masse_grasse: isNaN(mgN) ? null : mgN,
+          date: new Date().toISOString().split('T')[0]
+        });
+      }
+    }
+  } catch (e) { console.warn('wizFinish save', e); }
+
+  closeAnalysisWizard();
+  if (typeof loadBodyPhotos === 'function') loadBodyPhotos();
+}
+
+function openScanSheet() {
+  document.getElementById('scan-sheet').classList.add('open');
+  document.getElementById('scan-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  var poidsEl = document.getElementById('bstat-poids');
+  if (poidsEl && poidsEl.textContent && poidsEl.textContent !== '—') {
+    document.getElementById('ss-poids').value = poidsEl.textContent;
+  }
+  // Reset genre to homme
+  ssSelectedGenre = 'homme';
+  document.querySelectorAll('.ss-genre-btn').forEach(function(b){ b.classList.remove('active'); });
+  var hBtn = document.getElementById('ss-genre-homme');
+  if (hBtn) hBtn.classList.add('active');
+  // Reset morphotype
+  ssSelectedMorph = null;
+  document.querySelectorAll('.ss-morph-card').forEach(function(c){ c.classList.remove('active'); });
+}
+
+function closeScanSheet(e) {
+  if (e && e.currentTarget !== e.target) return;
+  document.getElementById('scan-sheet').classList.remove('open');
+  document.getElementById('scan-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  if (ssCamStream) { ssCamStream.getTracks().forEach(function(t){ t.stop(); }); ssCamStream = null; }
+}
+
+function ssHandleFile(e) {
+  var file = e.target.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) { ssShowPreview(ev.target.result); };
+  reader.readAsDataURL(file);
+}
+
+function ssShowPreview(dataUrl) {
+  var zone = document.getElementById('ss-upload-zone');
+  zone.innerHTML = '<img class="ss-preview-img" src="' + dataUrl + '" alt="Photo">';
+  zone.classList.add('has-image');
+  zone.onclick = null;
+  ssHasImage = true;
+  document.getElementById('ss-btn-analyze').disabled = false;
+  // Save as current body photo so dashboard updates
+  localStorage.setItem('espritum_last_scan_photo', dataUrl);
+  if (typeof loadBodyPhotos === 'function') loadBodyPhotos();
+  // Re-déclencher le plan IA si les 2 photos sont maintenant disponibles
+  const idx2 = parseInt(document.getElementById('goal-slider').value);
+  generateAIPlan(SLIDER_KEYS[idx2]);
+}
+
+function ssOpenCamera() {
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    .then(function(stream) {
+      ssCamStream = stream;
+      var vid = document.getElementById('ss-camera-video');
+      vid.srcObject = stream;
+      vid.style.display = 'block';
+      document.getElementById('ss-camera-btns').style.display = 'flex';
+      document.getElementById('ss-upload-zone').style.display = 'none';
+    })
+    .catch(function() { alert('Caméra non disponible. Utilise la galerie.'); });
+}
+
+function ssCapturePhoto() {
+  var vid = document.getElementById('ss-camera-video');
+  var canvas = document.getElementById('ss-cam-canvas');
+  canvas.width = vid.videoWidth;
+  canvas.height = vid.videoHeight;
+  canvas.getContext('2d').drawImage(vid, 0, 0);
+  ssStopCamera();
+  document.getElementById('ss-upload-zone').style.display = 'flex';
+  ssShowPreview(canvas.toDataURL('image/jpeg', 0.85));
+}
+
+function ssStopCamera() {
+  if (ssCamStream) { ssCamStream.getTracks().forEach(function(t){ t.stop(); }); ssCamStream = null; }
+  document.getElementById('ss-camera-video').style.display = 'none';
+  document.getElementById('ss-camera-btns').style.display = 'none';
+}
+
+function ssSelectGenre(el) {
+  document.querySelectorAll('.ss-genre-btn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  ssSelectedGenre = el.dataset.genre;
+}
+
+function ssSelectMorph(el, morph) {
+  if (ssSelectedMorph === morph) {
+    // Toggle off (deselect) on second click
+    el.classList.remove('active');
+    ssSelectedMorph = null;
+    return;
+  }
+  document.querySelectorAll('.ss-morph-card').forEach(function(c){ c.classList.remove('active'); });
+  el.classList.add('active');
+  ssSelectedMorph = morph;
+}
+
+async function ssStartAnalysis() {
+  if (!ssHasImage) return;
+
+  var poids = parseFloat(document.getElementById('ss-poids').value) || 75;
+  var taille = parseFloat(document.getElementById('ss-taille').value) || 175;
+  var genre = ssSelectedGenre;
+
+  document.getElementById('ss-section-upload').style.display = 'none';
+  document.getElementById('ss-section-analyzing').style.display = 'block';
+
+  ssSetStep(1, 'done');
+  await ssSleep(500);
+  ssSetStep(2, 'active');
+
+  var mgPct = null;
+  var usedVision = false;
+  var aiMorphotype = ssSelectedMorph || null; // User selection takes priority
+
+  if (window.EspritumAPI && window.EspritumAPI.getKey('gemini')) {
+    try {
+      var imgEl = document.querySelector('#ss-upload-zone .ss-preview-img');
+      if (imgEl && imgEl.src && imgEl.src.startsWith('data:')) {
+        var parts = imgEl.src.split(',');
+        var mimeType = parts[0].replace('data:', '').replace(';base64', '');
+        var b64 = parts[1];
+        var prompt = 'Analyse cette photo de corps humain. Données: poids ' + poids + 'kg, taille ' + taille + 'cm, genre: ' + genre + '. Réponds UNIQUEMENT avec un JSON valide sans texte supplémentaire: {"bodyFat": 15.5, "morphotype": "mésomorphe"}. Valeurs morphotype possibles: "endomorphe", "mésomorphe", "ectomorphe".';
+        var rawJson = await window.EspritumAPI.geminiVision(b64, mimeType, prompt, 80);
+        var jsonMatch = rawJson.match(/\{[\s\S]*?\}/);
+        if (jsonMatch) {
+          var parsed = JSON.parse(jsonMatch[0]);
+          if (parsed.bodyFat && !isNaN(parsed.bodyFat)) { mgPct = parseFloat(parsed.bodyFat); usedVision = true; }
+          // Only use AI morphotype if user didn't manually select one
+          if (parsed.morphotype && !ssSelectedMorph) { aiMorphotype = parsed.morphotype; }
+        }
+      }
+    } catch(e) { /* fallback */ }
+  }
+
+  ssSetStep(2, 'done');
+  ssSetStep(3, 'active');
+  await ssSleep(700);
+  ssSetStep(3, 'done');
+  ssSetStep(4, 'active');
+  await ssSleep(500);
+  ssSetStep(4, 'done');
+  await ssSleep(300);
+
+  // Fallback calc (Deurenberg formula)
+  var imc = parseFloat((poids / Math.pow(taille / 100, 2)).toFixed(1));
+  if (mgPct === null) {
+    var sexe = genre === 'homme' ? 1 : 0;
+    var mgBase = (1.20 * imc) + (0.23 * 28) - (10.8 * sexe) - 5.4;
+    mgPct = Math.round((mgBase + (Math.random() * 4 - 2)) * 10) / 10;
+  }
+  mgPct = Math.max(genre === 'homme' ? 5 : 12, Math.min(genre === 'homme' ? 40 : 48, mgPct));
+
+  // Auto-detect morphotype from IMC if not selected
+  if (!aiMorphotype) {
+    if (imc < 21) aiMorphotype = 'ectomorphe';
+    else if (imc < 26) aiMorphotype = 'mésomorphe';
+    else aiMorphotype = 'endomorphe';
+  }
+
+  var mgKg = parseFloat((poids * mgPct / 100).toFixed(1));
+  var mmKg = parseFloat(((poids - mgKg) * 0.55).toFixed(1));
+
+  var categorie;
+  if (genre === 'homme') {
+    if (mgPct < 10) categorie = 'athletique';
+    else if (mgPct < 18) categorie = 'normal';
+    else if (mgPct < 25) categorie = 'eleve';
+    else categorie = 'tres-eleve';
+  } else {
+    if (mgPct < 18) categorie = 'athletique';
+    else if (mgPct < 25) categorie = 'normal';
+    else if (mgPct < 32) categorie = 'eleve';
+    else categorie = 'tres-eleve';
+  }
+
+  var morphLabels = { 'endomorphe': 'Endomorphe', 'mésomorphe': 'Mésomorphe', 'ectomorphe': 'Ectomorphe' };
+  var morphCls = { 'endomorphe': 'morph-endo', 'mésomorphe': 'morph-meso', 'ectomorphe': 'morph-ecto' };
+
+  var msgs = {
+    athletique: 'Impressionnant, Guerrier ! Avec ' + mgPct + '% de masse grasse, tu es dans la catégorie athlétique. Ta masse musculaire estimée à ' + mmKg + ' kg témoigne d\'une vraie discipline. Continue à forger ce temple — Philippiens 4:13 : "Je puis tout par celui qui me fortifie."',
+    normal: 'Bonne composition, Guerrier ! Avec ' + mgPct + '% de masse grasse et ' + mmKg + ' kg de muscle estimés, tu es dans une fourchette saine. Un peu plus de régularité dans tes séances et tu progresseras significativement. Josué 1:9 : "Sois fort et courageux !"',
+    eleve: 'Tu as un beau potentiel à libérer ! Ton taux de ' + mgPct + '% est au-dessus de la normale mais c\'est totalement réversible. Avec le bon programme et 3-4 séances par semaine, tu peux perdre 1-2% par mois. Ésaïe 40:31 : "Ceux qui espèrent en l\'Éternel renouvellent leur force."',
+    'tres-eleve': 'C\'est le moment de commencer ta transformation, Guerrier. ' + mgPct + '% c\'est ton point de départ — pas ta limite. Avec de la constance et le bon plan, tu peux tout transformer. Proverbes 16:3 : "Recommande tes œuvres à l\'Éternel, tes projets réussiront."'
+  };
+
+  document.getElementById('ss-section-analyzing').style.display = 'none';
+  document.getElementById('ss-section-results').style.display = 'block';
+
+  document.getElementById('ss-r-pct').textContent = mgPct + '%';
+  document.getElementById('ss-r-mg-pct').textContent = mgPct + '%';
+  document.getElementById('ss-r-mg-kg').textContent = mgKg + ' kg';
+  document.getElementById('ss-r-mm-kg').textContent = mmKg + ' kg';
+  document.getElementById('ss-r-imc').textContent = imc;
+  document.getElementById('ss-r-analyse').textContent = msgs[categorie];
+
+  var morphBadge = document.getElementById('ss-r-morph-badge');
+  morphBadge.textContent = morphLabels[aiMorphotype] || aiMorphotype || 'Mésomorphe';
+  morphBadge.className = 'ss-morph-badge ' + (morphCls[aiMorphotype] || 'morph-meso');
+
+  // Morphotype recommendations
+  var morphRecs = {
+    'endomorphe': {
+      desc: 'Tu stockes facilement la graisse — mais la tendance est totalement réversible avec la bonne stratégie.',
+      tips: [
+        'Cardio-training HIIT 3× par semaine pour brûler les graisses',
+        'Priorité aux protéines : 2 g par kg de poids corporel',
+        'Limite les glucides simples (sucres, pain blanc, sodas)',
+        'Entraînement combiné force + cardio dans la même séance',
+        'Le jeûne intermittent 16:8 peut accélérer ta transformation'
+      ]
+    },
+    'mésomorphe': {
+      desc: 'Tu gagnes du muscle facilement et ton corps répond bien à l\'entraînement — exploite cet avantage.',
+      tips: [
+        'Mix force progressive + cardio modéré pour un physique équilibré',
+        'Macros : 35% protéines / 35% glucides / 30% lipides',
+        'Surcharge progressive des charges à chaque séance',
+        '3-4 séances par semaine suffisent pour progresser rapidement',
+        'La récupération est aussi importante que l\'entraînement'
+      ]
+    },
+    'ectomorphe': {
+      desc: 'Ton métabolisme est rapide et tu as du mal à prendre du poids — la stratégie est différente.',
+      tips: [
+        'Focus musculation lourde, limite le cardio au strict minimum',
+        'Surplus calorique : mange 300-500 kcal au-dessus de ta dépense',
+        'Glucides complexes en grande quantité autour des séances',
+        'Mouvements composés : squat, soulevé de terre, développé couché',
+        'Dors 8h minimum — la croissance musculaire se passe la nuit'
+      ]
+    }
+  };
+  var rec = morphRecs[aiMorphotype] || morphRecs['mésomorphe'];
+  var recCard = document.getElementById('ss-rec-card');
+  if (recCard) {
+    document.getElementById('ss-rec-morph-name').textContent = morphLabels[aiMorphotype] || 'Mésomorphe';
+    document.getElementById('ss-rec-desc').textContent = rec.desc;
+    document.getElementById('ss-rec-list').innerHTML = rec.tips.map(function(t){
+      return '<div class="ss-rec-item"><div class="ss-rec-dot"></div><span>' + t + '</span></div>';
+    }).join('');
+    recCard.style.display = 'block';
+  }
+
+  var disclaimerEl = document.getElementById('ss-r-disclaimer');
+  if (disclaimerEl) {
+    if (usedVision) { disclaimerEl.textContent = 'Analysé par IA · Tous les calculs sont approximatifs (±3-5%) — non médical'; disclaimerEl.style.color = '#555'; }
+    else { disclaimerEl.textContent = 'Tous les calculs sont approximatifs (±3-5%) — indicatif uniquement, non médical'; }
+  }
+
+  var maxMg = genre === 'homme' ? 35 : 45;
+  var markerPct = Math.min(95, Math.max(5, ((mgPct - 5) / (maxMg - 5)) * 100));
+  document.getElementById('ss-r-marker').style.left = markerPct + '%';
+
+  // Hide paywall for paid plans
+  var uplan = window._espritumUser && window._espritumUser.plan || 'gratuit';
+  if (['guerrier', 'champion', 'elite'].indexOf(uplan) !== -1) {
+    var pw = document.getElementById('ss-paywall-wrap');
+    if (pw) pw.style.display = 'none';
+  }
+
+  // Stocker résultats pour validation manuelle
+  window._ssLastResult = { mgPct: mgPct, poids: poids, mgKg: mgKg, mmKg: mmKg };
+
+  // Réinitialiser le bouton valider
+  var btnVal = document.getElementById('ss-btn-validate');
+  if (btnVal) { btnVal.classList.remove('saved'); btnVal.disabled = false; btnVal.innerHTML = '✓ Valider &amp; Enregistrer dans mes progrès'; }
+  var btnProg = document.getElementById('ss-btn-voir-progres');
+  if (btnProg) { btnProg.style.display = 'none'; }
+
+  // Update dashboard stats (live preview)
+  if (typeof renderBodyStats === 'function') {
+    renderBodyStats({ poids: poids, masse_grasse: mgPct, mg_kg: mgKg, mm_kg: mmKg });
+  }
+}
+
+async function ssValidateResults() {
+  var btnVal = document.getElementById('ss-btn-validate');
+  if (!window._ssLastResult) return;
+  btnVal.disabled = true;
+  btnVal.innerHTML = '⏳ Enregistrement...';
+  var mgPct = window._ssLastResult.mgPct;
+  var poids = window._ssLastResult.poids;
+  var mgKg  = window._ssLastResult.mgKg;
+  var mmKg  = window._ssLastResult.mmKg;
+  var uid = window._espritumUser && window._espritumUser.id;
+  try {
+    if (typeof sb !== 'undefined' && uid) {
+      await sb.from('measurements').insert({ user_id: uid, masse_grasse: mgPct, poids: poids, date: new Date().toISOString().split('T')[0] });
+      await sb.from('users').update({ masse_grasse: mgPct, poids: poids }).eq('id', uid);
+      btnVal.classList.add('saved');
+      btnVal.innerHTML = '✓ Enregistré !';
+      // Mettre à jour les stats du dashboard immédiatement
+      if (typeof renderBodyStats === 'function') {
+        renderBodyStats({ poids: poids, masse_grasse: mgPct, mg_kg: mgKg, mm_kg: mmKg });
+      }
+      // Fermer le modal après 1.2s et revenir au dashboard
+      setTimeout(function() {
+        if (typeof closeScanSheet === 'function') closeScanSheet();
+        else {
+          var sheet = document.querySelector('.ss-sheet-overlay');
+          if (sheet) sheet.style.display = 'none';
+        }
+      }, 1200);
+    } else {
+      btnVal.disabled = false;
+      btnVal.innerHTML = '✓ Valider &amp; Enregistrer dans mes progrès';
+    }
+  } catch(e) {
+    btnVal.disabled = false;
+    btnVal.innerHTML = '✓ Valider &amp; Enregistrer dans mes progrès';
+  }
+}
+
+function ssResetAll() {
+  ssHasImage = false; ssSelectedMorph = null; window._ssLastResult = null;
+  var btnVal = document.getElementById('ss-btn-validate');
+  if (btnVal) { btnVal.classList.remove('saved'); btnVal.disabled = false; btnVal.innerHTML = '✓ Valider &amp; Enregistrer dans mes progrès'; }
+  var btnProg = document.getElementById('ss-btn-voir-progres');
+  if (btnProg) { btnProg.style.display = 'none'; }
+  document.getElementById('ss-section-results').style.display = 'none';
+  document.getElementById('ss-section-analyzing').style.display = 'none';
+  document.getElementById('ss-section-upload').style.display = 'block';
+  var zone = document.getElementById('ss-upload-zone');
+  zone.innerHTML = '<div class="ss-upload-camera-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c82828" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="ss-upload-title">Photo de ton corps</div><div class="ss-upload-sub">Corps entier visible · Bonne lumière · Tenue légère</div>';
+  zone.classList.remove('has-image');
+  zone.onclick = function(){ document.getElementById('ss-file-input').click(); };
+  document.getElementById('ss-btn-analyze').disabled = true;
+  document.getElementById('ss-file-input').value = '';
+  document.getElementById('ss-description').value = '';
+  document.getElementById('ss-rec-card').style.display = 'none';
+  ssSelectedGenre = 'homme';
+  document.querySelectorAll('.ss-genre-btn').forEach(function(b){ b.classList.remove('active'); });
+  var hBtn = document.getElementById('ss-genre-homme');
+  if (hBtn) hBtn.classList.add('active');
+  document.querySelectorAll('.ss-morph-card').forEach(function(c){ c.classList.remove('active'); });
+  for (var i = 1; i <= 4; i++) {
+    var el = document.getElementById('ss-step' + i);
+    if (el) { el.className = 'ss-step' + (i === 1 ? ' done' : ''); }
+  }
+}
+
+function ssSetStep(n, state) {
+  var el = document.getElementById('ss-step' + n);
+  if (el) el.className = 'ss-step ' + state;
+}
+
+function ssSleep(ms) { return new Promise(function(r){ setTimeout(r, ms); }); }
+</script>
+
+<script src="topbar-avatar.js?v=2"></script>
+<script src="topbar-streak.js"></script>
+<script src="i18n.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof initI18n === 'function') initI18n();
+  });
+</script>
+</body>
+</html>

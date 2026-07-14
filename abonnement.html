@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-63PTD9QNBV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-63PTD9QNBV');
+</script>
+
+<script src="page-loader.js"></script>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+<title>Espritum — Mon Abonnement</title>
+<link rel="stylesheet" href="https://use.typekit.net/gld3dja.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Condensed:ital,wght@0,1..1000;1,1..1000&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Semi+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<style>
+  :root {
+    --red: #c82828;
+    --bg: #080808;
+    --bg2: #0d0d0d;
+    --bg3: #111111;
+    --border: #1e1e1e;
+    --muted: #555;
+    --muted2: #333;
+    --gold: #f5c518;
+    --font-display: 'acumin-pro-extra-condensed', 'Bebas Neue', sans-serif;
+    --font-body: 'acumin-pro-condensed', 'Barlow Semi Condensed', sans-serif;
+    --sidebar: 80px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: #fff; font-family: var(--font-body); display: flex; }
+
+  /* SIDEBAR — icons only, no red active state */
+  .sidebar { width: var(--sidebar); min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 50; align-items: center; }
+  .sidebar-brand { display: flex; align-items: center; justify-content: center; padding: 22px 0 26px; text-decoration: none; }
+  .sidebar-logo { width: 38px; height: 38px; object-fit: contain; border-radius: 8px; }
+  .sidebar-name { display: none; }
+  .sidebar-nav { flex: 1; padding: 8px 0; display: flex; flex-direction: column; gap: 6px; align-items: center; width: 100%; }
+  .nav-section-label { display: none; }
+  .nav-item { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 10px; text-decoration: none; transition: background 0.2s; color: transparent; font-size: 0; flex-shrink: 0; }
+  .nav-item span:not(.nav-icon):not(.nav-lock) { display: none; }
+  .nav-item:hover { background: rgba(255,255,255,0.04); }
+  .nav-item.active { background: rgba(255,255,255,0.06); }
+  .nav-icon { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex-shrink: 0; }
+  .nav-lock { font-size: 11px; margin-left: auto; opacity: 0.6; }
+  .sidebar-bottom { padding: 12px 0 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .user-card { display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; cursor: pointer; transition: opacity 0.2s; }
+  .user-card > div:not(.user-avatar) { display: none; }
+  .user-card:hover { opacity: 0.8; }
+  .user-avatar { width: 38px; height: 38px; border-radius: 50%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 16px; color: #ddd; flex-shrink: 0; }
+  .user-name, .user-plan { display: none; }
+
+  /* MAIN */
+  .main { margin-left: var(--sidebar); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+  .topbar { padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg); position: sticky; top: 0; z-index: 40; }
+  .topbar-left { display: flex; flex-direction: column; gap: 2px; }
+  .topbar-tag { font-size: 10px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; font-weight: 600; }
+  .topbar-title { font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; line-height: 1; }
+
+  .content { padding: 28px 32px; display: flex; flex-direction: column; gap: 22px; max-width: 900px; }
+
+  .card { background: transparent; border: none; padding: 0; margin-bottom: 28px; }
+  .card-title { font-family: var(--font-display); font-size: 20px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+
+  /* Plan actuel */
+  .current-plan-card {
+    background: linear-gradient(135deg, #0f0404, var(--bg2));
+    border: 1px solid rgba(200,40,40,0.25); border-radius: 10px; padding: 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  }
+
+  .plan-left { display: flex; align-items: center; gap: 20px; }
+  .plan-badge-icon { font-size: 52px; }
+  .plan-badge-name { font-family: var(--font-display); font-size: 42px; letter-spacing: 2px; text-transform: uppercase; color: #fff; line-height: 1; }
+  .plan-badge-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .plan-price-big { font-family: var(--font-display); font-size: 52px; color: var(--red); line-height: 1; }
+  .plan-price-period { font-size: 13px; color: var(--muted); margin-top: 4px; text-align: right; }
+
+  /* Features du plan */
+  .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .feature-item { display: flex; align-items: center; gap: 10px; padding: 13px 14px; background: var(--bg3); border-radius: 8px; }
+  .feature-icon { flex-shrink: 0; color: var(--red); display: flex; align-items: center; }
+  .feature-icon svg { width: 18px; height: 18px; display: block; }
+  .feature-text { font-size: 13px; color: #ccc; }
+  .feature-item.locked .feature-text { color: var(--muted); }
+  .feature-lock { font-size: 12px; margin-left: auto; color: var(--muted2); }
+
+  /* Plans upgrade */
+  .plans-grid { display: grid; grid-template-columns: 1fr; gap: 14px; max-width: 460px; margin: 0 auto; }
+
+  .plan-card {
+    background: var(--bg3); border: 1.5px solid transparent;
+    border-radius: 12px; padding: 24px; cursor: pointer;
+    transition: all 0.2s; position: relative; display: flex; flex-direction: column; gap: 14px;
+  }
+  .plan-card.popular { border-color: rgba(200,40,40,0.45); }
+  .plan-card:hover { border-color: rgba(200,40,40,0.5); transform: translateY(-2px); }
+  .plan-card.current { border-color: transparent; cursor: default; opacity: 0.6; }
+  .plan-card.current:hover { transform: none; }
+  .plan-card.recommended { border-color: var(--red); }
+
+  .plan-card-badge {
+    position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+    padding: 3px 14px; border-radius: 10px; font-size: 10px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase; white-space: nowrap;
+  }
+
+  .badge-current { background: var(--muted2); color: #888; }
+  .badge-popular { background: var(--red); color: #fff; }
+  .badge-premium { background: var(--gold); color: #000; }
+
+  .plan-card-icon { font-size: 32px; color: var(--red); }
+  .plan-card-icon svg { width: 34px; height: 34px; display: block; }
+  .plan-badge-icon svg { width: 30px; height: 30px; display: block; color: var(--red); }
+  .plan-card-name { font-family: var(--font-display); font-size: 26px; letter-spacing: 2px; text-transform: uppercase; }
+  .plan-card-price { font-family: var(--font-display); font-size: 36px; color: var(--red); line-height: 1; }
+  .plan-card-period { font-size: 12px; color: var(--muted); }
+  .plan-card-features { display: flex; flex-direction: column; gap: 6px; }
+  .plan-card-feat { font-size: 12px; color: #888; display: flex; align-items: center; gap: 6px; }
+  .plan-card-feat::before { content: '✓'; color: var(--red); font-weight: 700; flex-shrink: 0; }
+
+  .btn-select {
+    width: 100%; padding: 12px; border-radius: 4px;
+    font-family: var(--font-body); font-size: 12px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+    transition: all 0.2s; border: none; margin-top: auto;
+  }
+
+  .btn-select.active { background: var(--red); color: #fff; }
+  .btn-select.active:hover { background: #d93030; }
+  .btn-select.disabled { background: var(--muted2); color: var(--muted); cursor: not-allowed; }
+
+  /* Formulaire paiement */
+  .payment-form { display: none; }
+  .payment-form.visible { display: flex; flex-direction: column; gap: 20px; }
+
+  .selected-plan-banner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; background: rgba(200,40,40,0.08);
+    border: 1px solid rgba(200,40,40,0.25); border-radius: 6px;
+  }
+
+  .selected-plan-info { display: flex; align-items: center; gap: 12px; }
+  .selected-plan-name { font-family: var(--font-display); font-size: 22px; letter-spacing: 1px; text-transform: uppercase; }
+  .selected-plan-price { font-family: var(--font-display); font-size: 28px; color: var(--red); }
+
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field label { font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; font-weight: 600; }
+  .field input, .field select {
+    padding: 13px 16px; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 4px; color: #fff; font-family: var(--font-body); font-size: 14px;
+    outline: none; transition: border-color 0.2s;
+  }
+  .field input:focus { border-color: rgba(200,40,40,0.4); }
+  .field input::placeholder { color: var(--muted2); }
+
+  .field-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; }
+
+  .card-icons { display: flex; gap: 8px; margin-top: 6px; }
+  .card-icon { padding: 4px 10px; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; font-size: 12px; color: var(--muted); }
+
+  .secure-badge { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); padding: 10px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; }
+
+  .btn-pay {
+    width: 100%; padding: 17px; background: var(--red); border: none; border-radius: 6px;
+    color: #fff; font-family: var(--font-body); font-size: 14px; font-weight: 600;
+    letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: background 0.2s;
+  }
+  .btn-pay:hover { background: #d93030; }
+  .btn-pay:disabled { background: var(--muted2); cursor: not-allowed; }
+
+  .btn-back-plan {
+    width: 100%; padding: 13px; background: transparent; border: 1px solid var(--border);
+    border-radius: 6px; color: var(--muted); font-family: var(--font-body); font-size: 12px;
+    font-weight: 600; letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+  }
+  .btn-back-plan:hover { border-color: #333; color: #888; }
+
+  /* Succès */
+  .success-screen { display: none; text-align: center; padding: 48px; }
+  .success-screen.visible { display: block; }
+  .success-icon { font-size: 64px; margin-bottom: 20px; }
+  .success-title { font-family: var(--font-display); font-size: 48px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  .success-sub { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 28px; }
+  .btn-dashboard { padding: 15px 40px; background: var(--red); border: none; border-radius: 4px; color: #fff; font-family: var(--font-body); font-size: 13px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 28px; right: 28px; padding: 14px 20px; border-radius: 6px; font-size: 13px; font-weight: 500; z-index: 300; transform: translateY(80px); opacity: 0; transition: all 0.3s ease; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.error { background: rgba(200,40,40,0.9); border: 1px solid rgba(200,40,40,0.5); color: #ef9a9a; }
+  .toast.success { background: rgba(46,125,50,0.9); border: 1px solid rgba(46,125,50,0.5); color: #a5d6a7; }
+
+  /* Loading */
+40%{opacity:1;} }
+
+  @media (max-width: 1000px) { .plans-grid { grid-template-columns: 1fr 1fr; } .features-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } .plans-grid { grid-template-columns: 1fr; } .field-row { grid-template-columns: 1fr 1fr; } }
+
+  /* ── BOTTOM NAV MOBILE ── */
+  .mobile-nav {
+    display: none; position: fixed; bottom: 0; left: 0; right: 0;
+    background: #111111;
+    padding: 12px 0 max(12px, env(safe-area-inset-bottom));
+    z-index: 100; grid-template-columns: repeat(5, 1fr);  border-radius: 20px 20px 0 0; box-shadow: 0 -6px 24px rgba(0,0,0,0.7); }
+  .mobile-nav-item { display: flex; align-items: center; justify-content: center; padding: 6px 4px; text-decoration: none; transition: opacity 0.2s; cursor: pointer; opacity: 0.5; }
+  .mobile-nav-item.active { opacity: 1; }
+  .mobile-nav-item:hover { opacity: 0.85; }
+  .mobile-nav-icon { display: flex; }
+  .mobile-nav-label { display: none; }
+  @media (max-width: 768px) {
+    .mobile-nav { display: grid;  border-radius: 20px 20px 0 0; box-shadow: 0 -6px 24px rgba(0,0,0,0.7); }
+    .main { padding-bottom: 72px; }
+    .sidebar { display: none !important; }
+  }
+
+  /* ── MOBILE TOPBAR COMPACT ── */
+  @media (max-width: 768px) {
+    .topbar { padding: 14px 16px; }
+    .topbar-title { font-size: 22px; }
+    .content { padding: 16px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .main-grid { grid-template-columns: 1fr; gap: 14px; }
+    .bottom-grid { grid-template-columns: 1fr; gap: 14px; }
+    .card { padding: 16px; }
+  }
+
+  /* ── ANTI-ZOOM GLOBAL ── */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    touch-action: pan-x pan-y;
+  }
+  input, select, textarea {
+    font-size: 16px !important; /* empêche le zoom auto sur iOS */
+  }
+  * {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  /* MOBILE : topbar ultra simplifié */
+  @media (max-width: 768px) {
+    .topbar-right { display: none !important; }
+    .topbar { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .topbar-title { font-size: 24px; }
+    .streak-pill { display: none !important; }
+    .logout-btn { display: none !important; }
+    .free-badge { display: none !important; }
+    .period-tabs { display: none !important; }
+    .sensei-status { display: none !important; }
+    .date-nav .date-label { font-size: 12px; min-width: 80px; }
+  }
+
+  /* ── OVERFLOW FIX GLOBAL ── */
+  @media (max-width: 768px) {
+    body { overflow-x: hidden; }
+    .main { overflow-x: hidden; width: 100%; }
+    .content { overflow-x: hidden; }
+    * { max-width: 100%; }
+    img { max-width: 100%; }
+  }
+
+  @media (max-width: 768px) {
+    .topbar { margin-top: 44px; }
+    .main { padding-top: 0; }
+  }
+
+  /* ── BULGARIAN FONT ── */
+  html[lang="bg"] * {
+    font-family: 'Sofia Sans Condensed', var(--font-body, sans-serif) !important;
+  }
+  html[lang="bg"] .topbar-title,
+  html[lang="bg"] .sidebar-name,
+  html[lang="bg"] .card-title,
+  html[lang="bg"] .stat-val,
+  html[lang="bg"] .nav-item {
+    font-family: 'Sofia Sans Condensed', var(--font-display, sans-serif) !important;
+  }
+
+  /* ── CUSTOM NAV ICONS ── */
+  .nav-icon img { width: 26px; height: 26px; object-fit: contain; display: block; opacity: 0.45; transition: opacity 0.2s; }
+  .nav-item:hover .nav-icon img { opacity: 0.85; }
+  .nav-item.active .nav-icon img { opacity: 1; }
+  .mobile-nav-icon img { width: 24px; height: 24px; object-fit: contain; opacity: 1; }
+
+  /* Coach IA Floating Button */
+  .coach-fab { position: fixed; bottom: 28px; right: 28px; width: 56px; height: 56px; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 6px 24px rgba(200,40,40,0.4), 0 2px 8px rgba(0,0,0,0.3); z-index: 90; transition: transform 0.2s, box-shadow 0.2s; }
+  .coach-fab:hover { transform: scale(1.06); box-shadow: 0 8px 30px rgba(200,40,40,0.55), 0 4px 12px rgba(0,0,0,0.4); }
+  .coach-fab:active { transform: scale(0.96); }
+  @media (max-width: 768px) { .coach-fab { bottom: 80px; right: 18px; width: 50px; height: 50px; } }
+</style>
+<script src="site-config.js"></script>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<aside class="sidebar">
+  <a class="sidebar-brand" href="dashboard.html">
+    <img class="sidebar-logo" src="fav-icon-003.png" alt="Espritum">
+    <span class="sidebar-name">Espritum</span>
+  </a>
+  <nav class="sidebar-nav">
+    <a class="nav-item" href="dashboard.html" title="Dashboard"><span class="nav-icon"><img src="icons/dashboard.svg" alt="Dashboard"></span></a>
+    <a class="nav-item nav-freemium" href="nutrition.html" data-feature="Nutrition" title="Nutrition"><span class="nav-icon"><img src="icons/nutrition.svg" alt="Nutrition"></span><span class="nav-lock" id="lock-nutrition"></span></a>
+    <a class="nav-item nav-freemium" href="entrainement.html" data-feature="Entraînement" title="Training"><span class="nav-icon"><img src="icons/entrainement.svg" alt="Entraînement"></span><span class="nav-lock" id="lock-entrainement"></span></a>
+    <a class="nav-item nav-freemium" href="classement.html" data-feature="Classement" title="Classement"><span class="nav-icon"><img src="icons/classement.svg" alt="Classement"></span><span class="nav-lock" id="lock-classement"></span></a>
+    <a class="nav-item" href="profil.html" title="Profil"><span class="nav-icon"><img src="icons/profil.svg" alt="Profil"></span></a>
+  </nav>
+  <div class="sidebar-bottom">
+
+    <div class="user-card">
+      <div class="user-avatar" id="sidebar-avatar">?</div>
+      <div>
+        <div class="user-name" id="sidebar-name">—</div>
+        <div class="user-plan" id="sidebar-plan">—</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar" style="justify-content:space-between;">
+    <div class="topbar-left">
+      
+      <div class="topbar-title" data-i18n="nav_abonnement">Mon Abonnement</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Plan actuel -->
+    <div class="current-plan-card" id="current-plan-card">
+      <div class="plan-left">
+        <div class="plan-badge-icon" id="plan-icon">🛡️</div>
+        <div>
+          <div class="plan-badge-name" id="plan-name">Soldat</div>
+          <div class="plan-badge-sub" id="plan-sub">Plan actuel</div>
+        </div>
+      </div>
+      <div>
+        <div class="plan-price-big" id="plan-price">Gratuit</div>
+        <div class="plan-price-period" id="plan-period">pour toujours</div>
+      </div>
+    </div>
+
+    <!-- Fonctionnalités du plan actuel -->
+    <div class="card">
+      <div class="card-title">Ce que tu as avec ton plan</div>
+      <div class="features-grid" id="features-grid"></div>
+    </div>
+
+    <!-- Choisir un autre plan -->
+    <div class="card" id="plans-section">
+      <div class="card-title">Changer de plan</div>
+      <div class="plans-grid" id="plans-grid"></div>
+    </div>
+
+    <!-- Formulaire paiement -->
+    <div class="card payment-form" id="payment-form">
+      <div class="card-title">Informations de paiement</div>
+
+      <div class="selected-plan-banner" id="selected-banner">
+        <div class="selected-plan-info">
+          <span id="sel-icon" style="font-size:28px;">👑</span>
+          <div>
+            <div class="selected-plan-name" id="sel-name">Premium</div>
+            <div style="font-size:12px;color:var(--muted);">Débité chaque mois · Annulable à tout moment</div>
+          </div>
+        </div>
+        <div class="selected-plan-price" id="sel-price">11,99€/mois</div>
+      </div>
+
+      <div class="field">
+        <label>Nom sur la carte</label>
+        <input type="text" id="card-name" placeholder="Jean Dupont">
+      </div>
+
+      <div class="field">
+        <label>Numéro de carte</label>
+        <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
+        <div class="card-icons">
+          <span class="card-icon">💳 Visa</span>
+          <span class="card-icon">💳 Mastercard</span>
+          <span class="card-icon">💳 Amex</span>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Date d'expiration</label>
+          <input type="text" id="card-expiry" placeholder="MM/AA" maxlength="5" oninput="formatExpiry(this)">
+        </div>
+        <div class="field">
+          <label>CVV</label>
+          <input type="text" id="card-cvv" placeholder="123" maxlength="4">
+        </div>
+        <div class="field">
+          <label>Code postal</label>
+          <input type="text" id="card-zip" placeholder="75001" maxlength="10">
+        </div>
+      </div>
+
+      <div class="secure-badge">
+        🔒 Paiement 100% sécurisé · Chiffrement SSL · Powered by Stripe
+      </div>
+
+      <button class="btn-pay" id="btn-pay" onclick="processPay()">
+        Confirmer mon abonnement →
+      </button>
+      <button class="btn-back-plan" onclick="backToPlans()">← Changer de plan</button>
+    </div>
+
+    <!-- Succès -->
+    <div class="card success-screen" id="success-screen">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Bienvenue,<br><span style="color:var(--red)" id="success-name">Guerrier</span> !</div>
+      <div class="success-sub">Ton abonnement a été activé avec succès.<br>Toutes tes nouvelles fonctionnalités sont maintenant disponibles.</div>
+      <button class="btn-dashboard" onclick="window.location.replace('dashboard.html')">Accéder au dashboard →</button>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  const sb = window.sb;
+
+  const PLANS = {
+    gratuit: {
+      icon: '🛡️', name: 'Soldat', price: 'Gratuit', period: 'pour toujours',
+      features: [
+        { icon: '📸', text: 'Estimation masse grasse', locked: false },
+        { icon: '✝️', text: 'Verset du jour', locked: false },
+        { icon: '🏠', text: 'Dashboard basique', locked: false },
+        { icon: '🍎', text: 'Nutrition complète', locked: true },
+        { icon: '💪', text: 'Programmes entraînement', locked: true },
+        { icon: '🤖', text: 'Coach Sensei IA', locked: true },
+        { icon: '📊', text: 'Historique progression', locked: true },
+        { icon: '🏆', text: 'Classement communauté', locked: true },
+      ]
+    },
+    premium: {
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.52l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5 21h14"/></svg>', name: 'Premium', price: '11,99€', period: 'par mois',
+      features: [
+        { svg: '<path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/>', text: 'Programme d\'entraînement IA', locked: false },
+        { svg: '<path d="M12 20.94c1.5 0 2.75-.67 3.6-1.74 1.9-2.4 2.4-6.2 2.4-8.2 0-3-2-5-4.5-5-1.2 0-2 .5-3 1-.9-.5-1.8-1-3-1-2.5 0-4.5 2-4.5 5 0 2 .5 5.8 2.4 8.2.85 1.07 2.1 1.74 3.6 1.74Z"/><path d="M10 2c1 .5 2 2 2 5"/>', text: 'Nutrition complète + scan repas', locked: false },
+        { svg: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.2"/>', text: 'Analyse corporelle par photo', locked: false },
+        { svg: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>', text: 'Classement communauté', locked: false },
+      ]
+    }
+  };
+
+  // anciens plans → tous renvoyés vers Premium (compatibilité données existantes)
+  PLANS.guerrier = PLANS.champion = PLANS.elite = PLANS.premium;
+
+  const PLAN_LABEL = { gratuit: 'Gratuit', premium: '👑 Premium', guerrier: '👑 Premium', champion: '👑 Premium', elite: '👑 Premium' };
+
+  // Lien de paiement Stripe (abonnement Premium 11,99€/mois)
+  const STRIPE_CHECKOUT_URL = 'paiement.html?plan=premium';
+  function goCheckout() { window.location.href = STRIPE_CHECKOUT_URL; }
+
+  let userId = null;
+  let currentPlan = 'gratuit';
+  let selectedPlan = null;
+  let userPrenom = 'Guerrier';
+var safetyTimeout = 0;
+  async function init() {
+        try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { window.location.href = 'inscription.html'; return; }
+
+      userId = session.user.id;
+      const { data: profile } = await sb.from('users').select('*').eq('id', userId).single();
+
+      currentPlan = profile?.plan || 'gratuit';
+      userPrenom = profile?.prenom || 'Guerrier';
+
+      // Sidebar
+      document.getElementById('sidebar-avatar').textContent = userPrenom[0].toUpperCase();
+      document.getElementById('sidebar-name').textContent = userPrenom;
+      document.getElementById('sidebar-plan').textContent = PLAN_LABEL[currentPlan];
+
+      // Plan actuel
+      const p = PLANS[currentPlan];
+      document.getElementById('plan-icon').innerHTML = p.icon;
+      document.getElementById('plan-name').textContent = p.name;
+      document.getElementById('plan-price').textContent = p.price;
+      document.getElementById('plan-period').textContent = p.period;
+
+      // Features
+      renderFeatures(currentPlan);
+
+      // Plans grid
+      renderPlans();
+
+      // Freemium sidebar
+      initFreemium(currentPlan);
+
+    } catch(e) {
+      console.error(e);
+    } finally {
+    }
+  }
+
+  function renderFeatures(plan) {
+    const features = PLANS[plan].features;
+    document.getElementById('features-grid').innerHTML = features.map(f => `
+      <div class="feature-item ${f.locked ? 'locked' : ''}">
+        <span class="feature-icon">${f.svg ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${f.svg}</svg>` : (f.icon || '')}</span>
+        <span class="feature-text">${f.text}</span>
+        ${f.locked ? '<span class="feature-lock">🔒</span>' : '<span style="margin-left:auto;color:#4caf50;font-size:12px;">✓</span>'}
+      </div>
+    `).join('');
+  }
+
+  function renderPlans() {
+    const p = PLANS.premium;
+    const isCurrent = currentPlan !== 'gratuit';
+
+    document.getElementById('plans-grid').innerHTML = `
+      <div class="plan-card ${isCurrent ? 'current' : 'popular'}" id="plancard-premium">
+        ${isCurrent
+          ? '<div class="plan-card-badge badge-current">Ton plan</div>'
+          : '<div class="plan-card-badge badge-popular">Accès complet</div>'}
+        <div class="plan-card-icon">${p.icon}</div>
+        <div>
+          <div class="plan-card-name">${p.name}</div>
+          <div class="plan-card-price">${p.price}</div>
+          <div class="plan-card-period">${p.period}</div>
+        </div>
+        <div class="plan-card-features">
+          ${p.features.filter(f => !f.locked).map(f => `<div class="plan-card-feat">${f.text}</div>`).join('')}
+        </div>
+        <button class="btn-select ${isCurrent ? 'disabled' : 'active'}"
+          ${isCurrent ? 'disabled' : `onclick="goCheckout()"`}>
+          ${isCurrent ? 'Abonnement actif' : 'S\'abonner — 11,99€/mois →'}
+        </button>
+      </div>
+    `;
+  }
+
+  function selectPlan(plan) {
+    selectedPlan = plan;
+    const p = PLANS[plan];
+
+    document.getElementById('sel-icon').textContent = p.icon;
+    document.getElementById('sel-name').textContent = p.name;
+    document.getElementById('sel-price').textContent = `${p.price}/${p.period === 'par mois' ? 'mois' : 'an'}`;
+
+    document.getElementById('plans-section').style.display = 'none';
+    document.getElementById('payment-form').classList.add('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function backToPlans() {
+    document.getElementById('payment-form').classList.remove('visible');
+    document.getElementById('plans-section').style.display = 'block';
+    selectedPlan = null;
+  }
+
+  async function processPay() {
+    const name = document.getElementById('card-name').value.trim();
+    const number = document.getElementById('card-number').value.replace(/\s/g, '');
+    const expiry = document.getElementById('card-expiry').value.trim();
+    const cvv = document.getElementById('card-cvv').value.trim();
+
+    if (!name) { showToast('error', 'Entre le nom sur la carte.'); return; }
+    if (number.length < 16) { showToast('error', 'Numéro de carte invalide.'); return; }
+    if (!expiry || expiry.length < 5) { showToast('error', 'Date d\'expiration invalide.'); return; }
+    if (!cvv || cvv.length < 3) { showToast('error', 'CVV invalide.'); return; }
+
+    const btn = document.getElementById('btn-pay');
+    btn.disabled = true;
+    btn.textContent = 'Traitement en cours...';
+
+    // Simuler le traitement Stripe (2 secondes)
+    await new Promise(r => setTimeout(r, 2000));
+
+    try {
+      // Mettre à jour le plan dans Supabase
+      const { error: updateError } = await sb.from('users').update({ plan: selectedPlan }).eq('id', userId);
+      
+      if (updateError) throw updateError;
+
+      // Forcer le refresh de la session Supabase
+      await sb.auth.refreshSession();
+
+      // Afficher le succès
+      document.getElementById('payment-form').classList.remove('visible');
+      document.getElementById('plans-section').style.display = 'none';
+      document.getElementById('current-plan-card').style.display = 'none';
+      document.getElementById('success-name').textContent = userPrenom;
+      document.getElementById('success-screen').classList.add('visible');
+      
+      // Stocker le plan en localStorage pour que le dashboard le lise immédiatement
+      localStorage.setItem('espritum_plan', selectedPlan);
+
+    } catch(e) {
+      showToast('error', 'Erreur lors du paiement. Réessaie.');
+      btn.disabled = false;
+      btn.textContent = 'Confirmer mon abonnement →';
+    }
+  }
+
+  // Formatage carte
+  function formatCard(input) {
+    let val = input.value.replace(/\D/g, '').substring(0, 16);
+    input.value = val.match(/.{1,4}/g)?.join(' ') || val;
+  }
+
+  function formatExpiry(input) {
+    let val = input.value.replace(/\D/g, '').substring(0, 4);
+    if (val.length >= 2) val = val.substring(0,2) + '/' + val.substring(2);
+    input.value = val;
+  }
+
+  function showToast(type, msg) {
+    const t = document.getElementById('toast');
+    t.className = `toast ${type}`;
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  function initFreemium(plan) { /* désactivé temporairement */ }
+
+  init();
+</script>
+
+<!-- BARRE NAVIGATION MOBILE -->
+<nav class="mobile-nav">
+  <a class="mobile-nav-item" href="dashboard.html"><span class="mobile-nav-icon"><img src="icons/dashboard.svg" alt="Home"></span></a>
+  <a class="mobile-nav-item" href="nutrition.html"><span class="mobile-nav-icon"><img src="icons/nutrition.svg" alt="Nutrition"></span></a>
+  <a class="mobile-nav-item" href="entrainement.html"><span class="mobile-nav-icon"><img src="icons/entrainement.svg" alt="Training"></span></a>
+  <a class="mobile-nav-item" href="classement.html"><span class="mobile-nav-icon"><img src="icons/classement.svg" alt="Classement"></span></a>
+  <a class="mobile-nav-item" href="profil.html"><span class="mobile-nav-icon"><img src="icons/profil.svg" alt="Profil"></span></a>
+</nav>
+
+<script src="topbar-avatar.js?v=2"></script>
+</body>
+</html>
