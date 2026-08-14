@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Espritum — Ton résultat</title>
+<link rel="apple-touch-icon" href="sensei-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0B0B0C"/><text x="50" y="62" font-family="Oswald,sans-serif" font-size="34" font-weight="700" fill="#C41E26" text-anchor="middle">E</text></svg>
+</template>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:#0B0B0C;color:#F2EFE9;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+@keyframes eFade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+.screen{position:absolute;inset:0;max-width:390px;margin:0 auto;padding:64px 22px 24px;display:flex;flex-direction:column;gap:14px;animation:eFade .5s ease both}
+
+.head{flex:none;display:flex;flex-direction:column;gap:9px}
+.headrow{display:flex;align-items:baseline;justify-content:space-between}
+.steplabel{font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.18em;color:#E23B44}
+.stepcount{font:500 9px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:rgba(242,239,233,.3)}
+.segs{display:flex;gap:5px}
+.segs i{flex:1;height:3px;border-radius:2px;background:#C41E26;display:block}
+
+.title{flex:none;font:700 30px/0.96 Oswald,sans-serif;text-transform:uppercase;white-space:nowrap}
+
+.pair{flex:none;display:flex;gap:10px;align-items:center}
+.shot{flex:1;height:150px;border-radius:15px;overflow:hidden;background:#1B1B1F;border:1px solid rgba(242,239,233,.1);position:relative}
+.shot.goal{border-color:rgba(196,30,38,.45)}
+.shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 22%}
+.shot .tag{position:absolute;left:9px;top:9px;z-index:2;padding:4px 7px;border-radius:5px;background:rgba(11,11,12,.72);font:600 8px 'IBM Plex Mono',monospace;letter-spacing:.12em;color:rgba(242,239,233,.75)}
+.shot.goal .tag{color:#E23B44}
+.arrow{flex:none;width:24px;height:24px;border-radius:50%;background:rgba(196,30,38,.16);border:1px solid rgba(196,30,38,.5);display:flex;align-items:center;justify-content:center;color:#E23B44}
+.arrow svg{width:14px;height:14px;display:block;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* --- ligne de temps --- */
+.tl{flex:none;display:flex;flex-direction:column}
+.tlcaps{position:relative;height:13px}
+.tlcaps span{position:absolute;transform:translateX(-50%);font:600 7.5px 'IBM Plex Mono',monospace;letter-spacing:.14em;white-space:nowrap}
+.tlcaps .you{color:rgba(242,239,233,.42)}
+.tlcaps .ai{color:#E23B44}
+.tlline{position:relative;height:16px}
+.tlline .track{position:absolute;top:7.5px;height:1px;background:rgba(242,239,233,.13)}
+.tlline .seg{position:absolute;top:7px;height:2px;border-radius:1px;background:#C41E26;transition:left .45s cubic-bezier(.2,.8,.2,1),width .45s cubic-bezier(.2,.8,.2,1)}
+.tlline .dots{position:absolute;inset:0;display:flex}
+.tlline .dots div{flex:1;display:flex;align-items:center;justify-content:center}
+.dot{border-radius:50%;background:rgba(242,239,233,.18);width:4px;height:4px}
+.dot.on{width:5px;height:5px;background:rgba(196,30,38,.8)}
+.dot.you{width:11px;height:11px;background:#0B0B0C;border:1.5px solid rgba(242,239,233,.42)}
+.dot.ai{width:12px;height:12px;background:#C41E26;box-shadow:0 0 0 4px rgba(196,30,38,.2),0 0 14px rgba(196,30,38,.75)}
+.tlnums{display:flex}
+.tlnums div{flex:1;text-align:center;height:13px;font:500 8px/13px 'IBM Plex Mono',monospace;letter-spacing:.06em;color:rgba(242,239,233,.3)}
+
+.advice{flex:none;display:flex;flex-direction:column;gap:9px}
+.card{display:flex;align-items:center;gap:14px;padding:12px 15px;border-radius:14px;background:#141416;border:1px solid rgba(242,239,233,.08)}
+.card .n{font:400 46px/0.72 'Bebas Neue',Oswald,sans-serif;color:#C41E26;flex:none;width:32px;text-align:center}
+.card .body{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.card .k{font:600 12.5px 'IBM Plex Sans';color:#F2EFE9}
+.card .v{font:400 10.5px/1.45 'IBM Plex Sans';color:rgba(242,239,233,.46);text-wrap:pretty}
+
+.tail{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;overflow:hidden;filter:blur(9px);pointer-events:none;transition:filter .6s ease}
+body.unlocked .tail{filter:none;pointer-events:auto}
+.verdict{flex:1;min-height:0;padding:13px 15px;border-radius:14px;background:rgba(196,30,38,.11);border:1px solid rgba(196,30,38,.22);display:flex;gap:11px;overflow:hidden}
+.verdict .av{width:28px;height:28px;flex:none;border-radius:50%;background:#1B1B1E;border:1px solid rgba(196,30,38,.4);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.verdict .av img{width:23px;height:23px;object-fit:contain}
+.verdict .txt{display:flex;flex-direction:column;gap:5px;min-width:0}
+.verdict .k{font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.16em;color:#C41E26}
+.verdict .v{font:400 11px/1.5 'IBM Plex Sans';color:rgba(242,239,233,.68);text-wrap:pretty}
+
+.plan{flex:none;padding:16px;border-radius:14px;background:#C41E26;color:#F6F2EE;text-align:center;font:600 13px 'IBM Plex Sans';cursor:pointer;box-shadow:0 12px 30px -12px rgba(196,30,38,.7);transition:.2s;display:none;-webkit-tap-highlight-color:transparent}
+.plan:hover{background:#E23B44}
+body.unlocked .plan{display:block}
+
+.gate{position:absolute;left:0;right:0;bottom:0;max-width:390px;margin:0 auto;padding:52px 20px 22px;background:linear-gradient(180deg,rgba(11,11,12,0),rgba(11,11,12,.94) 26%,#0B0B0C 50%);z-index:20;animation:eFade .5s .3s ease both}
+body.unlocked .gate{display:none}
+.gatebox{display:flex;flex-direction:column;gap:14px;padding:20px;border-radius:20px;background:#131315;border:1px solid rgba(196,30,38,.35);box-shadow:0 -20px 60px -20px rgba(0,0,0,.9)}
+.gatehead{display:flex;align-items:center;gap:11px}
+.gatehead img{width:22px;height:auto;flex:none}
+.gatehead div{font:700 27px/0.94 Oswald,sans-serif;text-transform:uppercase;white-space:nowrap}
+.incl{display:flex;flex-direction:column;gap:7px}
+.incl .row{display:flex;align-items:center;gap:9px}
+.incl .tick{width:14px;height:14px;flex:none;border-radius:50%;background:rgba(196,30,38,.16);border:1px solid rgba(196,30,38,.5);display:flex;align-items:center;justify-content:center;color:#E23B44}
+.incl .tick svg{width:9px;height:9px;display:block;fill:none;stroke:currentColor;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+.incl span{font:400 11.5px 'IBM Plex Sans';color:rgba(242,239,233,.62)}
+.gatecta{padding:16px;border-radius:13px;background:#C41E26;color:#F6F2EE;text-align:center;font:600 13px 'IBM Plex Sans';cursor:pointer;box-shadow:0 12px 30px -12px rgba(196,30,38,.85);transition:.2s;-webkit-tap-highlight-color:transparent}
+.gatecta:hover{background:#E23B44;transform:translateY(-1px)}
+
+.langbar{position:absolute;top:18px;right:20px;display:flex;gap:6px;z-index:30}
+.langbar button{background:none;border:1px solid rgba(242,239,233,.12);color:rgba(242,239,233,.35);font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.12em;padding:5px 9px;border-radius:7px;cursor:pointer;transition:.2s}
+.langbar button[aria-pressed="true"]{color:#E23B44;border-color:rgba(196,30,38,.5);background:rgba(196,30,38,.12)}
+</style>
+</head>
+<body>
+<div class="langbar">
+<button data-lang="fr" aria-pressed="true">FR</button>
+<button data-lang="en" aria-pressed="false">EN</button>
+<button data-lang="bg" aria-pressed="false">BG</button>
+</div>
+
+<div class="screen">
+<div class="head">
+<div class="headrow">
+<span class="steplabel" data-k="stepLabel">TON RÉSULTAT</span>
+<span class="stepcount" data-k="stepCount">ÉTAPE 4 / 4</span>
+</div>
+<div class="segs"><i></i><i></i><i></i><i></i></div>
+</div>
+
+<div class="title" data-k="title">Ton écart.</div>
+
+<div class="pair">
+<div class="shot"><img src="photo-avant.png" alt=""><div class="tag" data-k="tagBefore">AVANT</div></div>
+<div class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12H18"></path><path d="M13 7L18 12L13 17"></path></svg></div>
+<div class="shot goal"><img src="photo-apres.png" alt=""><div class="tag" data-k="tagGoal">OBJECTIF</div></div>
+</div>
+
+<div class="tl">
+<div class="tlcaps">
+<span class="you" id="capYou">TON DÉLAI</span>
+<span class="ai" id="capAi">L'IA</span>
+</div>
+<div class="tlline">
+<div class="track" id="track"></div>
+<div class="seg" id="seg"></div>
+<div class="dots" id="dots"></div>
+</div>
+<div class="tlnums" id="nums"></div>
+</div>
+
+<div class="advice" id="advice"></div>
+
+<div class="tail">
+<div class="verdict">
+<div class="av"><img src="sensei-mark.png" alt=""></div>
+<div class="txt">
+<span class="k" data-k="verdict">LE VERDICT DE SENSEI</span>
+<span class="v" data-k="verdictBody"></span>
+</div>
+</div>
+</div>
+
+<div class="plan" id="plan" data-k="openPlan">Ouvrir mon plan →</div>
+</div>
+
+<div class="gate" id="gate">
+<div class="gatebox">
+<div class="gatehead">
+<img src="logo-blanc.png" alt="">
+<div data-k="gateFree">2 SEMAINES GRATUITES</div>
+</div>
+<div class="incl" id="incl"></div>
+<div class="gatecta" id="gatecta" data-k="gateCta">Commencer gratuitement →</div>
+</div>
+</div>
+
+<script>
+/* ------------------------------------------------------------------
+   Espritum — écran « Ton résultat » (écran 8).
+
+   La ligne de temps : 8 points espacés de 1,5 mois (1,5 → 12).
+   Point creux  = le délai choisi par l'utilisateur à l'écran 6.
+   Point rouge  = le délai calculé par l'IA sur le scan.
+   Segment rouge = l'écart entre les deux. Aucune phrase.
+
+   Intégration :
+     window.EspritumResult.setDeadline(3|4.5|6|7.5|9|10.5|12)  choix utilisateur
+     window.EspritumResult.setAiMonths(n)                      verdict IA
+     window.EspritumResult.setVerdict(texte)
+     window.EspritumResult.unlock()   retire le flou et le bloc d'abonnement
+     window.EspritumResult.setLang('fr'|'en'|'bg')
+   Émet espritum:gate-cta et espritum:open-plan.
+   ------------------------------------------------------------------ */
+
+var T = {
+  fr: {
+    stepLabel: "TON RÉSULTAT", stepCount: "ÉTAPE 4 / 4",
+    title: "Ton écart.",
+    tagBefore: "AVANT", tagGoal: "OBJECTIF",
+    tlYou: "TON DÉLAI", tlAi: "L'IA",
+    verdict: "LE VERDICT DE SENSEI",
+    verdictBody: "Tu as la structure. Il te manque la discipline et 10 points de masse grasse. Quatre séances par semaine, un déficit tenu, et dans 18 semaines tu ne reconnaîtras plus l'homme sur la première photo.",
+    openPlan: "Ouvrir mon plan →",
+    gateFree: "2 SEMAINES GRATUITES", gateCta: "Commencer gratuitement →",
+    gateIncludes: ["Plan d'entraînement", "Suivi nutrition", "Analyse de progression"],
+    advice: [
+      { n: "1", k: "Mange 190 g de protéines par jour", v: "À ton poids, c'est le seuil sous lequel tu perdrais du muscle en même temps que le gras." },
+      { n: "2", k: "Muscule 4 fois, ne cours pas plus", v: "Le cardio brûle sur l'instant, la masse musculaire brûle en permanence. Priorité à la fonte." },
+      { n: "3", k: "Photographie-toi le même jour, même lumière", v: "La balance ment une semaine sur deux. La photo hebdomadaire, jamais." }
+    ]
+  },
+  en: {
+    stepLabel: "YOUR RESULT", stepCount: "STEP 4 / 4",
+    title: "Your gap.",
+    tagBefore: "BEFORE", tagGoal: "GOAL",
+    tlYou: "YOUR PICK", tlAi: "THE AI",
+    verdict: "SENSEI'S VERDICT",
+    verdictBody: "You have the frame. What you lack is discipline and 10 points of body fat. Four sessions a week, a deficit you actually hold, and in 18 weeks you won't recognise the man in the first photo.",
+    openPlan: "Open my plan →",
+    gateFree: "2 WEEKS FREE", gateCta: "Start for free →",
+    gateIncludes: ["Training plan", "Nutrition tracking", "Progress analysis"],
+    advice: [
+      { n: "1", k: "Eat 190 g of protein a day", v: "At your weight, that's the line below which you'd lose muscle along with the fat." },
+      { n: "2", k: "Lift four times, don't run more", v: "Cardio burns in the moment; muscle burns permanently. Iron comes first." },
+      { n: "3", k: "Shoot the same day, same light", v: "The scale lies every other week. The weekly photo never does." }
+    ]
+  },
+  bg: {
+    stepLabel: "ТВОЯТ РЕЗУЛТАТ", stepCount: "СТЪПКА 4 / 4",
+    title: "Разликата ти.",
+    tagBefore: "ПРЕДИ", tagGoal: "ЦЕЛ",
+    tlYou: "ТВОЯТ СРОК", tlAi: "AI",
+    verdict: "ПРИСЪДАТА НА СЕНСЕЙ",
+    verdictBody: "Имаш структурата. Липсват ти дисциплина и 10 пункта мазнини. Четири тренировки седмично, спазен дефицит, и след 18 седмици няма да познаеш мъжа от първата снимка.",
+    openPlan: "Отвори плана ми →",
+    gateFree: "2 СЕДМИЦИ БЕЗПЛАТНО", gateCta: "Започни безплатно →",
+    gateIncludes: ["Тренировъчен план", "Проследяване на храненето", "Анализ на прогреса"],
+    advice: [
+      { n: "1", k: "Приемай 190 г протеин на ден", v: "При твоето тегло това е границата, под която ще губиш мускул заедно с мазнините." },
+      { n: "2", k: "Тренирай с тежести 4 пъти, не бягай повече", v: "Кардиото гори в момента, мускулът гори постоянно. Първо желязото." },
+      { n: "3", k: "Снимай се в същия ден, при същата светлина", v: "Кантарът лъже през седмица. Седмичната снимка — никога." }
+    ]
+  }
+};
+
+var TL = [1.5, 3, 4.5, 6, 7.5, 9, 10.5, 12];
+var TICK = '<svg viewBox="0 0 24 24"><path d="M4 12.5L9 17.5L20 6.5"></path></svg>';
+var lang = 'fr', youM = 6, aiM = 4.5;
+
+var dotsEl = document.getElementById('dots');
+var numsEl = document.getElementById('nums');
+var segEl = document.getElementById('seg');
+var trackEl = document.getElementById('track');
+var capYou = document.getElementById('capYou');
+var capAi = document.getElementById('capAi');
+
+function nearest(m) {
+  var best = 0, d = Infinity;
+  TL.forEach(function (v, i) { var x = Math.abs(v - m); if (x < d) { d = x; best = i; } });
+  return best;
+}
+function center(i) { return (i + 0.5) / TL.length * 100; }
+
+function renderLine() {
+  var yi = nearest(youM), ai = nearest(aiM);
+  var lo = Math.min(yi, ai), hi = Math.max(yi, ai);
+
+  dotsEl.innerHTML = TL.map(function (m, i) {
+    var cls = 'dot';
+    if (i === ai) cls += ' ai';
+    else if (i === yi) cls += ' you';
+    else if (i > lo && i < hi) cls += ' on';
+    return '<div><div class="' + cls + '"></div></div>';
+  }).join('');
+
+  numsEl.innerHTML = TL.map(function (m) {
+    return '<div>' + (m % 3 === 0 ? m : '') + '</div>';
+  }).join('');
+
+  var edge = (100 / (TL.length * 2)).toFixed(2) + '%';
+  trackEl.style.left = edge;
+  trackEl.style.right = edge;
+  segEl.style.left = center(lo).toFixed(2) + '%';
+  segEl.style.width = (center(hi) - center(lo)).toFixed(2) + '%';
+  capYou.style.left = center(yi).toFixed(2) + '%';
+  capAi.style.left = center(ai).toFixed(2) + '%';
+  capYou.style.visibility = yi === ai ? 'hidden' : 'visible';
+}
+
+function render(l) {
+  lang = l;
+  var d = T[l];
+  document.querySelectorAll('[data-k]').forEach(function (el) { el.textContent = d[el.dataset.k]; });
+  capYou.textContent = d.tlYou;
+  capAi.textContent = d.tlAi;
+  document.getElementById('advice').innerHTML = d.advice.map(function (a) {
+    return '<div class="card"><span class="n">' + a.n + '</span><div class="body"><span class="k">' + a.k + '</span><span class="v">' + a.v + '</span></div></div>';
+  }).join('');
+  document.getElementById('incl').innerHTML = d.gateIncludes.map(function (g) {
+    return '<div class="row"><div class="tick">' + TICK + '</div><span>' + g + '</span></div>';
+  }).join('');
+  renderLine();
+  document.querySelectorAll('.langbar button').forEach(function (b) {
+    b.setAttribute('aria-pressed', String(b.dataset.lang === l));
+  });
+  document.documentElement.lang = l;
+  try { localStorage.setItem('espritum.lang', l); } catch (e) {}
+}
+
+document.getElementById('gatecta').addEventListener('click', function () {
+  document.dispatchEvent(new CustomEvent('espritum:gate-cta'));
+});
+document.getElementById('plan').addEventListener('click', function () {
+  document.dispatchEvent(new CustomEvent('espritum:open-plan'));
+});
+document.querySelectorAll('.langbar button').forEach(function (b) {
+  b.addEventListener('click', function () { render(b.dataset.lang); });
+});
+
+window.EspritumResult = {
+  setDeadline: function (m) { youM = m; renderLine(); },
+  setAiMonths: function (m) { aiM = m; renderLine(); },
+  setVerdict: function (txt) { document.querySelector('.verdict .v').textContent = txt; },
+  unlock: function () { document.body.classList.add('unlocked'); },
+  lock: function () { document.body.classList.remove('unlocked'); },
+  setLang: render
+};
+
+var saved = 'fr';
+try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
+try { var m = parseFloat(localStorage.getItem('espritum.months')); if (m) youM = m; } catch (e) {}
+render(saved);
+</script>
+<script>/* ESP-NAV — intégration */
+(function () {
+  var R = window.EspritumResult;
+  // Photos réelles capturées dans le tunnel
+  try {
+    var cur = sessionStorage.getItem('espritum.photo.current');
+    var goal = sessionStorage.getItem('espritum.photo.goal');
+    if (cur) { var a = document.querySelector('.shot:not(.goal) img'); if (a) a.src = cur; }
+    if (goal) { var b = document.querySelector('.shot.goal img'); if (b) b.src = goal; }
+  } catch (e) {}
+  // Délai choisi par l'utilisateur (écran 6)
+  try { var dl = JSON.parse(localStorage.getItem('espritum.deadline') || 'null'); if (dl && dl.months && R) R.setDeadline(dl.months); } catch (e) {}
+  // Résultat de l'analyse IA (écran 7) → délai calculé, verdict, 3 conseils.
+  // On NE déverrouille PAS ici : le contenu reste flouté derrière le gate jusqu'à l'inscription.
+  try {
+    var an = JSON.parse(localStorage.getItem('espritum.analysis') || 'null');
+    if (an && R) {
+      if (an.aiMonths) R.setAiMonths(an.aiMonths);
+      if (typeof T !== 'undefined' && Array.isArray(an.advice) && an.advice.length) {
+        var mapped = an.advice.slice(0, 3).map(function (x, i) {
+          return { n: String(i + 1), k: (x && x.title) || '', v: (x && x.body) || '' };
+        });
+        ['fr', 'en', 'bg'].forEach(function (l) {
+          if (T[l]) { T[l].advice = mapped; if (an.verdict) T[l].verdictBody = an.verdict; }
+        });
+        R.setLang(localStorage.getItem('espritum.lang') || 'fr'); // re-render depuis les données IA
+      } else if (an.verdict) {
+        R.setVerdict(an.verdict);
+      }
+    }
+  } catch (e) {}
+})();
+document.addEventListener('espritum:gate-cta', function () { window.location.href = 'compte.html'; });
+document.addEventListener('espritum:open-plan', function () { /* TODO: dashboard / plan */ });
+</script>
+</body>
+</html>

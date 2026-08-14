@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Espritum — Questionnaire</title>
+<link rel="apple-touch-icon" href="sensei-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0B0B0C"/><text x="50" y="62" font-family="Oswald,sans-serif" font-size="34" font-weight="700" fill="#C41E26" text-anchor="middle">E</text></svg>
+</template>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:#0B0B0C;color:#F2EFE9;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+@keyframes eFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes eSlide{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+
+.screen{position:absolute;inset:0;padding:58px 24px 26px;display:flex;flex-direction:column;animation:eFadeIn .3s ease both}
+.head{flex:none;display:flex;flex-direction:column;gap:9px}
+.headrow{display:flex;align-items:baseline;justify-content:space-between}
+.steplabel{font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.18em;color:#E23B44}
+.stepcount{font:500 9px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:rgba(242,239,233,.3)}
+.segs{display:flex;gap:5px}
+.segs i{flex:1;height:3px;border-radius:2px;background:rgba(242,239,233,.13);display:block;transition:background .35s ease}
+.segs i.on{background:#C41E26}
+
+.navrow{flex:none;display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.back{width:40px;height:40px;margin-left:-10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(242,239,233,.4);font:400 14px 'IBM Plex Mono',monospace;border-radius:12px;transition:.2s;-webkit-tap-highlight-color:transparent}
+.back:hover{color:#F2EFE9;background:rgba(242,239,233,.06)}
+.counter{font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.18em;color:rgba(242,239,233,.35)}
+
+.qtitle{flex:none;font:700 31px/1.02 Oswald,sans-serif;text-transform:uppercase;margin-top:18px;text-wrap:pretty}
+
+.body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:22px 0;animation:eSlide .28s ease both}
+.body.num{align-items:center;gap:18px}
+
+.opt{display:flex;align-items:center;gap:16px;padding:17px 18px;border-radius:16px;background:#131315;border:1px solid rgba(242,239,233,.09);cursor:pointer;transition:.2s;-webkit-tap-highlight-color:transparent}
+.opt:hover{border-color:rgba(196,30,38,.5);background:#18181B}
+.opt.sel{background:rgba(196,30,38,.14);border:1.5px solid #C41E26}
+.opt .ico{width:44px;height:44px;flex:none;border-radius:13px;background:#1C1C20;display:flex;align-items:center;justify-content:center;color:rgba(226,59,68,.75)}
+.opt.sel .ico{background:rgba(196,30,38,.2);color:#E23B44}
+.opt .lbl{flex:1;font:500 15px 'IBM Plex Sans';color:rgba(242,239,233,.72);text-wrap:pretty}
+.opt.sel .lbl{font-weight:600;color:#F2EFE9}
+.opt .dot{width:19px;height:19px;flex:none;border-radius:50%;border:1.5px solid rgba(242,239,233,.16)}
+.opt.sel .dot{border:none;background:#C41E26;display:flex;align-items:center;justify-content:center}
+.opt.sel .dot::after{content:"";width:7px;height:7px;background:#F6F2EE;transform:rotate(45deg)}
+.bars{display:flex;align-items:flex-end;gap:3px;height:22px}
+.bars i{width:4px;border-radius:2px;display:block}
+
+.numwrap{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+.numwrap input{width:100%;background:transparent;border:none;text-align:center;color:#F2EFE9;font:400 76px/1 'Bebas Neue',Oswald,sans-serif;letter-spacing:.02em;padding:0}
+.numwrap input:focus{outline:none}
+.numrule{width:104px;height:2px;border-radius:2px;background:#C41E26}
+.numunit{font:600 10px 'IBM Plex Mono',monospace;letter-spacing:.2em;color:rgba(242,239,233,.4)}
+
+.cta{flex:none;padding:17px;border-radius:14px;background:#C41E26;color:#F6F2EE;text-align:center;font:600 13px 'IBM Plex Sans';letter-spacing:.03em;cursor:pointer;box-shadow:0 12px 30px -12px rgba(196,30,38,.7);transition:.2s;-webkit-tap-highlight-color:transparent}
+.cta:hover{background:#E23B44}
+.cta.hidden{visibility:hidden}
+
+.langbar{position:absolute;top:16px;right:20px;display:flex;gap:6px;z-index:5}
+.langbar button{background:none;border:1px solid rgba(242,239,233,.12);color:rgba(242,239,233,.35);font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.12em;padding:5px 9px;border-radius:7px;cursor:pointer;transition:.2s}
+.langbar button[aria-pressed="true"]{color:#E23B44;border-color:rgba(196,30,38,.5);background:rgba(196,30,38,.12)}
+</style>
+</head>
+<body>
+<div class="langbar">
+<button data-lang="fr" aria-pressed="true">FR</button>
+<button data-lang="en" aria-pressed="false">EN</button>
+<button data-lang="bg" aria-pressed="false">BG</button>
+</div>
+
+<div class="screen">
+<div class="head">
+<div class="headrow">
+<span class="steplabel" id="stepLabel">TON PROFIL</span>
+<span class="stepcount" id="stepCount">ÉTAPE 3 / 4</span>
+</div>
+<div class="segs"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+</div>
+
+<div class="navrow">
+<div class="back" id="back">←</div>
+<span class="counter" id="counter">QUESTION 1 / 8</span>
+</div>
+
+<div class="qtitle" id="qtitle"></div>
+<div class="body" id="body"></div>
+<div class="cta hidden" id="cta">CONTINUER</div>
+</div>
+
+<script>
+/* ------------------------------------------------------------------
+   Espritum — questionnaire d'inscription (8 questions, FR / EN / BG).
+
+   Les réponses alimentent l'analyse IA : sexe, âge, taille, poids,
+   répartition de la graisse, objectif, activité, fréquence.
+
+   Intégration :
+     window.EspritumQuiz.getAnswers()  → { sex, age, height, weight,
+                                            fat, goal, activity, freq }
+       - champs "choice" : { index, value } (value = libellé canonique EN)
+       - champs "number" : nombre
+     évènements : espritum:quiz-answer  (à chaque réponse)
+                  espritum:quiz-done    (questionnaire terminé)
+                  espritum:back         (retour avant la question 1)
+   ------------------------------------------------------------------ */
+
+var QI = {
+  man: ["M10 9a5 5 0 1 1 0 10a5 5 0 1 1 0-10","M15 9L20 4","M15.5 4H20V8.5"],
+  woman: ["M12 4a5 5 0 1 1 0 10a5 5 0 1 1 0-10","M12 14V21","M9 18H15"],
+  target: ["M12 5a7 7 0 1 1 0 14a7 7 0 1 1 0-14","M12 9.5a2.5 2.5 0 1 1 0 5a2.5 2.5 0 1 1 0-5"],
+  spread: ["M4 9V4H9","M4 4L10 10","M20 15V20H15","M20 20L14 14"],
+  down: ["M12 5a7 7 0 1 1 0 14a7 7 0 1 1 0-14","M12 8V15.5","M8.8 12.3L12 15.5L15.2 12.3"],
+  minus: ["M12 5a7 7 0 1 1 0 14a7 7 0 1 1 0-14","M8.5 12H15.5"],
+  trendDown: ["M4 8L10 14L13 11L20 18","M20 13V18H15"],
+  trendUp: ["M4 16L10 10L13 13L20 6","M15 6H20V11"],
+  recomp: ["M4 9H16","M13 6L16 9L13 12","M20 15H8","M11 12L8 15L11 18"],
+  heart: ["M12 20C12 20 5 15.5 5 10.8A4 4 0 0 1 12 8A4 4 0 0 1 19 10.8C19 15.5 12 20 12 20Z"]
+};
+
+/* Définition structurelle : identique dans les 3 langues. */
+var DEF = [
+  { key: "sex",      type: "choice", ic: [QI.man, QI.woman],
+    values: ["male", "female"] },
+  { key: "age",      type: "number", def: 28,  min: 14, max: 90 },
+  { key: "height",   type: "number", def: 178, min: 120, max: 230 },
+  { key: "weight",   type: "number", def: 85,  min: 35, max: 250 },
+  { key: "fat",      type: "choice", ic: [QI.target, QI.spread, QI.down, QI.minus],
+    values: ["belly", "even", "hips_thighs", "lean"] },
+  { key: "goal",     type: "choice", ic: [QI.trendDown, QI.trendUp, QI.recomp, QI.heart],
+    values: ["lose_fat", "build_muscle", "recomposition", "stay_fit"] },
+  { key: "activity", type: "choice", bars: true,
+    values: ["sedentary", "light", "moderate", "intense"] },
+  { key: "freq",     type: "choice", bars: true,
+    values: ["0-1", "2-3", "4-5", "6+"] }
+];
+
+var T = {
+  fr: {
+    stepLabel: "TON PROFIL", stepCount: "ÉTAPE 3 / 4",
+    quizWord: "QUESTION", cta: "CONTINUER",
+    quiz: [
+      { q: "Tu es…", o: ["Un homme", "Une femme"] },
+      { q: "Quel âge as-tu ?", u: "ANS" },
+      { q: "Quelle est ta taille ?", u: "CM" },
+      { q: "Quel est ton poids ?", u: "KG" },
+      { q: "Où stockes-tu la graisse en premier ?", o: ["Surtout le ventre", "Un peu partout", "Hanches / cuisses", "Je suis plutôt sec"] },
+      { q: "Ton objectif principal ?", o: ["Perdre du gras", "Prendre du muscle", "Recomposition (les deux)", "Rester en forme"] },
+      { q: "Ton niveau d'activité au quotidien ?", o: ["Sédentaire (bureau)", "Léger", "Modéré", "Intense (physique)"] },
+      { q: "Combien de séances par semaine ?", o: ["0 à 1", "2 à 3", "4 à 5", "6 et plus"] }
+    ]
+  },
+  en: {
+    stepLabel: "YOUR PROFILE", stepCount: "STEP 3 / 4",
+    quizWord: "QUESTION", cta: "CONTINUE",
+    quiz: [
+      { q: "You are…", o: ["A man", "A woman"] },
+      { q: "How old are you?", u: "YEARS" },
+      { q: "What's your height?", u: "CM" },
+      { q: "What's your weight?", u: "KG" },
+      { q: "Where do you store fat first?", o: ["Mostly the belly", "A bit everywhere", "Hips / thighs", "I'm rather lean"] },
+      { q: "Your main goal?", o: ["Lose fat", "Build muscle", "Recomposition (both)", "Stay fit"] },
+      { q: "Your daily activity level?", o: ["Sedentary (desk)", "Light", "Moderate", "Intense (physical)"] },
+      { q: "How many workouts per week?", o: ["0 to 1", "2 to 3", "4 to 5", "6 and more"] }
+    ]
+  },
+  bg: {
+    stepLabel: "ТВОЯТ ПРОФИЛ", stepCount: "СТЪПКА 3 / 4",
+    quizWord: "ВЪПРОС", cta: "ПРОДЪЛЖИ",
+    quiz: [
+      { q: "Ти си…", o: ["Мъж", "Жена"] },
+      { q: "На колко години си?", u: "ГОДИНИ" },
+      { q: "Какъв е ръстът ти?", u: "СМ" },
+      { q: "Какво е теглото ти?", u: "КГ" },
+      { q: "Къде натрупваш мазнини първо?", o: ["Основно в корема", "По малко навсякъде", "Бедра / ханш", "По-скоро съм сух"] },
+      { q: "Основната ти цел?", o: ["Сваляне на мазнини", "Качване на мускул", "Рекомпозиция (и двете)", "Поддържане на форма"] },
+      { q: "Дневното ти ниво на активност?", o: ["Седяща работа", "Леко", "Умерено", "Интензивно (физическо)"] },
+      { q: "Колко тренировки на седмица?", o: ["0 до 1", "2 до 3", "4 до 5", "6 и повече"] }
+    ]
+  }
+};
+
+var lang = 'fr';
+var idx = 0;
+var answers = {};
+
+var elTitle = document.getElementById('qtitle');
+var elBody = document.getElementById('body');
+var elCta = document.getElementById('cta');
+var elCounter = document.getElementById('counter');
+
+function svgIcon(paths) {
+  return '<svg viewBox="0 0 24 24" style="width:22px;height:22px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round">' +
+    paths.map(function (d) { return '<path d="' + d + '"></path>'; }).join('') + '</svg>';
+}
+
+function barsIcon(i, selected) {
+  return '<div class="bars">' + [10, 13, 16, 19].map(function (h, bi) {
+    var c = bi <= i ? (selected ? '#E23B44' : '#C41E26') : 'rgba(196,30,38,0.24)';
+    return '<i style="height:' + h + 'px;background:' + c + '"></i>';
+  }).join('') + '</div>';
+}
+
+function render() {
+  var t = T[lang], def = DEF[idx], q = t.quiz[idx];
+
+  document.getElementById('stepLabel').textContent = t.stepLabel;
+  document.getElementById('stepCount').textContent = t.stepCount;
+  elCounter.textContent = t.quizWord + ' ' + (idx + 1) + ' / 8';
+  elTitle.textContent = q.q;
+  elCta.textContent = t.cta;
+
+  elBody.className = 'body' + (def.type === 'number' ? ' num' : '');
+  elBody.innerHTML = '';
+
+  if (def.type === 'choice') {
+    elCta.classList.add('hidden');
+    q.o.forEach(function (label, i) {
+      var sel = answers[def.key] && answers[def.key].index === i;
+      var el = document.createElement('div');
+      el.className = 'opt' + (sel ? ' sel' : '');
+      el.innerHTML = '<div class="ico">' + (def.bars ? barsIcon(i, sel) : svgIcon(def.ic[i])) + '</div>' +
+                     '<span class="lbl">' + label + '</span><div class="dot"></div>';
+      el.addEventListener('click', function () {
+        answers[def.key] = { index: i, value: def.values[i], label: label };
+        document.dispatchEvent(new CustomEvent('espritum:quiz-answer', {
+          detail: { key: def.key, value: def.values[i], index: i }
+        }));
+        render();
+        setTimeout(advance, 220);
+      });
+      elBody.appendChild(el);
+    });
+  } else {
+    elCta.classList.remove('hidden');
+    var wrap = document.createElement('div');
+    wrap.className = 'numwrap';
+    var val = answers[def.key] !== undefined ? answers[def.key] : def.def;
+    wrap.innerHTML = '<input inputmode="numeric" value="' + val + '">' +
+                     '<div class="numrule"></div><div class="numunit">' + q.u + '</div>';
+    var input = wrap.querySelector('input');
+    input.addEventListener('input', function () {
+      var v = input.value.replace(/[^0-9]/g, '').slice(0, 3);
+      input.value = v;
+      answers[def.key] = v === '' ? def.def : parseInt(v, 10);
+    });
+    answers[def.key] = answers[def.key] !== undefined ? answers[def.key] : def.def;
+    elBody.appendChild(wrap);
+  }
+
+  document.querySelectorAll('.langbar button').forEach(function (b) {
+    b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
+  });
+  document.documentElement.lang = lang;
+}
+
+function advance() {
+  if (idx >= DEF.length - 1) {
+    document.dispatchEvent(new CustomEvent('espritum:quiz-done', { detail: getAnswers() }));
+    return;
+  }
+  idx++;
+  render();
+}
+
+function getAnswers() {
+  var out = {};
+  DEF.forEach(function (d) {
+    var a = answers[d.key];
+    out[d.key] = (a && typeof a === 'object') ? a.value : a;
+  });
+  return out;
+}
+
+elCta.addEventListener('click', advance);
+document.getElementById('back').addEventListener('click', function () {
+  if (idx === 0) { document.dispatchEvent(new CustomEvent('espritum:back')); return; }
+  idx--;
+  render();
+});
+document.querySelectorAll('.langbar button').forEach(function (b) {
+  b.addEventListener('click', function () { lang = b.dataset.lang; render(); try { localStorage.setItem('espritum.lang', lang); } catch (e) {} });
+});
+
+window.EspritumQuiz = {
+  getAnswers: getAnswers,
+  getIndex: function () { return idx; },
+  setLang: function (l) { if (T[l]) { lang = l; render(); } },
+  reset: function () { idx = 0; answers = {}; render(); }
+};
+
+try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) lang = v; } catch (e) {}
+render();
+</script>
+<script>/* ESP-NAV — intégration */
+document.addEventListener('espritum:quiz-done', function (e) {
+  try { localStorage.setItem('espritum.quiz', JSON.stringify(e.detail || {})); } catch (err) {}
+  setTimeout(function(){ window.location.href = 'delai.html'; }, 150);
+});
+document.addEventListener('espritum:back', function () { window.location.href = 'corps-de-reve.html'; });
+</script>
+</body>
+</html>

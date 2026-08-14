@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Espritum — Délai</title>
+<link rel="apple-touch-icon" href="sensei-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0B0B0C"/><text x="50" y="62" font-family="Oswald,sans-serif" font-size="34" font-weight="700" fill="#C41E26" text-anchor="middle">E</text></svg>
+</template>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:#0B0B0C;color:#F2EFE9;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+@keyframes eFadeIn{from{opacity:0}to{opacity:1}}
+
+.screen{position:absolute;inset:0;padding:64px 24px 26px;display:flex;flex-direction:column;gap:18px;animation:eFadeIn .35s ease both}
+.head{flex:none;display:flex;flex-direction:column;gap:9px}
+.headrow{display:flex;align-items:baseline;justify-content:space-between}
+.steplabel{font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.18em;color:#E23B44}
+.stepcount{font:500 9px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:rgba(242,239,233,.3)}
+.segs{display:flex;gap:5px}
+.segs i{flex:1;height:3px;border-radius:2px;background:rgba(242,239,233,.13);display:block;transition:background .35s ease}
+.segs i.on{background:#C41E26}
+
+.titleblock{flex:none;display:flex;flex-direction:column;gap:9px}
+.back{width:40px;height:40px;margin-left:-11px;border-radius:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;-webkit-tap-highlight-color:transparent}
+.back:hover{background:rgba(242,239,233,.06)}
+.title{font:700 31px/0.94 Oswald,sans-serif;text-transform:uppercase;white-space:nowrap}
+.sub{font:400 12px/1.55 'IBM Plex Sans';color:rgba(242,239,233,.5);text-wrap:pretty}
+
+.opts{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.opt{flex:1;max-height:98px;display:flex;align-items:center;gap:14px;padding:0 16px;border-radius:16px;background:#131315;border:1px solid rgba(242,239,233,.09);cursor:pointer;transition:.2s cubic-bezier(.2,.8,.2,1);-webkit-tap-highlight-color:transparent}
+.opt:hover{transform:translateY(-2px);border-color:rgba(196,30,38,.45)}
+.opt.sel{background:rgba(196,30,38,.14);border-color:#C41E26}
+.opt .m{flex:none;width:44px;display:flex;flex-direction:column;align-items:center;gap:1px}
+.opt .m b{font:700 26px/1 Oswald,sans-serif;color:rgba(242,239,233,.72);display:block}
+.opt.sel .m b{color:#E23B44}
+.opt .m span{font:500 7.5px 'IBM Plex Mono',monospace;letter-spacing:.1em;color:rgba(242,239,233,.35)}
+.opt .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.opt .pace{display:flex;align-items:center;gap:8px}
+.opt .pace b{font:600 13px 'IBM Plex Sans';color:#F2EFE9}
+.opt .reco{padding:2px 6px;border-radius:5px;background:rgba(196,30,38,.2);font:600 7.5px 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#E23B44}
+.opt .note{font:400 10.5px/1.35 'IBM Plex Sans';color:rgba(242,239,233,.42)}
+.bars{flex:none;display:flex;align-items:flex-end;gap:3px;height:22px}
+.bars i{width:4px;border-radius:2px;display:block;transition:background .25s ease}
+
+.cta{flex:none;padding:16px;border-radius:14px;text-align:center;font:600 13px 'IBM Plex Sans';transition:.2s;-webkit-tap-highlight-color:transparent}
+.cta.off{background:#18181B;color:rgba(242,239,233,.26);border:1px solid rgba(242,239,233,.07)}
+.cta.on{background:#C41E26;color:#F6F2EE;cursor:pointer;box-shadow:0 12px 30px -12px rgba(196,30,38,.8)}
+.cta.on:hover{background:#E23B44}
+
+.langbar{position:absolute;top:18px;right:20px;display:flex;gap:6px;z-index:5}
+.langbar button{background:none;border:1px solid rgba(242,239,233,.12);color:rgba(242,239,233,.35);font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.12em;padding:5px 9px;border-radius:7px;cursor:pointer;transition:.2s}
+.langbar button[aria-pressed="true"]{color:#E23B44;border-color:rgba(196,30,38,.5);background:rgba(196,30,38,.12)}
+</style>
+</head>
+<body>
+<div class="langbar">
+<button data-lang="fr" aria-pressed="true">FR</button>
+<button data-lang="en" aria-pressed="false">EN</button>
+<button data-lang="bg" aria-pressed="false">BG</button>
+</div>
+
+<div class="screen">
+<div class="head">
+<div class="headrow">
+<span class="steplabel" id="stepLabel">TON PROFIL</span>
+<span class="stepcount" id="stepCount">ÉTAPE 3 / 4</span>
+</div>
+<div class="segs"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+</div>
+
+<div class="titleblock">
+<div class="back" id="back">
+<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="rgba(242,239,233,.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H6M12 6l-6 6 6 6"></path></svg>
+</div>
+<div class="title" id="title">En combien de temps ?</div>
+<div class="sub" id="sub"></div>
+</div>
+
+<div class="opts" id="opts"></div>
+
+<div class="cta off" id="cta">Continuer →</div>
+</div>
+
+<script>
+/* ------------------------------------------------------------------
+   Espritum — écran « En combien de temps ? ».
+   Le délai choisi (en mois) cale le déficit calorique et le volume
+   d'entraînement générés par l'IA, et fixe la durée du plan.
+
+   Intégration :
+     window.EspritumDeadline.getMonths()  → 3 | 6 | 9 | 12 | null
+     window.EspritumDeadline.getWeeks()   → durée du plan en semaines
+     évènements : espritum:deadline (choix), espritum:next, espritum:back
+   ------------------------------------------------------------------ */
+
+var MONTHS = [3, 6, 9, 12];
+var RECOMMENDED = 6;
+
+var T = {
+  fr: {
+    stepLabel: "TON PROFIL", stepCount: "ÉTAPE 3 / 4",
+    title: "En combien de temps ?",
+    sub: "L'IA cale ton déficit et ton volume d'entraînement sur ce délai. Tu pourras le changer après un scan.",
+    monthsShort: "MOIS", recommended: "CONSEILLÉ", next: "Continuer →",
+    opts: [
+      { pace: "Agressif",   note: "Déficit sévère, aucune marge d'erreur." },
+      { pace: "Soutenu",    note: "Le meilleur rapport résultat / effort." },
+      { pace: "Progressif", note: "Confortable, muscle bien préservé." },
+      { pace: "Patient",    note: "Presque aucune contrainte au quotidien." }
+    ]
+  },
+  en: {
+    stepLabel: "YOUR PROFILE", stepCount: "STEP 3 / 4",
+    title: "In how long?",
+    sub: "The AI sets your deficit and training volume on this deadline. You can change it after a scan.",
+    monthsShort: "MONTHS", recommended: "ADVISED", next: "Continue →",
+    opts: [
+      { pace: "Aggressive", note: "Severe deficit, no room for error." },
+      { pace: "Steady",     note: "Best result-to-effort ratio." },
+      { pace: "Gradual",    note: "Comfortable, muscle well preserved." },
+      { pace: "Patient",    note: "Almost no constraint day to day." }
+    ]
+  },
+  bg: {
+    stepLabel: "ТВОЯТ ПРОФИЛ", stepCount: "СТЪПКА 3 / 4",
+    title: "За колко време?",
+    sub: "AI настройва дефицита и обема на тренировките според този срок. Можеш да го смениш след сканиране.",
+    monthsShort: "МЕСЕЦА", recommended: "СЪВЕТ", next: "Продължи →",
+    opts: [
+      { pace: "Агресивно",  note: "Сериозен дефицит, без право на грешка." },
+      { pace: "Стабилно",   note: "Най-добро съотношение резултат / усилие." },
+      { pace: "Постепенно", note: "Комфортно, мускулът е запазен." },
+      { pace: "Спокойно",   note: "Почти никакви ограничения в ежедневието." }
+    ]
+  }
+};
+
+var lang = 'fr';
+var picked = null;
+var elOpts = document.getElementById('opts');
+var elCta = document.getElementById('cta');
+
+function render() {
+  var t = T[lang];
+  document.getElementById('stepLabel').textContent = t.stepLabel;
+  document.getElementById('stepCount').textContent = t.stepCount;
+  document.getElementById('title').textContent = t.title;
+  document.getElementById('sub').textContent = t.sub;
+  elCta.textContent = t.next;
+  elCta.className = 'cta ' + (picked ? 'on' : 'off');
+
+  elOpts.innerHTML = '';
+  MONTHS.forEach(function (m, i) {
+    var o = t.opts[i];
+    var sel = picked === m;
+    var el = document.createElement('div');
+    el.className = 'opt' + (sel ? ' sel' : '');
+
+    /* Plus le délai est long, plus l'effort quotidien est faible :
+       les barres décroissent de gauche à droite dans la liste. */
+    var intensity = MONTHS.length - i;
+    var bars = [10, 13, 16, 19].map(function (h, bi) {
+      var active = bi < intensity;
+      var c = active ? (sel ? '#E23B44' : '#C41E26') : 'rgba(196,30,38,0.24)';
+      return '<i style="height:' + h + 'px;background:' + c + '"></i>';
+    }).join('');
+
+    el.innerHTML =
+      '<div class="m"><b>' + m + '</b><span>' + t.monthsShort + '</span></div>' +
+      '<div class="txt"><div class="pace"><b>' + o.pace + '</b>' +
+      (m === RECOMMENDED ? '<span class="reco">' + t.recommended + '</span>' : '') +
+      '</div><span class="note">' + o.note + '</span></div>' +
+      '<div class="bars">' + bars + '</div>';
+
+    el.addEventListener('click', function () {
+      picked = m;
+      document.dispatchEvent(new CustomEvent('espritum:deadline', {
+        detail: { months: m, weeks: Math.round(m * 4.33) }
+      }));
+      render();
+    });
+    elOpts.appendChild(el);
+  });
+
+  document.querySelectorAll('.langbar button').forEach(function (b) {
+    b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
+  });
+  document.documentElement.lang = lang;
+}
+
+elCta.addEventListener('click', function () {
+  if (!picked) return;
+  document.dispatchEvent(new CustomEvent('espritum:next', {
+    detail: { months: picked, weeks: Math.round(picked * 4.33) }
+  }));
+});
+document.getElementById('back').addEventListener('click', function () {
+  document.dispatchEvent(new CustomEvent('espritum:back'));
+});
+document.querySelectorAll('.langbar button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    lang = b.dataset.lang;
+    try { localStorage.setItem('espritum.lang', lang); } catch (e) {}
+    render();
+  });
+});
+
+window.EspritumDeadline = {
+  getMonths: function () { return picked; },
+  getWeeks: function () { return picked ? Math.round(picked * 4.33) : null; },
+  setLang: function (l) { if (T[l]) { lang = l; render(); } }
+};
+
+try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) lang = v; } catch (e) {}
+render();
+</script>
+<script>/* ESP-NAV — intégration */
+document.addEventListener('espritum:deadline', function (e) { try { localStorage.setItem('espritum.deadline', JSON.stringify(e.detail || {})); } catch (_) {} });
+document.addEventListener('espritum:next', function () { window.location.href = 'analyse.html'; });
+document.addEventListener('espritum:back', function () { window.location.href = 'questionnaire.html'; });
+</script>
+</body>
+</html>

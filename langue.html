@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Espritum — Langue</title>
+<link rel="apple-touch-icon" href="sensei-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0B0B0C"/><text x="50" y="62" font-family="Oswald,sans-serif" font-size="34" font-weight="700" fill="#C41E26" text-anchor="middle">E</text></svg>
+</template>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:#0B0B0C;color:#F2EFE9;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+@keyframes eFade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.screen{position:relative;height:100%;display:flex;flex-direction:column;animation:eFade .5s ease both}
+.halo{position:absolute;top:-90px;left:50%;transform:translateX(-50%);width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(196,30,38,.16),transparent 68%);pointer-events:none}
+.brand{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:96px 34px 0;position:relative}
+.wordmark{font:700 44px/0.9 Oswald,sans-serif;text-transform:uppercase;letter-spacing:.03em;text-align:center}
+.rule{width:26px;height:1px;background:rgba(196,30,38,.7)}
+.baseline{font:400 13.5px/1.5 'IBM Plex Sans';color:rgba(242,239,233,.4);font-style:italic;text-align:center}
+.pick{display:flex;flex-direction:column;gap:18px;padding:0 30px 44px}
+.pickhead{display:flex;align-items:center;gap:12px}
+.pickhead span{font:600 9.5px 'IBM Plex Mono',monospace;letter-spacing:.22em;color:rgba(242,239,233,.32);white-space:nowrap}
+.pickhead i{flex:1;height:1px;background:rgba(242,239,233,.09);display:block}
+.opts{display:flex;flex-direction:column;gap:11px}
+.opt{display:flex;align-items:center;gap:16px;padding:20px 22px;border-radius:17px;background:#131315;border:1px solid rgba(242,239,233,.08);cursor:pointer;transition:.22s cubic-bezier(.2,.8,.2,1);-webkit-tap-highlight-color:transparent}
+.opt:hover{border-color:rgba(196,30,38,.6);background:#191A1D;transform:translateY(-2px)}
+.opt[aria-selected="true"]{border-color:#C41E26;background:#191A1D}
+.opt .code{font:600 9.5px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:rgba(242,239,233,.3);width:22px;flex:none}
+.opt[aria-selected="true"] .code{color:#C41E26}
+.opt .name{font:500 17px 'IBM Plex Sans';flex:1}
+.opt .go{font:400 15px Oswald,sans-serif;color:rgba(196,30,38,.85)}
+.login{display:flex;justify-content:center;align-items:baseline;gap:7px}
+.login span{font:400 11.5px 'IBM Plex Sans';color:rgba(242,239,233,.3)}
+.login a{font:500 11.5px 'IBM Plex Sans';color:rgba(242,239,233,.62);cursor:pointer;text-decoration:none;border-bottom:1px solid rgba(242,239,233,.22);padding-bottom:1px;transition:.2s;-webkit-tap-highlight-color:transparent}
+.login a:hover{color:#E23B44;border-bottom-color:rgba(196,30,38,.6)}
+</style>
+</head>
+<body>
+<div class="screen">
+<div class="halo"></div>
+
+<div class="brand">
+<img src="sensei-mark.png" alt="Espritum" style="width:76px;height:auto;display:block">
+<div style="display:flex;flex-direction:column;align-items:center;gap:13px">
+<div class="wordmark">Espritum</div>
+<div class="rule"></div>
+<div class="baseline">Not just flesh — but spirit.</div>
+</div>
+</div>
+
+<div class="pick">
+<div class="pickhead"><span id="pickLabel">CHOISIS TA LANGUE</span><i></i></div>
+<div class="opts">
+<div class="opt" data-lang="fr" aria-selected="true"><span class="code">FR</span><span class="name">Français</span><span class="go">→</span></div>
+<div class="opt" data-lang="en" aria-selected="false"><span class="code">EN</span><span class="name">English</span><span class="go">→</span></div>
+<div class="opt" data-lang="bg" aria-selected="false"><span class="code">BG</span><span class="name">Български</span><span class="go">→</span></div>
+</div>
+<div class="login"><span id="haveAccount">Déjà un compte ?</span><a id="loginLink" href="#">Connexion</a></div>
+</div>
+</div>
+
+<script>
+var LABEL = { fr: "CHOISIS TA LANGUE", en: "CHOOSE YOUR LANGUAGE", bg: "ИЗБЕРИ СВОЯ ЕЗИК" };
+var HAVE = { fr: "Déjà un compte ?", en: "Already have an account?", bg: "Вече имаш акаунт?" };
+var LOGIN = { fr: "Connexion", en: "Log in", bg: "Вход" };
+var opts = document.querySelectorAll('.opt');
+var label = document.getElementById('pickLabel');
+var haveEl = document.getElementById('haveAccount');
+var loginEl = document.getElementById('loginLink');
+var current = 'fr';
+function select(lang) {
+  opts.forEach(function (o) { o.setAttribute('aria-selected', String(o.dataset.lang === lang)); });
+  label.textContent = LABEL[lang];
+  haveEl.textContent = HAVE[lang];
+  loginEl.textContent = LOGIN[lang];
+  current = lang;
+  document.documentElement.lang = lang;
+  try { localStorage.setItem('espritum.lang', lang); } catch (e) {}
+}
+opts.forEach(function (o) {
+  o.addEventListener('click', function () {
+    select(o.dataset.lang);
+    document.dispatchEvent(new CustomEvent('espritum:lang', { detail: { lang: o.dataset.lang } }));
+  });
+});
+loginEl.addEventListener('click', function (e) {
+  e.preventDefault();
+  document.dispatchEvent(new CustomEvent('espritum:login', { detail: { lang: current } }));
+});
+window.EspritumLang = { getLang: function () { return current; }, setLang: select };
+try { var saved = localStorage.getItem('espritum.lang'); if (saved && LABEL[saved]) select(saved); } catch (e) {}
+</script>
+<script>
+/* Espritum — liens (branchés par l'intégration). Design intact. */
+document.addEventListener('espritum:lang', function () {
+  setTimeout(function () { window.location.href = 'scan.html'; }, 180);
+});
+/* Bouton Connexion : lien à définir plus tard */
+document.addEventListener('espritum:login', function () { window.location.href = 'compte.html?mode=login'; });
+</script>
+</body>
+</html>

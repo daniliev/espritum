@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Espritum — Sensei</title>
+<link rel="apple-touch-icon" href="sensei-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0B0B0C"/><text x="50" y="62" font-family="Oswald,sans-serif" font-size="34" font-weight="700" fill="#C41E26" text-anchor="middle">E</text></svg>
+</template>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;display:flex;align-items:flex-start;justify-content:center;padding:16px 0}
+.phone{position:relative;flex:none;width:390px;height:844px;overflow:hidden;background:#0B0B0C}
+@media (min-width:420px) and (min-height:880px){.phone{border-radius:44px;box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 0 1px rgba(242,239,233,.07)}}
+@media (max-width:420px){.phone{width:100%;height:100vh;height:100dvh}body{padding:0}}
+@keyframes eFade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes eDot{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;padding:62px 0 30px;animation:eFade .4s ease both}
+
+.head{flex:none;display:flex;align-items:center;gap:12px;padding:10px 22px 16px;border-bottom:1px solid rgba(242,239,233,.07)}
+.back{font:400 13px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.4);cursor:pointer;background:none;border:none;padding:0}
+.back:hover{color:#E23B44}
+.head .av{width:36px;height:36px;flex:none;border-radius:50%;background:#1B1B1E;border:1px solid rgba(196,30,38,.4);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.head .av img{width:30px;height:30px;object-fit:contain}
+.head .c{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.head .c b{font:600 13.5px 'IBM Plex Sans'}
+.head .c span{font:500 9.5px 'IBM Plex Mono',monospace;color:#C41E26;letter-spacing:.1em}
+
+.thread{flex:1;min-height:0;overflow-y:auto;padding:18px 22px;display:flex;flex-direction:column;gap:11px;scrollbar-width:none}
+.thread::-webkit-scrollbar{display:none}
+.msg{max-width:82%;padding:13px 15px;font:400 12.5px/1.5 'IBM Plex Sans';text-wrap:pretty;animation:eFade .3s ease both}
+.msg.bot{align-self:flex-start;border-radius:15px 15px 15px 5px;background:#161619;border:1px solid rgba(242,239,233,.08);color:rgba(242,239,233,.88)}
+.msg.me{align-self:flex-end;border-radius:15px 15px 5px 15px;background:#C41E26;color:#F6F2EE}
+.verse{align-self:flex-start;max-width:82%;padding:12px 15px;border-radius:15px 15px 15px 5px;background:linear-gradient(150deg,#17171A,#111113);border:1px solid rgba(196,30,38,.22);display:flex;flex-direction:column;gap:5px;animation:eFade .3s ease both}
+.verse .t{font:400 12.5px/1.45 'IBM Plex Sans';font-style:italic;color:rgba(242,239,233,.8)}
+.verse .r{font:500 9px 'IBM Plex Mono',monospace;letter-spacing:.1em;color:rgba(196,30,38,.9)}
+.typing{align-self:flex-start;display:flex;align-items:center;gap:5px;padding:14px 16px;border-radius:15px 15px 15px 5px;background:#161619;border:1px solid rgba(242,239,233,.08)}
+.typing i{width:5px;height:5px;border-radius:50%;background:rgba(242,239,233,.6);display:block;animation:eDot 1.2s ease-in-out infinite}
+.typing i:nth-child(2){animation-delay:.15s}
+.typing i:nth-child(3){animation-delay:.3s}
+
+.quick{flex:none;display:flex;gap:7px;overflow-x:auto;padding:0 22px 11px;scrollbar-width:none}
+.quick::-webkit-scrollbar{display:none}
+.quick button{flex:none;padding:9px 13px;border-radius:11px;background:#141416;border:1px solid rgba(242,239,233,.1);color:rgba(242,239,233,.6);font:400 11px 'IBM Plex Sans';cursor:pointer;transition:.2s;white-space:nowrap;font-family:inherit}
+.quick button:hover{border-color:rgba(196,30,38,.45);color:#F2EFE9}
+
+.composer{flex:none;display:flex;gap:9px;padding:0 22px}
+.composer input{flex:1;min-width:0;padding:14px 16px;border-radius:22px;background:#141416;border:1px solid rgba(242,239,233,.1);color:#F2EFE9;font:400 12.5px 'IBM Plex Sans';outline:none;transition:.2s}
+.composer input:focus{border-color:rgba(196,30,38,.5)}
+.send{width:46px;height:46px;flex:none;border-radius:50%;background:#C41E26;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#F6F2EE;border:none;transition:.2s}
+.send:hover{background:#E23B44}
+
+.langbar{position:absolute;top:18px;right:20px;display:flex;gap:6px;z-index:70}
+.langbar button{background:none;border:1px solid rgba(242,239,233,.12);color:rgba(242,239,233,.35);font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.12em;padding:5px 9px;border-radius:7px;cursor:pointer}
+.langbar button[aria-pressed="true"]{color:#E23B44;border-color:rgba(196,30,38,.5);background:rgba(196,30,38,.12)}
+</style>
+</head>
+<body>
+<div class="phone">
+
+<div class="langbar">
+<button data-lang="fr" aria-pressed="true">FR</button>
+<button data-lang="en" aria-pressed="false">EN</button>
+<button data-lang="bg" aria-pressed="false">BG</button>
+</div>
+
+<div class="screen">
+<div class="head">
+<button class="back" id="back" type="button" aria-label="Retour">←</button>
+<div class="av"><img src="sensei-mark.png" alt=""></div>
+<div class="c">
+<b data-k="senseiName">Sensei</b>
+<span data-k="online">EN LIGNE</span>
+</div>
+</div>
+
+<div class="thread" id="thread"></div>
+
+<div class="quick" id="quick"></div>
+
+<div class="composer">
+<input id="draft" type="text" placeholder="Écris à Sensei…" autocomplete="off">
+<button class="send" id="send" type="button" aria-label="Envoyer">
+<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h14M12 5l7 7-7 7"></path></svg>
+</button>
+</div>
+</div>
+</div>
+
+<script>
+/* ------------------------------------------------------------------
+   Écran 20 — Sensei. Autonome, trilingue (FR/EN/BG).
+   Les réponses sont scriptées (maquette). En production, brancher
+   window.EspritumSensei.setResponder(async (texte, contexte) => réponse)
+   sur l'API du modèle : le reste du fil, l'indicateur de frappe et le
+   scroll sont déjà gérés.
+   API : setResponder(fn), setLang(l), push({from,text}), getThread()
+   Events : espritum:sensei-message (message envoyé par l'utilisateur),
+            espritum:navigate
+   ------------------------------------------------------------------ */
+var T = {
+  fr: { senseiName:"Sensei", online:"EN LIGNE", ph:"Écris à Sensei…",
+    intro:"Tu as fini ta séance push, mais tes calories sont à 1 890 sur 2 340. Le muscle ne pousse pas dans le vide. Mange.",
+    verse:{ t:"Je puis tout par celui qui me fortifie.", r:"Philippiens 4:13" },
+    quickies:["Pourquoi je stagne ?","Adapte mon plan","Je n'ai pas le temps"],
+    replies:["Tu ne stagnes pas. Tu répètes. Change la charge ou change le tempo — mais ne change pas d'excuse.",
+             "Plan ajusté : je passe tes jambes au lundi et j'ajoute 15 min de marche inclinée les jours off.",
+             "Le temps, tu ne le trouves pas — tu le prends. 25 minutes, trois exercices, zéro repos. Je te l'ai déjà écrit."],
+    fallback:["Note-le et fais-le. On en reparle après ta séance.",
+              "Ton scan de dimanche répondra mieux que moi. Fais-le.",
+              "Une chose à la fois : aujourd'hui, tes calories. Le reste suivra."] },
+  en: { senseiName:"Sensei", online:"ONLINE", ph:"Write to Sensei…",
+    intro:"You finished your push session, but you're at 1,890 of 2,340 calories. Muscle doesn't grow out of nothing. Eat.",
+    verse:{ t:"I can do all things through him who strengthens me.", r:"Philippians 4:13" },
+    quickies:["Why am I stuck?","Adapt my plan","I have no time"],
+    replies:["You're not stuck. You're repeating. Change the load or change the tempo — but don't change the excuse.",
+             "Plan adjusted: legs move to Monday and I'm adding 15 min incline walking on off days.",
+             "You don't find time — you take it. 25 minutes, three exercises, zero rest. I already wrote it for you."],
+    fallback:["Write it down and do it. We'll talk after your session.",
+              "Sunday's scan will answer better than I can. Take it.",
+              "One thing at a time: today, your calories. The rest follows."] },
+  bg: { senseiName:"Сенсей", online:"НА ЛИНИЯ", ph:"Пиши на Сенсей…",
+    intro:"Завърши push тренировката, но си на 1 890 от 2 340 калории. Мускулът не расте от нищо. Яж.",
+    verse:{ t:"Всичко мога чрез Онзи, Който ме укрепва.", r:"Филипяни 4:13" },
+    quickies:["Защо стагнирам?","Промени плана ми","Нямам време"],
+    replies:["Не стагнираш. Повтаряш. Смени тежестта или темпото — но не сменяй извинението.",
+             "Планът е коригиран: краката минават в понеделник и добавям 15 мин наклонено ходене в почивните дни.",
+             "Времето не се намира — взема се. 25 минути, три упражнения, нула почивка. Вече ти го написах."],
+    fallback:["Запиши го и го направи. Ще говорим след тренировката.",
+              "Неделното сканиране ще отговори по-добре от мен. Направи го.",
+              "Едно по едно: днес — калориите. Останалото следва."] }
+};
+
+var state = { lang:'fr', thread:null, typing:false, replyIdx:0, draft:'' };
+var responder = null;
+
+function d() { return T[state.lang]; }
+function emit(n, x) { document.dispatchEvent(new CustomEvent(n, { detail: x || {} })); }
+
+function baseThread() {
+  return [{ from:'bot', text: d().intro }, { from:'verse' }];
+}
+function thread() {
+  if (state.thread === null) state.thread = baseThread();
+  return state.thread;
+}
+
+function renderThread() {
+  var el = document.getElementById('thread');
+  el.innerHTML = thread().map(function (m) {
+    if (m.from === 'verse') {
+      return '<div class="verse"><span class="t">« ' + d().verse.t + ' »</span><span class="r">' + d().verse.r + '</span></div>';
+    }
+    return '<div class="msg ' + (m.from === 'me' ? 'me' : 'bot') + '">' + m.text + '</div>';
+  }).join('') + (state.typing ? '<div class="typing"><i></i><i></i><i></i></div>' : '');
+  el.scrollTop = el.scrollHeight;
+}
+
+function renderQuick() {
+  document.getElementById('quick').innerHTML = d().quickies.map(function (q, i) {
+    return '<button type="button" data-q="' + i + '">' + q + '</button>';
+  }).join('');
+}
+
+function answerFor(text, qIdx) {
+  if (qIdx !== null && qIdx !== undefined) return d().replies[qIdx];
+  var f = d().fallback;
+  var out = f[state.replyIdx % f.length];
+  state.replyIdx += 1;
+  return out;
+}
+
+async function send(text, qIdx) {
+  var t = (text || '').trim();
+  if (!t || state.typing) return;
+  thread().push({ from:'me', text: t });
+  state.draft = '';
+  document.getElementById('draft').value = '';
+  state.typing = true;
+  renderThread();
+  emit('espritum:sensei-message', { text: t, quickIndex: qIdx === undefined ? null : qIdx });
+
+  var reply;
+  if (responder) {
+    try { reply = await responder(t, { lang: state.lang, thread: thread().slice() }); }
+    catch (e) { reply = answerFor(t, qIdx); }
+  } else {
+    await new Promise(function (r) { setTimeout(r, 900); });
+    reply = answerFor(t, qIdx);
+  }
+  state.typing = false;
+  thread().push({ from:'bot', text: reply });
+  renderThread();
+}
+
+function render(l) {
+  if (l) {
+    var wasStock = state.thread === null || state.thread.length === 2;
+    state.lang = l;
+    if (wasStock) state.thread = baseThread();
+  }
+  document.querySelectorAll('[data-k]').forEach(function (el) { el.textContent = d()[el.dataset.k]; });
+  document.getElementById('draft').placeholder = d().ph;
+  renderThread(); renderQuick();
+  document.querySelectorAll('.langbar button').forEach(function (b) {
+    b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang));
+  });
+  document.documentElement.lang = state.lang;
+  try { localStorage.setItem('espritum.lang', state.lang); } catch (e) {}
+}
+
+document.getElementById('send').addEventListener('click', function () { send(document.getElementById('draft').value); });
+document.getElementById('draft').addEventListener('keydown', function (ev) {
+  if (ev.key === 'Enter') { ev.preventDefault(); send(ev.target.value); }
+});
+document.getElementById('quick').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-q]');
+  if (!b) return;
+  var i = parseInt(b.dataset.q, 10);
+  send(d().quickies[i], i);
+});
+document.getElementById('back').addEventListener('click', function () { emit('espritum:navigate', { to:'home' }); });
+document.querySelectorAll('.langbar button').forEach(function (b) {
+  b.addEventListener('click', function () { render(b.dataset.lang); });
+});
+
+window.EspritumSensei = {
+  setLang: render,
+  setResponder: function (fn) { responder = fn; },
+  push: function (m) { thread().push(m); renderThread(); },
+  reset: function () { state.thread = baseThread(); state.replyIdx = 0; renderThread(); },
+  getThread: function () { return thread().slice(); }
+};
+
+var saved = 'fr';
+try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
+render(saved);
+</script>
+<script>/* ESP-NAV — intégration */
+var ESP_ROUTES = { home: 'accueil.html' };
+document.addEventListener('espritum:navigate', function (ev) {
+  var to = (ev.detail || {}).to;
+  var url = ESP_ROUTES[to];
+  if (url) window.location.href = url;
+});
+/* espritum:sensei-message : réponses scriptées (maquette).
+   Le vrai coach IA se branchera via EspritumSensei.setResponder(async (texte, contexte) => réponse). */
+</script>
+</body>
+</html>

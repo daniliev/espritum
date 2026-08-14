@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Espritum — Corps de rêve</title>
+<link rel="apple-touch-icon" href="sensei-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0B0B0C"/><text x="50" y="62" font-family="Oswald,sans-serif" font-size="34" font-weight="700" fill="#C41E26" text-anchor="middle">E</text></svg>
+</template>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:#0B0B0C;color:#F2EFE9;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+@keyframes eFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes eFade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+.screen{position:absolute;inset:0;padding:66px 24px 30px;display:flex;flex-direction:column;gap:13px;animation:eFadeIn .35s ease both}
+.head{flex:none;display:flex;flex-direction:column;gap:9px}
+.headrow{display:flex;align-items:baseline;justify-content:space-between}
+.steplabel{font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.18em;color:#E23B44}
+.stepcount{font:500 9px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:rgba(242,239,233,.3)}
+.segs{display:flex;gap:5px}
+.segs i{flex:1;height:3px;border-radius:2px;background:rgba(242,239,233,.13);display:block;transition:background .35s ease}
+.segs i.on{background:#C41E26}
+
+.titleblock{flex:none;display:flex;flex-direction:column;gap:9px}
+.titlerow{flex:none;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.title{font:700 28px/0.96 Oswald,sans-serif;text-transform:uppercase;white-space:nowrap}
+.back{width:40px;height:40px;margin:-10px -12px -10px 0;flex:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(242,239,233,.35);font:400 13px 'IBM Plex Mono',monospace;border-radius:12px;transition:.2s;-webkit-tap-highlight-color:transparent}
+.back:hover{color:#F2EFE9;background:rgba(242,239,233,.06)}
+.sub{font:400 12px/1.55 'IBM Plex Sans';color:rgba(242,239,233,.45);text-wrap:pretty}
+
+.drop{flex:1;min-height:0;border-radius:20px;border:1.5px dashed rgba(242,239,233,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:.2s;background:#0F0F11;-webkit-tap-highlight-color:transparent}
+.drop:hover,.drop.over{border-color:rgba(196,30,38,.6);background:#141416}
+.drop .plus{position:relative;width:40px;height:40px;border-radius:12px;border:1.5px solid rgba(196,30,38,.6);display:flex;align-items:center;justify-content:center}
+.drop .plus .h{position:absolute;width:14px;height:1.5px;background:#C41E26}
+.drop .plus .v{width:1.5px;height:14px;background:#C41E26}
+.drop span{font:500 12px 'IBM Plex Sans';color:rgba(242,239,233,.5)}
+
+.shot{flex:1;min-height:0;position:relative;border-radius:20px;overflow:hidden;border:1px solid rgba(196,30,38,.3);background:#1B1B1F;animation:eFade .4s ease both;display:none}
+.shot.on{display:block}
+.shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 24%}
+.tag{position:absolute;left:16px;top:16px;padding:6px 10px;border-radius:7px;background:rgba(11,11,12,.8);font:600 9.5px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#E23B44}
+.change{position:absolute;right:14px;bottom:14px;padding:8px 13px;border-radius:10px;background:rgba(11,11,12,.82);border:1px solid rgba(242,239,233,.16);font:500 11px 'IBM Plex Sans';color:rgba(242,239,233,.75);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.change:hover{border-color:rgba(196,30,38,.6);color:#F2EFE9}
+
+.rules{flex:none;display:flex;flex-direction:column;gap:7px}
+.rule{display:flex;gap:10px;align-items:baseline}
+.rule b{width:4px;height:4px;flex:none;background:#C41E26;transform:rotate(45deg);display:block}
+.rule span{font:400 10.5px/1.45 'IBM Plex Sans';color:rgba(242,239,233,.42);text-wrap:pretty}
+
+.cta{flex:none;padding:16px;border-radius:14px;text-align:center;font:600 13px 'IBM Plex Sans';transition:.2s;-webkit-tap-highlight-color:transparent}
+.cta.off{background:#1B1B1E;color:rgba(242,239,233,.28);border:1px solid rgba(242,239,233,.07)}
+.cta.on{background:#C41E26;color:#F6F2EE;cursor:pointer;box-shadow:0 12px 30px -12px rgba(196,30,38,.7)}
+.cta.on:hover{background:#E23B44}
+
+.langbar{position:absolute;top:18px;right:20px;display:flex;gap:6px;z-index:5}
+.langbar button{background:none;border:1px solid rgba(242,239,233,.12);color:rgba(242,239,233,.35);font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.12em;padding:5px 9px;border-radius:7px;cursor:pointer;transition:.2s}
+.langbar button[aria-pressed="true"]{color:#E23B44;border-color:rgba(196,30,38,.5);background:rgba(196,30,38,.12)}
+#fileInput{display:none}
+</style>
+</head>
+<body>
+<div class="langbar">
+<button data-lang="fr" aria-pressed="true">FR</button>
+<button data-lang="en" aria-pressed="false">EN</button>
+<button data-lang="bg" aria-pressed="false">BG</button>
+</div>
+
+<div class="screen">
+<div class="head">
+<div class="headrow">
+<span class="steplabel" data-k="stepLabel">TA CIBLE</span>
+<span class="stepcount" data-k="stepCount">ÉTAPE 2 / 4</span>
+</div>
+<div class="segs"><i class="on"></i><i class="on"></i><i></i><i></i></div>
+</div>
+
+<div class="titleblock">
+<div class="titlerow">
+<div class="title" data-k="title">Ton corps de rêve</div>
+<div class="back" id="back">←</div>
+</div>
+<div class="sub" data-k="sub">Une photo du physique que tu veux atteindre. Elle devient ta référence à chaque scan.</div>
+</div>
+
+<div class="drop" id="drop">
+<div class="plus"><span class="h"></span><span class="v"></span></div>
+<span data-k="upload">Importer une photo</span>
+</div>
+
+<div class="shot" id="shot">
+<img id="preview" alt="">
+<div class="tag" data-k="tagGoal">OBJECTIF</div>
+<div class="change" id="change" data-k="change">Changer</div>
+</div>
+
+<div class="rules" id="rules"></div>
+
+<div class="cta off" id="cta" data-k="cta">Lancer l'analyse →</div>
+</div>
+
+<input type="file" id="fileInput" accept="image/*">
+
+<script>
+/* ------------------------------------------------------------------
+   Espritum — écran « Corps de rêve ».
+   Import d'une photo (bouton, glisser-déposer, ou coller).
+   Pas de caméra ici : la cible est une image que l'utilisateur possède.
+
+   Intégration :
+     window.EspritumGoal.getPhoto()  → dataURL JPEG/PNG ou null
+     évènements : espritum:goal-photo, espritum:analyze, espritum:back
+   ------------------------------------------------------------------ */
+
+var T = {
+  fr: {
+    stepLabel: "TA CIBLE", stepCount: "ÉTAPE 2 / 4",
+    title: "Ton corps de rêve",
+    sub: "Une photo du physique que tu veux atteindre. Elle devient ta référence à chaque scan.",
+    upload: "Importer une photo", tagGoal: "OBJECTIF", change: "Changer",
+    cta: "Lancer l'analyse →",
+    rules: [
+      "Un physique atteignable : même ossature, même taille que toi.",
+      "Corps entier visible, image nette, sans filtre.",
+      "Tu pourras la changer plus tard depuis ton profil."
+    ]
+  },
+  en: {
+    stepLabel: "YOUR TARGET", stepCount: "STEP 2 / 4",
+    title: "Your dream body",
+    sub: "A photo of the physique you want to reach. It becomes your reference at every scan.",
+    upload: "Upload a photo", tagGoal: "GOAL", change: "Change",
+    cta: "Run the analysis →",
+    rules: [
+      "A reachable physique: same frame, same height as you.",
+      "Full body visible, sharp image, no filter.",
+      "You can change it later from your profile."
+    ]
+  },
+  bg: {
+    stepLabel: "ТВОЯТА ЦЕЛ", stepCount: "СТЪПКА 2 / 4",
+    title: "Мечтаното ти тяло",
+    sub: "Снимка на физиката, която искаш да постигнеш. Тя става твоят ориентир при всяко сканиране.",
+    upload: "Качи снимка", tagGoal: "ЦЕЛ", change: "Смени",
+    cta: "Стартирай анализа →",
+    rules: [
+      "Постижима физика: същата структура и височина като твоята.",
+      "Цялото тяло се вижда, ясна снимка, без филтри.",
+      "Можеш да я смениш по-късно от профила си."
+    ]
+  }
+};
+
+var drop = document.getElementById('drop');
+var shot = document.getElementById('shot');
+var preview = document.getElementById('preview');
+var cta = document.getElementById('cta');
+var fileInput = document.getElementById('fileInput');
+var photoData = null;
+
+function render(lang) {
+  var d = T[lang];
+  document.querySelectorAll('[data-k]').forEach(function (el) { el.textContent = d[el.dataset.k]; });
+  document.getElementById('rules').innerHTML = d.rules.map(function (r) {
+    return '<div class="rule"><b></b><span>' + r + '</span></div>';
+  }).join('');
+  document.querySelectorAll('.langbar button').forEach(function (b) {
+    b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
+  });
+  document.documentElement.lang = lang;
+  try { localStorage.setItem('espritum.lang', lang); } catch (e) {}
+}
+
+function showPhoto(dataUrl) {
+  photoData = dataUrl;
+  preview.src = dataUrl;
+  shot.classList.add('on');
+  drop.style.display = 'none';
+  cta.classList.remove('off');
+  cta.classList.add('on');
+  document.dispatchEvent(new CustomEvent('espritum:goal-photo', { detail: { dataUrl: dataUrl } }));
+}
+
+function readFile(f) {
+  if (!f || !/^image\//.test(f.type)) return;
+  var reader = new FileReader();
+  reader.onload = function () { showPhoto(reader.result); };
+  reader.readAsDataURL(f);
+}
+
+drop.addEventListener('click', function () { fileInput.click(); });
+document.getElementById('change').addEventListener('click', function () { fileInput.click(); });
+fileInput.addEventListener('change', function () { readFile(fileInput.files && fileInput.files[0]); });
+
+['dragenter', 'dragover'].forEach(function (ev) {
+  drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('over'); });
+});
+['dragleave', 'drop'].forEach(function (ev) {
+  drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('over'); });
+});
+drop.addEventListener('drop', function (e) {
+  readFile(e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]);
+});
+document.addEventListener('paste', function (e) {
+  var items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].type.indexOf('image') === 0) { readFile(items[i].getAsFile()); break; }
+  }
+});
+
+cta.addEventListener('click', function () {
+  if (!photoData) return;
+  document.dispatchEvent(new CustomEvent('espritum:analyze', { detail: { dataUrl: photoData } }));
+});
+document.getElementById('back').addEventListener('click', function () {
+  document.dispatchEvent(new CustomEvent('espritum:back'));
+});
+document.querySelectorAll('.langbar button').forEach(function (b) {
+  b.addEventListener('click', function () { render(b.dataset.lang); });
+});
+
+window.EspritumGoal = {
+  getPhoto: function () { return photoData; },
+  setPhoto: showPhoto,
+  setLang: render
+};
+
+var saved = 'fr';
+try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
+render(saved);
+</script>
+<script>/* ESP-NAV — intégration */
+document.addEventListener('espritum:goal-photo', function (e) { try { sessionStorage.setItem('espritum.photo.goal', e.detail.dataUrl); } catch (_) {} });
+document.addEventListener('espritum:analyze', function () { window.location.href = 'questionnaire.html'; });
+document.addEventListener('espritum:back', function () { window.location.href = 'photo-actuelle.html'; });
+</script>
+</body>
+</html>
