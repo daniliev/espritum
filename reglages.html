@@ -117,6 +117,10 @@ body.sheet .sheet{display:flex}
 .langbar button{background:none;border:1px solid rgba(242,239,233,.12);color:rgba(242,239,233,.35);font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.12em;padding:5px 9px;border-radius:7px;cursor:pointer}
 .langbar button[aria-pressed="true"]{color:#E23B44;border-color:rgba(196,30,38,.5);background:rgba(196,30,38,.12)}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="esp-supabase.js"></script>
+<script>/* ESP-AUTH-GATE : accès réservé aux connectés */
+if (window.EspAuth) window.EspAuth.requireAuth();</script>
 </head>
 <body>
 <div class="phone">
@@ -593,8 +597,8 @@ document.addEventListener('espritum:setting-change', function () {
   } catch (e) {}
 });
 document.addEventListener('espritum:logout', function () {
-  /* vraie déconnexion Supabase à brancher plus tard */
-  window.location.href = 'compte.html?mode=login';
+  if (window.EspAuth) { window.EspAuth.logout().then(function () { window.location.href = 'compte.html?mode=login'; }); }
+  else { window.location.href = 'compte.html?mode=login'; }
 });
 document.addEventListener('espritum:delete-account', function () {
   /* TODO: confirmation + suppression réelle du compte (Supabase). Ne rien supprimer sans confirmation. */

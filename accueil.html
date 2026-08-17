@@ -131,6 +131,10 @@ body.due .scanbtn:after{content:"";position:absolute;inset:-7px;border-radius:50
 body.due #calm{display:none}
 body:not(.due) #due{display:none}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="esp-supabase.js"></script>
+<script>/* ESP-AUTH-GATE : accès réservé aux connectés */
+if (window.EspAuth) window.EspAuth.requireAuth();</script>
 </head>
 <body>
 <div class="phone">

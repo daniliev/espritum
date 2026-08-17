@@ -298,7 +298,9 @@ try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; }
 setMode('signup');
 render(saved);
 </script>
-<script>/* ESP-NAV — intégration */
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="esp-supabase.js"></script>
+<script>/* ESP-NAV — intégration (Supabase Auth) */
 (function () {
   // Ouvre directement l'onglet Connexion si on arrive via « Déjà un compte ? »
   try {
@@ -306,22 +308,37 @@ render(saved);
     if (p.get('mode') === 'login' && window.EspritumAuth) window.EspritumAuth.setMode('login');
   } catch (e) {}
 })();
+
+function espShowError(msg) {
+  if (window.EspritumAuth && window.EspritumAuth.setError) window.EspritumAuth.setError(msg);
+  else alert(msg);
+}
+function espLang() { try { return localStorage.getItem('espritum.lang') || 'fr'; } catch (e) { return 'fr'; } }
+
 document.addEventListener('espritum:signup', function (e) {
-  // Prénom + email + pays + ville conservés pour la suite (prix produits, etc.).
-  // Jamais le mot de passe en clair.
-  try {
-    var d = e.detail || {};
-    localStorage.setItem('espritum.account', JSON.stringify({
-      name: d.name, email: d.email, country: d.country, city: d.city
-    }));
-  } catch (err) {}
-  /* création réelle du compte (Supabase Auth) : à brancher plus tard */
-  window.location.href = 'abonnement.html';
+  var d = e.detail || {};
+  if (!window.EspAuth) { window.location.href = 'abonnement.html'; return; }
+  window.EspAuth.signUp({
+    email: d.email, password: d.pass, prenom: d.name,
+    pays: d.country, ville: d.city, langue: espLang()
+  }).then(function (r) {
+    if (r && r.error) { espShowError(r.error); return; }
+    if (r && r.needsConfirm) { espShowError('Vérifie ta boîte mail pour confirmer ton compte.'); return; }
+    // Prénom/email/pays/ville gardés pour la suite (prix courses, nom classement…). Jamais le mot de passe.
+    try { localStorage.setItem('espritum.account', JSON.stringify({ name: d.name, email: d.email, country: d.country, city: d.city })); } catch (err) {}
+    window.location.href = 'abonnement.html';
+  }).catch(function () { espShowError('Erreur réseau, réessaie.'); });
 });
+
 document.addEventListener('espritum:login', function (e) {
-  /* connexion réelle (Supabase Auth) : plus tard */
-  window.location.href = 'accueil.html';
+  var d = e.detail || {};
+  if (!window.EspAuth) { window.location.href = 'accueil.html'; return; }
+  window.EspAuth.login({ email: d.email, password: d.pass }).then(function (r) {
+    if (r && r.error) { espShowError(r.error); return; }
+    window.location.href = 'accueil.html';
+  }).catch(function () { espShowError('Erreur réseau, réessaie.'); });
 });
+
 document.addEventListener('espritum:back', function () { window.location.href = 'resultat.html'; });
 </script>
 </body>
