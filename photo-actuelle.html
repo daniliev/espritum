@@ -306,9 +306,13 @@ startCamera();
 window.addEventListener('pagehide', stopCamera);
 </script>
 <script>/* ESP-NAV — intégration */
+var ESP_WEEKLY = /[?&]mode=weekly/.test(location.search);
 document.addEventListener('espritum:photo', function (e) { try { sessionStorage.setItem('espritum.photo.current', e.detail.dataUrl); } catch (_) {} });
-document.addEventListener('espritum:next', function () { window.location.href = 'corps-de-reve.html'; });
-document.addEventListener('espritum:back', function () { window.location.href = 'scan.html'; });
+// Scan hebdomadaire = parcours raccourci : on saute le corps de rêve/questionnaire et on va droit à l'analyse
+document.addEventListener('espritum:next', function () {
+  window.location.href = ESP_WEEKLY ? 'analyse.html?mode=weekly' : 'corps-de-reve.html';
+});
+document.addEventListener('espritum:back', function () { window.location.href = ESP_WEEKLY ? 'accueil.html' : 'scan.html'; });
 </script>
 </body>
 </html>

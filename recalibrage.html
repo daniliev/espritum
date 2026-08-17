@@ -179,17 +179,59 @@ var saved = 'fr';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
 render(saved);
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="esp-supabase.js"></script>
 <script>/* ESP-NAV — intégration */
 (function () {
+  var lang = 'fr'; try { lang = localStorage.getItem('espritum.lang') || 'fr'; } catch (e) {}
+  var dec = (lang === 'en') ? '.' : ',';
+  var gram = (lang === 'bg') ? ' г' : ' g';
+  function grp(x) { return String(Math.abs(Math.round(x))).replace(/\B(?=(\d{3})+(?!\d))/g, (lang === 'en' ? ',' : ' ')); }
+  function fmtNum(n) { n = Math.round(Number(n) || 0); return (n < 0 ? '−' : '') + grp(n); }
+  function fmtPct(n) { return (Number(n) || 0).toFixed(1).replace('.', dec) + ' %'; }
+  function signPct(n) { var v = Number(n) || 0; return (v > 0 ? '+' : '−') + Math.abs(v).toFixed(1).replace('.', dec); }
+  function signInt(n) { var v = Math.round(Number(n) || 0); return v === 0 ? '±0' : (v > 0 ? '+' : '−') + grp(v); }
+
   // Photo « aujourd'hui » = le scan qui vient d'être pris
-  try {
-    var now = sessionStorage.getItem('espritum.photo.current');
-    if (now && window.EspritumAdjust) window.EspritumAdjust.setPhotos({ after: now });
-  } catch (e) {}
-  /* TODO (IA) : setPhotos({before: photo de la semaine précédente}),
-     setRows(...) et setChanges(...) générés par l'analyse hebdo. */
+  try { var now = sessionStorage.getItem('espritum.photo.current'); if (now) window.EspritumAdjust.setPhotos({ after: now }); } catch (e) {}
+
+  var result = null; try { result = JSON.parse(localStorage.getItem('espritum.recalibrage') || 'null'); } catch (e) {}
+  if (!result || !window.EspAuth) return; // accès direct sans analyse → on garde les valeurs de démo
+
+  window.EspAuth.getProfile().then(function (p) {
+    p = p || {};
+    var prevBf = Number(p.masse_grasse) || 0, prevCal = Number(p.calories_objectif) || 0;
+    var prevProt = Number(p.proteines_objectif) || 0;
+    var prevSess = (p.questionnaire && p.questionnaire.freq) ? Number(p.questionnaire.freq) : null;
+    var newBf = Number(result.bodyFatCurrent), newCal = Number(result.caloriesTarget);
+    var newProt = Number(result.proteinTarget), newSess = Number(result.sessionsPerWeek);
+
+    window.EspritumAdjust.setPhotos({ bfBefore: fmtPct(prevBf), bfAfter: fmtPct(newBf) });
+
+    var base = (window.T && window.T[lang] && window.T[lang].adjustRows) ? window.T[lang].adjustRows : null;
+    var lab = base ? base.map(function (r) { return r.k; }) : ['Masse grasse', 'Calories', 'Protéines', 'Séances'];
+    window.EspritumAdjust.setRows([
+      { k: lab[0], b: fmtPct(newBf), d: prevBf ? signPct(newBf - prevBf) : '' },
+      { k: lab[1], b: fmtNum(newCal), d: prevCal ? signInt(newCal - prevCal) : '' },
+      { k: lab[2], b: fmtNum(newProt) + gram, d: prevProt ? signInt(newProt - prevProt) : '' },
+      { k: lab[3], b: String(Math.round(newSess)), d: (prevSess != null) ? signInt(newSess - prevSess) : '' }
+    ]);
+    if (result.changes && result.changes.length) window.EspritumAdjust.setChanges(result.changes);
+
+    // Photo « avant » = dernier scan enregistré
+    window.EspAuth.lastScan().then(function (m) {
+      if (m && m.photo_url) window.EspAuth.getSignedUrl(m.photo_url).then(function (url) { if (url) window.EspritumAdjust.setPhotos({ before: url }); });
+    });
+  }).catch(function () {});
 })();
-document.addEventListener('espritum:apply-plan', function () { window.location.href = 'accueil.html'; });
+
+document.addEventListener('espritum:apply-plan', function () {
+  function go() { try { localStorage.removeItem('espritum.recalibrage'); } catch (e) {} window.location.href = 'accueil.html'; }
+  var result = null; try { result = JSON.parse(localStorage.getItem('espritum.recalibrage') || 'null'); } catch (e) {}
+  if (result && window.EspAuth) {
+    window.EspAuth.getProfile().then(function (p) { return window.EspAuth.saveWeeklyScan(result, p || {}); }).then(go, go);
+  } else { go(); }
+});
 </script>
 </body>
 </html>

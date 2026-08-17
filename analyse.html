@@ -179,11 +179,16 @@ render(saved);
 setProgress(0);
 simulate(92); // plafonne à 92% tant que l'IA n'a pas répondu (voir ESP-NAV plus bas)
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="esp-supabase.js"></script>
 <script>/* ESP-NAV — intégration */
-document.addEventListener('espritum:analyze-done', function () { window.location.href = 'resultat.html'; });
+var ESP_WEEKLY = /[?&]mode=weekly/.test(location.search);
+document.addEventListener('espritum:analyze-done', function () {
+  window.location.href = ESP_WEEKLY ? 'recalibrage.html?mode=weekly' : 'resultat.html';
+});
 
-/* Analyse IA réelle : envoie les 2 photos + questionnaire + délai à /api/analyze,
-   stocke le résultat, puis passe la barre à 100% (ce qui déclenche analyze-done). */
+/* Analyse IA réelle : envoie les photos + contexte à /api/analyze (onboarding)
+   ou /api/recalibrate (scan hebdo), stocke le résultat, puis passe la barre à 100%. */
 (function () {
   function readLS(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function readSS(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
@@ -205,10 +210,39 @@ document.addEventListener('espritum:analyze-done', function () { window.location
   function raw(dataUrl) { if (!dataUrl) return null; var i = dataUrl.indexOf(','); return i >= 0 ? dataUrl.slice(i + 1) : dataUrl; }
   function finish() { try { window.EspritumAnalyze.setProgress(100); } catch (e) {} }
 
+  // Scan hebdomadaire : nouvelle photo + profil → /api/recalibrate → localStorage 'espritum.recalibrage'
+  function runWeekly(cur) {
+    var lang = readLS('espritum.lang') || 'fr';
+    var profP = (window.EspAuth && window.EspAuth.getProfile) ? window.EspAuth.getProfile() : Promise.resolve(null);
+    profP.then(function (p) {
+      var profile = {};
+      if (p) {
+        profile.objectif = p.objectif; profile.poids = p.poids; profile.taille = p.taille;
+        profile.masse_grasse = p.masse_grasse; profile.delai_mois = p.delai_mois;
+        profile.calories_objectif = p.calories_objectif; profile.proteines_objectif = p.proteines_objectif;
+      }
+      downscale(cur, 768, function (curS) {
+        fetch('/api/recalibrate', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ current: raw(curS), profile: profile, lang: lang })
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            if (data && data.bodyFatCurrent != null && !data.error) {
+              try { localStorage.setItem('espritum.recalibrage', JSON.stringify(data)); } catch (e) {}
+            }
+            finish();
+          })
+          .catch(function () { finish(); });
+      });
+    }, function () { finish(); });
+  }
+
   function run() {
     var cur = readSS('espritum.photo.current');
     var goal = readSS('espritum.photo.goal');
     if (!cur) { finish(); return; } // pas de photo (accès direct) → on laisse passer
+    if (ESP_WEEKLY) { runWeekly(cur); return; }
 
     var quiz = null, months = null, lang = 'fr';
     try { quiz = JSON.parse(readLS('espritum.quiz') || 'null'); } catch (e) {}

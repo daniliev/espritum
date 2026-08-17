@@ -451,24 +451,33 @@ render(saved);
       if (p.delai_mois) window.EspritumHome.setPlan({ months: Number(p.delai_mois) });
       if (p.calories_objectif) window.EspritumHome.setNutrition({ target: p.calories_objectif });
     }).catch(function () {});
+
+    // Scan dû ? (bouton rouge) — vrai si le dernier scan date de 7 jours ou plus
+    window.EspAuth.lastScan().then(function (m) {
+      var days = m && m.created_at ? Math.floor((Date.now() - new Date(m.created_at).getTime()) / 86400000) : 999;
+      window.EspritumHome.setScanDue(days >= 7);
+    }).catch(function () {});
   }
 })();
 // Table de routage des onglets — à compléter au fur et à mesure des pages de l'app.
 var ESP_ROUTES = {
   home: null,      // déjà ici
   train: 'entrainement.html',
-  scan: null,      // TODO: scan hebdomadaire
+  scan: null,      // géré à part (scan hebdomadaire)
   food: 'nutrition.html',
-  rank: 'classement.html',      // TODO: classement
-  profile: 'profil.html',   // TODO: profil
+  rank: 'classement.html',
+  profile: 'profil.html',
   sensei: 'sensei.html'
 };
+// Lance le scan hebdomadaire (parcours raccourci : photo → analyse → recalibrage)
+function startWeeklyScan() { window.location.href = 'photo-actuelle.html?mode=weekly'; }
 document.addEventListener('espritum:navigate', function (e) {
   var to = (e.detail || {}).to;
+  if (to === 'scan') { startWeeklyScan(); return; }
   var url = ESP_ROUTES[to];
   if (url) window.location.href = url;
 });
-document.addEventListener('espritum:start-scan', function () { /* TODO: lancer le scan hebdomadaire */ });
+document.addEventListener('espritum:start-scan', startWeeklyScan);
 </script>
 </body>
 </html>

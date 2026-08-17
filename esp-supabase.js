@@ -165,6 +165,55 @@
       return sb.storage.from('scans').createSignedUrl(path, 3600).then(function (r) {
         return (r.data && r.data.signedUrl) || null;
       }, function () { return null; });
+    },
+
+    // Dernier scan enregistré (mesure la plus récente) — sert de « semaine précédente »
+    lastScan: function () {
+      return sb.auth.getUser().then(function (u) {
+        if (!u.data.user) return null;
+        return sb.from('measurements').select('id,created_at,masse_grasse,photo_url')
+          .eq('user_id', u.data.user.id).order('created_at', { ascending: false }).limit(1)
+          .then(function (r) { return (r.data && r.data[0]) || null; }, function () { return null; });
+      });
+    },
+
+    // Enregistre un scan hebdomadaire : nouvelle mesure + photo + plan recalibré sur le profil
+    saveWeeklyScan: function (result, profile) {
+      if (!result) return Promise.resolve();
+      return sb.auth.getUser().then(function (u) {
+        if (!u.data.user) return;
+        var uid = u.data.user.id;
+        var bf = (result.bodyFatCurrent != null) ? Number(result.bodyFatCurrent) : null;
+
+        // 1. Recalibre les cibles sur le profil
+        var upd = {};
+        if (bf != null) upd.masse_grasse = bf;
+        if (result.caloriesTarget) upd.calories_objectif = Math.round(result.caloriesTarget);
+        if (result.proteinTarget) upd.proteines_objectif = Math.round(result.proteinTarget);
+        if (result.sessionsPerWeek && profile && profile.questionnaire) {
+          var q = {}; for (var k in profile.questionnaire) q[k] = profile.questionnaire[k];
+          q.freq = result.sessionsPerWeek; upd.questionnaire = q;
+        }
+        var updP = Object.keys(upd).length ? sb.from('users').update(upd).eq('id', uid) : Promise.resolve();
+
+        // 2. Nouvelle mesure (le scan de cette semaine) + photo attachée
+        return Promise.resolve(updP).then(function () {
+          var m = { user_id: uid };
+          if (bf != null) m.masse_grasse = bf;
+          return sb.from('measurements').insert(m).select('id').single();
+        }).then(function (r) {
+          var id = r && r.data && r.data.id;
+          var cur = null; try { cur = sessionStorage.getItem('espritum.photo.current'); } catch (e) {}
+          if (!id || !cur) return;
+          return dataUrlToScaledBlob(cur, 1080).then(function (b) {
+            if (!b) return;
+            var path = uid + '/m-' + id + '.jpg';
+            return sb.storage.from('scans').upload(path, b, { contentType: 'image/jpeg', upsert: true }).then(function () {
+              return sb.from('measurements').update({ photo_url: path }).eq('id', id);
+            });
+          });
+        });
+      });
     }
   };
 
