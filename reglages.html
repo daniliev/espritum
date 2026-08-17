@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Espritum — Réglages</title>
+<link rel="apple-touch-icon" href="sensei-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0B0B0C"/><text x="50" y="62" font-family="Oswald,sans-serif" font-size="34" font-weight="700" fill="#C41E26" text-anchor="middle">E</text></svg>
+</template>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;display:flex;align-items:flex-start;justify-content:center;padding:16px 0}
+.phone{position:relative;flex:none;width:390px;height:844px;overflow:hidden;background:#0B0B0C}
+@media (min-width:420px) and (min-height:880px){.phone{border-radius:44px;box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 0 1px rgba(242,239,233,.07)}}
+@media (max-width:420px){.phone{width:100%;height:100vh;height:100dvh}body{padding:0}}
+@keyframes eFade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+.screen{position:absolute;inset:0;padding:56px 22px 26px;display:flex;flex-direction:column;gap:11px;animation:eFade .4s ease both}
+.head{flex:none;display:flex;align-items:center;gap:13px}
+.back{font:400 13px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.4);cursor:pointer;background:none;border:none;padding:0}
+.back:hover{color:#E23B44}
+.head b{font:700 25px/1 Oswald,sans-serif;text-transform:uppercase}
+
+.list{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:16px;padding-bottom:6px;scrollbar-width:none}
+.list::-webkit-scrollbar{display:none}
+.group{flex:none;display:flex;flex-direction:column;gap:8px}
+.group .hd{display:flex;align-items:center;gap:10px}
+.group .hd span{font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.2em;color:rgba(242,239,233,.32);white-space:nowrap}
+.group .hd i{flex:1;height:1px;background:rgba(242,239,233,.07);display:block}
+.rows{display:flex;flex-direction:column;gap:1px;border-radius:16px;overflow:hidden;border:1px solid rgba(242,239,233,.07)}
+.row{box-sizing:border-box;min-height:52px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 16px;background:#17171A;cursor:pointer;transition:.2s}
+.row:hover{background:#1D1D21}
+.row .l{display:flex;flex-direction:column;gap:2px;min-width:0}
+.row .l b{font:400 12.5px 'IBM Plex Sans';color:#F2EFE9}
+.row .l span{font:400 9.5px/1.35 'IBM Plex Sans';color:rgba(242,239,233,.3)}
+.row .v{font:500 11px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.42);white-space:nowrap;flex:none}
+.row .arrow{font:400 12px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.3);flex:none}
+.sw{box-sizing:border-box;width:38px;height:22px;flex:none;border-radius:12px;background:#25252A;padding:0 3px;display:flex;align-items:center;justify-content:flex-start;transition:.2s}
+.sw i{width:16px;height:16px;flex:none;border-radius:50%;background:rgba(242,239,233,.5);display:block;transition:.2s}
+.sw.on{background:#C41E26;justify-content:flex-end}
+.sw.on i{background:#F6F2EE}
+.pic{flex:none;display:flex;align-items:center;gap:11px}
+.pic .av{width:34px;height:34px;border-radius:50%;background-size:cover;background-position:center;border:1px solid rgba(196,30,38,.45)}
+.pic .empty{width:34px;height:34px;border-radius:50%;background:#1F1F23;border:1px dashed rgba(242,239,233,.2);display:flex;align-items:center;justify-content:center;color:rgba(242,239,233,.35)}
+
+.logout{flex:none;min-height:54px;display:flex;align-items:center;justify-content:center;border-radius:14px;border:1px solid rgba(196,30,38,.3);cursor:pointer;transition:.2s;background:none;width:100%}
+.logout:hover{background:rgba(196,30,38,.1);border-color:rgba(196,30,38,.6)}
+.logout span{font:500 12.5px 'IBM Plex Sans';color:#C41E26}
+.danger{flex:none;min-height:46px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;background:none;border:none;width:100%}
+.danger:hover{opacity:.7}
+.danger span{font:400 11px 'IBM Plex Sans';color:rgba(196,30,38,.65)}
+
+.veil{position:absolute;inset:0;z-index:60;background:rgba(6,6,8,.72);backdrop-filter:blur(6px);animation:eFade .2s ease both;display:none}
+body.sheet .veil{display:block}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:61;max-height:92%;background:#0E0E10;border-top:1px solid rgba(242,239,233,.09);border-radius:22px 22px 0 0;display:none;flex-direction:column;padding:16px 20px 26px;gap:14px;animation:eFade .28s ease both}
+body.sheet .sheet{display:flex}
+.grab{flex:none;width:44px;height:4px;border-radius:3px;background:rgba(242,239,233,.22);align-self:center}
+.sheet h2{flex:none;margin:0;font:700 19px/1.05 Oswald,sans-serif;text-transform:uppercase;text-align:center}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font:500 9px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:rgba(242,239,233,.4)}
+.field input{width:100%;box-sizing:border-box;height:50px;padding:0 15px;border-radius:12px;background:#141416;border:1px solid rgba(242,239,233,.1);color:#F2EFE9;font:400 15px 'IBM Plex Sans';outline:none;transition:.2s}
+.field input:focus{border-color:rgba(196,30,38,.6)}
+.field select{width:100%;box-sizing:border-box;height:50px;padding:0 32px 0 15px;border-radius:12px;background-color:#141416;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='rgba(242,239,233,0.45)' stroke-width='1.6' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 17px center;border:1px solid rgba(242,239,233,.1);color:#F2EFE9;font:400 15px 'IBM Plex Sans';line-height:1;appearance:none;outline:none}
+.field select:focus{border-color:rgba(196,30,38,.6)}
+.eye{position:absolute;right:14px;display:flex;align-items:center;cursor:pointer;color:rgba(242,239,233,.4);transition:.2s}
+.eye:hover{color:#E23B44}
+.err{font:400 10.5px 'IBM Plex Sans';color:#C96A5A}
+.cta{flex:none;padding:15px;border-radius:13px;background:#C41E26;text-align:center;font:600 12.5px 'IBM Plex Sans';color:#F6F2EE;cursor:pointer;transition:.2s;border:none;width:100%;font-family:inherit}
+.cta:hover{background:#E23B44}
+.ghost{flex:none;text-align:center;font:500 10.5px 'IBM Plex Sans';color:rgba(242,239,233,.4);cursor:pointer;transition:.2s;background:none;border:none;width:100%}
+.ghost:hover{color:#E23B44}
+.remove{flex:none;text-align:center;font:500 10.5px 'IBM Plex Sans';color:rgba(196,30,38,.75);cursor:pointer;background:none;border:none;width:100%}
+.remove:hover{color:#E23B44}
+
+.opt{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px;border-radius:13px;background:#141416;border:1px solid rgba(242,239,233,.09);cursor:pointer;transition:.2s}
+.opt:hover{border-color:rgba(196,30,38,.55)}
+.opt.on{background:rgba(196,30,38,.14);border-color:rgba(196,30,38,.5)}
+.opt span{font:500 13px 'IBM Plex Sans';color:#F2EFE9}
+.opt.on span{color:#E23B44}
+
+.trial{display:flex;flex-direction:column;gap:6px;padding:15px 16px;border-radius:14px;background:#141416;border:1px solid rgba(196,30,38,.45)}
+.trial.over{border-color:rgba(242,239,233,.08)}
+.trial .t{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.trial .t b{font:600 13px 'IBM Plex Sans';color:#F6F2EE}
+.trial.over .t b{color:rgba(242,239,233,.35)}
+.trial .t span{font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.16em;color:#E23B44}
+.trial.over .t span{color:rgba(242,239,233,.3)}
+.trial p{margin:0;font:400 10.5px/1.4 'IBM Plex Sans';color:rgba(242,239,233,.4)}
+.paid{display:flex;flex-direction:column;gap:7px;padding:15px 16px;border-radius:14px;background:linear-gradient(150deg,rgba(196,30,38,.16),#131315);border:1px solid rgba(196,30,38,.4);cursor:pointer;transition:.2s}
+.paid:hover{border-color:rgba(196,30,38,.75)}
+.paid .t{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.paid .t b{font:700 17px/1 Oswald,sans-serif;text-transform:uppercase}
+.paid .price{display:flex;align-items:baseline;gap:5px;flex:none}
+.paid .price span:first-child{font:400 24px/1 'Bebas Neue',Oswald,sans-serif;letter-spacing:.04em;color:#E23B44}
+.paid .price span:last-child{font:500 9px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.4)}
+.paid p{margin:0;font:400 10.5px/1.4 'IBM Plex Sans';color:rgba(242,239,233,.45)}
+
+.doc{flex:none;max-height:52vh;overflow-y:auto;display:flex;flex-direction:column;gap:14px;padding-right:2px;scrollbar-width:none}
+.doc::-webkit-scrollbar{display:none}
+.doc .updated{font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:rgba(242,239,233,.28);text-align:center}
+.doc section{display:flex;flex-direction:column;gap:5px}
+.doc h3{margin:0;font:600 11.5px 'IBM Plex Sans';color:#F2EFE9}
+.doc p{margin:0;font:400 11px/1.55 'IBM Plex Sans';color:rgba(242,239,233,.55);text-wrap:pretty}
+
+.avatarBig{width:112px;height:112px;border-radius:50%;background-size:cover;background-position:center;border:2px solid rgba(196,30,38,.5)}
+.avatarEmpty{width:112px;height:112px;border-radius:50%;background:#141416;border:1px dashed rgba(242,239,233,.22);display:flex;align-items:center;justify-content:center;color:rgba(242,239,233,.35);cursor:pointer;transition:.2s}
+.avatarEmpty:hover{border-color:rgba(196,30,38,.6);color:#E23B44}
+
+.langbar{position:absolute;top:18px;right:20px;display:flex;gap:6px;z-index:70}
+.langbar button{background:none;border:1px solid rgba(242,239,233,.12);color:rgba(242,239,233,.35);font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.12em;padding:5px 9px;border-radius:7px;cursor:pointer}
+.langbar button[aria-pressed="true"]{color:#E23B44;border-color:rgba(196,30,38,.5);background:rgba(196,30,38,.12)}
+</style>
+</head>
+<body>
+<div class="phone">
+<div class="screen">
+<div class="head">
+<button class="back" id="back" type="button" aria-label="Retour">←</button>
+<b data-k="title">Réglages</b>
+</div>
+
+<div class="list" id="list"></div>
+<input type="file" accept="image/*" id="photoInput" style="display:none">
+</div>
+
+<div class="veil" id="veil"></div>
+<div class="sheet" id="sheet">
+<div class="grab"></div>
+<h2 id="sheetTitle">—</h2>
+<div id="sheetBody" style="display:flex;flex-direction:column;gap:14px"></div>
+</div>
+</div>
+
+<script>
+/* ------------------------------------------------------------------
+   Écran 19 — Réglages. Autonome, trilingue (FR/EN/BG).
+   4 sections : Compte, Notifications, Abonnement, Légal & données.
+   Chaque ligne à valeur ouvre une feuille d'édition (texte, pays+ville,
+   mot de passe avec confirmation, photo, langue, abonnement, CGU).
+   API : window.EspritumSettings.setUser({name,email,country,city,avatar})
+         window.EspritumSettings.setTrial(joursRestants)
+         window.EspritumSettings.getState()
+   Events : espritum:navigate, espritum:setting-change, espritum:logout,
+            espritum:delete-account, espritum:subscribe
+   Textes légaux : maquette réaliste, à faire relire par un juriste.
+   ------------------------------------------------------------------ */
+
+var UI = {
+  fr: { title:"Réglages", logout:"Se déconnecter", deleteAccount:"Supprimer mon compte",
+    save:"Enregistrer", cancel:"Annuler", ph:"Saisis la nouvelle valeur",
+    country:"PAYS", city:"VILLE", newPass:"NOUVEAU MOT DE PASSE", confirmPass:"CONFIRME LE MOT DE PASSE",
+    passPh:"••••••••", passShort:"6 caractères minimum.", passMismatch:"Les deux mots de passe ne correspondent pas.",
+    choosePhoto:"Choisir une photo", removePhoto:"Retirer la photo", photoHint:"Carré, visage bien visible.",
+    groups:[
+      { title:"COMPTE", rows:[
+        { id:"name", k:"Prénom", kind:"text" },
+        { id:"email", k:"Adresse email", kind:"text" },
+        { id:"place", k:"Pays et ville", kind:"place" },
+        { id:"pass", k:"Mot de passe", kind:"pass" },
+        { id:"photo", k:"Photo de profil", kind:"photo" } ] },
+      { title:"NOTIFICATIONS", rows:[
+        { id:"n_scan", k:"Scan de la semaine", kind:"toggle", on:true },
+        { id:"n_session", k:"Séance du jour", kind:"toggle", on:true },
+        { id:"n_meals", k:"Repas", kind:"toggle", on:false },
+        { id:"n_sunday", k:"Résumé du dimanche", kind:"toggle", on:true } ] },
+      { title:"ABONNEMENT", rows:[
+        { id:"sub", k:"Gérer mon abonnement", kind:"sub" } ] },
+      { title:"LÉGAL & DONNÉES", rows:[
+        { id:"lang", k:"Langue", kind:"lang" },
+        { id:"terms", k:"Conditions d'utilisation", kind:"doc", doc:"terms" },
+        { id:"privacy", k:"Confidentialité", kind:"doc", doc:"privacy" } ] }
+    ] },
+  en: { title:"Settings", logout:"Log out", deleteAccount:"Delete my account",
+    save:"Save", cancel:"Cancel", ph:"Enter the new value",
+    country:"COUNTRY", city:"CITY", newPass:"NEW PASSWORD", confirmPass:"CONFIRM PASSWORD",
+    passPh:"••••••••", passShort:"6 characters minimum.", passMismatch:"The two passwords do not match.",
+    choosePhoto:"Choose a photo", removePhoto:"Remove photo", photoHint:"Square, face clearly visible.",
+    groups:[
+      { title:"ACCOUNT", rows:[
+        { id:"name", k:"First name", kind:"text" },
+        { id:"email", k:"Email address", kind:"text" },
+        { id:"place", k:"Country and city", kind:"place" },
+        { id:"pass", k:"Password", kind:"pass" },
+        { id:"photo", k:"Profile photo", kind:"photo" } ] },
+      { title:"NOTIFICATIONS", rows:[
+        { id:"n_scan", k:"Weekly scan", kind:"toggle", on:true },
+        { id:"n_session", k:"Today's session", kind:"toggle", on:true },
+        { id:"n_meals", k:"Meals", kind:"toggle", on:false },
+        { id:"n_sunday", k:"Sunday summary", kind:"toggle", on:true } ] },
+      { title:"SUBSCRIPTION", rows:[
+        { id:"sub", k:"Manage subscription", kind:"sub" } ] },
+      { title:"LEGAL & DATA", rows:[
+        { id:"lang", k:"Language", kind:"lang" },
+        { id:"terms", k:"Terms of use", kind:"doc", doc:"terms" },
+        { id:"privacy", k:"Privacy", kind:"doc", doc:"privacy" } ] }
+    ] },
+  bg: { title:"Настройки", logout:"Изход", deleteAccount:"Изтрий акаунта ми",
+    save:"Запази", cancel:"Отказ", ph:"Въведи новата стойност",
+    country:"ДЪРЖАВА", city:"ГРАД", newPass:"НОВА ПАРОЛА", confirmPass:"ПОТВЪРДИ ПАРОЛАТА",
+    passPh:"••••••••", passShort:"Минимум 6 символа.", passMismatch:"Двете пароли не съвпадат.",
+    choosePhoto:"Избери снимка", removePhoto:"Премахни снимката", photoHint:"Квадратна, с добре видимо лице.",
+    groups:[
+      { title:"АКАУНТ", rows:[
+        { id:"name", k:"Име", kind:"text" },
+        { id:"email", k:"Имейл адрес", kind:"text" },
+        { id:"place", k:"Държава и град", kind:"place" },
+        { id:"pass", k:"Парола", kind:"pass" },
+        { id:"photo", k:"Профилна снимка", kind:"photo" } ] },
+      { title:"ИЗВЕСТИЯ", rows:[
+        { id:"n_scan", k:"Седмично сканиране", kind:"toggle", on:true },
+        { id:"n_session", k:"Днешната тренировка", kind:"toggle", on:true },
+        { id:"n_meals", k:"Хранене", kind:"toggle", on:false },
+        { id:"n_sunday", k:"Неделно резюме", kind:"toggle", on:true } ] },
+      { title:"АБОНАМЕНТ", rows:[
+        { id:"sub", k:"Управление на абонамента", kind:"sub" } ] },
+      { title:"ПРАВНА ИНФОРМАЦИЯ", rows:[
+        { id:"lang", k:"Език", kind:"lang" },
+        { id:"terms", k:"Условия за ползване", kind:"doc", doc:"terms" },
+        { id:"privacy", k:"Конфиденциалност", kind:"doc", doc:"privacy" } ] }
+    ] }
+};
+
+var REGIONS = [
+  { key:"fr", label:"France", city:"Lyon" },
+  { key:"be", label:"Belgique", city:"Bruxelles" },
+  { key:"ch", label:"Suisse", city:"Genève" },
+  { key:"uk", label:"UK", city:"London" },
+  { key:"bg", label:"България", city:"София" }
+];
+var LANGS = [{ k:"fr", label:"Français" }, { k:"en", label:"English" }, { k:"bg", label:"Български" }];
+
+var SUB_T = {
+  fr: { trialTitle:"Essai de 2 semaines", trialLeft:"Il te reste {n} jours. Tout est débloqué.",
+        trialOver:"Ton essai est terminé.", tagActive:"EN COURS", tagOver:"TERMINÉ",
+        paidTitle:"Espritum", price:"11,99 €", per:"par mois",
+        desc:"Scan hebdo, plan réécrit chaque semaine, sensei, classement." },
+  en: { trialTitle:"2-week trial", trialLeft:"{n} days left. Everything is unlocked.",
+        trialOver:"Your trial has ended.", tagActive:"ACTIVE", tagOver:"ENDED",
+        paidTitle:"Espritum", price:"€11.99", per:"per month",
+        desc:"Weekly scan, plan rewritten every week, sensei, ranking." },
+  bg: { trialTitle:"2 седмици проба", trialLeft:"Остават {n} дни. Всичко е отключено.",
+        trialOver:"Пробата ти изтече.", tagActive:"АКТИВНА", tagOver:"ПРИКЛЮЧИЛА",
+        paidTitle:"Espritum", price:"11,99 €", per:"на месец",
+        desc:"Седмично сканиране, план всяка седмица, сенсей, класиране." }
+};
+
+/* Textes de maquette, à faire relire par un juriste avant publication. */
+var LEGAL = {
+  fr: {
+    updated:"Dernière mise à jour : août 2026",
+    terms:[
+      ["1. Objet","Espritum est une application de transformation physique. Elle analyse des photos que tu envoies chaque semaine, en déduit une estimation de ta composition corporelle et génère un plan d'entraînement et de nutrition. Ces conditions encadrent ton utilisation du service."],
+      ["2. Compte","Tu dois avoir 16 ans ou plus, et fournir des informations exactes. Tu es responsable de la confidentialité de ton mot de passe et de toute activité effectuée depuis ton compte."],
+      ["3. Ce que le service n'est pas","Espritum ne fournit ni diagnostic, ni avis médical, ni prescription. Les estimations issues des photos sont approximatives. Les plans sont des suggestions générales : demande l'avis d'un médecin avant de commencer, en particulier en cas de blessure, de pathologie, de grossesse ou de traitement en cours."],
+      ["4. Abonnement","L'essai gratuit dure deux semaines. Ensuite l'abonnement est de 11,99 € par mois, prélevé jusqu'à résiliation. Tu peux résilier à tout moment ; l'accès reste ouvert jusqu'à la fin de la période payée. Les achats effectués via une boutique d'applications suivent les règles de remboursement de cette boutique."],
+      ["5. Tes contenus","Tes photos et tes données restent à toi. Tu nous accordes uniquement le droit de les traiter pour faire fonctionner le service : analyse, génération du plan, suivi de ta progression. Nous ne les vendons pas et ne les publions pas."],
+      ["6. Classement et communauté","En participant au classement, ton prénom et ton rang peuvent être visibles par les autres utilisateurs. Tu peux passer en mode anonyme dans les réglages. Déclarer de fausses performances peut entraîner le retrait du classement."],
+      ["7. Résiliation","Tu peux supprimer ton compte à tout moment depuis les réglages. Nous pouvons suspendre un compte en cas d'abus, de fraude ou de non-paiement."],
+      ["8. Responsabilité","Le service est fourni tel quel. Nous ne garantissons aucun résultat physique. Notre responsabilité est limitée aux montants que tu as effectivement payés au cours des douze derniers mois."],
+      ["9. Modifications","Ces conditions peuvent évoluer. Tu seras averti dans l'application en cas de changement important, avant son entrée en vigueur."]
+    ],
+    privacy:[
+      ["Ce que nous collectons","Ton prénom, ton e-mail, ton pays et ta ville, tes photos de scan, tes mesures déclarées (poids, charges, kilomètres), tes repas scannés, et l'usage de l'application."],
+      ["Pourquoi","Pour analyser tes scans, générer ton plan, calculer ton rang et t'envoyer les rappels que tu as activés. Rien d'autre."],
+      ["Les photos","Elles servent à l'analyse de ta composition corporelle et à ta timeline personnelle. Elles ne sont jamais publiées ni partagées avec d'autres utilisateurs. Tu peux choisir de les garder uniquement sur ton appareil."],
+      ["Conservation","Tes données sont conservées tant que ton compte existe. À la suppression du compte, elles sont effacées sous trente jours, sauvegardes comprises."],
+      ["Partage","Aucune revente. Seuls nos prestataires techniques (hébergement, paiement, notifications) traitent des données pour notre compte, dans la limite de ce qui est nécessaire."],
+      ["Tes droits","Tu peux demander l'accès, la correction, l'export ou la suppression de tes données en écrivant au support. Réponse sous un mois."]
+    ]
+  },
+  en: {
+    updated:"Last updated: August 2026",
+    terms:[
+      ["1. Purpose","Espritum is a physical transformation app. It analyses photos you submit each week, estimates your body composition and generates a training and nutrition plan. These terms govern your use of the service."],
+      ["2. Account","You must be 16 or older and provide accurate information. You are responsible for keeping your password confidential and for any activity carried out from your account."],
+      ["3. What the service is not","Espritum provides no diagnosis, medical advice or prescription. Estimates derived from photos are approximate. Plans are general suggestions: consult a doctor before starting, especially if you have an injury, a medical condition, are pregnant or under treatment."],
+      ["4. Subscription","The free trial lasts two weeks. After that the subscription is €11.99 per month, charged until you cancel. You may cancel at any time; access remains open until the end of the paid period. Purchases made through an app store follow that store's refund rules."],
+      ["5. Your content","Your photos and data remain yours. You grant us only the right to process them to operate the service: analysis, plan generation, progress tracking. We do not sell or publish them."],
+      ["6. Ranking and community","By joining the ranking, your first name and rank may be visible to other users. You can switch to anonymous mode in settings. Declaring false performances may lead to removal from the ranking."],
+      ["7. Termination","You may delete your account at any time from settings. We may suspend an account in case of abuse, fraud or non-payment."],
+      ["8. Liability","The service is provided as is. We guarantee no physical result. Our liability is limited to the amounts you actually paid over the last twelve months."],
+      ["9. Changes","These terms may change. You will be notified in the app before any significant change takes effect."]
+    ],
+    privacy:[
+      ["What we collect","Your first name, email, country and city, your scan photos, your declared measurements (weight, loads, kilometres), your scanned meals, and app usage."],
+      ["Why","To analyse your scans, generate your plan, compute your rank and send the reminders you enabled. Nothing else."],
+      ["Photos","They are used for body composition analysis and your personal timeline. They are never published or shared with other users. You can choose to keep them on your device only."],
+      ["Retention","Your data is kept as long as your account exists. On account deletion it is erased within thirty days, backups included."],
+      ["Sharing","No resale. Only our technical providers (hosting, payment, notifications) process data on our behalf, limited to what is necessary."],
+      ["Your rights","You can request access, correction, export or deletion of your data by writing to support. We answer within one month."]
+    ]
+  },
+  bg: {
+    updated:"Последна актуализация: август 2026",
+    terms:[
+      ["1. Предмет","Espritum е приложение за физическа трансформация. Анализира снимки, които изпращаш всяка седмица, оценява състава на тялото ти и генерира тренировъчен и хранителен план. Тези условия уреждат ползването на услугата."],
+      ["2. Профил","Трябва да си на 16 или повече години и да предоставиш вярна информация. Отговаряш за опазването на паролата си и за всяка дейност от твоя профил."],
+      ["3. Какво не е услугата","Espritum не поставя диагноза, не дава медицински съвет и не предписва лечение. Оценките от снимките са приблизителни. Плановете са общи предложения: консултирай се с лекар, преди да започнеш, особено при травма, заболяване, бременност или лечение."],
+      ["4. Абонамент","Безплатната проба е две седмици. След това абонаментът е 11,99 € на месец до прекратяване. Може да прекратиш по всяко време; достъпът остава до края на платения период. Покупките през магазин за приложения следват правилата му за възстановяване."],
+      ["5. Твоето съдържание","Снимките и данните ти остават твои. Даваш ни право да ги обработваме само за да работи услугата: анализ, генериране на плана, проследяване на напредъка. Не ги продаваме и не ги публикуваме."],
+      ["6. Класиране и общност","При участие в класирането името и рангът ти може да са видими за други потребители. Може да преминеш в анонимен режим в настройките. Обявяването на неверни резултати може да доведе до премахване от класирането."],
+      ["7. Прекратяване","Може да изтриеш профила си по всяко време от настройките. Може да спрем профил при злоупотреба, измама или неплащане."],
+      ["8. Отговорност","Услугата се предоставя както е. Не гарантираме физически резултат. Отговорността ни е ограничена до сумите, платени от теб през последните дванадесет месеца."],
+      ["9. Промени","Условията може да се променят. Ще бъдеш уведомен в приложението преди съществена промяна."]
+    ],
+    privacy:[
+      ["Какво събираме","Име, имейл, държава и град, снимките от сканиранията, декларираните измервания (тегло, тежести, километри), сканираните хранения и ползването на приложението."],
+      ["Защо","За да анализираме сканиранията, да генерираме плана, да изчислим ранга и да изпращаме напомнянията, които си включил. Нищо повече."],
+      ["Снимките","Служат за анализ на състава на тялото и за личната ти хронология. Никога не се публикуват и не се споделят с други потребители. Може да избереш да останат само на устройството ти."],
+      ["Съхранение","Данните се пазят, докато профилът ти съществува. При изтриване се заличават до тридесет дни, включително резервните копия."],
+      ["Споделяне","Без препродажба. Само техническите ни доставчици (хостинг, плащания, известия) обработват данни от наше име, в необходимия минимум."],
+      ["Твоите права","Може да поискаш достъп, корекция, експорт или изтриване на данните си, като пишеш на поддръжката. Отговор до един месец."]
+    ]
+  }
+};
+
+var state = {
+  lang:'fr', name:'', email:'', country:'fr', city:'', pass:'', avatar:null,
+  trialDays:11, toggles:{}, open:null, docKind:'terms',
+  draft:'', pass1:'', pass2:'', passShown:false
+};
+
+function u() { return UI[state.lang]; }
+function region() { return REGIONS.filter(function (r) { return r.key === state.country; })[0] || REGIONS[0]; }
+function cityLabel() { return state.city.trim() || region().city; }
+function emit(n, x) { document.dispatchEvent(new CustomEvent(n, { detail: x || {} })); }
+function toggleOn(row) { return state.toggles[row.id] === undefined ? !!row.on : state.toggles[row.id]; }
+
+function valueOf(row) {
+  if (row.id === 'name') return state.name.trim() || '—';
+  if (row.id === 'email') return state.email.trim() || '—';
+  if (row.id === 'place') return cityLabel() + ' · ' + region().label;
+  if (row.id === 'pass') return '••••••••';
+  if (row.id === 'lang') return (LANGS.filter(function (l) { return l.k === state.lang; })[0] || LANGS[0]).label;
+  return '';
+}
+
+function renderList() {
+  document.getElementById('list').innerHTML = u().groups.map(function (g) {
+    var rows = g.rows.map(function (r) {
+      var right = '';
+      if (r.kind === 'toggle') {
+        right = '<div class="sw' + (toggleOn(r) ? ' on' : '') + '"><i></i></div>';
+      } else if (r.kind === 'photo') {
+        right = '<div class="pic">' + (state.avatar
+          ? '<div class="av" style="background-image:url(' + state.avatar + ')"></div>'
+          : '<div class="empty"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5M7.5 9.5 12 5l4.5 4.5M5 19h14"></path></svg></div>') +
+          '<span class="arrow">→</span></div>';
+      } else if (r.kind === 'sub' || r.kind === 'doc') {
+        right = '<span class="arrow">→</span>';
+      } else {
+        right = '<span class="v">' + valueOf(r) + ' &nbsp;→</span>';
+      }
+      return '<div class="row" data-row="' + r.id + '"><div class="l"><b>' + r.k + '</b>' +
+        (r.hint ? '<span>' + r.hint + '</span>' : '') + '</div>' + right + '</div>';
+    }).join('');
+    return '<div class="group"><div class="hd"><span>' + g.title + '</span><i></i></div><div class="rows">' + rows + '</div></div>';
+  }).join('') +
+  '<button class="logout" id="logout" type="button"><span>' + u().logout + '</span></button>' +
+  '<button class="danger" id="del" type="button"><span>' + u().deleteAccount + '</span></button>';
+}
+
+function rowById(id) {
+  var out = null;
+  u().groups.forEach(function (g) { g.rows.forEach(function (r) { if (r.id === id) out = r; }); });
+  return out;
+}
+
+function sheetBody(row) {
+  var w = u();
+  if (row.kind === 'text') {
+    return '<div class="field"><input id="draft" type="text" value="' + (state.draft || '').replace(/"/g, '&quot;') + '" placeholder="' + w.ph + '"></div>' +
+      '<button class="cta" id="save" type="button">' + w.save + '</button>' +
+      '<button class="ghost" data-close type="button">' + w.cancel + '</button>';
+  }
+  if (row.kind === 'place') {
+    return '<div style="display:flex;gap:8px">' +
+      '<div class="field" style="flex:1;min-width:0"><label>' + w.country + '</label>' +
+      '<select id="fCountry">' + REGIONS.map(function (r) {
+        return '<option value="' + r.key + '"' + (r.key === state.country ? ' selected' : '') + '>' + r.label + '</option>';
+      }).join('') + '</select></div>' +
+      '<div class="field" style="flex:1;min-width:0"><label>' + w.city + '</label>' +
+      '<input id="fCity" type="text" value="' + state.city.replace(/"/g, '&quot;') + '" placeholder="' + region().city + '"></div>' +
+      '</div>' +
+      '<button class="cta" id="save" type="button">' + w.save + '</button>' +
+      '<button class="ghost" data-close type="button">' + w.cancel + '</button>';
+  }
+  if (row.kind === 'pass') {
+    var type = state.passShown ? 'text' : 'password';
+    var err = state.pass1.length > 0 && state.pass1.length < 6 ? w.passShort
+      : (state.pass2.length > 0 && state.pass1 !== state.pass2 ? w.passMismatch : '');
+    var eye = state.passShown
+      ? '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.8-6.5 10-6.5S22 12 22 12s-3.8 6.5-10 6.5S2 12 2 12z"></path><circle cx="12" cy="12" r="2.8"></circle><path d="M3.5 3.5l17 17"></path></svg>'
+      : '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.8-6.5 10-6.5S22 12 22 12s-3.8 6.5-10 6.5S2 12 2 12z"></path><circle cx="12" cy="12" r="2.8"></circle></svg>';
+    return '<div style="display:flex;flex-direction:column;gap:11px">' +
+      '<div class="field"><label>' + w.newPass + '</label>' +
+      '<div style="position:relative;display:flex;align-items:center">' +
+      '<input id="p1" type="' + type + '" value="' + state.pass1 + '" placeholder="' + w.passPh + '" style="padding-right:46px">' +
+      '<div class="eye" id="eye">' + eye + '</div></div></div>' +
+      '<div class="field"><label>' + w.confirmPass + '</label>' +
+      '<input id="p2" type="' + type + '" value="' + state.pass2 + '" placeholder="' + w.passPh + '"></div>' +
+      (err ? '<span class="err">' + err + '</span>' : '') +
+      '</div>' +
+      '<button class="cta" id="save" type="button">' + w.save + '</button>' +
+      '<button class="ghost" data-close type="button">' + w.cancel + '</button>';
+  }
+  if (row.kind === 'photo') {
+    return '<div style="display:flex;flex-direction:column;align-items:center;gap:12px">' +
+      (state.avatar
+        ? '<div class="avatarBig" style="background-image:url(' + state.avatar + ')"></div>'
+        : '<div class="avatarEmpty" id="pickBig"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V6M7 11l5-5 5 5M5 20h14"></path></svg></div>') +
+      '<span style="font:400 10.5px \'IBM Plex Sans\';color:rgba(242,239,233,.35)">' + u().photoHint + '</span></div>' +
+      '<button class="cta" id="pick" type="button">' + u().choosePhoto + '</button>' +
+      (state.avatar ? '<button class="remove" id="removePhoto" type="button">' + u().removePhoto + '</button>' : '') +
+      '<button class="ghost" data-close type="button">' + u().cancel + '</button>';
+  }
+  if (row.kind === 'lang') {
+    return '<div style="display:flex;flex-direction:column;gap:8px">' + LANGS.map(function (o) {
+      return '<div class="opt' + (o.k === state.lang ? ' on' : '') + '" data-lang-opt="' + o.k + '"><span>' + o.label + '</span>' +
+        (o.k === state.lang ? '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#E23B44" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 12.5L10 17.5L19 7"></path></svg>' : '') +
+        '</div>';
+    }).join('') + '</div>' +
+    '<button class="ghost" data-close type="button">' + u().cancel + '</button>';
+  }
+  if (row.kind === 'sub') {
+    var q = SUB_T[state.lang], over = state.trialDays <= 0;
+    return '<div style="display:flex;flex-direction:column;gap:9px">' +
+      '<div class="trial' + (over ? ' over' : '') + '"><div class="t"><b>' + q.trialTitle + '</b>' +
+      '<span>' + (over ? q.tagOver : q.tagActive) + '</span></div>' +
+      '<p>' + (over ? q.trialOver : q.trialLeft.replace('{n}', state.trialDays)) + '</p></div>' +
+      '<div class="paid" id="subscribe"><div class="t"><b>' + q.paidTitle + '</b>' +
+      '<div class="price"><span>' + q.price + '</span><span>' + q.per + '</span></div></div>' +
+      '<p>' + q.desc + '</p></div></div>' +
+      '<button class="ghost" data-close type="button">' + u().cancel + '</button>';
+  }
+  if (row.kind === 'doc') {
+    var L = LEGAL[state.lang];
+    return '<div class="doc"><span class="updated">' + L.updated + '</span>' +
+      L[state.docKind].map(function (s) {
+        return '<section><h3>' + s[0] + '</h3><p>' + s[1] + '</p></section>';
+      }).join('') + '</div>' +
+      '<button class="ghost" data-close type="button">' + u().cancel + '</button>';
+  }
+  return '';
+}
+
+function openSheet(id) {
+  var row = rowById(id);
+  if (!row || row.kind === 'toggle') return;
+  state.open = id;
+  if (row.kind === 'doc') state.docKind = row.doc;
+  if (row.kind === 'text') state.draft = id === 'name' ? state.name : (id === 'email' ? state.email : '');
+  if (row.kind === 'pass') { state.pass1 = ''; state.pass2 = ''; state.passShown = false; }
+  document.getElementById('sheetTitle').textContent = row.k;
+  document.getElementById('sheetBody').innerHTML = sheetBody(row);
+  document.body.classList.add('sheet');
+}
+function closeSheet() { state.open = null; document.body.classList.remove('sheet'); }
+function refreshSheet() {
+  if (!state.open) return;
+  var row = rowById(state.open);
+  document.getElementById('sheetBody').innerHTML = sheetBody(row);
+}
+
+function render(l) {
+  if (l) { state.lang = l; }
+  document.querySelectorAll('[data-k]').forEach(function (el) { el.textContent = u()[el.dataset.k]; });
+  renderList();
+  if (state.open) { refreshSheet(); document.getElementById('sheetTitle').textContent = rowById(state.open).k; }
+  document.querySelectorAll('.langbar button').forEach(function (b) {
+    b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang));
+  });
+  document.documentElement.lang = state.lang;
+  try { localStorage.setItem('espritum.lang', state.lang); } catch (e) {}
+}
+
+document.getElementById('list').addEventListener('click', function (ev) {
+  if (ev.target.closest('#logout')) { emit('espritum:logout'); return; }
+  if (ev.target.closest('#del')) { emit('espritum:delete-account'); return; }
+  var r = ev.target.closest('[data-row]');
+  if (!r) return;
+  var row = rowById(r.dataset.row);
+  if (row.kind === 'toggle') {
+    state.toggles[row.id] = !toggleOn(row);
+    emit('espritum:setting-change', { id: row.id, value: state.toggles[row.id] });
+    renderList();
+    return;
+  }
+  openSheet(row.id);
+});
+
+document.getElementById('veil').addEventListener('click', closeSheet);
+
+document.getElementById('sheetBody').addEventListener('input', function (ev) {
+  if (ev.target.id === 'draft') state.draft = ev.target.value;
+  if (ev.target.id === 'p1') state.pass1 = ev.target.value;
+  if (ev.target.id === 'p2') state.pass2 = ev.target.value;
+  if (ev.target.id === 'fCity') state.city = ev.target.value;
+});
+document.getElementById('sheetBody').addEventListener('change', function (ev) {
+  if (ev.target.id === 'fCountry') { state.country = ev.target.value; refreshSheet(); }
+});
+document.getElementById('sheetBody').addEventListener('click', function (ev) {
+  if (ev.target.closest('[data-close]')) { closeSheet(); return; }
+  if (ev.target.closest('#eye')) { state.passShown = !state.passShown; refreshSheet(); return; }
+  if (ev.target.closest('#pick') || ev.target.closest('#pickBig')) { document.getElementById('photoInput').click(); return; }
+  if (ev.target.closest('#removePhoto')) { state.avatar = null; refreshSheet(); renderList(); emit('espritum:setting-change', { id:'photo', value:null }); return; }
+  if (ev.target.closest('#subscribe')) { closeSheet(); emit('espritum:subscribe', { plan:'monthly', price:11.99 }); emit('espritum:navigate', { to:'pay' }); return; }
+  var lo = ev.target.closest('[data-lang-opt]');
+  if (lo) { closeSheet(); render(lo.dataset.langOpt); emit('espritum:setting-change', { id:'lang', value: state.lang }); return; }
+  if (ev.target.closest('#save')) {
+    var row = rowById(state.open);
+    if (row.kind === 'text') {
+      if (state.open === 'name') state.name = state.draft;
+      if (state.open === 'email') state.email = state.draft;
+    }
+    if (row.kind === 'pass') {
+      if (state.pass1.length < 6 || state.pass1 !== state.pass2) { refreshSheet(); return; }
+      state.pass = state.pass1;
+    }
+    emit('espritum:setting-change', { id: state.open, value: row.kind === 'pass' ? '••••••' : valueOf(row) });
+    closeSheet();
+    renderList();
+  }
+});
+
+document.getElementById('photoInput').addEventListener('change', function (ev) {
+  var f = ev.target.files && ev.target.files[0];
+  if (!f) return;
+  var r = new FileReader();
+  r.onload = function () {
+    state.avatar = r.result;
+    refreshSheet(); renderList();
+    emit('espritum:setting-change', { id:'photo', value:'(image)' });
+  };
+  r.readAsDataURL(f);
+});
+
+document.getElementById('back').addEventListener('click', function () { emit('espritum:navigate', { to:'profile' }); });
+document.querySelectorAll('.langbar button').forEach(function (b) {
+  b.addEventListener('click', function () { render(b.dataset.lang); });
+});
+
+window.EspritumSettings = {
+  setLang: render,
+  setUser: function (o) {
+    ['name', 'email', 'country', 'city', 'avatar'].forEach(function (k) {
+      if (o[k] !== undefined) state[k] = o[k];
+    });
+    render();
+  },
+  setTrial: function (days) { state.trialDays = days; render(); },
+  getState: function () { return JSON.parse(JSON.stringify(state)); }
+};
+
+var saved = 'fr';
+try { var v = localStorage.getItem('espritum.lang'); if (v && UI[v]) saved = v; } catch (e) {}
+render(saved);
+</script>
+<script>/* ESP-NAV — intégration */
+(function () {
+  // Hydratation depuis le compte (page 9)
+  try {
+    var acc = JSON.parse(localStorage.getItem('espritum.account') || 'null');
+    if (acc && window.EspritumSettings) window.EspritumSettings.setUser({
+      name: acc.name, email: acc.email, country: acc.country, city: acc.city
+    });
+  } catch (e) {}
+})();
+var ESP_ROUTES = {
+  profile: 'profil.html',          // TODO: page profil (18)
+  pay: 'paiement.html'    // « Gérer mon abonnement » → paiement
+};
+document.addEventListener('espritum:navigate', function (ev) {
+  var to = (ev.detail || {}).to;
+  var url = ESP_ROUTES[to];
+  if (url) window.location.href = url;
+});
+// Toute modif compte ici → resync espritum.account (prix courses, nom classement…)
+document.addEventListener('espritum:setting-change', function () {
+  try {
+    var st = window.EspritumSettings.getState();
+    var acc = JSON.parse(localStorage.getItem('espritum.account') || '{}') || {};
+    acc.name = st.name; acc.email = st.email; acc.country = st.country; acc.city = st.city;
+    localStorage.setItem('espritum.account', JSON.stringify(acc));
+  } catch (e) {}
+});
+document.addEventListener('espritum:logout', function () {
+  /* vraie déconnexion Supabase à brancher plus tard */
+  window.location.href = 'compte.html?mode=login';
+});
+document.addEventListener('espritum:delete-account', function () {
+  /* TODO: confirmation + suppression réelle du compte (Supabase). Ne rien supprimer sans confirmation. */
+});
+document.addEventListener('espritum:subscribe', function () { /* voir paiement.html (navigate:pay) */ });
+</script>
+</body>
+</html>

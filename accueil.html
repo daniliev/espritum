@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Espritum — Accueil</title>
+<link rel="apple-touch-icon" href="sensei-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0B0B0C"/><text x="50" y="62" font-family="Oswald,sans-serif" font-size="34" font-weight="700" fill="#C41E26" text-anchor="middle">E</text></svg>
+</template>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;display:flex;align-items:flex-start;justify-content:center;padding:16px 0}
+.phone{position:relative;flex:none;width:390px;height:844px;overflow:hidden;background:#0B0B0C}
+@media (min-width:420px) and (min-height:880px){.phone{border-radius:44px;box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 0 1px rgba(242,239,233,.07)}}
+@media (max-width:420px){.phone{width:100%;height:100vh;height:100dvh}body{padding:0}}
+@keyframes eFade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes ePulse{0%,100%{opacity:.35;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+
+.screen{position:absolute;inset:0;padding:60px 22px 108px;display:flex;flex-direction:column;gap:13px;justify-content:space-between;animation:eFade .4s ease both}
+
+.top{display:flex;justify-content:space-between;align-items:center;flex:none}
+.top .l{display:flex;flex-direction:column;gap:5px}
+.kick{font:500 9.5px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:rgba(242,239,233,.35)}
+.hello{font:700 27px/1 Oswald,sans-serif;text-transform:uppercase}
+.top .r{display:flex;align-items:center;gap:8px}
+.streak{display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:10px;background:rgba(196,30,38,.14);border:1px solid rgba(196,30,38,.25)}
+.streak img{width:9px;height:auto}
+.streak span{font:600 12.5px Oswald,sans-serif;color:#E23B44}
+.avatar{width:38px;height:38px;border-radius:50%;background:#18181B;border:1px solid rgba(242,239,233,.12);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;color:rgba(242,239,233,.6)}
+.avatar:hover{border-color:rgba(196,30,38,.6);color:#E23B44}
+.avatar svg{width:19px;height:19px;fill:currentColor;display:block}
+
+/* --- rappel de scan --- */
+.due{flex:none;padding:17px 18px;border-radius:18px;background:linear-gradient(155deg,rgba(196,30,38,.18),rgba(196,30,38,.04));border:1px solid rgba(196,30,38,.42);animation:eFade .45s ease both}
+.due .meta{display:flex;align-items:center;gap:8px}
+.due .meta img{width:17px;height:auto}
+.due .meta span{font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.16em;color:#E23B44}
+.due .t{font:700 21px/1.04 Oswald,sans-serif;text-transform:uppercase;margin-top:10px}
+.due .cta{margin-top:13px;padding:13px;border-radius:12px;background:#C41E26;color:#F6F2EE;text-align:center;font:600 12.5px 'IBM Plex Sans';cursor:pointer;box-shadow:0 10px 26px -10px rgba(196,30,38,.8);transition:.2s}
+.due .cta:hover{background:#E23B44}
+
+/* --- verset + progression du plan --- */
+.verse{flex:none;padding:14px 17px;border-radius:15px;background:linear-gradient(150deg,#17171A,#111113);border:1px solid rgba(242,239,233,.07);display:flex;flex-direction:column;gap:5px}
+.verse .txt{font:400 13px/1.45 'IBM Plex Sans';font-style:italic;color:rgba(242,239,233,.8);text-wrap:pretty}
+.verse .ref{font:500 9.5px 'IBM Plex Mono',monospace;color:rgba(196,30,38,.9);letter-spacing:.1em}
+
+.plan{flex:none;padding:14px 18px;border-radius:15px;background:#111113;border:1px solid rgba(242,239,233,.07);display:flex;align-items:center;gap:18px}
+.ring{position:relative;width:74px;height:74px;flex:none}
+.ring svg{width:74px;height:74px;transform:rotate(-90deg);display:block}
+.ring .in{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:1px}
+.ring .in b{font:400 25px/0.8 'Bebas Neue',Oswald,sans-serif;color:#F6F2EE}
+.ring .in i{font:400 13px/0.8 'Bebas Neue',Oswald,sans-serif;color:rgba(242,239,233,.45);font-style:normal}
+.plan .r{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.wk{display:flex;align-items:baseline;gap:6px}
+.wk span{font:400 26px/0.85 'Bebas Neue',Oswald,sans-serif;color:#F6F2EE;letter-spacing:.03em}
+.wk .red{color:#C41E26}
+.wk .sl{color:rgba(242,239,233,.3);font-size:22px}
+.left{font:400 11px 'IBM Plex Sans';color:rgba(242,239,233,.42)}
+.left b{color:#C41E26;font-weight:600}
+
+/* --- balance calorique --- */
+.bal{flex:1;min-height:0;max-height:186px;display:flex;flex-direction:column;padding:15px 17px 12px;border-radius:18px;background:#131315;border:1px solid rgba(242,239,233,.08)}
+.bal .h{flex:none;display:flex;justify-content:space-between;align-items:flex-start}
+.bal .h .l{display:flex;flex-direction:column;gap:3px}
+.bal .h .k{font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.16em;color:rgba(242,239,233,.35)}
+.bal .h .v{display:flex;align-items:baseline;gap:6px}
+.bal .h .v b{font:700 26px/1 Oswald,sans-serif}
+.bal .h .v em{font:500 9.5px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.4);font-style:normal}
+.legend{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.legend div{display:flex;align-items:center;gap:6px}
+.legend i{width:14px;height:2px;border-radius:2px;display:block}
+.legend span{font:500 8.5px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.45)}
+.graph{position:relative;flex:1;min-height:0;margin-top:10px}
+.graph svg{width:100%;height:100%;display:block;overflow:visible}
+.graph .end{position:absolute;left:97.3%;width:7px;height:7px;border-radius:50%;transform:translate(-50%,-50%);transition:top .5s ease}
+.days{flex:none;display:flex;justify-content:space-between;margin-top:7px}
+.days span{font:500 8.5px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.26)}
+
+/* --- rang --- */
+.rank{flex:none;padding:14px 17px;border-radius:16px;background:linear-gradient(150deg,rgba(196,30,38,.18),#131315);border:1px solid rgba(196,30,38,.32);cursor:pointer;transition:.2s;display:flex;align-items:center;gap:13px}
+.rank:hover{border-color:rgba(196,30,38,.6);transform:translateY(-2px)}
+.rank img{width:26px;height:auto;flex:none}
+.rank .c{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.rank .k{font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:rgba(242,239,233,.4)}
+.rank .n{font:400 25px/0.82 'Bebas Neue',Oswald,sans-serif;color:#F6F2EE;letter-spacing:.03em}
+.rank .sep{width:1px;height:34px;background:rgba(242,239,233,.1);flex:none}
+.rank .p{flex:none;display:flex;flex-direction:column;gap:3px;align-items:flex-end}
+.rank .p b{font:400 25px/0.82 'Bebas Neue',Oswald,sans-serif;color:#C41E26;font-weight:400}
+
+/* --- raccourcis --- */
+.duo{display:flex;gap:11px;flex:none}
+.tile{flex:1;padding:14px 15px;border-radius:16px;background:#141416;border:1px solid rgba(242,239,233,.08);cursor:pointer;transition:.2s}
+.tile:hover{border-color:rgba(196,30,38,.4);transform:translateY(-2px)}
+.tile .k{font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.13em;color:rgba(242,239,233,.35)}
+.tile .v{font:700 24px Oswald,sans-serif;margin-top:6px;color:#F2EFE9}
+.tile.sensei{display:flex;align-items:center;gap:11px}
+.tile.sensei .av{width:34px;height:34px;flex:none;border-radius:50%;background:#1B1B1E;border:1px solid rgba(196,30,38,.4);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.tile.sensei .av img{width:27px;height:27px;object-fit:contain}
+.tile.sensei .c{display:flex;flex-direction:column;gap:3px;min-width:0}
+.tile.sensei .n{font:600 12.5px 'IBM Plex Sans'}
+.tile.sensei .t{font:400 10px/1.35 'IBM Plex Sans';color:rgba(242,239,233,.42);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* --- barre d'onglets --- */
+.tabs{position:absolute;left:0;right:0;bottom:0;height:78px;background:linear-gradient(180deg,rgba(11,11,12,0),rgba(11,11,12,.96) 32%);backdrop-filter:blur(14px);border-top:1px solid rgba(242,239,233,.07);display:flex;align-items:flex-start;padding:10px 14px 0;z-index:30}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;padding-top:9px;color:rgba(242,239,233,.32);transition:.2s}
+.tab:hover{color:rgba(242,239,233,.72)}
+.tab.on{color:#E23B44}
+.tab svg{width:24px;height:24px;fill:currentColor;display:block}
+.tab .dot{width:4px;height:4px;border-radius:50%;background:transparent}
+.tab.on .dot{background:#C41E26}
+.tab.scan{gap:0;padding-top:0;margin-top:-12px}
+.scanbtn{position:relative;width:54px;height:54px;border-radius:50%;background:#18181B;border:1px solid rgba(242,239,233,.16);display:flex;align-items:center;justify-content:center;transition:.2s}
+.scanbtn:hover{border-color:rgba(196,30,38,.5);transform:translateY(-3px)}
+.scanbtn i{width:21px;height:21px;border:2px solid rgba(242,239,233,.5);border-radius:5px;display:block}
+body.due .scanbtn{background:#C41E26;border-color:transparent;box-shadow:0 12px 26px -8px rgba(196,30,38,.85)}
+body.due .scanbtn i{border-color:#F6F2EE}
+body.due .scanbtn:after{content:"";position:absolute;inset:-7px;border-radius:50%;border:1px solid rgba(196,30,38,.55);animation:ePulse 1.9s ease-in-out infinite}
+.homebar{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:132px;height:4px;border-radius:3px;background:rgba(242,239,233,.28);z-index:31}
+
+.langbar{position:absolute;top:18px;right:20px;display:flex;gap:6px;z-index:32}
+.langbar button{background:none;border:1px solid rgba(242,239,233,.12);color:rgba(242,239,233,.35);font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.12em;padding:5px 9px;border-radius:7px;cursor:pointer}
+.langbar button[aria-pressed="true"]{color:#E23B44;border-color:rgba(196,30,38,.5);background:rgba(196,30,38,.12)}
+
+body.due #calm{display:none}
+body:not(.due) #due{display:none}
+</style>
+</head>
+<body>
+<div class="phone">
+<div class="screen">
+
+<div class="top">
+<div class="l">
+<div class="kick" data-k="today">AUJOURD'HUI</div>
+<div class="hello" id="greeting">Salut à toi</div>
+</div>
+<div class="r">
+<div class="streak"><img src="logo-mark.png" alt=""><span id="streak">12</span></div>
+<div class="avatar" id="goProfile" role="button" tabindex="0" aria-label="Profil">
+<svg viewBox="0 0 300 300"><path d="M206.83,251.56h-113.66c-36.54-5.22-29.21-46.81-11.85-68.49,11.27-14.07,28.55-22.7,46.56-23.86,12.85-.83,30.22-.84,43.09-.14,18.31.99,35.99,9.51,47.51,23.77,17.5,21.65,25.03,63.46-11.65,68.72Z"></path><path d="M193.1,111.23c-11.64,31.09-52.28,39.66-75.78,16.16-22.59-22.59-15.68-61.54,13.38-74.67,37.72-17.04,76.91,19.74,62.4,58.51Z"></path></svg>
+</div>
+</div>
+</div>
+
+<div class="due" id="due">
+<div class="meta"><img src="logo-blanc.png" alt=""><span data-k="scanDueMeta">SEMAINE 13 · SCAN ATTENDU</span></div>
+<div class="t" data-k="scanDueTitle">Ton plan a 7 jours.</div>
+<div class="cta" id="scanCta" role="button" tabindex="0"><span data-k="scanDueCta">Faire mon scan de la semaine</span> →</div>
+</div>
+
+<div id="calm">
+<div class="verse" style="margin-bottom:13px">
+<span class="txt">« <span data-k="verseText">Je puis tout par celui qui me fortifie.</span> »</span>
+<span class="ref" data-k="verseRef">Philippiens 4:13</span>
+</div>
+
+<div class="plan">
+<div class="ring">
+<svg viewBox="0 0 110 110"><circle cx="55" cy="55" r="48" fill="none" stroke="#1E1E22" stroke-width="11"></circle><circle id="ringArc" cx="55" cy="55" r="48" fill="none" stroke="#C41E26" stroke-width="11" stroke-linecap="round" stroke-dasharray="302" stroke-dashoffset="290" style="transition:stroke-dashoffset .6s cubic-bezier(.2,.8,.2,1)"></circle></svg>
+<div class="in"><b id="planPct">4</b><i>%</i></div>
+</div>
+<div class="r">
+<div class="wk">
+<span data-k="weekWord">SEMAINE</span>
+<span class="red" id="weekNum">1</span>
+<span class="sl">/</span>
+<span id="weekTotal">26</span>
+</div>
+<span class="left"><b><span id="weeksLeft">25</span> <span data-k="weeksWord">semaines</span></b> <span data-k="remainingWord">restantes — continue.</span></span>
+</div>
+</div>
+</div>
+
+<div class="bal">
+<div class="h">
+<div class="l">
+<span class="k" data-k="balanceTitle">BALANCE CALORIQUE · 7 JOURS</span>
+<div class="v"><b id="balValue">−438</b><em id="balLabel">DÉFICIT / JOUR</em></div>
+</div>
+<div class="legend">
+<div><i style="background:#F2EFE9"></i><span data-k="legendIn">CONSOMMÉ</span></div>
+<div><i style="background:#C41E26"></i><span data-k="legendOut">DÉPENSÉ</span></div>
+</div>
+</div>
+<div class="graph">
+<svg viewBox="0 0 300 104" preserveAspectRatio="none">
+<polyline id="inArea" fill="rgba(242,239,233,0.07)" stroke="none"></polyline>
+<polyline id="outArea" fill="rgba(196,30,38,0.13)" stroke="none"></polyline>
+<polyline id="inLine" fill="none" stroke="#F2EFE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>
+<polyline id="outLine" fill="none" stroke="#C41E26" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>
+</svg>
+<div class="end" id="inDot" style="background:#F2EFE9"></div>
+<div class="end" id="outDot" style="background:#C41E26"></div>
+</div>
+<div class="days" id="days"></div>
+</div>
+
+<div class="rank" id="goRank" role="button" tabindex="0">
+<img src="logo-blanc.png" alt="">
+<div class="c">
+<span class="k"><span data-k="rankLabel">RANG</span> <span id="rankNum">5</span>/7</span>
+<span class="n" id="rankName">Acier</span>
+</div>
+<div class="sep"></div>
+<div class="p">
+<span class="k" data-k="spiritWeek">ESPRIT / SEM.</span>
+<b id="spiritPts">+310</b>
+</div>
+</div>
+
+<div class="duo">
+<div class="tile" id="goFood" role="button" tabindex="0">
+<div class="k" data-k="kcalLeft">KCAL RESTANTES</div>
+<div class="v" id="kcalLeft">770</div>
+</div>
+<div class="tile sensei" id="goSensei" role="button" tabindex="0">
+<div class="av"><img src="sensei-mark.png" alt=""></div>
+<div class="c">
+<span class="n" data-k="senseiName">Sensei</span>
+<span class="t" data-k="senseiTeaser">« Tu as sauté ton cardio hier. »</span>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="tabs" id="tabs"></div>
+<div class="homebar"></div>
+</div>
+
+<script>
+var T = {
+  fr: {
+    today:"AUJOURD'HUI", hello:"Salut", helloAlone:"Salut à toi",
+    verseText:"Je puis tout par celui qui me fortifie.", verseRef:"Philippiens 4:13",
+    weekWord:"SEMAINE", weeksWord:"semaines", remainingWord:"restantes — continue.",
+    balanceTitle:"BALANCE CALORIQUE · 7 JOURS", legendIn:"CONSOMMÉ", legendOut:"DÉPENSÉ",
+    deficitLabel:"DÉFICIT / JOUR", surplusLabel:"SURPLUS / JOUR",
+    rankLabel:"RANG", spiritWeek:"ESPRIT / SEM.",
+    rankNames:["Cendre","Pierre","Fer","Bronze","Acier","Obsidienne","Esprit"],
+    kcalLeft:"KCAL RESTANTES", senseiName:"Sensei", senseiTeaser:"« Tu as sauté ton cardio hier. »",
+    scanDueMeta:"SEMAINE 13 · SCAN ATTENDU", scanDueTitle:"Ton plan a 7 jours.", scanDueCta:"Faire mon scan de la semaine",
+    week:["L","M","M","J","V","S","D"],
+    tabs:["Accueil","Séance","Scan","Nutrition","Classement"]
+  },
+  en: {
+    today:"TODAY", hello:"Hey", helloAlone:"Hey there",
+    verseText:"I can do all things through him who strengthens me.", verseRef:"Philippians 4:13",
+    weekWord:"WEEK", weeksWord:"weeks", remainingWord:"remaining — keep going.",
+    balanceTitle:"CALORIE BALANCE · 7 DAYS", legendIn:"IN", legendOut:"OUT",
+    deficitLabel:"DEFICIT / DAY", surplusLabel:"SURPLUS / DAY",
+    rankLabel:"RANK", spiritWeek:"SPIRIT / WK",
+    rankNames:["Ash","Stone","Iron","Bronze","Steel","Obsidian","Spirit"],
+    kcalLeft:"KCAL LEFT", senseiName:"Sensei", senseiTeaser:"\u201CYou skipped cardio yesterday.\u201D",
+    scanDueMeta:"WEEK 13 · SCAN DUE", scanDueTitle:"Your plan is 7 days old.", scanDueCta:"Take this week's scan",
+    week:["M","T","W","T","F","S","S"],
+    tabs:["Home","Session","Scan","Nutrition","Ranking"]
+  },
+  bg: {
+    today:"ДНЕС", hello:"Здравей", helloAlone:"Здравей",
+    verseText:"Всичко мога чрез Онзи, Който ме укрепва.", verseRef:"Филипяни 4:13",
+    weekWord:"СЕДМИЦА", weeksWord:"седмици", remainingWord:"остават — продължавай.",
+    balanceTitle:"КАЛОРИЕН БАЛАНС · 7 ДНИ", legendIn:"ПРИЕТИ", legendOut:"ИЗГОРЕНИ",
+    deficitLabel:"ДЕФИЦИТ / ДЕН", surplusLabel:"ИЗЛИШЪК / ДЕН",
+    rankLabel:"РАНГ", spiritWeek:"ДУХ / СЕДМ.",
+    rankNames:["Пепел","Камък","Желязо","Бронз","Стомана","Обсидиан","Дух"],
+    kcalLeft:"ОСТАВАЩИ KCAL", senseiName:"Сенсей", senseiTeaser:"„Пропусна кардиото вчера.“",
+    scanDueMeta:"СЕДМИЦА 13 · ОЧАКВА СЕ СКАНИРАНЕ", scanDueTitle:"Планът ти е на 7 дни.", scanDueCta:"Направи седмичното сканиране",
+    week:["П","В","С","Ч","П","С","Н"],
+    tabs:["Начало","Тренировка","Скан","Хранене","Класиране"]
+  }
+};
+
+var ICONS = {
+  home:["M252.75,59.47v95.75c-2.23,6.69-6.97,11.37-14.23,12.01-20.92,1.86-44.5-1.37-65.69,0-7.92-.82-13.61-6.64-14.25-14.6l.02-90.95c.65-7.3,5.5-12.34,12.41-14.23h69.31c3.25.82,5.84,2.25,7.88,4.27.25.25.5.51.74.78.24.27.47.55.69.83.22.29.43.59.63.89s.4.62.59.94c.37.65.72,1.33,1.04,2.05.16.36.31.72.45,1.1.14.37.28.76.41,1.15Z","M141.78,101.74c-.71,7.67-6.55,13.52-14.22,14.22-20.61,1.89-44.01-1.42-64.92.02-7.72-.26-14.35-6.05-15.02-13.82-1.16-13.48.81-28.72.12-42.38,1.3-6.38,5.81-10.52,11.91-12.32h69.71c6.72,1.82,11.66,6.77,12.37,13.87-.78,13.01,1.22,27.58.04,40.41Z","M252.75,196.49v44.07c-1.85,6.32-6.34,11.07-13.07,11.97l-67.27.06c-7.22-.75-12.88-6.33-13.7-13.55.49-13.01-1.04-27.07-.13-39.97.58-8.33,6.22-14.35,14.62-15.02,21.07-1.67,44.37,1.24,65.67.06,7.1.71,12.05,5.66,13.87,12.37Z","M141.18,241.36c-1.53,6.11-6.96,10.61-13.21,11.23l-66.91-.02c-7.1-.77-12.64-6.3-13.44-13.4l.02-92.95c.94-7.06,6.45-12.46,13.53-13.31l66.39-.11c6.54.6,11.87,4.89,13.63,11.21,1,32.29,1,65.07,0,97.36Z"],
+  train:["M251.65,117.06v4.76c-1.08,1.54-1.37,3.21-2.57,4.77-4.61,6.01-13.04,5.91-18.29.8l-58.37-58.38c-10.14-11.04,2.98-26.79,15.49-18.27,6,5.75,11.61,12.12,17.87,17.49,4.49-3.17,7.83-8.27,12.11-11.73,2.7-2.18,5.08-3.11,8.33-1.17,5.1,6.12,13.36,11.89,18.09,18.04,1.77,2.3,2.01,4.66.36,7.13-1.35,1.88-13.41,12.73-13.25,13.67l17.84,17.92,2.39,4.96Z","M121.39,251.68h-4.76l-4.57-2.38c-6-5.75-11.61-12.11-17.87-17.49-4.4,3.18-7.74,8.04-11.9,11.54-2.94,2.47-5.54,3.62-8.95.99-6.15-4.73-11.93-12.99-18.04-18.1-1.3-2.06-1.35-4.35-.15-6.47l13.41-13.62-.35-.75-17.49-17.46c-7.57-10.82,4.54-24.11,16.01-17.2,21.21,20.27,42,41.2,62.38,62.31,4.91,7.33.65,16.72-7.71,18.63Z","M214.92,161.93l-76.66-76.63c-6.8-7.25-2-19.68,8.08-20.16,3-.14,6.14.92,8.42,2.87l77.23,77.24c8.76,11.6-5.27,25.89-17.07,16.68Z","M145.43,232.22l-77.45-77.42c-5.67-6.21-1.85-17.96,6.45-19.37,4.21-.71,7.58.26,10.83,2.88l76.44,76.44c9.57,11.72-4.35,26.18-16.28,17.47Z","M180.53,144.61l-36.25,35.96-24.85-25.13,35.97-35.96,25.13,25.13Z"],
+  food:["M118.42,139.93c-.51,2.66.3,5.39.42,7.91,1.06,23.18,2.09,46.32,3.16,69.49.32,6.88,1.88,16.66,1.33,23.23-.35,4.15-3.15,8.55-6.94,10.41-4.13,2.04-17.86,2-21.94-.16-4.08-2.15-6.41-6.62-6.73-11.1l5.07-99.55c-25.9-9.19-27.6-38.64-19.68-61.31,8.61-24.65,31.9-45.2,53.94-19.65,18.59,21.55,24.66,69.66-8.63,80.73Z","M229.84,109.48c-.79,9.66-6.6,19.73-14.19,25.55-2.94,2.25-6.37,3.66-9.49,5.6l1.73,40.61c1.21,15.04,1.64,30.14,2.28,45.23.44,10.16,3.78,24.66-11.15,25.82-10.24.8-21.76.84-23.5-11.73l4.97-99.56c-.23-1.26-4.84-2.95-6.24-3.81-27.96-17.01-14.25-55.91-17.54-83.03,1.17-7.99,11.34-9.14,14.43-1.59l.26,46.81c.05,2.69,3.54,6.67,6.13,6.67h8.45v-53.23c0-.13,1.12-1.95,1.37-2.28,3.09-4.11,8.78-4.11,11.88,0,.26.34,1.37,2.15,1.37,2.28v53.23h8.45c2.59,0,6.08-3.98,6.13-6.67l.15-46.46c2.72-7.59,12.71-7.13,14.53.8-1.1,18.09,1.45,37.87-.02,55.75Z"],
+  rank:["M246.54,80.02c-.33-2.4-2.34-4.45-4.74-4.8h-34.45c-.07-6.35-.03-12.67.27-18.89-.17-3.2-2.87-5.53-6.02-5.59l-104.41.12c-2.47.42-4.58,2.58-4.87,5.07.3,6.35.34,12.8.25,19.29h-34.45c-2.03,0-4.64,2.7-4.73,4.8.42,18.21-2.47,38.63,7.09,55.03,3.91,6.71,10.01,11.99,16.93,15.67h0c.11.07.23.13.36.19,1.12.58,2.26,1.13,3.41,1.63.4.18.81.37,1.25.57,6.78,3.06,13.56,5.49,20.28,7.41,6.82,10.98,16.52,20.22,27.76,26.03,1.88.98,5.22,2.49,8.7,3.83.35,2.43.49,5.04.3,7.81-.06.91-.16,1.8-.28,2.65-1.82,15.93-13.16,29.51-28.62,33.79-1.58.44-8.05,1.41-8.61,1.96-.79.77-.81,11.84,0,12.66h96c.81-.82.79-11.89,0-12.66-.57-.55-7.01-1.51-8.61-1.96-15.44-4.34-26.8-17.84-28.62-33.79-.15-1.35-.25-2.78-.26-4.3-.02-2.2.15-4.27.43-6.2,15.17-5.51,28.27-16.61,36.72-30.46,10.21-2.75,16.61-5.39,17.59-5.81,0,0,0,0,0,0,2.43-.99,5.34-2.38,7.25-3.34h0c.85-.43,1.51-.77,1.83-.96,25.87-15.17,22.19-43.66,22.23-69.75ZM77.45,138.82c-11.24-8.17-13.58-21.19-14.16-34.35-.28-6.26.24-12.61.02-18.88h29.07c-.37,14.58-.93,29.23-.06,43.34.36,5.75,1.54,11.44,3.42,16.92-7.31-2.36-13.45-4.86-18.28-7.03ZM222.49,138.82c-4.75,2.14-10.9,4.65-18.25,7.02,1.85-5.45,3.02-11.12,3.38-16.91.88-14.12.3-28.77-.06-43.34h29.07c-.37,18.3,2.59,41.08-14.14,53.24Z"]
+};
+
+var EATEN_HIST = [2210, 2380, 2050, 2290, 2170, 2410];
+var BURNED_HIST = [520, 610, 470, 700, 590, 355];
+
+var state = {
+  lang: 'fr',
+  name: '',
+  scanDue: false,
+  streak: 12,
+  months: 6,
+  week: 1,
+  kcalTarget: 2340,
+  eaten: 1570,
+  burnedToday: 0,
+  rankNum: 5,
+  spirit: 310
+};
+
+function poly(vals, max, h, w) {
+  return vals.map(function (v, i) {
+    var x = 8 + i * ((w - 16) / (vals.length - 1));
+    var y = h - 8 - (Math.min(v, max) / max) * (h - 18);
+    return [x, y];
+  });
+}
+function line(p) { return p.map(function (q) { return q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' '); }
+function area(p, h) { return '8,' + h + ' ' + line(p) + ' ' + p[p.length - 1][0].toFixed(1) + ',' + h; }
+
+function renderChart() {
+  var eatSeries = EATEN_HIST.concat([state.eaten]);
+  var burnSeries = BURNED_HIST.concat([state.burnedToday]);
+  var inPts = poly(eatSeries, 2800, 104, 300);
+  var outPts = poly(burnSeries, 2800, 104, 300);
+  document.getElementById('inLine').setAttribute('points', line(inPts));
+  document.getElementById('outLine').setAttribute('points', line(outPts));
+  document.getElementById('inArea').setAttribute('points', area(inPts, 104));
+  document.getElementById('outArea').setAttribute('points', area(outPts, 104));
+  document.getElementById('inDot').style.top = (inPts[6][1] / 104 * 100).toFixed(2) + '%';
+  document.getElementById('outDot').style.top = (outPts[6][1] / 104 * 100).toFixed(2) + '%';
+
+  var avgIn = eatSeries.reduce(function (a, b) { return a + b; }, 0) / 7;
+  var avgOut = burnSeries.reduce(function (a, b) { return a + b; }, 0) / 7;
+  var balance = Math.round((state.kcalTarget + avgOut) - avgIn);
+  var d = T[state.lang];
+  var v = document.getElementById('balValue');
+  v.textContent = (balance > 0 ? '−' : '+') + Math.abs(balance);
+  v.style.color = balance > 0 ? '#F2EFE9' : '#E23B44';
+  document.getElementById('balLabel').textContent = balance > 0 ? d.deficitLabel : d.surplusLabel;
+}
+
+function renderPlan() {
+  var total = Math.round((state.months || 6) * 4.33);
+  var left = total - state.week;
+  var pct = Math.round(state.week / total * 100);
+  document.getElementById('weekNum').textContent = String(state.week);
+  document.getElementById('weekTotal').textContent = String(total);
+  document.getElementById('weeksLeft').textContent = String(left);
+  document.getElementById('planPct').textContent = String(pct);
+  document.getElementById('ringArc').setAttribute('stroke-dashoffset', String(302 - 302 * (state.week / total)));
+}
+
+function renderTabs() {
+  var d = T[state.lang];
+  var keys = ['home', 'train', 'scan', 'food', 'rank'];
+  document.getElementById('tabs').innerHTML = keys.map(function (key, i) {
+    if (key === 'scan') {
+      return '<div class="tab scan" data-tab="scan" role="button" tabindex="0" aria-label="' + d.tabs[i] + '"><div class="scanbtn"><i></i></div></div>';
+    }
+    var paths = ICONS[key].map(function (p) { return '<path d="' + p + '"></path>'; }).join('');
+    return '<div class="tab' + (key === 'home' ? ' on' : '') + '" data-tab="' + key + '" role="button" tabindex="0" aria-label="' + d.tabs[i] + '">' +
+      '<svg viewBox="0 0 300 300">' + paths + '</svg><div class="dot"></div></div>';
+  }).join('');
+  document.querySelectorAll('#tabs .tab').forEach(function (el) {
+    el.addEventListener('click', function () {
+      document.dispatchEvent(new CustomEvent('espritum:navigate', { detail: { to: el.dataset.tab } }));
+    });
+  });
+}
+
+function render(l) {
+  if (l) { state.lang = l; }
+  var d = T[state.lang];
+  document.querySelectorAll('[data-k]').forEach(function (el) { el.textContent = d[el.dataset.k]; });
+  document.getElementById('greeting').textContent = state.name.trim() ? d.hello + ' ' + state.name.trim() : d.helloAlone;
+  document.getElementById('streak').textContent = String(state.streak);
+  document.getElementById('rankNum').textContent = String(state.rankNum);
+  document.getElementById('rankName').textContent = d.rankNames[state.rankNum - 1];
+  document.getElementById('spiritPts').textContent = '+' + state.spirit;
+  document.getElementById('kcalLeft').textContent = String(state.kcalTarget - state.eaten);
+  document.getElementById('days').innerHTML = d.week.map(function (x) { return '<span>' + x + '</span>'; }).join('');
+  document.body.classList.toggle('due', state.scanDue);
+  renderPlan();
+  renderChart();
+  renderTabs();
+  document.querySelectorAll('.langbar button').forEach(function (b) {
+    b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang));
+  });
+  document.documentElement.lang = state.lang;
+  try { localStorage.setItem('espritum.lang', state.lang); } catch (e) {}
+}
+
+function emit(name, detail) { document.dispatchEvent(new CustomEvent(name, { detail: detail || {} })); }
+
+document.getElementById('scanCta').addEventListener('click', function () { emit('espritum:start-scan'); });
+document.getElementById('goProfile').addEventListener('click', function () { emit('espritum:navigate', { to: 'profile' }); });
+document.getElementById('goRank').addEventListener('click', function () { emit('espritum:navigate', { to: 'rank' }); });
+document.getElementById('goFood').addEventListener('click', function () { emit('espritum:navigate', { to: 'food' }); });
+document.getElementById('goSensei').addEventListener('click', function () { emit('espritum:navigate', { to: 'sensei' }); });
+document.querySelectorAll('.langbar button').forEach(function (b) {
+  b.addEventListener('click', function () { render(b.dataset.lang); });
+});
+
+window.EspritumHome = {
+  setLang: render,
+  setUser: function (o) {
+    if (o.name !== undefined) state.name = o.name;
+    if (o.streak !== undefined) state.streak = o.streak;
+    render();
+  },
+  setPlan: function (o) {
+    if (o.months !== undefined) state.months = o.months;
+    if (o.week !== undefined) state.week = o.week;
+    render();
+  },
+  setNutrition: function (o) {
+    if (o.target !== undefined) state.kcalTarget = o.target;
+    if (o.eaten !== undefined) state.eaten = o.eaten;
+    if (o.burnedToday !== undefined) state.burnedToday = o.burnedToday;
+    render();
+  },
+  setRank: function (o) {
+    if (o.rank !== undefined) state.rankNum = o.rank;
+    if (o.spirit !== undefined) state.spirit = o.spirit;
+    render();
+  },
+  setScanDue: function (v) { state.scanDue = !!v; render(); },
+  getState: function () { return JSON.parse(JSON.stringify(state)); }
+};
+
+var saved = 'fr';
+try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
+render(saved);
+</script>
+<script>/* ESP-NAV — intégration */
+(function () {
+  // Hydratation depuis le tunnel : prénom (inscription) + durée de plan (délai)
+  try {
+    var acc = JSON.parse(localStorage.getItem('espritum.account') || 'null');
+    if (acc && acc.name) window.EspritumHome.setUser({ name: acc.name });
+    var dl = JSON.parse(localStorage.getItem('espritum.deadline') || 'null');
+    if (dl && dl.months) window.EspritumHome.setPlan({ months: dl.months });
+  } catch (e) {}
+})();
+// Table de routage des onglets — à compléter au fur et à mesure des pages de l'app.
+var ESP_ROUTES = {
+  home: null,      // déjà ici
+  train: 'entrainement.html',
+  scan: null,      // TODO: scan hebdomadaire
+  food: 'nutrition.html',
+  rank: 'classement.html',      // TODO: classement
+  profile: 'profil.html',   // TODO: profil
+  sensei: 'sensei.html'
+};
+document.addEventListener('espritum:navigate', function (e) {
+  var to = (e.detail || {}).to;
+  var url = ESP_ROUTES[to];
+  if (url) window.location.href = url;
+});
+document.addEventListener('espritum:start-scan', function () { /* TODO: lancer le scan hebdomadaire */ });
+</script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Espritum — Analyse IA</title>
+<link rel="apple-touch-icon" href="sensei-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0B0B0C"/><text x="50" y="62" font-family="Oswald,sans-serif" font-size="34" font-weight="700" fill="#C41E26" text-anchor="middle">E</text></svg>
+</template>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:#0B0B0C;color:#F2EFE9;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+@keyframes eFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes eSpin{to{transform:rotate(360deg)}}
+@keyframes eBlink{0%,100%{opacity:.2}50%{opacity:1}}
+
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;padding:66px 26px 30px;gap:14px;animation:eFadeIn .4s ease both}
+.center{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+
+.ring{position:relative;width:184px;height:184px;flex:none}
+.ring .inner{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(242,239,233,.08)}
+.ring .orbit{position:absolute;inset:-14px;border-radius:50%;border:1px dashed rgba(196,30,38,.2);animation:eSpin 18s linear infinite}
+.ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .num b{font:700 52px/1 Oswald,sans-serif;color:#F2EFE9}
+.ring .num i{font:500 10px 'IBM Plex Mono',monospace;letter-spacing:.2em;color:rgba(242,239,233,.35);margin-top:4px;font-style:normal}
+
+.title{font:700 20px Oswald,sans-serif;text-transform:uppercase;letter-spacing:.04em;margin-top:38px;text-align:center}
+.steps{display:flex;flex-direction:column;gap:11px;margin-top:26px;width:100%}
+.step{display:flex;gap:11px;align-items:center}
+.step .mark{width:20px;height:20px;flex:none;border-radius:50%;border:1.5px solid rgba(196,30,38,.3);display:flex;align-items:center;justify-content:center;color:rgba(196,30,38,.35);animation:eBlink 1.4s ease-in-out infinite;transition:border-color .3s ease,background .3s ease,color .3s ease}
+.step .mark svg{width:11px;height:11px;display:block;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.step .label{font:400 12px 'IBM Plex Sans';color:rgba(242,239,233,.3);transition:color .3s ease}
+.step.done .mark{border-color:#C41E26;background:rgba(196,30,38,.16);color:#E23B44;animation:none}
+.step.done .label{color:#F2EFE9}
+
+.verse{flex:none;font:400 11.5px/1.6 'IBM Plex Sans';color:rgba(242,239,233,.28);text-align:center;font-style:italic}
+
+.langbar{position:absolute;top:18px;right:20px;display:flex;gap:6px;z-index:5}
+.langbar button{background:none;border:1px solid rgba(242,239,233,.12);color:rgba(242,239,233,.35);font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.12em;padding:5px 9px;border-radius:7px;cursor:pointer;transition:.2s}
+.langbar button[aria-pressed="true"]{color:#E23B44;border-color:rgba(196,30,38,.5);background:rgba(196,30,38,.12)}
+</style>
+</head>
+<body>
+<div class="screen">
+<div class="center">
+<div class="ring">
+<div class="inner"></div>
+<div class="orbit"></div>
+<svg viewBox="0 0 200 200">
+<circle cx="100" cy="100" r="94" fill="none" stroke="rgba(242,239,233,0.07)" stroke-width="4"></circle>
+<circle id="arc" cx="100" cy="100" r="94" fill="none" stroke="#C41E26" stroke-width="4" stroke-linecap="round" stroke-dasharray="590" stroke-dashoffset="590"></circle>
+</svg>
+<div class="num"><b id="pct">0</b><i>%</i></div>
+</div>
+
+<div class="title" data-k="analyzing">L'IA t'analyse</div>
+<div class="steps" id="steps"></div>
+</div>
+
+<div class="verse" data-k="analyzeVerse">« Ne savez-vous pas que votre corps est le temple du Saint-Esprit ? »</div>
+</div>
+
+<script>
+/* ------------------------------------------------------------------
+   Espritum — écran « Analyse IA ».
+   Écran d'attente : la progression est pilotée de l'extérieur.
+
+   Intégration :
+     window.EspritumAnalyze.setProgress(0..100)   position exacte
+     window.EspritumAnalyze.simulate()            démo autonome
+     window.EspritumAnalyze.stop()                arrête la démo
+     window.EspritumAnalyze.setLang('fr'|'en'|'bg')
+   Émet espritum:analyze-done quand la barre atteint 100.
+
+   Le vrai appel API doit plafonner à 92 % tant que la réponse
+   n'est pas revenue, puis appeler setProgress(100).
+   ------------------------------------------------------------------ */
+
+var T = {
+  fr: {
+    analyzing: "L'IA t'analyse",
+    analyzeVerse: "« Ne savez-vous pas que votre corps est le temple du Saint-Esprit ? »",
+    steps: ["Détection de la morphologie", "Estimation de la masse grasse", "Calcul de l'écart à l'objectif", "Génération de ton plan"]
+  },
+  en: {
+    analyzing: "The AI is reading you",
+    analyzeVerse: "\u201CDo you not know that your body is a temple of the Holy Spirit?\u201D",
+    steps: ["Detecting morphology", "Estimating body fat", "Measuring the gap", "Generating your plan"]
+  },
+  bg: {
+    analyzing: "AI те анализира",
+    analyzeVerse: "„Не знаете ли, че тялото ви е храм на Светия Дух?“",
+    steps: ["Разпознаване на морфологията", "Оценка на телесните мазнини", "Изчисляване на разликата", "Генериране на плана ти"]
+  }
+};
+
+var CHECK = '<svg viewBox="0 0 24 24"><path d="M5 12.5L10 17.5L19 7"></path></svg>';
+var arc = document.getElementById('arc');
+var pctEl = document.getElementById('pct');
+var stepsEl = document.getElementById('steps');
+var pct = 0, lang = 'fr', timer = null, fired = false;
+
+function renderSteps() {
+  var labels = T[lang].steps;
+  var at = Math.floor(pct / 25);
+  stepsEl.innerHTML = labels.map(function (l, i) {
+    return '<div class="step' + (i < at ? ' done' : '') + '"><div class="mark">' + CHECK + '</div><div class="label">' + l + '</div></div>';
+  }).join('');
+}
+
+function setProgress(v) {
+  pct = Math.max(0, Math.min(100, Math.round(v)));
+  pctEl.textContent = pct;
+  arc.setAttribute('stroke-dashoffset', String(590 - 590 * (pct / 100)));
+  renderSteps();
+  if (pct >= 100 && !fired) {
+    fired = true;
+    stop();
+    document.dispatchEvent(new CustomEvent('espritum:analyze-done'));
+  }
+  if (pct < 100) fired = false;
+}
+
+function stop() { if (timer) { clearInterval(timer); timer = null; } }
+
+function simulate(cap) {
+  var ceiling = typeof cap === 'number' ? cap : 100;
+  stop();
+  timer = setInterval(function () {
+    if (pct >= ceiling) { stop(); return; }
+    setProgress(pct + 2);
+  }, 90);
+}
+
+function render(l) {
+  lang = l;
+  var d = T[l];
+  document.querySelectorAll('[data-k]').forEach(function (el) { el.textContent = d[el.dataset.k]; });
+  renderSteps();
+  document.querySelectorAll('.langbar button').forEach(function (b) {
+    b.setAttribute('aria-pressed', String(b.dataset.lang === l));
+  });
+  document.documentElement.lang = l;
+  try { localStorage.setItem('espritum.lang', l); } catch (e) {}
+}
+
+document.querySelectorAll('.langbar button').forEach(function (b) {
+  b.addEventListener('click', function () { render(b.dataset.lang); });
+});
+
+window.EspritumAnalyze = { setProgress: setProgress, simulate: simulate, stop: stop, setLang: render, getProgress: function () { return pct; } };
+
+var saved = 'fr';
+try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
+render(saved);
+setProgress(0);
+simulate(92); // plafonne à 92% tant que l'IA n'a pas répondu (voir ESP-NAV plus bas)
+</script>
+<script>/* ESP-NAV — intégration */
+document.addEventListener('espritum:analyze-done', function () { window.location.href = 'resultat.html'; });
+
+/* Analyse IA réelle : envoie les 2 photos + questionnaire + délai à /api/analyze,
+   stocke le résultat, puis passe la barre à 100% (ce qui déclenche analyze-done). */
+(function () {
+  function readLS(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function readSS(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+
+  // Réduit une image (data-URL) à 768px max, JPEG qualité 0.72 — léger pour l'envoi + moins cher.
+  function downscale(dataUrl, max, cb) {
+    if (!dataUrl) { cb(null); return; }
+    var img = new Image();
+    img.onload = function () {
+      var w = img.width, h = img.height, s = Math.min(1, max / Math.max(w, h));
+      var cw = Math.max(1, Math.round(w * s)), ch = Math.max(1, Math.round(h * s));
+      var c = document.createElement('canvas'); c.width = cw; c.height = ch;
+      c.getContext('2d').drawImage(img, 0, 0, cw, ch);
+      try { cb(c.toDataURL('image/jpeg', 0.72)); } catch (e) { cb(null); }
+    };
+    img.onerror = function () { cb(null); };
+    img.src = dataUrl;
+  }
+  function raw(dataUrl) { if (!dataUrl) return null; var i = dataUrl.indexOf(','); return i >= 0 ? dataUrl.slice(i + 1) : dataUrl; }
+  function finish() { try { window.EspritumAnalyze.setProgress(100); } catch (e) {} }
+
+  function run() {
+    var cur = readSS('espritum.photo.current');
+    var goal = readSS('espritum.photo.goal');
+    if (!cur) { finish(); return; } // pas de photo (accès direct) → on laisse passer
+
+    var quiz = null, months = null, lang = 'fr';
+    try { quiz = JSON.parse(readLS('espritum.quiz') || 'null'); } catch (e) {}
+    try { var dl = JSON.parse(readLS('espritum.deadline') || 'null'); months = dl && dl.months; } catch (e) {}
+    lang = readLS('espritum.lang') || 'fr';
+
+    downscale(cur, 768, function (curS) {
+      downscale(goal, 768, function (goalS) {
+        fetch('/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ current: raw(curS), goal: raw(goalS), quiz: quiz, months: months, lang: lang })
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            if (data && data.aiMonths && !data.error) {
+              try { localStorage.setItem('espritum.analysis', JSON.stringify(data)); } catch (e) {}
+            }
+            finish();
+          })
+          .catch(function () { finish(); }); // en cas d'échec réseau, on continue (écran 8 en repli)
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+})();
+</script>
+</body>
+</html>
