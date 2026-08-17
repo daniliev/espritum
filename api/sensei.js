@@ -45,7 +45,7 @@ export default async function handler(req, res) {
     const body = {
       systemInstruction: { parts: [{ text: systemText }] },
       contents: contents,
-      generationConfig: { temperature: 0.85, maxOutputTokens: 300 }
+      generationConfig: { temperature: 0.85, maxOutputTokens: 1500 }
     };
 
     const upstream = await fetch(

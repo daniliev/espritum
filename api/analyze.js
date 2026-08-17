@@ -55,7 +55,7 @@ export default async function handler(req, res) {
       contents: [{ parts }],
       generationConfig: {
         temperature: 0.5,
-        maxOutputTokens: 1024,
+        maxOutputTokens: 2500,
         responseMimeType: 'application/json',
         responseSchema: {
           type: 'object',
