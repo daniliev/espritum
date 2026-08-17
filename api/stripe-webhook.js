@@ -70,7 +70,7 @@ export default async function handler(req, res) {
     var obj = (event.data && event.data.object) || {};
     if (event.type === 'checkout.session.completed') {
       var uid = obj.client_reference_id;
-      await patchUser(uid, { plan: 'premium', stripe_customer_id: obj.customer || null });
+      await patchUser(uid, { plan: 'premium' });
       await upsertSub({ user_id: uid, stripe_subscription_id: obj.subscription, stripe_customer_id: obj.customer, plan: 'premium', statut: 'active', montant: 11.99 });
     } else if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.created') {
       var u1 = obj.metadata && obj.metadata.user_id;
