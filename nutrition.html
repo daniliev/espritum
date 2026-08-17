@@ -569,17 +569,31 @@ render(saved);
 var ESP_ROUTES = {
   home: 'accueil.html',
   train: 'entrainement.html',
-  scan: null,      // TODO: scan hebdomadaire
+  scan: null,      // scan hebdomadaire (géré à part)
   food: null,      // déjà ici
-  rank: 'classement.html',      // TODO: classement
-  profile: 'profil.html',   // TODO: profil
+  rank: 'classement.html',
+  profile: 'profil.html',
   courses: 'courses.html'
 };
 document.addEventListener('espritum:navigate', function (ev) {
   var to = (ev.detail || {}).to;
+  if (to === 'scan') { window.location.href = 'photo-actuelle.html?mode=weekly'; return; }
   var url = ESP_ROUTES[to];
   if (url) window.location.href = url;
 });
+
+// Cibles nutritionnelles réelles depuis le profil
+if (window.EspAuth) {
+  window.EspAuth.getProfile().then(function (p) {
+    if (!p) return;
+    var o = {};
+    if (p.calories_objectif) o.calories = Math.round(p.calories_objectif);
+    if (p.proteines_objectif) o.protein = Math.round(p.proteines_objectif);
+    if (p.glucides_objectif) o.carbs = Math.round(p.glucides_objectif);
+    if (p.lipides_objectif) o.fat = Math.round(p.lipides_objectif);
+    if (Object.keys(o).length && window.EspritumNutrition) window.EspritumNutrition.setTargets(o);
+  }).catch(function () {});
+}
 /* Scan repas (scan-open / photo-taken / meal-added / meal-planned) : analyse IA + sauvegarde à brancher plus tard */
 </script>
 <script>/* ESP-PREMIUM-SCAN : scan repas réservé au premium */

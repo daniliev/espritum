@@ -397,6 +397,7 @@ var ESP_ROUTES = {
 };
 document.addEventListener('espritum:navigate', function (ev) {
   var to = (ev.detail || {}).to;
+  if (to === 'scan') { window.location.href = 'photo-actuelle.html?mode=weekly'; return; }
   var url = ESP_ROUTES[to];
   if (url) window.location.href = url;
 });

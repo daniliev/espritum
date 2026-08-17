@@ -167,6 +167,16 @@
       }, function () { return null; });
     },
 
+    // Tous les scans (mesures) de l'utilisateur, du plus ancien au plus récent
+    listScans: function () {
+      return sb.auth.getUser().then(function (u) {
+        if (!u.data.user) return [];
+        return sb.from('measurements').select('id,created_at,masse_grasse,photo_url')
+          .eq('user_id', u.data.user.id).order('created_at', { ascending: true })
+          .then(function (r) { return r.data || []; }, function () { return []; });
+      });
+    },
+
     // Dernier scan enregistré (mesure la plus récente) — sert de « semaine précédente »
     lastScan: function () {
       return sb.auth.getUser().then(function (u) {

@@ -263,7 +263,46 @@ document.addEventListener('espritum:navigate', function (ev) {
   var url = ESP_ROUTES[to];
   if (url) window.location.href = url;
 });
-/* Timeline photos + rang + axes : données serveur (setTimeline/setRank/setAxes) à brancher plus tard */
+
+// Données réelles : profil (prénom, série, membre depuis) + timeline des photos de scan
+if (window.EspAuth) {
+  var espLang = 'fr'; try { espLang = localStorage.getItem('espritum.lang') || 'fr'; } catch (e) {}
+  var espLocale = { fr: 'fr-FR', en: 'en-US', bg: 'bg-BG' }[espLang] || 'fr-FR';
+  var pctFmt = function (n) { return Number(n).toFixed(1).replace('.', espLang === 'en' ? '.' : ',') + ' %'; };
+
+  window.EspAuth.getProfile().then(function (p) {
+    if (!p) return;
+    var o = {};
+    if (p.prenom) o.name = p.prenom;
+    if (p.streak != null) o.streak = p.streak;
+    if (p.created_at) {
+      var s = new Date(p.created_at).toLocaleDateString(espLocale, { month: 'long', year: 'numeric' }).toUpperCase();
+      o.since = (espLang === 'en' ? 'MEMBER SINCE ' : espLang === 'bg' ? 'ЧЛЕН ОТ ' : 'MEMBRE DEPUIS ') + s;
+    }
+    if (Object.keys(o).length) window.EspritumProfile.setUser(o);
+  }).catch(function () {});
+
+  window.EspAuth.listScans().then(function (scans) {
+    if (!scans || !scans.length) return;
+    // Fourchette de masse grasse (premier → dernier scan) + nombre de semaines suivies
+    var withBf = scans.filter(function (s) { return s.masse_grasse != null; });
+    if (withBf.length) {
+      var first = withBf[0].masse_grasse, last = withBf[withBf.length - 1].masse_grasse;
+      window.EspritumProfile.setUser({ weeks: scans.length, bfRange: withBf.length > 1 ? (pctFmt(first) + ' → ' + pctFmt(last)) : pctFmt(last) });
+    }
+    // Timeline : photos réelles (URLs signées), étiquetées par semaine
+    var withPhoto = scans.filter(function (s) { return s.photo_url; });
+    if (!withPhoto.length) return;
+    var firstDate = new Date(scans[0].created_at).getTime();
+    Promise.all(withPhoto.map(function (s) { return window.EspAuth.getSignedUrl(s.photo_url); })).then(function (urls) {
+      var tl = withPhoto.map(function (s, i) {
+        var wk = Math.max(1, Math.floor((new Date(s.created_at).getTime() - firstDate) / (7 * 86400000)) + 1);
+        return { label: 'S' + wk, img: urls[i] || 'photo-avant.png' };
+      });
+      window.EspritumProfile.setTimeline(tl);
+    });
+  }).catch(function () {});
+}
 </script>
 </body>
 </html>
