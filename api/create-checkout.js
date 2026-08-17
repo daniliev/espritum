@@ -21,7 +21,7 @@ export default async function handler(req, res) {
   if (!key) return res.status(503).json({ error: 'STRIPE_SECRET_KEY not configured on server' });
 
   const priceId = process.env.STRIPE_PRICE_PREMIUM || FALLBACK_PRICE;
-  const { email } = req.body || {};
+  const { email, user_id } = req.body || {};
   const origin = req.headers.origin || 'https://app.espritum.com';
 
   const params = new URLSearchParams();
@@ -33,6 +33,11 @@ export default async function handler(req, res) {
   params.append('success_url', origin + '/accueil.html?paid=1&session_id={CHECKOUT_SESSION_ID}');
   params.append('cancel_url', origin + '/abonnement.html');
   if (email) params.append('customer_email', email);
+  // Lie la session au compte Supabase → le webhook saura qui a payé
+  if (user_id) {
+    params.append('client_reference_id', user_id);
+    params.append('subscription_data[metadata][user_id]', user_id);
+  }
 
   try {
     const resp = await fetch('https://api.stripe.com/v1/checkout/sessions', {

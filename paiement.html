@@ -364,31 +364,35 @@ var saved = 'fr';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
 render(saved);
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="esp-supabase.js"></script>
+<script>/* ESP-AUTH-GATE : il faut un compte connecté pour payer */
+if (window.EspAuth) window.EspAuth.requireAuth();</script>
 <script>/* ESP-NAV — intégration */
 /* SÉCURITÉ : les champs carte de cette page ne sont JAMAIS lus.
    Le paiement réel se fait sur Stripe Checkout (page hébergée par Stripe,
    qui collecte la carte, gère le 3D Secure, Apple Pay et l'essai de 14 j). */
 function espritumCheckout(btn) {
+  if (btn) { btn.style.opacity = '0.6'; btn.style.pointerEvents = 'none'; }
+  function fail(msg) { if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; } alert(msg); }
   var email = '';
   try { var acc = JSON.parse(localStorage.getItem('espritum.account') || 'null'); email = (acc && acc.email) || ''; } catch (e) {}
-  if (btn) { btn.style.opacity = '0.6'; btn.style.pointerEvents = 'none'; }
-  fetch('/api/create-checkout', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: email })
+  var getSess = window.EspAuth ? window.EspAuth.getSession() : Promise.resolve(null);
+  getSess.then(function (s) {
+    var uid = s && s.user && s.user.id;
+    if (s && s.user && s.user.email) email = s.user.email;
+    return fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, user_id: uid })
+    });
   })
     .then(function (r) { return r.json(); })
     .then(function (d) {
       if (d && d.url) { window.location.href = d.url; }
-      else {
-        if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; }
-        alert('Paiement indisponible pour le moment' + (d && d.error ? ' : ' + d.error : '.'));
-      }
+      else { fail('Paiement indisponible pour le moment' + (d && d.error ? ' : ' + d.error : '.')); }
     })
-    .catch(function () {
-      if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; }
-      alert('Erreur réseau, réessaie.');
-    });
+    .catch(function () { fail('Erreur réseau, réessaie.'); });
 }
 document.addEventListener('espritum:apple-pay', function () { espritumCheckout(document.getElementById('applepay')); });
 document.addEventListener('espritum:pay', function () { espritumCheckout(document.getElementById('pay')); });
