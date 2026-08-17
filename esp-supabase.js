@@ -62,6 +62,31 @@
       });
     },
 
+    // Vrai si l'utilisateur connecté est premium (abonné ou en essai)
+    isPremium: function () {
+      return sb.auth.getUser().then(function (u) {
+        if (!u.data.user) return false;
+        return sb.from('users').select('plan').eq('id', u.data.user.id).single().then(
+          function (r) { return !!(r.data && r.data.plan === 'premium'); },
+          function () { return false; }
+        );
+      });
+    },
+
+    // Protège une page PREMIUM : connexion requise, et si pas premium → page d'abonnement
+    requirePremium: function (redirect) {
+      return sb.auth.getSession().then(function (r) {
+        if (!r.data.session) { window.location.replace('compte.html?mode=login'); return false; }
+        return sb.from('users').select('plan').eq('id', r.data.session.user.id).single().then(
+          function (rr) {
+            if (!rr.data || rr.data.plan !== 'premium') { window.location.replace(redirect || 'abonnement.html?upgrade=1'); return false; }
+            return true;
+          },
+          function () { window.location.replace(redirect || 'abonnement.html?upgrade=1'); return false; }
+        );
+      });
+    },
+
     // Profil de l'utilisateur connecté
     getProfile: function () {
       return sb.auth.getUser().then(function (u) {

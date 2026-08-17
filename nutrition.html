@@ -582,5 +582,13 @@ document.addEventListener('espritum:navigate', function (ev) {
 });
 /* Scan repas (scan-open / photo-taken / meal-added / meal-planned) : analyse IA + sauvegarde à brancher plus tard */
 </script>
+<script>/* ESP-PREMIUM-SCAN : scan repas réservé au premium */
+if (window.EspAuth) window.EspAuth.isPremium().then(function (prem) {
+  if (!prem) {
+    var b = document.getElementById('openScan');
+    if (b) b.addEventListener('click', function (e) { e.stopImmediatePropagation(); window.location.href = 'abonnement.html?upgrade=1'; }, true);
+  }
+});
+</script>
 </body>
 </html>
