@@ -251,9 +251,12 @@ function captureFromVideo() {
   showPhoto(canvas.toDataURL('image/jpeg', 0.9));
 }
 
-document.getElementById('shutter').addEventListener('click', function () {
-  if (liveMode) captureFromVideo();
-  else fileInput.click();
+document.getElementById('shutter').addEventListener('click', async function () {
+  if (liveMode) { captureFromVideo(); return; }
+  // Caméra pas encore active : on la (re)tente AVEC le geste utilisateur.
+  // iOS n'autorise la caméra qu'après un tap et affiche la demande d'autorisation à ce moment.
+  var ok = await startCamera();
+  if (!ok) fileInput.click(); // vraiment refusée / indisponible → appareil photo natif
 });
 
 fileInput.addEventListener('change', function () {

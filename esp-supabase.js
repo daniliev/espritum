@@ -102,6 +102,62 @@
           if (Object.keys(m).length) { m.user_id = uid; return sb.from('measurements').insert(m); }
         });
       });
+    },
+
+    // Upload des photos (corps actuel + objectif) dans le Storage privé
+    uploadScanPhotos: function () {
+      return sb.auth.getUser().then(function (u) {
+        if (!u.data.user) return;
+        var uid = u.data.user.id;
+        function ss(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+        var cur = ss('espritum.photo.current');
+        var goal = ss('espritum.photo.goal');
+        var tasks = [];
+        if (cur) tasks.push(dataUrlToScaledBlob(cur, 1080).then(function (b) {
+          if (!b) return;
+          var path = uid + '/current.jpg';
+          return sb.storage.from('scans').upload(path, b, { contentType: 'image/jpeg', upsert: true }).then(function () {
+            // relie la photo à la mesure la plus récente (le scan initial)
+            return sb.from('measurements').select('id').eq('user_id', uid).order('created_at', { ascending: false }).limit(1).then(function (r) {
+              if (r.data && r.data[0]) return sb.from('measurements').update({ photo_url: path }).eq('id', r.data[0].id);
+            });
+          });
+        }));
+        if (goal) tasks.push(dataUrlToScaledBlob(goal, 1080).then(function (b) {
+          if (!b) return;
+          var path = uid + '/goal.jpg';
+          return sb.storage.from('scans').upload(path, b, { contentType: 'image/jpeg', upsert: true }).then(function () {
+            return sb.from('users').update({ photo_objectif: path }).eq('id', uid);
+          });
+        }));
+        return Promise.all(tasks);
+      });
+    },
+
+    // URL signée temporaire (1h) pour afficher une photo privée
+    getSignedUrl: function (path) {
+      if (!path) return Promise.resolve(null);
+      return sb.storage.from('scans').createSignedUrl(path, 3600).then(function (r) {
+        return (r.data && r.data.signedUrl) || null;
+      }, function () { return null; });
     }
   };
+
+  // data-URL → Blob JPEG redimensionné (max px sur le plus grand côté)
+  function dataUrlToScaledBlob(dataUrl, max) {
+    return new Promise(function (resolve) {
+      if (!dataUrl) { resolve(null); return; }
+      var img = new Image();
+      img.onload = function () {
+        var w = img.width, h = img.height, s = Math.min(1, max / Math.max(w, h));
+        var c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(w * s));
+        c.height = Math.max(1, Math.round(h * s));
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        try { c.toBlob(function (b) { resolve(b); }, 'image/jpeg', 0.85); } catch (e) { resolve(null); }
+      };
+      img.onerror = function () { resolve(null); };
+      img.src = dataUrl;
+    });
+  }
 })();

@@ -328,6 +328,8 @@ document.addEventListener('espritum:signup', function (e) {
     try { localStorage.setItem('espritum.account', JSON.stringify({ name: d.name, email: d.email, country: d.country, city: d.city })); } catch (err) {}
     // Sauvegarde le questionnaire + délai + résultat IA du tunnel sur le profil (non bloquant)
     window.EspAuth.saveOnboarding().catch(function () {}).then(function () {
+      return window.EspAuth.uploadScanPhotos().catch(function () {});
+    }).then(function () {
       window.location.href = 'abonnement.html';
     });
   }).catch(function () { espShowError('Erreur réseau, réessaie.'); });
