@@ -59,9 +59,6 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 .cta{flex:none;padding:16px;border-radius:14px;background:#C41E26;color:#F6F2EE;text-align:center;font:600 13px 'IBM Plex Sans';cursor:pointer;box-shadow:0 12px 30px -12px rgba(196,30,38,.7);transition:.2s;border:none;width:100%;font-family:'IBM Plex Sans',system-ui,sans-serif}
 .cta:hover{background:#E23B44}
 
-.langbar{position:absolute;top:18px;right:20px;display:flex;gap:6px;z-index:32}
-.langbar button{background:none;border:1px solid rgba(242,239,233,.12);color:rgba(242,239,233,.35);font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.12em;padding:5px 9px;border-radius:7px;cursor:pointer}
-.langbar button[aria-pressed="true"]{color:#E23B44;border-color:rgba(196,30,38,.5);background:rgba(196,30,38,.12)}
 </style>
 </head>
 <body>
@@ -147,18 +144,12 @@ function render(l) {
       CHANGE_ICONS[i % CHANGE_ICONS.length] + '"></path></svg></div><span class="tx">' + c + '</span></div>';
   }).join('');
 
-  document.querySelectorAll('.langbar button').forEach(function (b) {
-    b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang));
-  });
   document.documentElement.lang = state.lang;
   try { localStorage.setItem('espritum.lang', state.lang); } catch (e) {}
 }
 
 document.getElementById('apply').addEventListener('click', function () {
   document.dispatchEvent(new CustomEvent('espritum:apply-plan'));
-});
-document.querySelectorAll('.langbar button').forEach(function (b) {
-  b.addEventListener('click', function () { render(b.dataset.lang); });
 });
 
 window.EspritumAdjust = {
