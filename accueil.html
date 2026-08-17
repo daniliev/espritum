@@ -440,6 +440,18 @@ render(saved);
     var dl = JSON.parse(localStorage.getItem('espritum.deadline') || 'null');
     if (dl && dl.months) window.EspritumHome.setPlan({ months: dl.months });
   } catch (e) {}
+  // Données réelles depuis la base (profil de l'utilisateur connecté) — prime sur le localStorage
+  if (window.EspAuth) {
+    window.EspAuth.getProfile().then(function (p) {
+      if (!p) return;
+      var o = {};
+      if (p.prenom) o.name = p.prenom;
+      if (p.streak != null) o.streak = p.streak;
+      if (Object.keys(o).length) window.EspritumHome.setUser(o);
+      if (p.delai_mois) window.EspritumHome.setPlan({ months: Number(p.delai_mois) });
+      if (p.calories_objectif) window.EspritumHome.setNutrition({ target: p.calories_objectif });
+    }).catch(function () {});
+  }
 })();
 // Table de routage des onglets — à compléter au fur et à mesure des pages de l'app.
 var ESP_ROUTES = {

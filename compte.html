@@ -326,7 +326,10 @@ document.addEventListener('espritum:signup', function (e) {
     if (r && r.needsConfirm) { espShowError('Vérifie ta boîte mail pour confirmer ton compte.'); return; }
     // Prénom/email/pays/ville gardés pour la suite (prix courses, nom classement…). Jamais le mot de passe.
     try { localStorage.setItem('espritum.account', JSON.stringify({ name: d.name, email: d.email, country: d.country, city: d.city })); } catch (err) {}
-    window.location.href = 'abonnement.html';
+    // Sauvegarde le questionnaire + délai + résultat IA du tunnel sur le profil (non bloquant)
+    window.EspAuth.saveOnboarding().catch(function () {}).then(function () {
+      window.location.href = 'abonnement.html';
+    });
   }).catch(function () { espShowError('Erreur réseau, réessaie.'); });
 });
 

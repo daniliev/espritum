@@ -70,6 +70,38 @@
           return r.data || null;
         });
       });
+    },
+
+    // Sauvegarde les données du tunnel (questionnaire, délai, résultat IA) sur le profil + 1ère mesure
+    saveOnboarding: function () {
+      return sb.auth.getUser().then(function (u) {
+        if (!u.data.user) return;
+        var uid = u.data.user.id;
+        function ls(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+        var quiz = ls('espritum.quiz');
+        var deadline = ls('espritum.deadline');
+        var res = ls('espritum.analysis');
+        var upd = {};
+        if (quiz) {
+          upd.questionnaire = quiz;
+          if (quiz.weight) upd.poids = parseFloat(quiz.weight);
+          if (quiz.height) upd.taille = parseFloat(quiz.height);
+          if (quiz.goal) upd.objectif = quiz.goal;
+          if (quiz.activity) upd.niveau_activite = quiz.activity;
+        }
+        if (deadline && deadline.months) upd.delai_mois = deadline.months;
+        if (res) {
+          upd.resultat_ia = res;
+          if (res.bodyFatCurrent) upd.masse_grasse = res.bodyFatCurrent;
+        }
+        var updP = Object.keys(upd).length ? sb.from('users').update(upd).eq('id', uid) : Promise.resolve();
+        return Promise.resolve(updP).then(function () {
+          var m = {};
+          if (quiz && quiz.weight) m.poids = parseFloat(quiz.weight);
+          if (res && res.bodyFatCurrent) m.masse_grasse = res.bodyFatCurrent;
+          if (Object.keys(m).length) { m.user_id = uid; return sb.from('measurements').insert(m); }
+        });
+      });
     }
   };
 })();
