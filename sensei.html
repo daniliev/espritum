@@ -251,5 +251,23 @@ document.addEventListener('espritum:navigate', function (ev) {
 /* espritum:sensei-message : réponses scriptées (maquette).
    Le vrai coach IA se branchera via EspritumSensei.setResponder(async (texte, contexte) => réponse). */
 </script>
+<script>/* ESP-SENSEI : branche le vrai coach IA (Gemini) */
+(function () {
+  if (!window.EspritumSensei) return;
+  var profile = null;
+  if (window.EspAuth) { window.EspAuth.getProfile().then(function (p) { profile = p; }).catch(function () {}); }
+  window.EspritumSensei.setResponder(function (text, ctx) {
+    var thread = (ctx && ctx.thread) || [];
+    var messages = thread
+      .filter(function (m) { return m.from === 'me' || m.from === 'bot'; })
+      .map(function (m) { return { role: m.from === 'bot' ? 'model' : 'user', text: m.text }; });
+    return fetch('/api/sensei', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: messages, lang: (ctx && ctx.lang) || 'fr', profile: profile })
+    }).then(function (r) { return r.json(); })
+      .then(function (d) { if (d && d.reply) return d.reply; throw new Error('no reply'); });
+  });
+})();
+</script>
 </body>
 </html>
