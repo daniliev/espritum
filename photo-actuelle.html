@@ -130,7 +130,7 @@ body{margin:0;background:#0B0B0C;color:#F2EFE9;font-family:'IBM Plex Sans',syste
 </div>
 </div>
 
-<input type="file" id="fileInput" accept="image/*" capture="user">
+<input type="file" id="fileInput" accept="image/*" capture="environment">
 <canvas id="canvas" hidden></canvas>
 
 <script>
@@ -138,7 +138,7 @@ body{margin:0;background:#0B0B0C;color:#F2EFE9;font-family:'IBM Plex Sans',syste
    Espritum — écran « Photo actuelle » avec overlay caméra.
 
    Comportement :
-   1. Tente getUserMedia (caméra frontale) → flux vidéo en direct
+   1. Tente getUserMedia (caméra arrière) → flux vidéo en direct
       sous la silhouette. Nécessite HTTPS (ou localhost).
    2. Si refusé / indisponible (fichier local, permission refusée),
       bascule sur <input type="file" capture> → appareil photo natif.
@@ -211,7 +211,7 @@ async function startCamera() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return false;
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: { ideal: 1080 }, height: { ideal: 1920 } },
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1080 }, height: { ideal: 1920 } },
       audio: false
     });
     video.srcObject = stream;
