@@ -545,7 +545,7 @@ function saveMeal(slot, m) {
   if (!window.EspAuth || !window.espSB) return;
   window.EspAuth.getSession().then(function (s) {
     if (!s) return;
-    window.espSB.from('meals').insert({
+    return window.espSB.from('meals').insert({
       user_id: s.user.id, nom: m.name || 'Repas', type_repas: ['petit_dejeuner', 'dejeuner', 'diner'][slot] || 'repas',
       calories: m.kcal, proteines: m.p, glucides: m.c, lipides: m.f, quantite: 1
     });
