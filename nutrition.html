@@ -352,7 +352,7 @@ if (mealFile) mealFile.addEventListener('change', function () {
   var fl = mealFile.files && mealFile.files[0];
   if (!fl) return;
   var r = new FileReader();
-  r.onload = function () { state.mealPhoto = r.result; showMealShot(); openSheet('res'); emit('espritum:photo-taken'); };
+  r.onload = function () { state.mealPhoto = r.result; showMealShot(); openSheet('res'); emit('espritum:photo-taken'); analyzeMeal(); };
   r.readAsDataURL(fl);
 });
 var EAT_HIST = [2210, 2380, 2050, 2290, 2170, 2410];
@@ -360,7 +360,7 @@ var MACRO_EMOJI = ["🥩", "🍞", "🥑"];
 
 var state = {
   lang:'fr', streak:12, kcalTarget:2340, macroTarget:{ p:190, c:260, f:70 },
-  shots:{}, planned:{}, grams:{}, slot:null, recoSlot:null, coursesCount:20
+  shots:{}, scanned:{}, aiDetected:null, planned:{}, grams:{}, slot:null, recoSlot:null, coursesCount:20
 };
 
 function guessSlot() { var h = new Date().getHours(); return h < 11 ? 0 : (h < 16 ? 1 : 2); }
@@ -369,11 +369,34 @@ function d() { return T[state.lang]; }
 
 function mealsView() {
   return d().meals.map(function (m, i) {
-    var shot = state.shots[i] || null, plan = state.planned[i];
-    return { slot: d().slots[i], n: shot ? m.n : (plan ? plan.n : m.n), k: shot ? m.k : (plan ? plan.k : m.k), shot: shot };
+    var shot = state.shots[i] || null, plan = state.planned[i], sc = state.scanned[i];
+    var n = shot ? ((sc && sc.name) || m.n) : (plan ? plan.n : m.n);
+    var k = shot ? ((sc && sc.kcal != null) ? sc.kcal : m.k) : (plan ? plan.k : m.k);
+    return { slot: d().slots[i], n: n, k: k, shot: shot };
   });
 }
 function eatenTotal() { return mealsView().reduce(function (a, m) { return a + (m.shot ? m.k : 0); }, 0); }
+
+// Aliments détectés (IA si dispo, sinon démo) normalisés {n,g,k,p,c,f}
+function detectedItems() {
+  if (state.aiDetected) return state.aiDetected;
+  return d().detected.map(function (x) { return { n: x.n, g: x.g, k: x.k, p: 0, c: 0, f: 0 }; });
+}
+function scanTotals() {
+  return detectedItems().reduce(function (t, x, i) {
+    var g = state.grams[i] === undefined ? x.g : state.grams[i];
+    var r = x.g ? (g / x.g) : 1;
+    t.k += (x.k || 0) * r; t.p += (x.p || 0) * r; t.c += (x.c || 0) * r; t.f += (x.f || 0) * r;
+    return t;
+  }, { k: 0, p: 0, c: 0, f: 0 });
+}
+function consumedMacros() {
+  var m = { p: 0, c: 0, f: 0 };
+  Object.keys(state.scanned).forEach(function (i) {
+    if (state.shots[i]) { var s = state.scanned[i]; m.p += s.p || 0; m.c += s.c || 0; m.f += s.f || 0; }
+  });
+  return m;
+}
 
 function poly(vals, max, h, w) {
   return vals.map(function (v, i) { return [8 + i * ((w - 16) / (vals.length - 1)), h - 8 - (Math.min(v, max) / max) * (h - 18)]; });
@@ -393,12 +416,15 @@ function renderTop() {
   document.getElementById('targetLine').setAttribute('y1', ty.toFixed(1));
   document.getElementById('targetLine').setAttribute('y2', ty.toFixed(1));
 
-  var ratio = Math.min(1, eaten / (state.kcalTarget || 1));
+  var cm = consumedMacros();
   var g = [state.macroTarget.p, state.macroTarget.c, state.macroTarget.f];
+  var eatenM = [cm.p, cm.c, cm.f];
   document.getElementById('macros').innerHTML = d().macros.map(function (k, i) {
+    var val = Math.round(eatenM[i]);
+    var pct = g[i] ? Math.min(100, Math.round(val / g[i] * 100)) : 0;
     return '<div class="macro"><div class="hd"><span>' + MACRO_EMOJI[i] + '</span><span>' + k + '</span></div>' +
-      '<span class="val">' + Math.round(g[i] * ratio) + ' / ' + g[i] + ' g</span>' +
-      '<div class="bar"><i style="width:' + Math.round(ratio * 100) + '%"></i></div></div>';
+      '<span class="val">' + val + ' / ' + g[i] + ' g</span>' +
+      '<div class="bar"><i style="width:' + pct + '%"></i></div></div>';
   }).join('');
 }
 
@@ -418,15 +444,11 @@ function renderMeals() {
 }
 
 function renderResult() {
-  var det = d().detected;
-  var total = det.reduce(function (a, x, i) {
-    var g = state.grams[i] === undefined ? x.g : state.grams[i];
-    return a + x.k * (g / x.g);
-  }, 0);
-  document.getElementById('scanTotal').textContent = String(Math.round(total));
+  var det = detectedItems();
+  document.getElementById('scanTotal').textContent = String(Math.round(scanTotals().k));
   document.getElementById('items').innerHTML = det.map(function (x, i) {
-    var max = x.g * 2, g = state.grams[i] === undefined ? x.g : state.grams[i];
-    var pct = (g / max * 100).toFixed(1) + '%';
+    var max = (x.g || 100) * 2, g = state.grams[i] === undefined ? x.g : state.grams[i];
+    var pct = (max ? (g / max * 100) : 0).toFixed(1) + '%';
     return '<div class="item"><div class="hd"><b>' + x.n + '</b><span>' + g + ' ' + d().gramUnit + '</span></div>' +
       '<div class="slider" data-slider="' + i + '"><div class="ticks"></div><div class="rail"></div>' +
       '<div class="fill" style="width:' + pct + '"></div><div class="dot" style="left:' + pct + '"></div></div></div>';
@@ -475,6 +497,61 @@ function openSheet(name) {
   if (name) document.body.classList.add(name);
 }
 
+// Réduit la photo (data-URL) à 768px, JPEG léger — renvoie le base64 nu pour l'API
+function mealB64(cb) {
+  var src = state.mealPhoto;
+  if (!src) { cb(null); return; }
+  var img = new Image();
+  img.onload = function () {
+    var s = Math.min(1, 768 / Math.max(img.width, img.height));
+    var c = document.createElement('canvas');
+    c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    try { var u = c.toDataURL('image/jpeg', 0.72); cb(u.slice(u.indexOf(',') + 1)); } catch (e) { cb(null); }
+  };
+  img.onerror = function () { cb(null); };
+  img.src = src;
+}
+
+// Analyse le repas via /api/meal et remplit le sheet résultat
+function analyzeMeal() {
+  var L = { fr: { a: 'Analyse en cours…', nf: 'Aucun aliment détecté', er: 'Analyse impossible, réessaie' },
+            en: { a: 'Analyzing…', nf: 'No food detected', er: 'Analysis failed, retry' },
+            bg: { a: 'Анализ…', nf: 'Няма разпозната храна', er: 'Неуспешен анализ' } }[state.lang]
+        || { a: 'Analyse en cours…', nf: 'Aucun aliment détecté', er: 'Analyse impossible, réessaie' };
+  state.aiDetected = null; state.grams = {};
+  document.getElementById('scanTotal').textContent = '…';
+  document.getElementById('items').innerHTML = '<div class="item"><div class="hd"><b>' + L.a + '</b></div></div>';
+  mealB64(function (b64) {
+    if (!b64) { state.aiDetected = [{ n: L.er, g: 0, k: 0, p: 0, c: 0, f: 0 }]; renderResult(); return; }
+    fetch('/api/meal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image: b64, lang: state.lang }) })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data && Array.isArray(data.items) && data.items.length) {
+          state.aiDetected = data.items.map(function (x) {
+            return { n: x.name, g: Math.round(x.grams) || 0, k: Math.round(x.kcal) || 0, p: Math.round(x.protein) || 0, c: Math.round(x.carbs) || 0, f: Math.round(x.fat) || 0 };
+          });
+        } else {
+          state.aiDetected = [{ n: L.nf, g: 0, k: 0, p: 0, c: 0, f: 0 }];
+        }
+        state.grams = {}; renderResult();
+      })
+      .catch(function () { state.aiDetected = [{ n: L.er, g: 0, k: 0, p: 0, c: 0, f: 0 }]; renderResult(); });
+  });
+}
+
+// Enregistre le repas dans Supabase (table meals)
+function saveMeal(slot, m) {
+  if (!window.EspAuth || !window.espSB) return;
+  window.EspAuth.getSession().then(function (s) {
+    if (!s) return;
+    window.espSB.from('meals').insert({
+      user_id: s.user.id, nom: m.name || 'Repas', type_repas: ['petit_dejeuner', 'dejeuner', 'diner'][slot] || 'repas',
+      calories: m.kcal, proteines: m.p, glucides: m.c, lipides: m.f, quantite: 1
+    });
+  }).catch(function () {});
+}
+
 document.getElementById('openScan').addEventListener('click', function () {
   state.grams = {}; state.slot = null;
   renderResult();
@@ -483,13 +560,19 @@ document.getElementById('openScan').addEventListener('click', function () {
   emit('espritum:scan-open');
 });
 document.getElementById('shoot').addEventListener('click', function () {
-  if (mealLive) { state.mealPhoto = captureMeal(); showMealShot(); stopMealCam(); openSheet('res'); emit('espritum:photo-taken'); }
+  if (mealLive) { state.mealPhoto = captureMeal(); showMealShot(); stopMealCam(); openSheet('res'); emit('espritum:photo-taken'); analyzeMeal(); }
   else { mealFile.click(); }
 });
 document.getElementById('retake').addEventListener('click', function () { openSheet('cam'); startMealCam(); });
 document.getElementById('confirm').addEventListener('click', function () {
   var slot = state.slot === null ? guessSlot() : state.slot;
+  var t = scanTotals(), det = detectedItems();
   state.shots[slot] = state.mealPhoto || MEAL_SHOTS[slot];
+  state.scanned[slot] = {
+    name: det.map(function (x) { return x.n; }).slice(0, 3).join(', '),
+    kcal: Math.round(t.k), p: Math.round(t.p), c: Math.round(t.c), f: Math.round(t.f)
+  };
+  saveMeal(slot, state.scanned[slot]);
   openSheet(null);
   emit('espritum:meal-added', { slot: slot, grams: state.grams });
   render();
