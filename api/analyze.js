@@ -38,8 +38,13 @@ export default async function handler(req, res) {
       'motivant, jamais complaisant mais toujours respectueux. ' +
       'On te donne deux photos : la PREMIÈRE est le corps ACTUEL de l\'utilisateur, ' +
       'la SECONDE (si présente) est son corps de RÊVE (objectif). ' +
+      'VALIDATION D\'ABORD (essentiel) : ' +
+      'currentUsable = true UNIQUEMENT si la première photo montre clairement le CORPS d\'une personne (torse/buste ou corps entier) exploitable pour estimer la composition corporelle. ' +
+      'Mets currentUsable = false si c\'est un simple visage/selfie de tête, un objet, un animal, un paysage, de la nourriture, un écran, ou toute image qui n\'est pas un corps humain analysable. ' +
+      'goalUsable = true seulement si la seconde photo montre un PHYSIQUE humain (un corps de référence à atteindre) ; false si ce n\'est pas un corps (photo random, objet, scène, etc.). S\'il n\'y a pas de seconde photo, goalUsable = true. ' +
+      'Si currentUsable est false, renvoie bodyFatCurrent 0, aiMonths 0, un verdict vide et un tableau advice vide, et explique le souci dans "issue" (en ' + langName + '). NE FABRIQUE JAMAIS une analyse crédible sur une photo qui n\'est pas un corps. ' +
       'Profil de l\'utilisateur : ' + profile + '. ' +
-      'Analyse la première photo : estime son pourcentage de masse grasse (bodyFatCurrent) et sa morphologie. ' +
+      'Si (et seulement si) currentUsable est true : analyse la première photo : estime son pourcentage de masse grasse (bodyFatCurrent) et sa morphologie. ' +
       'Compare à l\'objectif et au profil, puis calcule un délai RÉALISTE en mois (aiMonths) pour atteindre ce corps ' +
       '(sois honnête : c\'est souvent différent du délai souhaité). ' +
       'Rédige un "verdict" percutant façon Sensei (2 à 3 phrases). ' +
@@ -60,6 +65,9 @@ export default async function handler(req, res) {
         responseSchema: {
           type: 'object',
           properties: {
+            currentUsable: { type: 'boolean' },
+            goalUsable: { type: 'boolean' },
+            issue: { type: 'string' },
             bodyFatCurrent: { type: 'number' },
             aiMonths: { type: 'number' },
             verdict: { type: 'string' },
@@ -75,7 +83,7 @@ export default async function handler(req, res) {
               }
             }
           },
-          required: ['bodyFatCurrent', 'aiMonths', 'verdict', 'advice']
+          required: ['currentUsable', 'goalUsable', 'bodyFatCurrent', 'aiMonths', 'verdict', 'advice']
         }
       }
     };

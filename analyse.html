@@ -61,6 +61,14 @@ body{margin:0;background:#0B0B0C;color:#F2EFE9;font-family:'IBM Plex Sans',syste
     box-shadow: 0 40px 90px -30px rgba(0,0,0,.9), 0 0 0 1px rgba(242,239,233,.07);
   }
 }
+.errbox{display:none;flex-direction:column;align-items:center;text-align:center;gap:13px;padding:0 30px;max-width:340px}
+body.error .center,body.error .verse{display:none}
+body.error .errbox{display:flex}
+.erricon{width:58px;height:58px;border-radius:50%;background:rgba(196,30,38,.12);border:1px solid rgba(196,30,38,.4);display:flex;align-items:center;justify-content:center}
+.errtitle{font:600 20px 'Bebas Neue',Oswald,sans-serif;letter-spacing:.05em;color:#F6F2EE}
+.errmsg{font:400 13px/1.5 'IBM Plex Sans',sans-serif;color:rgba(242,239,233,.6)}
+.errbtn{margin-top:6px;padding:13px 28px;border:none;border-radius:12px;background:#C41E26;color:#F6F2EE;font:600 13px 'IBM Plex Sans',sans-serif;letter-spacing:.02em;cursor:pointer}
+.errbtn:hover{background:#E23B44}
 </style>
 </head>
 <body>
@@ -78,6 +86,13 @@ body{margin:0;background:#0B0B0C;color:#F2EFE9;font-family:'IBM Plex Sans',syste
 
 <div class="title" data-k="analyzing">L'IA t'analyse</div>
 <div class="steps" id="steps"></div>
+</div>
+
+<div class="errbox" id="errbox">
+<div class="erricon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#E23B44" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 17h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg></div>
+<div class="errtitle" id="errTitle">Photo non exploitable</div>
+<div class="errmsg" id="errMsg"></div>
+<button type="button" class="errbtn" id="errRetake">Reprendre la photo</button>
 </div>
 
 <div class="verse" data-k="analyzeVerse">« Ne savez-vous pas que votre corps est le temple du Saint-Esprit ? »</div>
@@ -258,6 +273,10 @@ document.addEventListener('espritum:analyze-done', function () {
         })
           .then(function (r) { return r.json(); })
           .then(function (data) {
+            // Photos non exploitables (pas un corps) → on refuse l'analyse
+            if (data && !data.error && (data.currentUsable === false || data.goalUsable === false)) {
+              showAnalyzeError(data); return;
+            }
             if (data && data.aiMonths && !data.error) {
               try { localStorage.setItem('espritum.analysis', JSON.stringify(data)); } catch (e) {}
             }
@@ -266,6 +285,24 @@ document.addEventListener('espritum:analyze-done', function () {
           .catch(function () { finish(); }); // en cas d'échec réseau, on continue (écran 8 en repli)
       });
     });
+  }
+
+  // Écran d'erreur : photo non exploitable → bouton pour reprendre la bonne photo
+  function showAnalyzeError(data) {
+    var lang = readLS('espritum.lang') || 'fr';
+    var L = {
+      fr: { t: 'Photo non exploitable', d: 'Cette photo ne montre pas un corps analysable. Reprends une vraie photo de toi.', dg: 'La photo objectif doit montrer un physique humain. Choisis-en une autre.', b: 'Reprendre la photo' },
+      en: { t: 'Unusable photo', d: 'This photo doesn\'t show an analysable body. Retake a real photo of yourself.', dg: 'The goal photo must show a human physique. Pick another one.', b: 'Retake photo' },
+      bg: { t: 'Неизползваема снимка', d: 'Тази снимка не показва тяло за анализ. Направи истинска твоя снимка.', dg: 'Целевата снимка трябва да показва физика. Избери друга.', b: 'Направи отново' }
+    }[lang] || { t: 'Photo non exploitable', d: 'Cette photo ne montre pas un corps analysable. Reprends une vraie photo de toi.', dg: 'La photo objectif doit montrer un physique humain.', b: 'Reprendre la photo' };
+    var goalOnly = (data.currentUsable !== false && data.goalUsable === false);
+    document.getElementById('errTitle').textContent = L.t;
+    document.getElementById('errMsg').textContent = data.issue || (goalOnly ? L.dg : L.d);
+    var btn = document.getElementById('errRetake');
+    btn.textContent = L.b;
+    btn.onclick = function () { window.location.href = goalOnly ? 'corps-de-reve.html' : 'photo-actuelle.html'; };
+    try { window.EspritumAnalyze.stop(); } catch (e) {}
+    document.body.classList.add('error');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
