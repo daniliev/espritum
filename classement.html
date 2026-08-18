@@ -41,6 +41,8 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 .segs div{flex:1;text-align:center;padding:12px 0;border-radius:11px;color:rgba(242,239,233,.34);font:600 10px 'IBM Plex Mono',monospace;letter-spacing:.14em;cursor:pointer;transition:.2s}
 .segs div:hover{color:#F2EFE9}
 .segs div.on{background:#C41E26;color:#F6F2EE;box-shadow:0 6px 20px -8px rgba(196,30,38,.9)}
+.segs div.locked{opacity:.34;pointer-events:none;cursor:default}
+.segs div.locked:after{content:"·";display:block;font-size:9px;letter-spacing:0;opacity:.7}
 
 .me{flex:none;display:flex;align-items:center;gap:14px;padding:15px 18px;border-radius:17px;background:linear-gradient(120deg,rgba(196,30,38,.19),rgba(196,30,38,.05));border:1px solid rgba(196,30,38,.45)}
 .me .pos{font:700 30px/1 Oswald,sans-serif;color:#E23B44;flex:none}
@@ -275,9 +277,11 @@ function detailOf(b) {
 function nameOf(b) { return b.me ? myLabel() : b.name; }
 function iniOf(b) { return b.me ? (state.name.trim() ? state.name.trim().slice(0, 2).toUpperCase() : 'ES') : b.ini; }
 
+var LOCKED_TABS = ['force', 'endurance', 'friends']; // axes pas encore mesurés (logging à venir)
 function renderSegs() {
   document.getElementById('segs').innerHTML = d().tabs.map(function (label, i) {
-    return '<div class="' + (TAB_KEYS[i] === state.tab ? 'on' : '') + '" data-tab="' + TAB_KEYS[i] + '">' + label + '</div>';
+    var cls = (TAB_KEYS[i] === state.tab ? 'on' : '') + (LOCKED_TABS.indexOf(TAB_KEYS[i]) >= 0 ? ' locked' : '');
+    return '<div class="' + cls.trim() + '" data-tab="' + TAB_KEYS[i] + '">' + label + '</div>';
   }).join('');
 }
 
@@ -381,11 +385,28 @@ render(saved);
 </script>
 <script>/* ESP-NAV — intégration */
 (function () {
-  // Nom du compte → carte « TOI » du classement
+  // Nom du compte → carte « TOI » (fallback avant les données serveur)
   try {
     var acc = JSON.parse(localStorage.getItem('espritum.account') || 'null');
     if (acc && acc.name && window.EspritumRanking) window.EspritumRanking.setMe({ name: acc.name });
   } catch (e) {}
+
+  // Classement Esprit RÉEL : fonction serveur sécurisée get_leaderboard (prénom + score uniquement)
+  function initiales(n) { n = (n || '').trim(); if (!n) return 'ES'; var p = n.split(/\s+/); return (p.length > 1 ? (p[0][0] + p[1][0]) : n.slice(0, 2)).toUpperCase(); }
+  function tierOf(score) { var TH = [0, 200, 400, 700, 1000, 1400, 2000], r = 1; for (var i = 0; i < TH.length; i++) if (score >= TH[i]) r = i + 1; return r; }
+
+  if (window.espSB) {
+    window.espSB.rpc('get_leaderboard').then(function (res) {
+      var data = res && res.data;
+      if (!data || !data.length) return;
+      var rows = data.map(function (u) {
+        return { name: u.prenom, ini: initiales(u.prenom), pts: u.score, s: u.scans, st: u.streak, me: !!u.is_me };
+      });
+      window.EspritumRanking.setBoard('progress', rows);
+      var mine = rows.filter(function (r) { return r.me; })[0];
+      if (mine) window.EspritumRanking.setMe({ name: mine.name, streak: mine.st, rank: tierOf(mine.pts), esprit: mine.pts, force: '—', endurance: '—' });
+    }).catch(function () {});
+  }
 })();
 var ESP_ROUTES = {
   home: 'accueil.html',
@@ -401,7 +422,7 @@ document.addEventListener('espritum:navigate', function (ev) {
   var url = ESP_ROUTES[to];
   if (url) window.location.href = url;
 });
-/* espritum:board-tab : classement calculé côté serveur (setBoard/setMe) à brancher plus tard */
+/* Onglet Progression = classement Esprit réel (get_leaderboard). Force/Endurance/Amis verrouillés jusqu'au logging d'entraînement. */
 </script>
 </body>
 </html>
