@@ -179,8 +179,8 @@ var T = {
     axes:[{k:"ESPRIT",key:"esprit"},{k:"FORCE",key:"force"},{k:"SOUFFLE",key:"endurance"}],
     ranks:["Cendre","Pierre","Fer","Bronze","Acier","Obsidienne","Esprit"],
     around:"AUTOUR DE TOI", rest:"LE RESTE DU GROUPE",
-    unit:{ progress:"pts", force:"× pdc", endurance:"km", friends:"pts" },
-    detail:{ progress:"{n} pts · {s} séances", force:"Total {n} × poids de corps", endurance:"{n} km · 5 km en {p}", friends:"{n} pts · {s} séances" },
+    unit:{ progress:"pts", force:"%", endurance:"km", friends:"pts" },
+    detail:{ progress:"{n} pts · {s} séances", force:"+{n} % vs départ · {s} exos", endurance:"{n} km · 5 km en {p}", friends:"{n} pts · {s} séances" },
     push:"40 points te séparent du podium. Une séance et ton scan de la semaine suffisent.",
     you:"Toi", navTabs:["Accueil","Séance","Scan","Nutrition","Classement"] },
   en: { rankTitle:"Ranking", meta:"WEEK 13 · ENDS IN 2 D", rankWord:"RANK",
@@ -188,8 +188,8 @@ var T = {
     axes:[{k:"SPIRIT",key:"esprit"},{k:"STRENGTH",key:"force"},{k:"BREATH",key:"endurance"}],
     ranks:["Ash","Stone","Iron","Bronze","Steel","Obsidian","Spirit"],
     around:"AROUND YOU", rest:"THE REST OF THE GROUP",
-    unit:{ progress:"pts", force:"× bw", endurance:"km", friends:"pts" },
-    detail:{ progress:"{n} pts · {s} sessions", force:"Total {n} × bodyweight", endurance:"{n} km · 5 km in {p}", friends:"{n} pts · {s} sessions" },
+    unit:{ progress:"pts", force:"%", endurance:"km", friends:"pts" },
+    detail:{ progress:"{n} pts · {s} sessions", force:"+{n} % vs start · {s} lifts", endurance:"{n} km · 5 km in {p}", friends:"{n} pts · {s} sessions" },
     push:"40 points separate you from the podium. One session and your weekly scan will do it.",
     you:"You", navTabs:["Home","Session","Scan","Nutrition","Ranking"] },
   bg: { rankTitle:"Класиране", meta:"СЕДМИЦА 13 · КРАЙ СЛЕД 2 Д", rankWord:"РАНГ",
@@ -197,8 +197,8 @@ var T = {
     axes:[{k:"ДУХ",key:"esprit"},{k:"СИЛА",key:"force"},{k:"ДЪХ",key:"endurance"}],
     ranks:["Пепел","Камък","Желязо","Бронз","Стомана","Обсидиан","Дух"],
     around:"ОКОЛО ТЕБ", rest:"ОСТАНАЛИТЕ",
-    unit:{ progress:"т.", force:"× тегло", endurance:"км", friends:"т." },
-    detail:{ progress:"{n} т. · {s} тренировки", force:"Общо {n} × телесно тегло", endurance:"{n} км · 5 км за {p}", friends:"{n} т. · {s} тренировки" },
+    unit:{ progress:"т.", force:"%", endurance:"км", friends:"т." },
+    detail:{ progress:"{n} т. · {s} тренировки", force:"+{n} % спрямо старта · {s} упр.", endurance:"{n} км · 5 км за {p}", friends:"{n} т. · {s} тренировки" },
     push:"40 точки те делят от подиума. Една тренировка и седмичното сканиране стигат.",
     you:"Ти", navTabs:["Начало","Тренировка","Скан","Хранене","Класиране"] }
 };
@@ -262,7 +262,7 @@ var GLOBAL_OFFSET = { progress:0, force:0, endurance:0, friends:0 }; // position
 
 var state = {
   lang:'fr', tab:'progress', streak:12, name:'',
-  rank:5, esprit:860, force:'4,95', endurance:47
+  rank:5, esprit:860, force:'—', endurance:'—'
 };
 
 function d() { return T[state.lang]; }
@@ -277,7 +277,7 @@ function detailOf(b) {
 function nameOf(b) { return b.me ? myLabel() : b.name; }
 function iniOf(b) { return b.me ? (state.name.trim() ? state.name.trim().slice(0, 2).toUpperCase() : 'ES') : b.ini; }
 
-var LOCKED_TABS = ['force', 'endurance', 'friends']; // axes pas encore mesurés (logging à venir)
+var LOCKED_TABS = ['endurance', 'friends']; // cardio/amis pas encore mesurés
 function renderSegs() {
   document.getElementById('segs').innerHTML = d().tabs.map(function (label, i) {
     var cls = (TAB_KEYS[i] === state.tab ? 'on' : '') + (LOCKED_TABS.indexOf(TAB_KEYS[i]) >= 0 ? ' locked' : '');
@@ -395,16 +395,32 @@ render(saved);
   function initiales(n) { n = (n || '').trim(); if (!n) return 'ES'; var p = n.split(/\s+/); return (p.length > 1 ? (p[0][0] + p[1][0]) : n.slice(0, 2)).toUpperCase(); }
   function tierOf(score) { var TH = [0, 200, 400, 700, 1000, 1400, 2000], r = 1; for (var i = 0; i < TH.length; i++) if (score >= TH[i]) r = i + 1; return r; }
 
+  var espLang = 'fr'; try { espLang = localStorage.getItem('espritum.lang') || 'fr'; } catch (e) {}
+  function fp(n) { return espLang === 'en' ? String(n) : String(n).replace('.', ','); }
+
   if (window.espSB) {
+    // Onglet PROGRESSION = score Esprit (régularité + séances + gras perdu − décroissance)
     window.espSB.rpc('get_leaderboard').then(function (res) {
       var data = res && res.data;
       if (!data || !data.length) return;
       var rows = data.map(function (u) {
-        return { name: u.prenom, ini: initiales(u.prenom), pts: u.score, s: u.scans, st: u.streak, me: !!u.is_me };
+        return { name: u.prenom, ini: initiales(u.prenom), pts: u.score, s: u.sessions, st: u.streak, me: !!u.is_me };
       });
       window.EspritumRanking.setBoard('progress', rows);
       var mine = rows.filter(function (r) { return r.me; })[0];
-      if (mine) window.EspritumRanking.setMe({ name: mine.name, streak: mine.st, rank: tierOf(mine.pts), esprit: mine.pts, force: '—', endurance: '—' });
+      if (mine) window.EspritumRanking.setMe({ name: mine.name, streak: mine.st, rank: tierOf(mine.pts), esprit: mine.pts });
+    }).catch(function () {});
+
+    // Onglet FORCE = progression des charges vs ton propre départ (%)
+    window.espSB.rpc('get_leaderboard_force').then(function (res) {
+      var data = res && res.data;
+      if (!data || !data.length) return;
+      var rows = data.map(function (u) {
+        return { name: u.prenom, ini: initiales(u.prenom), pts: fp(u.force_pct), s: u.lifts, st: u.streak, me: !!u.is_me };
+      });
+      window.EspritumRanking.setBoard('force', rows);
+      var mine = rows.filter(function (r) { return r.me; })[0];
+      if (mine) window.EspritumRanking.setMe({ force: mine.pts });
     }).catch(function () {});
   }
 })();
