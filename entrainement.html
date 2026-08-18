@@ -472,7 +472,67 @@ document.addEventListener('espritum:navigate', function (ev) {
   var url = ESP_ROUTES[to];
   if (url) window.location.href = url;
 });
-/* espritum:weight-change / set-toggle / muscle-change : persistance (Supabase) à brancher plus tard */
+/* Persistance de la séance du jour (localStorage) + logging Supabase des exercices terminés */
+(function () {
+  if (typeof state === 'undefined') return;
+  var t = new Date();
+  var ymd = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+  var LS = 'espritum.train.' + ymd;         // séance en cours (survit au rechargement)
+  var LOGKEY = 'espritum.train.logged.' + ymd; // exercices déjà enregistrés en base aujourd'hui
+
+  // 1) Restaurer la séance du jour
+  try {
+    var saved = JSON.parse(localStorage.getItem(LS) || 'null');
+    if (saved) {
+      if (saved.sets) state.sets = saved.sets;
+      if (saved.weights) state.weights = saved.weights;
+      if (saved.muscle && MUS_EX[saved.muscle]) state.muscle = saved.muscle;
+      render();
+    }
+  } catch (e) {}
+
+  function persist() {
+    try { localStorage.setItem(LS, JSON.stringify({ sets: state.sets, weights: state.weights, muscle: state.muscle })); } catch (e) {}
+  }
+  function loadLogged() { try { return JSON.parse(localStorage.getItem(LOGKEY) || '{}'); } catch (e) { return {}; } }
+  function saveLogged(o) { try { localStorage.setItem(LOGKEY, JSON.stringify(o)); } catch (e) {} }
+
+  // Exercice « terminé » = toutes ses séries cochées (pour un muscle donné, pas seulement l'actif)
+  function doneFor(muscle, e, i) {
+    var n = setsOf(e.s), cur = state.sets[muscle + ':' + i];
+    if (!cur) return false;
+    for (var k = 0; k < n; k++) if (!cur[k]) return false;
+    return true;
+  }
+
+  var uid = null;
+  function logDone() {
+    if (!uid || !window.espSB) return;
+    var logged = loadLogged();
+    Object.keys(MUS_EX).forEach(function (muscle) {
+      (MUS_EX[muscle] || []).forEach(function (e, i) {
+        var key = muscle + '|' + e.fr;
+        if (logged[key] || !doneFor(muscle, e, i)) return;
+        var base = weightOf(e.s);
+        var w = state.weights[muscle + ':' + i]; if (w === undefined) w = base;
+        var rec = {
+          user_id: uid, nom: e.fr, muscle_cible: muscle,
+          series: setsOf(e.s), reps: parseInt(repsOf(e.s), 10) || null,
+          poids: (w == null ? 0 : w), termine: true
+        };
+        window.espSB.from('workouts').insert(rec).then(function (r) {
+          if (!r.error) { logged[key] = true; saveLogged(logged); }
+        }, function () {});
+      });
+    });
+  }
+
+  if (window.EspAuth) window.EspAuth.getSession().then(function (s) { if (s) { uid = s.user.id; logDone(); } });
+
+  document.addEventListener('espritum:set-toggle', function () { persist(); logDone(); });
+  document.addEventListener('espritum:weight-change', persist);
+  document.addEventListener('espritum:muscle-change', persist);
+})();
 </script>
 </body>
 </html>
