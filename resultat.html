@@ -125,9 +125,9 @@ body.unlocked .gate{display:none}
 <div class="title" data-k="title">Ton écart.</div>
 
 <div class="pair">
-<div class="shot"><img src="photo-avant.png" alt=""><div class="tag" data-k="tagBefore">AVANT</div></div>
+<div class="shot"><img src="" alt="" onerror="this.style.display='none'"><div class="tag" data-k="tagBefore">AVANT</div></div>
 <div class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12H18"></path><path d="M13 7L18 12L13 17"></path></svg></div>
-<div class="shot goal"><img src="photo-apres.png" alt=""><div class="tag" data-k="tagGoal">OBJECTIF</div></div>
+<div class="shot goal"><img src="" alt="" onerror="this.style.display='none'"><div class="tag" data-k="tagGoal">OBJECTIF</div></div>
 </div>
 
 <div class="tl">
@@ -334,16 +334,28 @@ try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; }
 try { var m = parseFloat(localStorage.getItem('espritum.months')); if (m) youM = m; } catch (e) {}
 render(saved);
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="esp-supabase.js"></script>
 <script>/* ESP-NAV — intégration */
 (function () {
   var R = window.EspritumResult;
-  // Photos réelles capturées dans le tunnel
-  try {
-    var cur = sessionStorage.getItem('espritum.photo.current');
-    var goal = sessionStorage.getItem('espritum.photo.goal');
-    if (cur) { var a = document.querySelector('.shot:not(.goal) img'); if (a) a.src = cur; }
-    if (goal) { var b = document.querySelector('.shot.goal img'); if (b) b.src = goal; }
-  } catch (e) {}
+  // Photos : d'abord celles du tunnel (sessionStorage), sinon les photos STOCKÉES (Supabase) au revisit
+  function setAvant(src) { var a = document.querySelector('.shot:not(.goal) img'); if (a && src) { a.style.display = ''; a.src = src; } }
+  function setObjectif(src) { var b = document.querySelector('.shot.goal img'); if (b && src) { b.style.display = ''; b.src = src; } }
+  var cur = null, goal = null;
+  try { cur = sessionStorage.getItem('espritum.photo.current'); goal = sessionStorage.getItem('espritum.photo.goal'); } catch (e) {}
+  if (cur) setAvant(cur);
+  if (goal) setObjectif(goal);
+  if ((!cur || !goal) && window.EspAuth) {
+    window.EspAuth.getSession().then(function (s) {
+      if (!s) return;
+      var uid = s.user.id;
+      if (!cur) window.EspAuth.getSignedUrl(uid + '/current.jpg').then(setAvant);
+      if (!goal) window.EspAuth.getProfile().then(function (p) {
+        if (p && p.photo_objectif) window.EspAuth.getSignedUrl(p.photo_objectif).then(setObjectif);
+      });
+    }).catch(function () {});
+  }
   // Délai choisi par l'utilisateur (écran 6)
   try { var dl = JSON.parse(localStorage.getItem('espritum.deadline') || 'null'); if (dl && dl.months && R) R.setDeadline(dl.months); } catch (e) {}
   // Résultat de l'analyse IA (écran 7) → délai calculé, verdict, 3 conseils.
