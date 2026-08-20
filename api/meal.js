@@ -21,7 +21,8 @@ export default async function handler(req, res) {
     const prompt =
       'Tu es le moteur nutritionnel de l\'app Espritum. On te donne la photo d\'un repas (une assiette). ' +
       'Identifie chaque aliment visible et estime, pour la portion réellement présente sur la photo : ' +
-      'les grammes (grams), les calories (kcal), les protéines (protein), glucides (carbs) et lipides (fat) en grammes. ' +
+      'la quantité (grams), les calories (kcal), les protéines (protein), glucides (carbs) et lipides (fat) en grammes. ' +
+      'Pour chaque item, indique unit="ml" si c\'est une BOISSON / un liquide (eau, jus, café, thé, soda, lait, smoothie, etc.) — dans ce cas "grams" est le VOLUME en millilitres ; sinon unit="g". ' +
       'Nomme chaque aliment de façon courte et claire en ' + langName + '. ' +
       'Sois réaliste et prudent dans tes estimations. Si l\'image ne montre pas de nourriture, renvoie une liste vide.';
 
@@ -40,13 +41,14 @@ export default async function handler(req, res) {
                 type: 'object',
                 properties: {
                   name: { type: 'string' },
+                  unit: { type: 'string' },
                   grams: { type: 'number' },
                   kcal: { type: 'number' },
                   protein: { type: 'number' },
                   carbs: { type: 'number' },
                   fat: { type: 'number' }
                 },
-                required: ['name', 'grams', 'kcal', 'protein', 'carbs', 'fat']
+                required: ['name', 'unit', 'grams', 'kcal', 'protein', 'carbs', 'fat']
               }
             }
           },

@@ -443,16 +443,30 @@ function renderMeals() {
   document.getElementById('coursesLabel').textContent = d().coursesTitle + ' · ' + state.coursesCount + ' ' + d().itemsWord;
 }
 
+function fmtAmount(x, amt) {
+  amt = Math.round(amt);
+  if (x.u === 'ml') {
+    if (amt >= 1000) return (amt / 1000).toFixed(1).replace('.', ',') + ' L';
+    if (amt >= 100) return Math.round(amt / 10) + ' cl';
+    return amt + ' ml';
+  }
+  return amt + ' ' + d().gramUnit;
+}
 function renderResult() {
+  if (state.analyzing) {
+    document.getElementById('scanTotal').textContent = '…';
+    document.getElementById('items').innerHTML = '<div class="item"><div class="hd"><b>' + (state.analyzeMsg || '') + '</b></div></div>';
+  } else {
   var det = detectedItems();
   document.getElementById('scanTotal').textContent = String(Math.round(scanTotals().k));
   document.getElementById('items').innerHTML = det.map(function (x, i) {
     var max = (x.g || 100) * 2, g = state.grams[i] === undefined ? x.g : state.grams[i];
     var pct = (max ? (g / max * 100) : 0).toFixed(1) + '%';
-    return '<div class="item"><div class="hd"><b>' + x.n + '</b><span>' + g + ' ' + d().gramUnit + '</span></div>' +
+    return '<div class="item"><div class="hd"><b>' + x.n + '</b><span>' + fmtAmount(x, g) + '</span></div>' +
       '<div class="slider" data-slider="' + i + '"><div class="ticks"></div><div class="rail"></div>' +
       '<div class="fill" style="width:' + pct + '"></div><div class="dot" style="left:' + pct + '"></div></div></div>';
   }).join('');
+  }
   var slot = state.slot === null ? guessSlot() : state.slot;
   document.getElementById('slotRow').innerHTML = d().slots.map(function (label, i) {
     return '<div class="' + (i === slot ? 'on' : '') + '" data-slot="' + i + '"><span>' + label + '</span></div>';
@@ -519,24 +533,24 @@ function analyzeMeal() {
             en: { a: 'Analyzing…', nf: 'No food detected', er: 'Analysis failed, retry' },
             bg: { a: 'Анализ…', nf: 'Няма разпозната храна', er: 'Неуспешен анализ' } }[state.lang]
         || { a: 'Analyse en cours…', nf: 'Aucun aliment détecté', er: 'Analyse impossible, réessaie' };
-  state.aiDetected = null; state.grams = {};
-  document.getElementById('scanTotal').textContent = '…';
-  document.getElementById('items').innerHTML = '<div class="item"><div class="hd"><b>' + L.a + '</b></div></div>';
+  state.aiDetected = null; state.grams = {}; state.analyzing = true; state.analyzeMsg = L.a;
+  renderResult();
   mealB64(function (b64) {
-    if (!b64) { state.aiDetected = [{ n: L.er, g: 0, k: 0, p: 0, c: 0, f: 0 }]; renderResult(); return; }
+    if (!b64) { state.analyzing = false; state.aiDetected = [{ n: L.er, g: 0, u: 'g', k: 0, p: 0, c: 0, f: 0 }]; renderResult(); return; }
     fetch('/api/meal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image: b64, lang: state.lang }) })
       .then(function (r) { return r.json(); })
       .then(function (data) {
+        state.analyzing = false;
         if (data && Array.isArray(data.items) && data.items.length) {
           state.aiDetected = data.items.map(function (x) {
-            return { n: x.name, g: Math.round(x.grams) || 0, k: Math.round(x.kcal) || 0, p: Math.round(x.protein) || 0, c: Math.round(x.carbs) || 0, f: Math.round(x.fat) || 0 };
+            return { n: x.name, u: x.unit === 'ml' ? 'ml' : 'g', g: Math.round(x.grams) || 0, k: Math.round(x.kcal) || 0, p: Math.round(x.protein) || 0, c: Math.round(x.carbs) || 0, f: Math.round(x.fat) || 0 };
           });
         } else {
-          state.aiDetected = [{ n: L.nf, g: 0, k: 0, p: 0, c: 0, f: 0 }];
+          state.aiDetected = [{ n: L.nf, g: 0, u: 'g', k: 0, p: 0, c: 0, f: 0 }];
         }
         state.grams = {}; renderResult();
       })
-      .catch(function () { state.aiDetected = [{ n: L.er, g: 0, k: 0, p: 0, c: 0, f: 0 }]; renderResult(); });
+      .catch(function () { state.analyzing = false; state.aiDetected = [{ n: L.er, g: 0, u: 'g', k: 0, p: 0, c: 0, f: 0 }]; renderResult(); });
   });
 }
 
@@ -587,16 +601,27 @@ document.getElementById('resSheet').addEventListener('pointerdown', function (ev
   if (slot) { state.slot = parseInt(slot.dataset.slot, 10); renderResult(); return; }
   if (!sl) return;
   ev.preventDefault();
-  var i = parseInt(sl.dataset.slider, 10), max = d().detected[i].g * 2;
+  var i = parseInt(sl.dataset.slider, 10);
+  var items = detectedItems();
+  if (!items[i]) return;
+  var x = items[i], max = (x.g || 100) * 2;
+  var fill = sl.querySelector('.fill'), dot = sl.querySelector('.dot');
+  var itemEl = sl.closest('.item'), label = itemEl && itemEl.querySelector('.hd span');
+  // Mise à jour EN PLACE (pas de re-render pendant le drag, sinon l'élément suivi est détaché)
   var apply = function (e) {
     var r = sl.getBoundingClientRect();
     var ratio = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
-    state.grams[i] = Math.max(10, Math.round(ratio * max / 10) * 10);
-    renderResult();
+    var amt = Math.max(10, Math.round(ratio * max / 10) * 10);
+    state.grams[i] = amt;
+    var pct = Math.min(100, amt / max * 100).toFixed(1) + '%';
+    if (fill) fill.style.width = pct;
+    if (dot) dot.style.left = pct;
+    if (label) label.textContent = fmtAmount(x, amt);
+    document.getElementById('scanTotal').textContent = String(Math.round(scanTotals().k));
   };
   apply(ev);
   var move = function (e) { apply(e); };
-  var up = function () { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
+  var up = function () { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); renderResult(); };
   window.addEventListener('pointermove', move);
   window.addEventListener('pointerup', up);
 });
