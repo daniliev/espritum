@@ -343,7 +343,7 @@ render(saved);
   function setAvant(src) { var a = document.querySelector('.shot:not(.goal) img'); if (a && src) { a.style.display = ''; a.src = src; } }
   function setObjectif(src) { var b = document.querySelector('.shot.goal img'); if (b && src) { b.style.display = ''; b.src = src; } }
   var cur = null, goal = null;
-  try { cur = sessionStorage.getItem('espritum.photo.current'); goal = sessionStorage.getItem('espritum.photo.goal'); } catch (e) {}
+  try { cur = localStorage.getItem('espritum.photo.current') || sessionStorage.getItem('espritum.photo.current'); goal = localStorage.getItem('espritum.photo.goal') || sessionStorage.getItem('espritum.photo.goal'); } catch (e) {}
   if (cur) setAvant(cur);
   if (goal) setObjectif(goal);
   if ((!cur || !goal) && window.EspAuth) {

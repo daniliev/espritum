@@ -184,7 +184,7 @@ render(saved);
   function signInt(n) { var v = Math.round(Number(n) || 0); return v === 0 ? '±0' : (v > 0 ? '+' : '−') + grp(v); }
 
   // Photo « aujourd'hui » = le scan qui vient d'être pris
-  try { var now = sessionStorage.getItem('espritum.photo.current'); if (now) window.EspritumAdjust.setPhotos({ after: now }); } catch (e) {}
+  try { var now = localStorage.getItem('espritum.photo.current') || sessionStorage.getItem('espritum.photo.current'); if (now) window.EspritumAdjust.setPhotos({ after: now }); } catch (e) {}
 
   var result = null; try { result = JSON.parse(localStorage.getItem('espritum.recalibrage') || 'null'); } catch (e) {}
   if (!result || !window.EspAuth) return; // accès direct sans analyse → on garde les valeurs de démo

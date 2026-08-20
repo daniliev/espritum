@@ -247,7 +247,7 @@ try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; }
 render(saved);
 </script>
 <script>/* ESP-NAV — intégration */
-document.addEventListener('espritum:goal-photo', function (e) { try { sessionStorage.setItem('espritum.photo.goal', e.detail.dataUrl); } catch (_) {} });
+document.addEventListener('espritum:goal-photo', function (e) { try { localStorage.setItem('espritum.photo.goal', e.detail.dataUrl); } catch (_) {} });
 document.addEventListener('espritum:analyze', function () { window.location.href = 'questionnaire.html'; });
 document.addEventListener('espritum:back', function () { window.location.href = 'photo-actuelle.html'; });
 </script>

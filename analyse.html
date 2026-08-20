@@ -206,7 +206,7 @@ document.addEventListener('espritum:analyze-done', function () {
    ou /api/recalibrate (scan hebdo), stocke le résultat, puis passe la barre à 100%. */
 (function () {
   function readLS(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
-  function readSS(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+  function readSS(k) { try { return localStorage.getItem(k) || sessionStorage.getItem(k); } catch (e) { return null; } }
 
   // Réduit une image (data-URL) à 768px max, JPEG qualité 0.72 — léger pour l'envoi + moins cher.
   function downscale(dataUrl, max, cb) {

@@ -134,7 +134,7 @@
       return sb.auth.getUser().then(function (u) {
         if (!u.data.user) return;
         var uid = u.data.user.id;
-        function ss(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+        function ss(k) { try { return localStorage.getItem(k) || sessionStorage.getItem(k); } catch (e) { return null; } }
         var cur = ss('espritum.photo.current');
         var goal = ss('espritum.photo.goal');
         var tasks = [];
@@ -155,7 +155,12 @@
             return sb.from('users').update({ photo_objectif: path }).eq('id', uid);
           });
         }));
-        return Promise.all(tasks);
+        return Promise.all(tasks).then(function (r) {
+          // photos uploadées → on libère le localStorage (elles ne servent plus qu'au tunnel)
+          try { localStorage.removeItem('espritum.photo.current'); localStorage.removeItem('espritum.photo.goal'); } catch (e) {}
+          try { sessionStorage.removeItem('espritum.photo.current'); sessionStorage.removeItem('espritum.photo.goal'); } catch (e) {}
+          return r;
+        });
       });
     },
 
@@ -213,12 +218,13 @@
           return sb.from('measurements').insert(m).select('id').single();
         }).then(function (r) {
           var id = r && r.data && r.data.id;
-          var cur = null; try { cur = sessionStorage.getItem('espritum.photo.current'); } catch (e) {}
+          var cur = null; try { cur = localStorage.getItem('espritum.photo.current') || sessionStorage.getItem('espritum.photo.current'); } catch (e) {}
           if (!id || !cur) return;
           return dataUrlToScaledBlob(cur, 1080).then(function (b) {
             if (!b) return;
             var path = uid + '/m-' + id + '.jpg';
             return sb.storage.from('scans').upload(path, b, { contentType: 'image/jpeg', upsert: true }).then(function () {
+              try { localStorage.removeItem('espritum.photo.current'); sessionStorage.removeItem('espritum.photo.current'); } catch (e) {}
               return sb.from('measurements').update({ photo_url: path }).eq('id', id);
             });
           });
