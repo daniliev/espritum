@@ -58,9 +58,9 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 .danger span{font:400 11px 'IBM Plex Sans';color:rgba(196,30,38,.65)}
 
 .veil{position:absolute;inset:0;z-index:60;background:rgba(6,6,8,.72);backdrop-filter:blur(6px);animation:eFade .2s ease both;display:none}
-body.sheet .veil{display:block}
+body.sheeton .veil{display:block}
 .sheet{position:absolute;left:0;right:0;bottom:0;z-index:61;max-height:92%;background:#0E0E10;border-top:1px solid rgba(242,239,233,.09);border-radius:22px 22px 0 0;display:none;flex-direction:column;padding:16px 20px 26px;gap:14px;animation:eFade .28s ease both}
-body.sheet .sheet{display:flex}
+body.sheeton .sheet{display:flex}
 .grab{flex:none;width:44px;height:4px;border-radius:3px;background:rgba(242,239,233,.22);align-self:center}
 .sheet h2{flex:none;margin:0;font:700 19px/1.05 Oswald,sans-serif;text-transform:uppercase;text-align:center}
 .field{display:flex;flex-direction:column;gap:6px}
@@ -464,9 +464,9 @@ function openSheet(id) {
   if (row.kind === 'pass') { state.pass1 = ''; state.pass2 = ''; state.passShown = false; }
   document.getElementById('sheetTitle').textContent = row.k;
   document.getElementById('sheetBody').innerHTML = sheetBody(row);
-  document.body.classList.add('sheet');
+  document.body.classList.add('sheeton');
 }
-function closeSheet() { state.open = null; document.body.classList.remove('sheet'); }
+function closeSheet() { state.open = null; document.body.classList.remove('sheeton'); }
 function refreshSheet() {
   if (!state.open) return;
   var row = rowById(state.open);
