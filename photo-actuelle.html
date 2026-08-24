@@ -44,7 +44,7 @@ body{margin:0;background:#0B0B0C;color:#F2EFE9;font-family:'IBM Plex Sans',syste
 .stage{position:relative;flex:1;min-height:0;border-radius:22px;overflow:hidden;background:repeating-linear-gradient(135deg,#151517 0 9px,#111113 9px 18px);border:1px solid rgba(242,239,233,.09)}
 #video,#preview{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
 #video.on,#preview.on{display:block}
-#video{transform:scaleX(-1)}
+#video{transform:none}
 
 .overlay{position:absolute;inset:0;pointer-events:none}
 .silhouette{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:120px;height:270px;border-radius:60px 60px 40px 40px;border:1.5px dashed rgba(196,30,38,.55);animation:ePulse 2.6s ease-in-out infinite}
@@ -246,7 +246,6 @@ function captureFromVideo() {
   if (!w || !h) return;
   canvas.width = w; canvas.height = h;
   var ctx = canvas.getContext('2d');
-  ctx.translate(w, 0); ctx.scale(-1, 1);   // dé-miroir la caméra frontale
   ctx.drawImage(video, 0, 0, w, h);
   showPhoto(canvas.toDataURL('image/jpeg', 0.9));
 }
