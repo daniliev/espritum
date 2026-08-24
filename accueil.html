@@ -450,6 +450,10 @@ render(saved);
       if (Object.keys(o).length) window.EspritumHome.setUser(o);
       if (p.delai_mois) window.EspritumHome.setPlan({ months: Number(p.delai_mois) });
       if (p.calories_objectif) window.EspritumHome.setNutrition({ target: p.calories_objectif });
+      if (p.avatar_url) {
+        var av = document.getElementById('goProfile');
+        if (av) { av.style.backgroundImage = 'url(' + p.avatar_url + ')'; av.style.backgroundSize = 'cover'; av.style.backgroundPosition = 'center'; var svg = av.querySelector('svg'); if (svg) svg.style.display = 'none'; }
+      }
     }).catch(function () {});
 
     // Scan dû ? (bouton rouge) — vrai si le dernier scan date de 7 jours ou plus

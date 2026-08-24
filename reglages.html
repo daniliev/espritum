@@ -540,8 +540,11 @@ document.getElementById('photoInput').addEventListener('change', function (ev) {
   if (!f) return;
   var r = new FileReader();
   r.onload = function () {
-    state.avatar = r.result;
+    state.avatar = r.result;          // aperçu immédiat
     refreshSheet(); renderList();
+    if (window.EspAuth) window.EspAuth.uploadAvatar(r.result).then(function (url) {
+      if (url) { state.avatar = url; refreshSheet(); renderList(); }
+    }).catch(function () {});
     emit('espritum:setting-change', { id:'photo', value:'(image)' });
   };
   r.readAsDataURL(f);
@@ -577,6 +580,17 @@ render(saved);
       name: acc.name, email: acc.email, country: acc.country, city: acc.city
     });
   } catch (e) {}
+  // Données réelles (dont l'avatar déjà enregistré)
+  if (window.EspAuth) window.EspAuth.getProfile().then(function (p) {
+    if (!p) return;
+    var o = {};
+    if (p.prenom) o.name = p.prenom;
+    if (p.email) o.email = p.email;
+    if (p.pays) o.country = p.pays;
+    if (p.ville) o.city = p.ville;
+    if (Object.keys(o).length && window.EspritumSettings) window.EspritumSettings.setUser(o);
+    if (p.avatar_url && typeof state !== 'undefined') { state.avatar = p.avatar_url; if (typeof refreshSheet === 'function') refreshSheet(); if (typeof renderList === 'function') renderList(); }
+  }).catch(function () {});
 })();
 var ESP_ROUTES = {
   profile: 'profil.html',          // TODO: page profil (18)

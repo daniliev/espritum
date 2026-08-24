@@ -172,6 +172,23 @@
       }, function () { return null; });
     },
 
+    // Upload de la photo de profil (avatar) → bucket public 'avatars' + users.avatar_url
+    uploadAvatar: function (dataUrl) {
+      return sb.auth.getUser().then(function (u) {
+        if (!u.data.user || !dataUrl) return null;
+        var uid = u.data.user.id;
+        return dataUrlToScaledBlob(dataUrl, 512).then(function (b) {
+          if (!b) return null;
+          var path = uid + '/avatar.jpg';
+          return sb.storage.from('avatars').upload(path, b, { contentType: 'image/jpeg', upsert: true }).then(function () {
+            var base = sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+            var url = base + '?v=' + Date.now(); // anti-cache (le chemin est fixe)
+            return sb.from('users').update({ avatar_url: url }).eq('id', uid).then(function () { return url; });
+          });
+        });
+      });
+    },
+
     // Tous les scans (mesures) de l'utilisateur, du plus ancien au plus récent
     listScans: function () {
       return sb.auth.getUser().then(function (u) {

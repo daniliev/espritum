@@ -280,6 +280,10 @@ if (window.EspAuth) {
       o.since = (espLang === 'en' ? 'MEMBER SINCE ' : espLang === 'bg' ? 'ЧЛЕН ОТ ' : 'MEMBRE DEPUIS ') + s;
     }
     if (Object.keys(o).length) window.EspritumProfile.setUser(o);
+    if (p.avatar_url) {
+      var av = document.getElementById('initials');
+      if (av) { av.style.color = 'transparent'; av.style.backgroundImage = 'url(' + p.avatar_url + ')'; av.style.backgroundSize = 'cover'; av.style.backgroundPosition = 'center'; }
+    }
   }).catch(function () {});
 
   window.EspAuth.listScans().then(function (scans) {
