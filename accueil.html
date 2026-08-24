@@ -119,9 +119,9 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 .scanbtn{position:relative;width:54px;height:54px;border-radius:50%;background:#18181B;border:1px solid rgba(242,239,233,.16);display:flex;align-items:center;justify-content:center;transition:.2s}
 .scanbtn:hover{border-color:rgba(196,30,38,.5);transform:translateY(-3px)}
 .scanbtn i{width:21px;height:21px;border:2px solid rgba(242,239,233,.5);border-radius:5px;display:block}
-body.due .scanbtn{background:#C41E26;border-color:transparent;box-shadow:0 12px 26px -8px rgba(196,30,38,.85)}
-body.due .scanbtn i{border-color:#F6F2EE}
-body.due .scanbtn:after{content:"";position:absolute;inset:-7px;border-radius:50%;border:1px solid rgba(196,30,38,.55);animation:ePulse 1.9s ease-in-out infinite}
+body.scandue .scanbtn{background:#C41E26;border-color:transparent;box-shadow:0 12px 26px -8px rgba(196,30,38,.85)}
+body.scandue .scanbtn i{border-color:#F6F2EE}
+body.scandue .scanbtn:after{content:"";position:absolute;inset:-7px;border-radius:50%;border:1px solid rgba(196,30,38,.55);animation:ePulse 1.9s ease-in-out infinite}
 .homebar{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:132px;height:4px;border-radius:3px;background:rgba(242,239,233,.28);z-index:31}
 
 .langbar{position:absolute;top:18px;right:20px;display:flex;gap:6px;z-index:32}
@@ -377,7 +377,7 @@ function render(l) {
   document.getElementById('spiritPts').textContent = '+' + state.spirit;
   document.getElementById('kcalLeft').textContent = String(state.kcalTarget - state.eaten);
   document.getElementById('days').innerHTML = d.week.map(function (x) { return '<span>' + x + '</span>'; }).join('');
-  document.body.classList.toggle('due', state.scanDue);
+  document.body.classList.toggle('scandue', state.scanDue);
   renderPlan();
   renderChart();
   renderTabs();
