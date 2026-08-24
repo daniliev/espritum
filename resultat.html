@@ -41,22 +41,15 @@ body{margin:0;background:#0B0B0C;color:#F2EFE9;font-family:'IBM Plex Sans',syste
 .arrow svg{width:14px;height:14px;display:block;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 
 /* --- ligne de temps --- */
-.tl{flex:none;display:flex;flex-direction:column}
-.tlcaps{position:relative;height:13px}
-.tlcaps span{position:absolute;transform:translateX(-50%);font:600 7.5px 'IBM Plex Mono',monospace;letter-spacing:.14em;white-space:nowrap}
-.tlcaps .you{color:rgba(242,239,233,.42)}
-.tlcaps .ai{color:#E23B44}
-.tlline{position:relative;height:16px}
-.tlline .track{position:absolute;top:7.5px;height:1px;background:rgba(242,239,233,.13)}
-.tlline .seg{position:absolute;top:7px;height:2px;border-radius:1px;background:#C41E26;transition:left .45s cubic-bezier(.2,.8,.2,1),width .45s cubic-bezier(.2,.8,.2,1)}
-.tlline .dots{position:absolute;inset:0;display:flex}
-.tlline .dots div{flex:1;display:flex;align-items:center;justify-content:center}
-.dot{border-radius:50%;background:rgba(242,239,233,.18);width:4px;height:4px}
-.dot.on{width:5px;height:5px;background:rgba(196,30,38,.8)}
-.dot.you{width:11px;height:11px;background:#0B0B0C;border:1.5px solid rgba(242,239,233,.42)}
-.dot.ai{width:12px;height:12px;background:#C41E26;box-shadow:0 0 0 4px rgba(196,30,38,.2),0 0 14px rgba(196,30,38,.75)}
-.tlnums{display:flex}
-.tlnums div{flex:1;text-align:center;height:13px;font:500 8px/13px 'IBM Plex Mono',monospace;letter-spacing:.06em;color:rgba(242,239,233,.3)}
+.tl{flex:none;display:flex;gap:10px}
+.tlbox{flex:1;padding:12px 15px;border-radius:14px;background:#141416;border:1px solid rgba(242,239,233,.08);display:flex;flex-direction:column;gap:6px}
+.tlbox.ai{border-color:rgba(196,30,38,.4);background:rgba(196,30,38,.08)}
+.tlbox .lbl{font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.16em;color:rgba(242,239,233,.4)}
+.tlbox.ai .lbl{color:#E23B44}
+.tlbox .val{display:flex;align-items:baseline;gap:5px}
+.tlbox .val b{font:700 27px/0.9 Oswald,sans-serif;color:#F6F2EE}
+.tlbox.ai .val b{color:#E23B44}
+.tlbox .val i{font:500 10px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.5);font-style:normal}
 
 .advice{flex:none;display:flex;flex-direction:column;gap:9px}
 .card{display:flex;align-items:center;gap:14px;padding:12px 15px;border-radius:14px;background:#141416;border:1px solid rgba(242,239,233,.08)}
@@ -131,16 +124,8 @@ body.unlocked .gate{display:none}
 </div>
 
 <div class="tl">
-<div class="tlcaps">
-<span class="you" id="capYou">TON DÉLAI</span>
-<span class="ai" id="capAi">L'IA</span>
-</div>
-<div class="tlline">
-<div class="track" id="track"></div>
-<div class="seg" id="seg"></div>
-<div class="dots" id="dots"></div>
-</div>
-<div class="tlnums" id="nums"></div>
+<div class="tlbox ai"><span class="lbl" id="capAi">L'IA</span><span class="val"><b id="aiVal">4,5</b> <i id="aiUnit">mois</i></span></div>
+<div class="tlbox you"><span class="lbl" id="capYou">TON DÉLAI</span><span class="val"><b id="youVal">6</b> <i id="youUnit">mois</i></span></div>
 </div>
 
 <div class="advice" id="advice"></div>
@@ -192,7 +177,7 @@ var T = {
     stepLabel: "TON RÉSULTAT", stepCount: "ÉTAPE 4 / 4",
     title: "Ton écart.",
     tagBefore: "AVANT", tagGoal: "OBJECTIF",
-    tlYou: "TON DÉLAI", tlAi: "L'IA",
+    tlYou: "TON DÉLAI", tlAi: "L'IA", monthWord: "mois",
     verdict: "LE VERDICT DE SENSEI",
     verdictBody: "Tu as la structure. Il te manque la discipline et 10 points de masse grasse. Quatre séances par semaine, un déficit tenu, et dans 18 semaines tu ne reconnaîtras plus l'homme sur la première photo.",
     openPlan: "Ouvrir mon plan →",
@@ -208,7 +193,7 @@ var T = {
     stepLabel: "YOUR RESULT", stepCount: "STEP 4 / 4",
     title: "Your gap.",
     tagBefore: "BEFORE", tagGoal: "GOAL",
-    tlYou: "YOUR PICK", tlAi: "THE AI",
+    tlYou: "YOUR PICK", tlAi: "THE AI", monthWord: "months",
     verdict: "SENSEI'S VERDICT",
     verdictBody: "You have the frame. What you lack is discipline and 10 points of body fat. Four sessions a week, a deficit you actually hold, and in 18 weeks you won't recognise the man in the first photo.",
     openPlan: "Open my plan →",
@@ -224,7 +209,7 @@ var T = {
     stepLabel: "ТВОЯТ РЕЗУЛТАТ", stepCount: "СТЪПКА 4 / 4",
     title: "Разликата ти.",
     tagBefore: "ПРЕДИ", tagGoal: "ЦЕЛ",
-    tlYou: "ТВОЯТ СРОК", tlAi: "AI",
+    tlYou: "ТВОЯТ СРОК", tlAi: "AI", monthWord: "месеца",
     verdict: "ПРИСЪДАТА НА СЕНСЕЙ",
     verdictBody: "Имаш структурата. Липсват ти дисциплина и 10 пункта мазнини. Четири тренировки седмично, спазен дефицит, и след 18 седмици няма да познаеш мъжа от първата снимка.",
     openPlan: "Отвори плана ми →",
@@ -256,38 +241,13 @@ function nearest(m) {
 }
 function center(i) { return (i + 0.5) / TL.length * 100; }
 
+function fmtM(m) { var s = Math.round(m * 10) / 10; return (s % 1 === 0) ? String(s) : String(s).replace('.', lang === 'en' ? '.' : ','); }
 function renderLine() {
-  var yi = nearest(youM), ai = nearest(aiM);
-  var lo = Math.min(yi, ai), hi = Math.max(yi, ai);
-
-  dotsEl.innerHTML = TL.map(function (m, i) {
-    var cls = 'dot';
-    if (i === ai) cls += ' ai';
-    else if (i === yi) cls += ' you';
-    else if (i > lo && i < hi) cls += ' on';
-    return '<div><div class="' + cls + '"></div></div>';
-  }).join('');
-
-  numsEl.innerHTML = TL.map(function (m) {
-    return '<div>' + (m % 3 === 0 ? m : '') + '</div>';
-  }).join('');
-
-  var edge = (100 / (TL.length * 2)).toFixed(2) + '%';
-  trackEl.style.left = edge;
-  trackEl.style.right = edge;
-  segEl.style.left = center(lo).toFixed(2) + '%';
-  segEl.style.width = (center(hi) - center(lo)).toFixed(2) + '%';
-  var yc = center(yi), ac = center(ai);
-  capYou.style.left = yc.toFixed(2) + '%';
-  capAi.style.left = ac.toFixed(2) + '%';
-  capYou.style.visibility = yi === ai ? 'hidden' : 'visible';
-  if (yi !== ai && Math.abs(yc - ac) < 22) {
-    if (yc <= ac) { capYou.style.transform = 'translateX(-85%)'; capAi.style.transform = 'translateX(-15%)'; }
-    else { capYou.style.transform = 'translateX(-15%)'; capAi.style.transform = 'translateX(-85%)'; }
-  } else {
-    capYou.style.transform = 'translateX(-50%)';
-    capAi.style.transform = 'translateX(-50%)';
-  }
+  var u = (T[lang] && T[lang].monthWord) || 'mois';
+  document.getElementById('aiVal').textContent = fmtM(aiM);
+  document.getElementById('youVal').textContent = fmtM(youM);
+  document.getElementById('aiUnit').textContent = u;
+  document.getElementById('youUnit').textContent = u;
 }
 
 function render(l) {
