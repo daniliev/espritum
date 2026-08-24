@@ -700,6 +700,7 @@ if (window.EspAuth) {
     if (p.glucides_objectif) o.carbs = Math.round(p.glucides_objectif);
     if (p.lipides_objectif) o.fat = Math.round(p.lipides_objectif);
     if (Object.keys(o).length && window.EspritumNutrition) window.EspritumNutrition.setTargets(o);
+    if (p.avatar_url) { var av = document.getElementById('goProfile'); if (av) { av.style.backgroundImage = 'url(' + p.avatar_url + ')'; av.style.backgroundSize = 'cover'; av.style.backgroundPosition = 'center'; var s = av.querySelector('svg'); if (s) s.style.display = 'none'; } }
   }).catch(function () {});
 }
 /* Scan repas (scan-open / photo-taken / meal-added / meal-planned) : analyse IA + sauvegarde à brancher plus tard */

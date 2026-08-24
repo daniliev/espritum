@@ -472,6 +472,10 @@ document.addEventListener('espritum:navigate', function (ev) {
   var url = ESP_ROUTES[to];
   if (url) window.location.href = url;
 });
+// Avatar (photo de profil) en haut à droite
+if (window.EspAuth) window.EspAuth.getProfile().then(function (p) {
+  if (p && p.avatar_url) { var av = document.getElementById('goProfile'); if (av) { av.style.backgroundImage = 'url(' + p.avatar_url + ')'; av.style.backgroundSize = 'cover'; av.style.backgroundPosition = 'center'; var s = av.querySelector('svg'); if (s) s.style.display = 'none'; } }
+}).catch(function () {});
 /* Persistance de la séance du jour (localStorage) + logging Supabase des exercices terminés */
 (function () {
   if (typeof state === 'undefined') return;
