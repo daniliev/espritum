@@ -50,6 +50,20 @@
 
     logout: function () { return sb.auth.signOut(); },
 
+    // Envoie l'email de réinitialisation (lien vers reset-password.html)
+    resetPassword: function (email, redirectTo) {
+      return sb.auth.resetPasswordForEmail(email, { redirectTo: redirectTo }).then(function (r) {
+        return r.error ? { error: r.error.message } : { ok: true };
+      });
+    },
+
+    // Définit un nouveau mot de passe (après avoir cliqué le lien de l'email)
+    updatePassword: function (newPassword) {
+      return sb.auth.updateUser({ password: newPassword }).then(function (r) {
+        return r.error ? { error: r.error.message } : { ok: true };
+      });
+    },
+
     getSession: function () {
       return sb.auth.getSession().then(function (r) { return r.data.session; });
     },
