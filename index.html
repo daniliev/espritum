@@ -6,8 +6,18 @@
 <title>Espritum</title>
 <link rel="apple-touch-icon" href="sensei-mark.png">
 <link rel="icon" href="favicon.ico">
-<!-- Point d'entrée de l'app : redirige vers le début du tunnel (choix de langue). -->
-<meta http-equiv="refresh" content="0; url=langue.html">
+<!-- Point d'entrée : si un lien de réinitialisation de mot de passe arrive ici (jeton dans l'URL),
+     on route vers la page dédiée en gardant le jeton ; sinon on va au début du tunnel (choix de langue). -->
+<script>
+(function () {
+  var h = window.location.hash || '', q = window.location.search || '';
+  if (/type=recovery|access_token=|[?&]code=/.test(h + q)) {
+    window.location.replace('reset-password.html' + q + h);
+  } else {
+    window.location.replace('langue.html');
+  }
+})();
+</script>
 <style>
   html,body{height:100%;margin:0;background:#0B0B0C;color:#F2EFE9;
     font-family:system-ui,-apple-system,sans-serif;
@@ -16,7 +26,6 @@
 </style>
 </head>
 <body>
-<script>window.location.replace('langue.html');</script>
 <noscript><a href="langue.html">Entrer dans Espritum →</a></noscript>
 </body>
 </html>
