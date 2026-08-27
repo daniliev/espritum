@@ -365,20 +365,8 @@ document.addEventListener('espritum:login', function (e) {
 
 document.addEventListener('espritum:back', function () { window.location.href = 'resultat.html'; });
 
-// Mot de passe oublié → envoie l'email de réinitialisation
-document.getElementById('forgot').addEventListener('click', function () {
-  var self = this;
-  var email = '';
-  try { email = ((window.EspritumAuth.getValues() || {}).email || '').trim(); } catch (e) {}
-  if (!email) { espShowError(espLang() === 'en' ? 'Enter your email first.' : espLang() === 'bg' ? 'Първо въведи имейла си.' : 'Entre d\'abord ton adresse email.'); return; }
-  if (!window.EspAuth) { espShowError('Service indisponible, réessaie.'); return; }
-  self.style.pointerEvents = 'none'; var old = self.textContent; self.textContent = '…';
-  window.EspAuth.resetPassword(email, location.origin + '/reset-password.html').then(function (r) {
-    self.style.pointerEvents = ''; self.textContent = old;
-    if (r && r.error) { espShowError(r.error); return; }
-    espShowError(espLang() === 'en' ? 'Reset email sent — check your inbox.' : espLang() === 'bg' ? 'Изпратен имейл за нулиране — виж пощата си.' : 'Email de réinitialisation envoyé — regarde ta boîte mail.');
-  });
-});
+// Mot de passe oublié → page dédiée
+document.getElementById('forgot').addEventListener('click', function () { window.location.href = 'mot-de-passe-oublie.html'; });
 </script>
 </body>
 </html>
