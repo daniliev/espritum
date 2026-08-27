@@ -44,7 +44,7 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 .duo{display:flex;gap:8px}
 .duo .field{flex:1;min-width:0}
 .weak{font:400 10.5px 'IBM Plex Sans';color:#C96A5A;display:none}
-body.weak .weak{display:block}
+body.pwweak .weak{display:block}
 
 .terms{flex:none;display:flex;gap:11px;align-items:flex-start;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .terms .box{width:18px;height:18px;flex:none;border-radius:6px;border:1px solid rgba(242,239,233,.22);margin-top:1px;display:flex;align-items:center;justify-content:center;transition:.2s}
@@ -207,7 +207,7 @@ function valid() {
   return okMail && okPass && v.name.length > 0 && terms;
 }
 function refresh() {
-  document.body.classList.toggle('weak', elPass.value.length > 0 && elPass.value.length < 6);
+  document.body.classList.toggle('pwweak', elPass.value.length > 0 && elPass.value.length < 6);
   ctaEl.classList.toggle('on', valid());
 }
 
