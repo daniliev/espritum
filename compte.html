@@ -41,6 +41,10 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 .field select{width:100%;height:49.5px;padding:0 32px 0 15px;border-radius:12px;background-color:#141416;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='rgba(242,239,233,0.45)' stroke-width='1.6' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 13px center;border:1px solid rgba(242,239,233,.1);color:#F2EFE9;font:400 16px 'IBM Plex Sans';outline:none;appearance:none;transition:.2s}
 .field select:focus{border-color:rgba(196,30,38,.6)}
 .field.half input{height:49.5px;padding:0 15px}
+.pwwrap{position:relative;display:flex}
+.pwwrap input{padding-right:46px}
+.eye{position:absolute;right:6px;top:0;bottom:0;display:flex;align-items:center;padding:0 9px;background:none;border:none;color:rgba(242,239,233,.4);cursor:pointer;transition:.2s;-webkit-tap-highlight-color:transparent}
+.eye:hover,.eye.on{color:#E23B44}
 .duo{display:flex;gap:8px}
 .duo .field{flex:1;min-width:0}
 .weak{font:400 10.5px 'IBM Plex Sans';color:#C96A5A;display:none}
@@ -112,7 +116,12 @@ body.login .signup-only{display:none}
 </div>
 <div class="field">
 <label for="fPass" id="lPass">MOT DE PASSE</label>
+<div class="pwwrap">
 <input id="fPass" type="password" autocomplete="current-password" placeholder="••••••••">
+<button type="button" class="eye" id="eyePass" aria-label="Afficher le mot de passe">
+<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+</button>
+</div>
 <span class="weak" id="weak">6 caractères minimum.</span>
 </div>
 </div>
@@ -262,6 +271,11 @@ document.querySelectorAll('.tabs button').forEach(function (b) {
   b.addEventListener('click', function () { setMode(b.dataset.tab); });
 });
 [elName, elEmail, elPass].forEach(function (i) { i.addEventListener('input', refresh); });
+document.getElementById('eyePass').addEventListener('click', function () {
+  var shown = elPass.type === 'text';
+  elPass.type = shown ? 'password' : 'text';
+  this.classList.toggle('on', !shown);
+});
 
 termsEl.addEventListener('click', function () {
   terms = !terms;
