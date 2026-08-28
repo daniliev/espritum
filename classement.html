@@ -135,15 +135,6 @@ if (window.EspAuth) window.EspAuth.requirePremium();</script>
 
 <div class="segs" id="segs"></div>
 
-<div class="rankbadge">
-<img src="logo-blanc.png" alt="">
-<div class="c">
-<span class="k"><span data-k="rankWord">RANG</span> <span id="rankNum">5</span>/7</span>
-<span class="n" id="rankName">Acier</span>
-</div>
-<div class="axes" id="axes"></div>
-</div>
-
 <div class="me">
 <span class="pos" id="myPos">#1244</span>
 <div class="av" id="myIni">ES</div>
@@ -293,14 +284,6 @@ function renderMe() {
   document.getElementById('myName').textContent = myLabel().toUpperCase();
   document.getElementById('myDetail').textContent = detailOf(mine);
   document.getElementById('myStreak').textContent = String(state.streak);
-  document.getElementById('rankNum').textContent = String(state.rank);
-  document.getElementById('rankName').textContent = d().ranks[state.rank - 1];
-  document.getElementById('axes').innerHTML = d().axes.map(function (a) {
-    var v = state[a.key];
-    if (a.key === 'endurance') v = v + ' ' + d().unit.endurance;
-    if (a.key === 'force') v = v + ' ' + d().unit.force;
-    return '<div class="axis"><span class="k">' + a.k + '</span><span class="v">' + v + '</span></div>';
-  }).join('');
   document.getElementById('restLabel').textContent = state.tab === 'friends' ? d().rest : d().around;
   document.getElementById('push').textContent = d().push;
 }
