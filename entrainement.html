@@ -206,7 +206,7 @@ if (window.EspAuth) window.EspAuth.requireAuth();</script>
 
 <div class="rest" id="rest">
 <svg class="rsvg" viewBox="0 0 300 62" preserveAspectRatio="none">
-<rect id="restRect" x="1.5" y="1.5" width="297" height="59" rx="13" fill="none" stroke="#C41E26" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke" style="transition:stroke-dashoffset 1s linear"></rect>
+<rect id="restRect" x="1.5" y="1.5" width="297" height="59" rx="13" pathLength="1" fill="none" stroke="#C41E26" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke" stroke-dasharray="1" style="transition:stroke-dashoffset 1s linear"></rect>
 </svg>
 <div class="rin">
 <div style="display:flex;align-items:baseline;gap:6px">
@@ -407,8 +407,8 @@ function render(l) {
 
   document.getElementById('restNum').textContent = String(S.restLeft);
   var rect = document.getElementById('restRect');
-  rect.setAttribute('stroke-dasharray', String(REST_PERIM));
-  rect.setAttribute('stroke-dashoffset', String(REST_PERIM * (1 - S.restLeft / S.restSec)));
+  rect.setAttribute('stroke-dasharray', '1');
+  rect.setAttribute('stroke-dashoffset', String(1 - S.restLeft / S.restSec));
   document.getElementById('restPresets').innerHTML = [30, 60, 90, 120].map(function (v) {
     return '<div class="preset' + (S.restSec === v ? ' on' : '') + '" data-sec="' + v + '">' + v + 's</div>';
   }).join('');
