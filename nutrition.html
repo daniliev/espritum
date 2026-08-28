@@ -17,12 +17,16 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 .phone{position:relative;flex:none;width:390px;height:844px;overflow:hidden;background:#0B0B0C}
 @media (min-width:420px) and (min-height:880px){.phone{border-radius:44px;box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 0 1px rgba(242,239,233,.07)}}
 @media (max-width:420px){.phone{width:100%;height:auto;min-height:100svh;overflow:visible}body{padding:0;display:block}}
-.screen{position:absolute;inset:0;padding:60px 22px 100px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+@keyframes eF{from{opacity:0}to{opacity:1}}
+@keyframes eFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.screen{position:absolute;inset:0;padding:60px 22px 100px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;animation:eFade .4s ease both}
 .screen::-webkit-scrollbar{display:none}
 
 .top{flex:none;display:flex;justify-content:space-between;align-items:center}
 .title{font:700 27px/1 Oswald,sans-serif;text-transform:uppercase}
 .streak{display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:10px;background:rgba(196,30,38,.14);border:1px solid rgba(196,30,38,.25)}
+.streak img{width:9px;height:auto}
 .streak span{font:600 12.5px Oswald,sans-serif;color:#E23B44}
 .avatar{width:38px;height:38px;border-radius:50%;background:#18181B;border:1px solid rgba(242,239,233,.12);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(242,239,233,.6)}
 .avatar svg{width:19px;height:19px;fill:currentColor;display:block}
@@ -34,22 +38,20 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 .scanbtn{flex:none;align-self:stretch;height:50px;display:flex;align-items:center;justify-content:center;gap:9px;border-radius:25px;background:#C41E26;cursor:pointer;transition:.18s cubic-bezier(.2,.8,.2,1);box-shadow:0 10px 22px -14px rgba(196,30,38,.9);-webkit-tap-highlight-color:transparent}
 .scanbtn:hover{background:#E23B44;transform:translateY(-1px)}
 .scanbtn:active{background:#B01A21;transform:translateY(0)}
-.mealrow{flex:none;height:70px;display:flex;align-items:center;border-radius:14px;background:#141416;border:1px solid rgba(242,239,233,.08);overflow:hidden}
+.mealrow{flex:none;height:70px;display:flex;align-items:center;border-radius:14px;background:#141416;border:1px solid rgba(242,239,233,.08);overflow:hidden;animation:eFade .35s ease both}
 .thumb{width:64px;height:70px;flex:none;position:relative;overflow:hidden;background:repeating-linear-gradient(135deg,#1F1F23 0 6px,#191A1D 6px 12px);display:flex;align-items:center;justify-content:center}
-.logrow{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:11px;background:#0F0F11;border:1px solid rgba(242,239,233,.07)}
 .x{width:22px;height:22px;flex:none;border-radius:50%;border:1px solid rgba(242,239,233,.14);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(242,239,233,.45);transition:.2s;background:none}
 .x:hover{border-color:rgba(196,30,38,.6);color:#E23B44}
+.empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:26px 22px;border-radius:14px;border:1px dashed rgba(242,239,233,.14);background:rgba(255,255,255,.012)}
 
 .veil{position:absolute;inset:0;z-index:60;background:rgba(6,6,8,.72);animation:eF .2s ease both}
-@keyframes eF{from{opacity:0}to{opacity:1}}
-.sheet{position:absolute;left:0;right:0;bottom:0;z-index:61;max-height:90%;background:#0E0E10;border-top:1px solid rgba(242,239,233,.09);border-radius:22px 22px 0 0;display:flex;flex-direction:column;padding:16px 20px 26px;gap:14px;animation:eF .28s ease both;overflow-y:auto;scrollbar-width:none}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:61;max-height:calc(100% - 62px);background:#0E0E10;border-top:1px solid rgba(242,239,233,.09);border-radius:22px 22px 0 0;display:flex;flex-direction:column;padding:16px 20px 26px;gap:14px;animation:eFade .28s ease both;overflow-y:auto;scrollbar-width:none}
 .sheet::-webkit-scrollbar{display:none}
 .close{width:30px;height:30px;border-radius:50%;border:1px solid rgba(242,239,233,.14);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(242,239,233,.5);transition:.2s;background:none}
 .close:hover{border-color:rgba(196,30,38,.6);color:#E23B44}
-.slot{flex:1;min-width:0;height:38px;padding:0 4px;border-radius:12px;background:#161619;border:1px solid rgba(242,239,233,.09);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s}
-.slot span{font:500 10px/1 'IBM Plex Sans';color:rgba(242,239,233,.55);text-align:center}
-.slot.on{background:rgba(196,30,38,.16);border-color:rgba(196,30,38,.5)}
-.slot.on span{color:#E23B44}
+textarea{width:100%;min-height:76px;resize:none;padding:12px 13px;border-radius:13px;background:#0F0F11;border:1px solid rgba(242,239,233,.1);color:#F2EFE9;font:400 16px/1.5 'IBM Plex Sans';box-sizing:border-box}
+textarea:focus{outline:none;border-color:rgba(196,30,38,.5)}
+textarea::placeholder{color:rgba(242,239,233,.3)}
 .hidden{display:none!important}
 #camVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
 #camVideo.on{display:block}
@@ -65,10 +67,12 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 .bigscan{position:relative;width:54px;height:54px;border-radius:50%;background:#18181B;border:1px solid rgba(242,239,233,.16);display:flex;align-items:center;justify-content:center;transition:.2s}
 .bigscan i{width:21px;height:21px;border:2px solid rgba(242,239,233,.5);border-radius:5px;display:block}
 
-/* Mobile : scroll de page classique (nav fixe) — placé en fin pour l'emporter */
+/* Mobile : scroll de page classique (nav fixe), sheets ancrés au bas de l'écran */
 @media (max-width:420px){
   .screen{position:static;inset:auto;min-height:100svh;overflow:visible;padding-bottom:96px}
   .tabs{position:fixed}
+  .veil{position:fixed}
+  .sheet{position:fixed;max-height:calc(100svh - 62px)}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -80,35 +84,33 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 <div class="screen">
 
 <div class="top">
-<div class="title">Nutrition</div>
+<div class="title" data-k="title">Nutrition</div>
 <div style="display:flex;align-items:center;gap:8px">
-<div class="streak"><span id="streak">0</span></div>
+<div class="streak"><img src="logo-mark.png" alt=""><span id="streak">0</span></div>
 <div class="avatar" id="goProfile" role="button" tabindex="0" aria-label="Profil">
 <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-5 0-9 2.5-9 6v2h18v-2c0-3.5-4-6-9-6z"></path></svg>
 </div>
 </div>
 </div>
 
-<div class="card" style="padding:15px 17px 12px">
-<div style="display:flex;justify-content:space-between;align-items:flex-start">
-<div style="display:flex;flex-direction:column;gap:3px">
-<span class="kicker">CALORIES CONSOMMÉES</span>
+<div class="card" style="padding:17px 19px;display:flex;align-items:center;gap:16px">
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px">
+<span class="kicker" data-k="avail">CALORIES DISPONIBLES</span>
 <div style="display:flex;align-items:baseline;gap:5px">
-<span style="font:700 25px/1 Oswald,sans-serif" id="eaten">0</span>
-<span style="font:500 9.5px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.4)" id="target">/ 2340 KCAL</span>
+<span style="font:700 34px/1 Oswald,sans-serif" id="left">2340</span>
+<span style="font:500 9.5px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.4)" data-k="kcal">KCAL</span>
 </div>
+<span style="font:500 8.5px/1.45 'IBM Plex Mono',monospace;color:rgba(242,239,233,.3)" id="sub">SUR 2340 · CONSOMMÉ 0</span>
 </div>
-<span style="font:500 8.5px/1.4 'IBM Plex Mono',monospace;color:rgba(242,239,233,.28);text-align:right;max-width:112px">Calculé sur tes scans de repas</span>
-</div>
-<div style="position:relative;height:70px;margin-top:9px">
-<svg viewBox="0 0 300 76" preserveAspectRatio="none" style="width:100%;height:100%;display:block;overflow:visible">
-<line x1="0" y1="26" x2="300" y2="26" stroke="rgba(196,30,38,0.5)" stroke-width="1" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"></line>
-<polyline id="area" points="" fill="rgba(242,239,233,0.07)" stroke="none"></polyline>
-<polyline id="line" points="" fill="none" stroke="#F2EFE9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>
+<div style="position:relative;width:96px;height:96px;flex:none">
+<svg viewBox="0 0 110 110" style="width:96px;height:96px;transform:rotate(-90deg);display:block">
+<defs><linearGradient id="kcalGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FF6B62"/><stop offset="50%" stop-color="#C41E26"/><stop offset="100%" stop-color="#6E0D12"/></linearGradient></defs>
+<circle cx="55" cy="55" r="46" fill="none" stroke="#1E1E22" stroke-width="10"></circle>
+<circle id="ring" cx="55" cy="55" r="46" fill="none" stroke="url(#kcalGrad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289" style="transition:stroke-dashoffset .5s cubic-bezier(.2,.8,.2,1)"></circle>
 </svg>
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+<span style="font:700 21px/1 Oswald,sans-serif;color:#F6F2EE" id="pct">0%</span>
 </div>
-<div style="display:flex;justify-content:space-between;margin-top:6px">
-<span class="mono">L</span><span class="mono">M</span><span class="mono">M</span><span class="mono">J</span><span class="mono">V</span><span class="mono">S</span><span class="mono">D</span>
 </div>
 </div>
 
@@ -116,19 +118,10 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 
 <div class="scanbtn" id="open">
 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#F6F2EE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V5a1 1 0 0 1 1-1h3M21 8V5a1 1 0 0 0-1-1h-3M3 16v3a1 1 0 0 0 1 1h3M21 16v3a1 1 0 0 1-1 1h-3M12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6z"></path></svg>
-<span style="font:600 13px 'IBM Plex Sans';letter-spacing:.02em;color:#F6F2EE">Scanner un repas</span>
+<span style="font:600 13px 'IBM Plex Sans';letter-spacing:.02em;color:#F6F2EE" data-k="scanBtn">Scanner un repas</span>
 </div>
 
 <div style="flex:none;display:flex;flex-direction:column;gap:8px" id="meals"></div>
-
-<div class="card" style="display:flex;flex-direction:column;gap:10px;padding:14px 15px;border-radius:16px">
-<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
-<span class="kicker" style="letter-spacing:.18em">JOURNAL DE LA JOURNÉE</span>
-<span class="bebas" style="font-size:20px;color:#E23B44" id="logTotal">0</span>
-</div>
-<span id="logEmpty" style="font:400 10.5px/1.5 'IBM Plex Sans';color:rgba(242,239,233,.4)">Tout ce que tu scannes dans la journée s'affiche ici.</span>
-<div style="display:flex;flex-direction:column;gap:5px" id="log"></div>
-</div>
 
 </div>
 
@@ -138,46 +131,44 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 
 <div class="sheet hidden" id="cam">
 <div style="flex:none;display:flex;align-items:center;justify-content:space-between">
-<span style="font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.2em;color:#E23B44">SCAN REPAS</span>
+<span style="font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.2em;color:#E23B44" data-k="camKicker">SCAN REPAS</span>
 <div class="close" data-close><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></div>
 </div>
-<div style="flex:none;height:300px;position:relative;border-radius:18px;overflow:hidden;background:radial-gradient(120% 80% at 50% 20%,#1B1B1F,#0E0E10);border:1px solid rgba(242,239,233,.08);display:flex;align-items:center;justify-content:center">
+<div style="flex:none;aspect-ratio:1/1;width:100%;position:relative;border-radius:18px;overflow:hidden;background:radial-gradient(120% 80% at 50% 20%,#1B1B1F,#0E0E10);border:1px solid rgba(242,239,233,.08);display:flex;align-items:center;justify-content:center">
 <video id="camVideo" playsinline muted autoplay></video>
-<div style="width:180px;height:180px;position:relative;margin-bottom:40px;z-index:2">
+<div style="width:186px;height:186px;position:relative;margin-bottom:40px;z-index:2">
 <div style="position:absolute;top:0;left:0;width:34px;height:34px;border-top:2px solid #C41E26;border-left:2px solid #C41E26;border-radius:12px 0 0 0"></div>
 <div style="position:absolute;top:0;right:0;width:34px;height:34px;border-top:2px solid #C41E26;border-right:2px solid #C41E26;border-radius:0 12px 0 0"></div>
 <div style="position:absolute;bottom:0;left:0;width:34px;height:34px;border-bottom:2px solid #C41E26;border-left:2px solid #C41E26;border-radius:0 0 0 12px"></div>
 <div style="position:absolute;bottom:0;right:0;width:34px;height:34px;border-bottom:2px solid #C41E26;border-right:2px solid #C41E26;border-radius:0 0 12px 0"></div>
 </div>
 <div style="position:absolute;left:0;right:0;bottom:0;padding:22px 16px 13px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;background:linear-gradient(180deg,transparent,rgba(8,8,10,.88));z-index:2">
-<span style="font:700 18px/1.05 Oswald,sans-serif;text-transform:uppercase">Cadre ton assiette</span>
-<span style="font:400 10.5px 'IBM Plex Sans';color:rgba(242,239,233,.5)">Une seule photo, vue du dessus.</span>
+<span style="font:700 18px/1.05 Oswald,sans-serif;text-transform:uppercase" data-k="camTitle">Cadre ton assiette</span>
+<span style="font:400 10.5px 'IBM Plex Sans';color:rgba(242,239,233,.5)" data-k="camSub">Une seule photo, vue du dessus.</span>
 </div>
 </div>
 <canvas id="camCanvas" style="display:none"></canvas>
 <input id="camFile" type="file" accept="image/*" capture="environment" style="display:none">
 <div class="scanbtn" id="shoot" style="border-radius:14px;height:52px">
-<span style="font:600 13px 'IBM Plex Sans';color:#F6F2EE">Prendre la photo</span>
+<span style="font:600 13px 'IBM Plex Sans';color:#F6F2EE" data-k="shoot">Prendre la photo</span>
 </div>
 </div>
 
 <div class="sheet hidden" id="res">
 <div style="flex:none;display:flex;align-items:center;justify-content:space-between">
-<span style="font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.2em;color:#E23B44">DÉTECTÉ PAR L'IA</span>
+<span style="font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.2em;color:#E23B44" data-k="resKicker">DÉTECTÉ PAR L'IA</span>
 <div class="close" data-close><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></div>
 </div>
 
-<div id="shotbox" style="flex:none;height:110px;border-radius:16px;overflow:hidden;position:relative;background:repeating-linear-gradient(135deg,#1F1F23 0 6px,#191A1D 6px 12px);background-size:cover;background-position:center">
+<div id="shotbox" style="flex:none;aspect-ratio:1/1;width:100%;border-radius:16px;overflow:hidden;position:relative;background:repeating-linear-gradient(135deg,#1F1F23 0 6px,#191A1D 6px 12px);background-size:cover;background-position:center">
 <div style="position:absolute;left:0;right:0;bottom:0;padding:22px 14px 11px;display:flex;align-items:baseline;justify-content:space-between;background:linear-gradient(180deg,transparent,rgba(8,8,10,.88))">
-<span style="font:700 19px/1 Oswald,sans-serif;text-transform:uppercase">C'est bien ça ?</span>
+<span style="font:700 19px/1 Oswald,sans-serif;text-transform:uppercase" data-k="resTitle">C'est bien ça ?</span>
 <span class="bebas" style="font-size:24px;color:#E23B44" id="total">…</span>
 </div>
 </div>
 
-<div style="flex:none;display:flex;flex-direction:column;gap:7px" id="items"></div>
-
 <div style="flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px">
-<span class="kicker" style="letter-spacing:.18em">PORTION</span>
+<span class="kicker" style="letter-spacing:.18em" data-k="portion">PORTION</span>
 <div style="display:flex;align-items:center;gap:10px">
 <div class="close" id="minus" style="width:28px;height:28px"><span style="font:600 14px 'IBM Plex Sans'">−</span></div>
 <span style="font:600 13px 'IBM Plex Mono',monospace;min-width:34px;text-align:center" id="portion">1×</span>
@@ -185,20 +176,57 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 </div>
 </div>
 
-<div style="flex:none;display:flex;flex-direction:column;gap:7px">
-<span class="kicker" style="letter-spacing:.18em">CRÉNEAU</span>
-<div style="display:flex;gap:8px" id="slots"></div>
+<div style="flex:none;display:flex;flex-direction:column;gap:8px">
+<span class="kicker" style="letter-spacing:.18em" data-k="descLabel">DESCRIPTION</span>
+<textarea id="desc" data-kph="descPlaceholder" placeholder="Poulet grillé, riz basmati, brocoli vapeur…"></textarea>
+<span style="font:400 10px/1.5 'IBM Plex Sans';color:rgba(242,239,233,.35)" data-k="descNote">Une description précise permet une analyse plus détaillée de ton repas.</span>
 </div>
 
 <div class="scanbtn" id="add" style="border-radius:14px;height:52px">
-<span style="font:600 13px 'IBM Plex Sans';color:#F6F2EE">Ajouter à mon journal</span>
+<span style="font:600 13px 'IBM Plex Sans';color:#F6F2EE" data-k="addBtn">Ajouter à mon journal</span>
 </div>
-<div id="back" style="flex:none;text-align:center;font:400 11px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.3);cursor:pointer">← Reprendre la photo</div>
+<div id="back" data-k="retake" style="flex:none;text-align:center;font:400 11px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.3);cursor:pointer">← Reprendre la photo</div>
 </div>
 
 </div>
 
 <script>
+// ---- i18n ----
+var T = {
+  fr: { title:'Nutrition', avail:'CALORIES DISPONIBLES', kcal:'KCAL', onWord:'SUR', consumed:'CONSOMMÉ',
+    macros:['PROTÉINES','GLUCIDES','LIPIDES'], scanBtn:'Scanner un repas',
+    emptyTitle:'Rien de scanné', emptyText:"Tout ce que tu scannes dans la journée s'affiche ici.",
+    camKicker:'SCAN REPAS', camTitle:'Cadre ton assiette', camSub:'Une seule photo, vue du dessus.', shoot:'Prendre la photo',
+    resKicker:"DÉTECTÉ PAR L'IA", resTitle:"C'est bien ça ?", portion:'PORTION',
+    descLabel:'DESCRIPTION', descPlaceholder:'Poulet grillé, riz basmati, brocoli vapeur…',
+    descNote:'Une description précise permet une analyse plus détaillée de ton repas.',
+    addBtn:'Ajouter à mon journal', retake:'← Reprendre la photo', analyzing:'Analyse…' },
+  en: { title:'Nutrition', avail:'CALORIES AVAILABLE', kcal:'KCAL', onWord:'OF', consumed:'EATEN',
+    macros:['PROTEIN','CARBS','FAT'], scanBtn:'Scan a meal',
+    emptyTitle:'Nothing scanned', emptyText:'Everything you scan during the day shows up here.',
+    camKicker:'MEAL SCAN', camTitle:'Frame your plate', camSub:'One photo, top view.', shoot:'Take the photo',
+    resKicker:'DETECTED BY AI', resTitle:'Is this right?', portion:'PORTION',
+    descLabel:'DESCRIPTION', descPlaceholder:'Grilled chicken, basmati rice, steamed broccoli…',
+    descNote:'A precise description enables a more detailed analysis of your meal.',
+    addBtn:'Add to my journal', retake:'← Retake the photo', analyzing:'Analyzing…' },
+  bg: { title:'Хранене', avail:'НАЛИЧНИ КАЛОРИИ', kcal:'ККАЛ', onWord:'ОТ', consumed:'ПРИЕТИ',
+    macros:['ПРОТЕИНИ','ВЪГЛЕХИДРАТИ','МАЗНИНИ'], scanBtn:'Сканирай хранене',
+    emptyTitle:'Нищо сканирано', emptyText:'Всичко, което сканираш през деня, се показва тук.',
+    camKicker:'СКАН ХРАНЕНЕ', camTitle:'Кадрирай чинията', camSub:'Една снимка, отгоре.', shoot:'Направи снимка',
+    resKicker:'ОТКРИТО ОТ ИИ', resTitle:'Така ли е?', portion:'ПОРЦИЯ',
+    descLabel:'ОПИСАНИЕ', descPlaceholder:'Пилешко на скара, ориз басмати, броколи на пара…',
+    descNote:'Точното описание позволява по-подробен анализ на храненето ти.',
+    addBtn:'Добави в дневника', retake:'← Повтори снимката', analyzing:'Анализ…' }
+};
+var lang = (function () { try { var v = localStorage.getItem('espritum.lang'); return T[v] ? v : 'fr'; } catch (e) { return 'fr'; } })();
+var d = T[lang];
+document.documentElement.lang = lang;
+function applyLang() {
+  document.querySelectorAll('[data-k]').forEach(function (el) { if (d[el.dataset.k] != null) el.textContent = d[el.dataset.k]; });
+  document.querySelectorAll('[data-kph]').forEach(function (el) { if (d[el.dataset.kph] != null) el.setAttribute('placeholder', d[el.dataset.kph]); });
+}
+
+// ---- Nav app ----
 var ICONS = {
   home:["M252.75,59.47v95.75c-2.23,6.69-6.97,11.37-14.23,12.01-20.92,1.86-44.5-1.37-65.69,0-7.92-.82-13.61-6.64-14.25-14.6l.02-90.95c.65-7.3,5.5-12.34,12.41-14.23h69.31c3.25.82,5.84,2.25,7.88,4.27.25.25.5.51.74.78.24.27.47.55.69.83.22.29.43.59.63.89s.4.62.59.94c.37.65.72,1.33,1.04,2.05.16.36.31.72.45,1.1.14.37.28.76.41,1.15Z","M141.78,101.74c-.71,7.67-6.55,13.52-14.22,14.22-20.61,1.89-44.01-1.42-64.92.02-7.72-.26-14.35-6.05-15.02-13.82-1.16-13.48.81-28.72.12-42.38,1.3-6.38,5.81-10.52,11.91-12.32h69.71c6.72,1.82,11.66,6.77,12.37,13.87-.78,13.01,1.22,27.58.04,40.41Z","M252.75,196.49v44.07c-1.85,6.32-6.34,11.07-13.07,11.97l-67.27.06c-7.22-.75-12.88-6.33-13.7-13.55.49-13.01-1.04-27.07-.13-39.97.58-8.33,6.22-14.35,14.62-15.02,21.07-1.67,44.37,1.24,65.67.06,7.1.71,12.05,5.66,13.87,12.37Z","M141.18,241.36c-1.53,6.11-6.96,10.61-13.21,11.23l-66.91-.02c-7.1-.77-12.64-6.3-13.44-13.4l.02-92.95c.94-7.06,6.45-12.46,13.53-13.31l66.39-.11c6.54.6,11.87,4.89,13.63,11.21,1,32.29,1,65.07,0,97.36Z"],
   train:["M251.65,117.06v4.76c-1.08,1.54-1.37,3.21-2.57,4.77-4.61,6.01-13.04,5.91-18.29.8l-58.37-58.38c-10.14-11.04,2.98-26.79,15.49-18.27,6,5.75,11.61,12.12,17.87,17.49,4.49-3.17,7.83-8.27,12.11-11.73,2.7-2.18,5.08-3.11,8.33-1.17,5.1,6.12,13.36,11.89,18.09,18.04,1.77,2.3,2.01,4.66.36,7.13-1.35,1.88-13.41,12.73-13.25,13.67l17.84,17.92,2.39,4.96Z","M121.39,251.68h-4.76l-4.57-2.38c-6-5.75-11.61-12.11-17.87-17.49-4.4,3.18-7.74,8.04-11.9,11.54-2.94,2.47-5.54,3.62-8.95.99-6.15-4.73-11.93-12.99-18.04-18.1-1.3-2.06-1.35-4.35-.15-6.47l13.41-13.62-.35-.75-17.49-17.46c-7.57-10.82,4.54-24.11,16.01-17.2,21.21,20.27,42,41.2,62.38,62.31,4.91,7.33.65,16.72-7.71,18.63Z","M214.92,161.93l-76.66-76.63c-6.8-7.25-2-19.68,8.08-20.16,3-.14,6.14.92,8.42,2.87l77.23,77.24c8.76,11.6-5.27,25.89-17.07,16.68Z","M145.43,232.22l-77.45-77.42c-5.67-6.21-1.85-17.96,6.45-19.37,4.21-.71,7.58.26,10.83,2.88l76.44,76.44c9.57,11.72-4.35,26.18-16.28,17.47Z","M180.53,144.61l-36.25,35.96-24.85-25.13,35.97-35.96,25.13,25.13Z"],
@@ -220,64 +248,53 @@ document.getElementById('tabs').addEventListener('click', function (e) {
 });
 document.getElementById('goProfile').addEventListener('click', function () { window.location.href = 'profil.html'; });
 
-// ---- État : le JOURNAL est la source de vérité ----
+// ---- État : le JOURNAL (repas scannés) est la source de vérité ----
 var TARGET = { kcal: 2340, p: 190, c: 260, f: 70 };
-var MACROS = [{ e: '🥩', k: 'PROTÉINES', key: 'p' }, { e: '🍚', k: 'GLUCIDES', key: 'c' }, { e: '🥑', k: 'LIPIDES', key: 'f' }];
-var SLOTS = ['Petit-déjeuner', 'Déjeuner', 'Dîner', 'Grignotage'];
-var S = { log: [], portion: 1, slot: null, ai: null, analyzing: false, photo: null };
+var MACRO_KEYS = [{ e: '🥩', key: 'p' }, { e: '🍚', key: 'c' }, { e: '🥑', key: 'f' }];
+var S = { log: [], portion: 1, ai: null, analyzing: false, photo: null };
 var $ = function (id) { return document.getElementById(id); };
-var hm = function (dt) { var d = dt || new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
-var guess = function () { var h = new Date().getHours(); return h < 11 ? 0 : (h < 16 ? 1 : 2); };
-var slotIdx = function () { return S.slot === null ? guess() : S.slot; };
+var hm = function (dt) { var x = dt || new Date(); return String(x.getHours()).padStart(2, '0') + ':' + String(x.getMinutes()).padStart(2, '0'); };
+var CAM_ICON = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="rgba(242,239,233,.28)" stroke-width="1.7" stroke-linecap="round"><path d="M3 8V5a1 1 0 0 1 1-1h3M21 8V5a1 1 0 0 0-1-1h-3M3 16v3a1 1 0 0 0 1 1h3M21 16v3a1 1 0 0 1-1 1h-3M12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6z"></path></svg>';
 
 function render() {
   var eaten = S.log.reduce(function (a, x) { return a + (x.k || 0); }, 0);
-  $('eaten').textContent = Math.round(eaten);
-  $('logTotal').textContent = Math.round(eaten);
-  $('target').textContent = '/ ' + TARGET.kcal + ' KCAL';
+  var pct = TARGET.kcal ? Math.min(100, Math.round(eaten / TARGET.kcal * 100)) : 0;
+  $('left').textContent = Math.max(0, TARGET.kcal - eaten);
+  $('pct').textContent = pct + '%';
+  $('ring').setAttribute('stroke-dashoffset', String(289 - 289 * (pct / 100)));
+  $('sub').textContent = d.onWord + ' ' + TARGET.kcal + ' · ' + d.consumed + ' ' + Math.round(eaten);
 
   var sum = { p: 0, c: 0, f: 0 };
   S.log.forEach(function (x) { sum.p += x.p || 0; sum.c += x.c || 0; sum.f += x.f || 0; });
-  $('macros').innerHTML = MACROS.map(function (m) {
-    var val = Math.round(sum[m.key]), tg = TARGET[m.key], pct = tg ? Math.min(100, Math.round(val / tg * 100)) : 0;
-    return '<div style="flex:1;padding:12px 13px;border-radius:14px;background:#141416;border:1px solid rgba(242,239,233,.08);display:flex;flex-direction:column;gap:7px">' +
-      '<div style="display:flex;align-items:center;gap:5px"><span style="font-size:11px;line-height:1">' + m.e + '</span><span style="font:600 8.5px \'IBM Plex Mono\',monospace;letter-spacing:.1em;color:rgba(242,239,233,.35)">' + m.k + '</span></div>' +
-      '<span style="font:600 12px \'IBM Plex Sans\'">' + val + ' / ' + tg + ' g</span>' +
-      '<div style="height:3px;border-radius:2px;background:#1F1F23;overflow:hidden"><div style="height:100%;border-radius:2px;background:#C41E26;transition:width .5s ease;width:' + pct + '%"></div></div></div>';
+  $('macros').innerHTML = MACRO_KEYS.map(function (m, i) {
+    var val = Math.round(sum[m.key]), tg = TARGET[m.key], p = tg ? Math.min(100, Math.round(val / tg * 100)) : 0;
+    return '<div style="flex:1;padding:12px 13px;border-radius:14px;background:#141416;border:1px solid rgba(242,239,233,.08);display:flex;flex-direction:column;gap:7px">'
+      + '<div style="display:flex;align-items:center;gap:5px"><span style="font-size:11px;line-height:1">' + m.e + '</span><span style="font:600 8.5px \'IBM Plex Mono\',monospace;letter-spacing:.1em;color:rgba(242,239,233,.35)">' + d.macros[i] + '</span></div>'
+      + '<span style="font:600 12px \'IBM Plex Sans\'">' + val + ' / ' + tg + ' g</span>'
+      + '<div style="height:3px;border-radius:2px;background:#1F1F23;overflow:hidden"><div style="height:100%;border-radius:2px;background:#C41E26;transition:width .5s ease;width:' + p + '%"></div></div></div>';
   }).join('');
 
-  var week = [1980, 2210, 2050, 2380, 1890, 2260, eaten];
-  var pts = week.map(function (v, i) { return [10 + i * (280 / 6), 70 - Math.min(1, v / 3000) * 60]; });
-  $('line').setAttribute('points', pts.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' '));
-  $('area').setAttribute('points', '10,76 ' + pts.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ') + ' 290,76');
+  if (!S.log.length) {
+    $('meals').innerHTML = '<div class="empty">'
+      + '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="rgba(242,239,233,.3)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V5a1 1 0 0 1 1-1h3M21 8V5a1 1 0 0 0-1-1h-3M3 16v3a1 1 0 0 0 1 1h3M21 16v3a1 1 0 0 1-1 1h-3M12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6z"></path></svg>'
+      + '<span style="font:600 11.5px \'IBM Plex Sans\';color:rgba(242,239,233,.7)">' + d.emptyTitle + '</span>'
+      + '<span style="font:400 10.5px/1.5 \'IBM Plex Sans\';color:rgba(242,239,233,.35);max-width:210px">' + d.emptyText + '</span></div>';
+    return;
+  }
 
-  $('meals').innerHTML = SLOTS.map(function (label, i) {
-    var entries = S.log.filter(function (x) { return x.slot === i; });
-    var has = entries.length > 0;
-    var k = entries.reduce(function (a, x) { return a + (x.k || 0); }, 0);
-    var name = entries.map(function (x) { return x.n; }).join(', ');
-    return '<div class="mealrow">' +
-      '<div class="thumb">' + (has ? '<div style="position:absolute;inset:0;background:linear-gradient(135deg,#3A2A22,#221814)"></div>' : '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="rgba(242,239,233,.28)" stroke-width="1.7" stroke-linecap="round"><path d="M3 8V5a1 1 0 0 1 1-1h3M21 8V5a1 1 0 0 0-1-1h-3M3 16v3a1 1 0 0 0 1 1h3M21 16v3a1 1 0 0 1-1 1h-3M12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6z"></path></svg>') + '</div>' +
-      '<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;padding:0 11px">' +
-        '<span style="font:500 9px \'IBM Plex Mono\',monospace;letter-spacing:.16em;color:rgba(242,239,233,.34)">' + label.toUpperCase() + '</span>' +
-        '<span style="font:500 12.5px/1.2 \'IBM Plex Sans\';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:' + (has ? '#F2EFE9' : 'rgba(242,239,233,.62)') + '">' + (has ? name : 'Rien de scanné') + '</span>' +
-      '</div>' +
-      '<div style="flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:5px;padding-right:14px">' +
-        '<span class="bebas" style="color:' + (has ? '#F2EFE9' : 'rgba(242,239,233,.55)') + '">' + (has ? Math.round(k) : '—') + '</span>' +
-        (has ? '<span style="font:500 8.5px \'IBM Plex Mono\',monospace;color:rgba(242,239,233,.28)">KCAL</span>' : '') +
-      '</div></div>';
+  $('meals').innerHTML = S.log.map(function (x, i) {
+    return '<div class="mealrow"><div class="thumb">' + CAM_ICON + '</div>'
+      + '<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;padding:0 11px">'
+      + '<span class="mono">' + x.time + '</span>'
+      + '<span style="font:500 12.5px/1.2 \'IBM Plex Sans\';color:#F2EFE9;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">' + x.n + '</span></div>'
+      + '<div style="flex:none;display:flex;align-items:center;gap:9px;padding-right:13px">'
+      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">'
+      + '<span class="bebas" style="color:#F2EFE9">' + Math.round(x.k) + '</span>'
+      + '<span style="font:500 8.5px \'IBM Plex Mono\',monospace;color:rgba(242,239,233,.28)">' + d.kcal + '</span></div>'
+      + '<div class="x" data-rm="' + i + '"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></div>'
+      + '</div></div>';
   }).join('');
-
-  $('logEmpty').classList.toggle('hidden', S.log.length > 0);
-  $('log').innerHTML = S.log.map(function (x, i) {
-    return '<div class="logrow">' +
-      '<span class="mono">' + x.time + '</span>' +
-      '<span style="flex:1;min-width:0;font:500 12px \'IBM Plex Sans\';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + x.n + '</span>' +
-      '<span class="bebas" style="font-size:15px;color:rgba(242,239,233,.75)">' + Math.round(x.k) + '</span>' +
-      '<button class="x" data-rm="' + i + '"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>' +
-      '</div>';
-  }).join('');
-  $('log').querySelectorAll('[data-rm]').forEach(function (el) {
+  $('meals').querySelectorAll('[data-rm]').forEach(function (el) {
     el.onclick = function () { var idx = +el.dataset.rm, ent = S.log[idx]; S.log.splice(idx, 1); render(); if (ent && ent.id) deleteMeal(ent.id); };
   });
 }
@@ -285,28 +302,12 @@ function render() {
 // ---- Sheet résultat (IA) ----
 function aiItems() { return S.ai || []; }
 function aiTotal() {
-  return aiItems().reduce(function (t, x) {
-    t.k += (x.k || 0); t.p += (x.p || 0); t.c += (x.c || 0); t.f += (x.f || 0); return t;
-  }, { k: 0, p: 0, c: 0, f: 0 });
+  return aiItems().reduce(function (t, x) { t.k += (x.k || 0); t.p += (x.p || 0); t.c += (x.c || 0); t.f += (x.f || 0); return t; }, { k: 0, p: 0, c: 0, f: 0 });
 }
 function renderSheet() {
-  if (S.analyzing) {
-    $('total').textContent = '…';
-    $('items').innerHTML = '<div style="padding:11px 13px;border-radius:12px;background:#141416;border:1px solid rgba(242,239,233,.07);font:500 12px \'IBM Plex Sans\';color:rgba(242,239,233,.5)">Analyse en cours…</div>';
-  } else {
-    var t = aiTotal();
-    $('total').textContent = Math.round(t.k * S.portion);
-    $('items').innerHTML = aiItems().map(function (x) {
-      var u = x.u === 'ml' ? ' ML' : ' G';
-      return '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;border-radius:12px;background:#141416;border:1px solid rgba(242,239,233,.07)">' +
-        '<span style="font:500 12px \'IBM Plex Sans\'">' + x.n + '</span>' +
-        '<span style="font:500 10px \'IBM Plex Mono\',monospace;color:rgba(242,239,233,.45)">' + Math.round(x.g * S.portion) + u + ' · ' + Math.round(x.k * S.portion) + '</span></div>';
-    }).join('') || '<div style="padding:11px 13px;border-radius:12px;background:#141416;border:1px solid rgba(242,239,233,.07);font:500 12px \'IBM Plex Sans\';color:rgba(242,239,233,.5)">Aucun aliment détecté</div>';
-  }
   $('portion').textContent = S.portion.toFixed(1).replace('.0', '') + '×';
-  var cur = slotIdx();
-  $('slots').innerHTML = SLOTS.map(function (l, i) { return '<div class="slot ' + (i === cur ? 'on' : '') + '" data-slot="' + i + '"><span>' + l + '</span></div>'; }).join('');
-  $('slots').querySelectorAll('[data-slot]').forEach(function (el) { el.onclick = function () { S.slot = +el.dataset.slot; renderSheet(); }; });
+  if (S.analyzing) { $('total').textContent = d.analyzing; return; }
+  $('total').textContent = Math.round(aiTotal().k * S.portion);
 }
 
 function show(which) {
@@ -316,7 +317,7 @@ function show(which) {
   if (which !== 'cam') stopCam();
 }
 
-// ---- Caméra ----
+// ---- Caméra + IA ----
 var video = $('camVideo'), canvas = $('camCanvas'), file = $('camFile'), stream = null, live = false;
 function startCam() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { live = false; return Promise.resolve(false); }
@@ -342,7 +343,6 @@ function toB64(src, cb) {
   img.onerror = function () { cb(null); };
   img.src = src;
 }
-function lang() { try { return localStorage.getItem('espritum.lang') || 'fr'; } catch (e) { return 'fr'; } }
 
 function analyze() {
   S.ai = null; S.analyzing = true; S.portion = 1;
@@ -350,12 +350,12 @@ function analyze() {
   show('res'); renderSheet();
   toB64(S.photo, function (b64) {
     if (!b64) { S.analyzing = false; S.ai = []; renderSheet(); return; }
-    fetch('/api/meal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image: b64, lang: lang() }) })
+    fetch('/api/meal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image: b64, lang: lang }) })
       .then(function (r) { return r.json(); })
       .then(function (data) {
         S.analyzing = false;
         S.ai = (data && Array.isArray(data.items) ? data.items : []).map(function (x) {
-          return { n: x.name, u: x.unit === 'ml' ? 'ml' : 'g', g: Math.round(x.grams) || 0, k: Math.round(x.kcal) || 0, p: Math.round(x.protein) || 0, c: Math.round(x.carbs) || 0, f: Math.round(x.fat) || 0 };
+          return { n: x.name, k: Math.round(x.kcal) || 0, p: Math.round(x.protein) || 0, c: Math.round(x.carbs) || 0, f: Math.round(x.fat) || 0 };
         });
         renderSheet();
       })
@@ -364,11 +364,8 @@ function analyze() {
 }
 
 // ---- Handlers scan ----
-$('open').onclick = function () { S.portion = 1; S.slot = null; S.photo = null; show('cam'); startCam(); };
-$('shoot').onclick = function () {
-  if (live) { S.photo = capture(); analyze(); }
-  else file.click();
-};
+$('open').onclick = function () { S.portion = 1; S.photo = null; $('desc').value = ''; show('cam'); startCam(); };
+$('shoot').onclick = function () { if (live) { S.photo = capture(); analyze(); } else file.click(); };
 if (file) file.addEventListener('change', function () {
   var f = file.files && file.files[0]; if (!f) return;
   var r = new FileReader(); r.onload = function () { S.photo = r.result; analyze(); }; r.readAsDataURL(f);
@@ -380,24 +377,25 @@ document.querySelectorAll('[data-close]').forEach(function (el) { el.onclick = f
 $('veil').onclick = function () { show(null); };
 $('add').onclick = function () {
   if (S.analyzing) return;
-  var t = aiTotal(), i = slotIdx();
-  var names = aiItems().map(function (x) { return x.n; }).slice(0, 3);
-  if (!names.length) return;
-  var entry = { n: names.join(', '), k: Math.round(t.k * S.portion), p: Math.round(t.p * S.portion), c: Math.round(t.c * S.portion), f: Math.round(t.f * S.portion), time: hm(), slot: i };
+  var t = aiTotal();
+  var desc = $('desc').value.trim();
+  var aiNames = aiItems().map(function (x) { return x.n; }).filter(Boolean).slice(0, 3).join(', ');
+  var name = desc || aiNames;
+  if (!name && !t.k) return;
+  var entry = { n: name || d.scanBtn, k: Math.round(t.k * S.portion), p: Math.round(t.p * S.portion), c: Math.round(t.c * S.portion), f: Math.round(t.f * S.portion), time: hm() };
   S.log.push(entry);
   show(null); render();
   saveMeal(entry);
 };
 
-// ---- Supabase : cibles, avatar, journal du jour ----
-function today() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
-var TYP = ['petit_dejeuner', 'dejeuner', 'diner', 'grignotage'];
+// ---- Supabase : cibles, avatar, streak, journal du jour ----
+function today() { var x = new Date(); return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0'); }
 function saveMeal(entry) {
   if (!window.espSB || !window.EspAuth) return;
   window.EspAuth.getSession().then(function (s) {
     if (!s) return;
     window.espSB.from('meals').insert({
-      user_id: s.user.id, nom: entry.n, type_repas: TYP[entry.slot] || 'repas',
+      user_id: s.user.id, nom: entry.n, type_repas: 'repas',
       calories: entry.k, proteines: entry.p, glucides: entry.c, lipides: entry.f, quantite: S.portion
     }).select('id').single().then(function (r) { if (r && r.data) entry.id = r.data.id; }, function () {});
   }).catch(function () {});
@@ -406,6 +404,10 @@ function deleteMeal(id) {
   if (!window.espSB) return;
   window.espSB.from('meals').delete().eq('id', id).then(function () {}, function () {});
 }
+
+applyLang();
+render();
+
 if (window.EspAuth) {
   window.EspAuth.getProfile().then(function (p) {
     if (!p) return;
@@ -414,18 +416,21 @@ if (window.EspAuth) {
     if (p.proteines_objectif) TARGET.p = Math.round(p.proteines_objectif);
     if (p.glucides_objectif) TARGET.c = Math.round(p.glucides_objectif);
     if (p.lipides_objectif) TARGET.f = Math.round(p.lipides_objectif);
-    if (p.avatar_url) { var av = $('goProfile'); av.style.backgroundImage = 'url(' + p.avatar_url + ')'; av.style.backgroundSize = 'cover'; av.style.backgroundPosition = 'center'; var sv = av.querySelector('svg'); if (sv) sv.style.display = 'none'; }
+    if (p.avatar_url) {
+      var av = $('goProfile');
+      if (av) { av.style.backgroundImage = 'url(' + p.avatar_url + ')'; av.style.backgroundSize = 'cover'; av.style.backgroundPosition = 'center'; var svg = av.querySelector('svg'); if (svg) svg.style.display = 'none'; }
+    }
     render();
   }).catch(function () {});
 
-  // Journal du jour depuis Supabase (les repas déjà scannés aujourd'hui)
+  // Repas déjà scannés aujourd'hui
   if (window.espSB) window.EspAuth.getSession().then(function (s) {
     if (!s) return;
-    window.espSB.from('meals').select('id,nom,type_repas,calories,proteines,glucides,lipides,created_at')
+    window.espSB.from('meals').select('id,nom,calories,proteines,glucides,lipides,created_at')
       .eq('user_id', s.user.id).eq('date', today()).order('created_at', { ascending: true })
       .then(function (r) {
         (r.data || []).forEach(function (m) {
-          S.log.push({ id: m.id, n: m.nom, k: m.calories || 0, p: Number(m.proteines) || 0, c: Number(m.glucides) || 0, f: Number(m.lipides) || 0, slot: TYP.indexOf(m.type_repas), time: hm(new Date(m.created_at)) });
+          S.log.push({ id: m.id, n: m.nom, k: m.calories || 0, p: Number(m.proteines) || 0, c: Number(m.glucides) || 0, f: Number(m.lipides) || 0, time: hm(new Date(m.created_at)) });
         });
         render();
       }, function () {});
@@ -436,8 +441,6 @@ if (window.EspAuth) {
 if (window.EspAuth) window.EspAuth.isPremium().then(function (prem) {
   if (!prem) $('open').addEventListener('click', function (e) { e.stopImmediatePropagation(); window.location.href = 'abonnement.html?upgrade=1'; }, true);
 });
-
-render();
 </script>
 </body>
 </html>
