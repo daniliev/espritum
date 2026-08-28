@@ -251,7 +251,7 @@ function render() {
   $('line').setAttribute('points', pts.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' '));
   $('area').setAttribute('points', '10,76 ' + pts.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ') + ' 290,76');
 
-  $('meals').innerHTML = SLOTS.slice(0, 3).map(function (label, i) {
+  $('meals').innerHTML = SLOTS.map(function (label, i) {
     var entries = S.log.filter(function (x) { return x.slot === i; });
     var has = entries.length > 0;
     var k = entries.reduce(function (a, x) { return a + (x.k || 0); }, 0);
