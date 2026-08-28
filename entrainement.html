@@ -154,18 +154,11 @@ if (window.EspAuth) window.EspAuth.requireAuth();</script>
 <body>
 <div class="phone">
 
-<div class="langbar">
-<button data-lang="fr" aria-pressed="true">FR</button>
-<button data-lang="en" aria-pressed="false">EN</button>
-<button data-lang="bg" aria-pressed="false">BG</button>
-</div>
-
 <div class="screen">
 
 <div class="head">
 <div class="h1" data-k="sessionTitle">Séance du jour</div>
 <div class="hr">
-<span class="count" id="progress">0/5</span>
 <div class="streak"><img src="logo-mark.png" alt=""><span id="streak">12</span></div>
 <div class="avatar" id="goProfile" role="button" tabindex="0" aria-label="Profil">
 <svg viewBox="0 0 300 300"><path d="M206.83,251.56h-113.66c-36.54-5.22-29.21-46.81-11.85-68.49,11.27-14.07,28.55-22.7,46.56-23.86,12.85-.83,30.22-.84,43.09-.14,18.31.99,35.99,9.51,47.51,23.77,17.5,21.65,25.03,63.46-11.65,68.72Z"></path><path d="M193.1,111.23c-11.64,31.09-52.28,39.66-75.78,16.16-22.59-22.59-15.68-61.54,13.38-74.67,37.72-17.04,76.91,19.74,62.4,58.51Z"></path></svg>
@@ -393,7 +386,6 @@ function render(l) {
   var setTotal = list.reduce(function (a, x) { return a + setsArr(x.ek, x.e.s).length; }, 0) || 1;
   var exDone = list.filter(function (x) { return setsArr(x.ek, x.e.s).every(Boolean); }).length;
 
-  document.getElementById('progress').textContent = exDone + '/' + list.length;
   var pct = Math.round(doneTotal / setTotal * 100);
   document.getElementById('musPct').textContent = pct + '%';
   document.getElementById('musRing').setAttribute('stroke-dashoffset', String(289 - 289 * pct / 100));
