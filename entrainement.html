@@ -63,7 +63,7 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 
 /* --- timer de repos --- */
 .rest{flex:none;position:relative;height:62px;border-radius:14px;background:#131315;border:1px solid rgba(242,239,233,.08);cursor:pointer}
-.rest .rsvg{position:absolute;inset:-1px;width:calc(100% + 2px);height:calc(100% + 2px);display:block;pointer-events:none}
+.rest .rsvg{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 .rest .rin{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 15px}
 .rest .rnum{font:700 24px/1 Oswald,sans-serif;font-variant-numeric:tabular-nums}
 .rest .rs{font:400 10px 'IBM Plex Sans';color:rgba(242,239,233,.45)}
@@ -205,8 +205,8 @@ if (window.EspAuth) window.EspAuth.requireAuth();</script>
 </div>
 
 <div class="rest" id="rest">
-<svg class="rsvg" viewBox="0 0 300 62" preserveAspectRatio="none">
-<rect id="restRect" x="1.5" y="1.5" width="297" height="59" rx="13" pathLength="1" fill="none" stroke="#C41E26" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke" stroke-dasharray="1" style="transition:stroke-dashoffset 1s linear"></rect>
+<svg class="rsvg" id="restSvg">
+<rect id="restRect" fill="none" stroke="#C41E26" stroke-width="3" stroke-linecap="round" style="transition:stroke-dashoffset 1s linear"></rect>
 </svg>
 <div class="rin">
 <div style="display:flex;align-items:baseline;gap:6px">
@@ -341,7 +341,20 @@ var ICONS = {
 
 var EX_KCAL = [95, 80, 70, 65, 60, 55, 50, 48, 45, 40];
 var BURNED_HIST = [520, 610, 470, 700, 590, 355];
-var REST_PERIM = 2 * (297 - 26) + 2 * (59 - 26) + 2 * Math.PI * 13;
+var restLen = 300;
+// Dimensionne le contour du timer en pixels réels (1:1, sans étirement) et mesure son vrai périmètre.
+// Évite le bug iOS où preserveAspectRatio="none" + non-scaling-stroke calcule les pointillés dans l'espace étiré.
+function layoutRest() {
+  var el = document.getElementById('rest'), rect = document.getElementById('restRect'), svg = document.getElementById('restSvg');
+  if (!el || !rect || !svg) return;
+  var w = el.clientWidth || 300, h = el.clientHeight || 62, r = 13;
+  svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+  rect.setAttribute('x', 1.5); rect.setAttribute('y', 1.5);
+  rect.setAttribute('width', Math.max(0, w - 3)); rect.setAttribute('height', Math.max(0, h - 3));
+  rect.setAttribute('rx', r);
+  try { restLen = rect.getTotalLength(); } catch (e) { restLen = 2 * (w - 3 - 2 * r) + 2 * (h - 3 - 2 * r) + 2 * Math.PI * r; }
+  rect.setAttribute('stroke-dasharray', String(restLen));
+}
 
 var S = { lang:'fr', picked:["pectoraux"], minutes:60, sets:{}, weights:{}, openEx:null, restSec:90, restLeft:90, restRun:false, streak:12 };
 var restIv = null;
@@ -406,9 +419,8 @@ function render(l) {
   document.getElementById('days').innerHTML = d.week.map(function (x) { return '<span>' + x + '</span>'; }).join('');
 
   document.getElementById('restNum').textContent = String(S.restLeft);
-  var rect = document.getElementById('restRect');
-  rect.setAttribute('stroke-dasharray', '1');
-  rect.setAttribute('stroke-dashoffset', String(1 - S.restLeft / S.restSec));
+  layoutRest();
+  document.getElementById('restRect').setAttribute('stroke-dashoffset', String(restLen * (1 - S.restLeft / S.restSec)));
   document.getElementById('restPresets').innerHTML = [30, 60, 90, 120].map(function (v) {
     return '<div class="preset' + (S.restSec === v ? ' on' : '') + '" data-sec="' + v + '">' + v + 's</div>';
   }).join('');
@@ -540,6 +552,7 @@ window.EspritumTraining = {
 var savedLang = 'fr';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) savedLang = v; } catch (e) {}
 render(savedLang);
+window.addEventListener('resize', function () { render(); });
 </script>
 <script>/* ESP-NAV — intégration */
 var ESP_ROUTES = { home: 'accueil.html', train: null, scan: null, food: 'nutrition.html', rank: 'classement.html', profile: 'profil.html' };
