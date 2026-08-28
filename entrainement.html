@@ -386,6 +386,15 @@ function poly(vals, max, h, w) {
   }).join(' ');
 }
 
+// Mise à jour légère de la seule pilule de repos (appelée chaque seconde) — n'reconstruit pas la liste d'exercices
+function renderRest() {
+  document.getElementById('restNum').textContent = String(S.restLeft);
+  document.getElementById('restRect').setAttribute('stroke-dashoffset', String(restLen * (1 - S.restLeft / S.restSec)));
+  document.getElementById('restPresets').innerHTML = [30, 60, 90, 120].map(function (v) {
+    return '<div class="preset' + (S.restSec === v ? ' on' : '') + '" data-sec="' + v + '">' + v + 's</div>';
+  }).join('');
+}
+
 function render(l) {
   if (l) S.lang = l;
   var d = T[S.lang];
@@ -418,12 +427,8 @@ function render(l) {
   document.getElementById('burnDot').style.top = ((76 - 6 - (burnedToday / max) * 58) / 76 * 100) + '%';
   document.getElementById('days').innerHTML = d.week.map(function (x) { return '<span>' + x + '</span>'; }).join('');
 
-  document.getElementById('restNum').textContent = String(S.restLeft);
   layoutRest();
-  document.getElementById('restRect').setAttribute('stroke-dashoffset', String(restLen * (1 - S.restLeft / S.restSec)));
-  document.getElementById('restPresets').innerHTML = [30, 60, 90, 120].map(function (v) {
-    return '<div class="preset' + (S.restSec === v ? ' on' : '') + '" data-sec="' + v + '">' + v + 's</div>';
-  }).join('');
+  renderRest();
 
   document.getElementById('exoList').innerHTML = list.map(function (x, i) {
     var sets = setsArr(x.ek, x.e.s), base = weightOf(x.e.s);
@@ -522,16 +527,16 @@ document.getElementById('exoList').addEventListener('click', function (e) {
 /* --- timer de repos --- */
 document.getElementById('rest').addEventListener('click', function (e) {
   var p = e.target.closest('[data-sec]');
-  if (p) { clearInterval(restIv); restIv = null; S.restSec = +p.dataset.sec; S.restLeft = S.restSec; S.restRun = false; render(); return; }
-  if (S.restRun) { clearInterval(restIv); restIv = null; S.restRun = false; render(); return; }
+  if (p) { clearInterval(restIv); restIv = null; S.restSec = +p.dataset.sec; S.restLeft = S.restSec; S.restRun = false; renderRest(); return; }
+  if (S.restRun) { clearInterval(restIv); restIv = null; S.restRun = false; renderRest(); return; }
   if (S.restLeft <= 0) S.restLeft = S.restSec;
   S.restRun = true;
   restIv = setInterval(function () {
     S.restLeft -= 1;
     if (S.restLeft <= 0) { S.restLeft = 0; S.restRun = false; clearInterval(restIv); restIv = null; }
-    render();
+    renderRest();
   }, 1000);
-  render();
+  renderRest();
 });
 
 /* --- navigation + langue --- */
