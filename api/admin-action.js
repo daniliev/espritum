@@ -155,6 +155,44 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true });
     }
 
+    // ── Modifier le prénom / nom d'un abonné ────────────────────
+    if (action === 'update-user') {
+      const { user_id, prenom, nom } = body;
+      if (!user_id) return res.status(400).json({ error: 'user_id requis' });
+      const fields = {};
+      if (typeof prenom === 'string') fields.prenom = prenom.trim();
+      if (typeof nom === 'string') fields.nom = nom.trim();
+      if (!Object.keys(fields).length) return res.status(400).json({ error: 'rien à modifier' });
+      const r = await sbPatchUser(user_id, fields);
+      if (!r.ok) { const t = await r.text().catch(() => ''); return res.status(502).json({ error: 'Maj (' + r.status + ') ' + t }); }
+      return res.status(200).json({ ok: true });
+    }
+
+    // ── Supprimer complètement un compte ────────────────────────
+    if (action === 'delete-user') {
+      const { user_id } = body;
+      if (!user_id) return res.status(400).json({ error: 'user_id requis' });
+      const uidEnc = encodeURIComponent(user_id);
+      // 1) Résilier l'abonnement Stripe s'il existe (stoppe la facturation)
+      const sid = await getSubId(user_id);
+      if (sid) { try { await stripe('subscriptions/' + sid, null, 'DELETE'); } catch (e) {} }
+      // 2) Supprimer les données liées (best effort ; une table absente est ignorée)
+      const delHeaders = Object.assign({}, sbHeaders, { Prefer: 'return=minimal' });
+      const tables = ['meals', 'measurements', 'workouts', 'subscriptions', 'instant_photos', 'photo_likes'];
+      for (let i = 0; i < tables.length; i++) {
+        try { await fetch(url + '/rest/v1/' + tables[i] + '?user_id=eq.' + uidEnc, { method: 'DELETE', headers: delHeaders }); } catch (e) {}
+      }
+      // 3) Supprimer la ligne de profil
+      try { await fetch(url + '/rest/v1/users?id=eq.' + uidEnc, { method: 'DELETE', headers: delHeaders }); } catch (e) {}
+      // 4) Supprimer le compte d'authentification
+      let authStatus = 0;
+      try {
+        const ra = await fetch(url + '/auth/v1/admin/users/' + uidEnc, { method: 'DELETE', headers: { apikey: key, Authorization: 'Bearer ' + key } });
+        authStatus = ra.status;
+      } catch (e) {}
+      return res.status(200).json({ ok: true, auth_status: authStatus });
+    }
+
     // ── Supprimer un e-mail de la liste d'attente ───────────────
     if (action === 'delete-waitlist') {
       const { id } = body;

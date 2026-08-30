@@ -234,6 +234,9 @@ const T_ALL = {
     susp:"Suspendre le compte", unsusp:"Réactiver le compte",
     suspNote:"L'accès à l'app est coupé, les prélèvements sont mis en pause (Stripe).",
     unsuspNote:"L'accès et les prélèvements reprennent immédiatement.",
+    identity:"IDENTITÉ", firstName:"Prénom", lastName:"Nom", saveName:"Enregistrer le nom", nameSaved:"Nom mis à jour.",
+    deleteAcc:"Supprimer le compte", deleteNote:"Action définitive : profil, données et accès supprimés.",
+    deleteConfirm:"Supprimer définitivement {name} ? Cette action est irréversible.",
     newPromo:"Créer un code promo", newCode:"NOUVEAU CODE", codeWord:"Code", offWord:"Remise",
     durWord:"Durée", maxWord:"Limite d'utilisations", create:"Créer le code",
     offs:["−10 %","−25 %","−50 %","1er mois offert"],
@@ -259,6 +262,9 @@ const T_ALL = {
     susp:"Suspend account", unsusp:"Reactivate account",
     suspNote:"App access is cut off and charges are paused (Stripe).",
     unsuspNote:"Access and charges resume immediately.",
+    identity:"IDENTITY", firstName:"First name", lastName:"Last name", saveName:"Save name", nameSaved:"Name updated.",
+    deleteAcc:"Delete account", deleteNote:"Permanent: profile, data and access are removed.",
+    deleteConfirm:"Permanently delete {name}? This cannot be undone.",
     newPromo:"Create a promo code", newCode:"NEW CODE", codeWord:"Code", offWord:"Discount",
     durWord:"Duration", maxWord:"Usage limit", create:"Create code",
     offs:["−10 %","−25 %","−50 %","First month free"],
@@ -284,6 +290,9 @@ const T_ALL = {
     susp:"Спри профила", unsusp:"Активирай профила",
     suspNote:"Достъпът до приложението спира, плащанията са на пауза (Stripe).",
     unsuspNote:"Достъпът и плащанията се възобновяват веднага.",
+    identity:"ИДЕНТИЧНОСТ", firstName:"Име", lastName:"Фамилия", saveName:"Запази името", nameSaved:"Името е обновено.",
+    deleteAcc:"Изтрий профила", deleteNote:"Необратимо: профил, данни и достъп се изтриват.",
+    deleteConfirm:"Изтриване на {name} завинаги? Действието е необратимо.",
     newPromo:"Създай промо код", newCode:"НОВ КОД", codeWord:"Код", offWord:"Отстъпка",
     durWord:"Продължителност", maxWord:"Лимит на използване", create:"Създай кода",
     offs:["−10 %","−25 %","−50 %","Първи месец безплатно"],
@@ -341,7 +350,7 @@ function mapUsers(data){
     const now = new Date();
     const isNew = !isNaN(created) && created.getFullYear()===now.getFullYear() && created.getMonth()===now.getMonth();
     const name = (u.prenom ? (u.prenom + (u.nom?(" "+u.nom):"")) : "") || (u.email ? u.email.split("@")[0] : "Utilisateur");
-    out.push({ id:u.id, name, email:u.email||"—", status, plan, since:frDate(debut), next:showNext?frShort(next):"—", months:monthsSince(debut), montant, isNew });
+    out.push({ id:u.id, name, prenom:u.prenom||"", nom:u.nom||"", email:u.email||"—", status, plan, since:frDate(debut), next:showNext?frShort(next):"—", months:monthsSince(debut), montant, isNew });
   });
   return out;
 }
@@ -394,6 +403,21 @@ function suspBtn(u, big) {
   return '<div class="suspBtn btn" style="height:' + (big?46:42) + 'px;border-radius:' + (big?23:12) + 'px;background:' + (s?"rgba(95,168,138,.14)":"rgba(196,30,38,.12)") + ';border:1px solid ' + (s?"rgba(95,168,138,.35)":"rgba(196,30,38,.35)") + ';color:' + (s?"#5FA88A":"#E23B44") + '">' + (S.busy?"…":(s?t.unsusp:t.susp)) + '</div>';
 }
 const suspNote = u => u.status === "suspendu" ? T().unsuspNote : T().suspNote;
+const escAttr = s => String(s==null?"":s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+function nameEditHtml(u, big) {
+  const t = T(), h = big?42:38, r = big?12:11, bg = big?"#131315":"#0F0F11";
+  return '<div style="display:flex;flex-direction:column;gap:7px"><span class="fk" style="letter-spacing:.14em">' + t.identity + '</span>'
+    + '<div style="display:flex;gap:8px">'
+    + '<input class="uPrenom" value="' + escAttr(u.prenom) + '" placeholder="' + t.firstName + '" style="flex:1;min-width:0;height:' + h + 'px;padding:0 12px;border-radius:' + r + 'px;background:' + bg + ';border:1px solid rgba(242,239,233,.1);color:#F2EFE9;font:500 12.5px \'IBM Plex Sans\'">'
+    + '<input class="uNom" value="' + escAttr(u.nom) + '" placeholder="' + t.lastName + '" style="flex:1;min-width:0;height:' + h + 'px;padding:0 12px;border-radius:' + r + 'px;background:' + bg + ';border:1px solid rgba(242,239,233,.1);color:#F2EFE9;font:500 12.5px \'IBM Plex Sans\'">'
+    + '</div>'
+    + '<div class="saveName btn ' + (S.busy?"off":"red") + '" style="height:' + (big?44:40) + 'px;border-radius:' + (big?22:11) + 'px">' + (S.busy?"…":t.saveName) + '</div></div>';
+}
+function deleteBtnHtml(u, big) {
+  const t = T();
+  return '<div style="display:flex;flex-direction:column;gap:7px"><div class="delBtn btn" style="height:' + (big?46:42) + 'px;border-radius:' + (big?23:12) + 'px;background:rgba(196,30,38,.12);border:1px solid rgba(196,30,38,.4);color:#E23B44">' + (S.busy?"…":t.deleteAcc) + '</div>'
+    + '<span class="note" style="text-align:center">' + t.deleteNote + '</span></div>';
+}
 
 function promoFormHtml(big) {
   const t = T(), h = big ? 44 : 40, r = big ? 12 : 11, bg = big ? "#131315" : "#0F0F11";
@@ -540,7 +564,8 @@ function render() {
       + '<div class="x" data-close style="width:26px;height:26px">' + CLOSE + '</div></div>'
       + factsHtml(u,"#0F0F11")
       + '<div style="display:flex;flex-direction:column;gap:7px"><span class="fk" style="letter-spacing:.14em">' + t.planWord + '</span>' + planSelect(u,false) + saveBtn(u,false) + '</div>'
-      + '<div style="display:flex;flex-direction:column;gap:7px">' + suspBtn(u,false) + '<span class="note">' + suspNote(u) + '</span></div></div>'
+      + '<div style="display:flex;flex-direction:column;gap:7px">' + suspBtn(u,false) + '<span class="note">' + suspNote(u) + '</span></div>'
+      + nameEditHtml(u,false) + deleteBtnHtml(u,false) + '</div>'
     : '<div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:7px;padding:40px 24px;border-radius:16px;border:1px dashed rgba(242,239,233,.13);background:rgba(255,255,255,.012)">'
       + '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="rgba(242,239,233,.3)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8"></path></svg>'
       + '<span style="font:600 11.5px \'IBM Plex Sans\';color:rgba(242,239,233,.65)">' + t.noSel + '</span>'
@@ -558,7 +583,8 @@ function render() {
     + '<div class="x" data-close style="width:28px;height:28px">' + CLOSE + '</div></div>'
     + factsHtml(u,"#131315")
     + '<div style="flex:none;display:flex;flex-direction:column;gap:7px"><span class="fk" style="letter-spacing:.14em">' + t.planWord + '</span>' + planSelect(u,true) + saveBtn(u,true) + '</div>'
-    + suspBtn(u,true) + '<span class="note" style="text-align:center">' + suspNote(u) + '</span>';
+    + suspBtn(u,true) + '<span class="note" style="text-align:center">' + suspNote(u) + '</span>'
+    + nameEditHtml(u,true) + deleteBtnHtml(u,true);
   if (S.promoForm) $("mPromoForm").innerHTML =
     '<div style="flex:none;display:flex;align-items:center;justify-content:space-between"><span style="font:600 8.5px \'IBM Plex Mono\',monospace;letter-spacing:.2em;color:#E23B44">' + t.newCode + '</span>'
     + '<div class="x" data-close style="width:28px;height:28px">' + CLOSE + '</div></div>' + promoFormHtml(true);
@@ -604,6 +630,19 @@ function wire() {
     const u = sel(); if (!u) return;
     const status = u.status === "suspendu" ? "actif" : "suspendu";
     if (await act({ action:"set-status", user_id:u.id, status })) await loadData();
+  });
+  document.querySelectorAll(".saveName").forEach(el => el.onclick = async () => {
+    const u = sel(); if (!u) return;
+    const box = el.closest("#dPanel") || el.closest("#mSheet") || document;
+    const pe = box.querySelector(".uPrenom"), ne = box.querySelector(".uNom");
+    const prenom = pe ? pe.value : "", nom = ne ? ne.value : "";
+    if (prenom.trim() === (u.prenom||"") && nom.trim() === (u.nom||"")) return;
+    if (await act({ action:"update-user", user_id:u.id, prenom:prenom, nom:nom })) await loadData();
+  });
+  document.querySelectorAll(".delBtn").forEach(el => el.onclick = async () => {
+    const u = sel(); if (!u) return;
+    if (!confirm(T().deleteConfirm.replace("{name}", u.name))) return;
+    if (await act({ action:"delete-user", user_id:u.id })) { closeAll(); await loadData(); }
   });
   document.querySelectorAll(".pCode").forEach(el => el.oninput = e => { S.pCode = e.target.value.toUpperCase(); e.target.value = S.pCode; });
   document.querySelectorAll(".pOff").forEach(el => el.onchange = e => { S.pOff = e.target.value; });
