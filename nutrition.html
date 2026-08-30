@@ -200,7 +200,7 @@ var T = {
     resKicker:"DÉTECTÉ PAR L'IA", resTitle:"C'est bien ça ?", portion:'PORTION',
     descLabel:'DESCRIPTION', descPlaceholder:'Poulet grillé, riz basmati, brocoli vapeur…',
     descNote:'Une description précise permet une analyse plus détaillée de ton repas.',
-    addBtn:'Ajouter à mon journal', retake:'← Reprendre la photo', analyzing:'Analyse…' },
+    addBtn:'Ajouter à mon journal', retake:'← Reprendre la photo', analyzing:'Analyse…', meal:'Repas' },
   en: { title:'Nutrition', avail:'CALORIES AVAILABLE', kcal:'KCAL', onWord:'OF', consumed:'EATEN',
     macros:['PROTEIN','CARBS','FAT'], scanBtn:'Scan a meal',
     emptyTitle:'Nothing scanned', emptyText:'Everything you scan during the day shows up here.',
@@ -208,7 +208,7 @@ var T = {
     resKicker:'DETECTED BY AI', resTitle:'Is this right?', portion:'PORTION',
     descLabel:'DESCRIPTION', descPlaceholder:'Grilled chicken, basmati rice, steamed broccoli…',
     descNote:'A precise description enables a more detailed analysis of your meal.',
-    addBtn:'Add to my journal', retake:'← Retake the photo', analyzing:'Analyzing…' },
+    addBtn:'Add to my journal', retake:'← Retake the photo', analyzing:'Analyzing…', meal:'Meal' },
   bg: { title:'Хранене', avail:'НАЛИЧНИ КАЛОРИИ', kcal:'ККАЛ', onWord:'ОТ', consumed:'ПРИЕТИ',
     macros:['ПРОТЕИНИ','ВЪГЛЕХИДРАТИ','МАЗНИНИ'], scanBtn:'Сканирай хранене',
     emptyTitle:'Нищо сканирано', emptyText:'Всичко, което сканираш през деня, се показва тук.',
@@ -216,7 +216,7 @@ var T = {
     resKicker:'ОТКРИТО ОТ ИИ', resTitle:'Така ли е?', portion:'ПОРЦИЯ',
     descLabel:'ОПИСАНИЕ', descPlaceholder:'Пилешко на скара, ориз басмати, броколи на пара…',
     descNote:'Точното описание позволява по-подробен анализ на храненето ти.',
-    addBtn:'Добави в дневника', retake:'← Повтори снимката', analyzing:'Анализ…' }
+    addBtn:'Добави в дневника', retake:'← Повтори снимката', analyzing:'Анализ…', meal:'Ястие' }
 };
 var lang = (function () { try { var v = localStorage.getItem('espritum.lang'); return T[v] ? v : 'fr'; } catch (e) { return 'fr'; } })();
 var d = T[lang];
@@ -307,8 +307,16 @@ function aiTotal() {
 }
 function renderSheet() {
   $('portion').textContent = S.portion.toFixed(1).replace('.0', '') + '×';
-  if (S.analyzing) { $('total').textContent = d.analyzing; return; }
+  var addBtn = $('add'), addSpan = addBtn ? addBtn.querySelector('span') : null;
+  if (S.analyzing) {
+    $('total').textContent = d.analyzing;
+    if (addBtn) { addBtn.style.opacity = '.55'; addBtn.style.pointerEvents = 'none'; }
+    if (addSpan) addSpan.textContent = d.analyzing;
+    return;
+  }
   $('total').textContent = Math.round(aiTotal().k * S.portion);
+  if (addBtn) { addBtn.style.opacity = ''; addBtn.style.pointerEvents = ''; }
+  if (addSpan) addSpan.textContent = d.addBtn;
 }
 
 function show(which) {
@@ -351,16 +359,21 @@ function analyze() {
   show('res'); renderSheet();
   toB64(S.photo, function (b64) {
     if (!b64) { S.analyzing = false; S.ai = []; renderSheet(); return; }
-    fetch('/api/meal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image: b64, lang: lang }) })
+    var ctrl = null, to = null;
+    try { ctrl = new AbortController(); to = setTimeout(function () { try { ctrl.abort(); } catch (e) {} }, 20000); } catch (e) {}
+    var opts = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image: b64, lang: lang }) };
+    if (ctrl) opts.signal = ctrl.signal;
+    fetch('/api/meal', opts)
       .then(function (r) { return r.json(); })
       .then(function (data) {
+        if (to) clearTimeout(to);
         S.analyzing = false;
         S.ai = (data && Array.isArray(data.items) ? data.items : []).map(function (x) {
           return { n: x.name, k: Math.round(x.kcal) || 0, p: Math.round(x.protein) || 0, c: Math.round(x.carbs) || 0, f: Math.round(x.fat) || 0 };
         });
         renderSheet();
       })
-      .catch(function () { S.analyzing = false; S.ai = []; renderSheet(); });
+      .catch(function () { if (to) clearTimeout(to); S.analyzing = false; S.ai = []; renderSheet(); });
   });
 }
 
@@ -381,13 +394,12 @@ $('plus').onclick = function () { S.portion = Math.min(4, S.portion + 0.5); rend
 document.querySelectorAll('[data-close]').forEach(function (el) { el.onclick = function () { show(null); }; });
 $('veil').onclick = function () { show(null); };
 $('add').onclick = function () {
-  if (S.analyzing) return;
+  if (S.analyzing) return;   // le bouton est déjà grisé pendant l'analyse
   var t = aiTotal();
   var desc = $('desc').value.trim();
   var aiNames = aiItems().map(function (x) { return x.n; }).filter(Boolean).slice(0, 3).join(', ');
-  var name = desc || aiNames;
-  if (!name && !t.k) return;
-  var entry = { n: name || d.scanBtn, k: Math.round(t.k * S.portion), p: Math.round(t.p * S.portion), c: Math.round(t.c * S.portion), f: Math.round(t.f * S.portion), time: hm(), photo: S.photo || null };
+  var name = desc || aiNames || d.meal;   // toujours un nom, même si l'IA n'a rien détecté
+  var entry = { n: name, k: Math.round(t.k * S.portion), p: Math.round(t.p * S.portion), c: Math.round(t.c * S.portion), f: Math.round(t.f * S.portion), time: hm(), photo: S.photo || null };
   S.log.push(entry);
   show(null); render();
   saveMeal(entry);
