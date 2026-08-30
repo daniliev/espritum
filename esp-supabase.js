@@ -203,6 +203,21 @@
       });
     },
 
+    // Upload de la photo d'un repas → bucket public 'meal-photos' → URL publique
+    uploadMealPhoto: function (dataUrl, mealId) {
+      return sb.auth.getUser().then(function (u) {
+        if (!u.data.user || !dataUrl || !mealId) return null;
+        var uid = u.data.user.id;
+        return dataUrlToScaledBlob(dataUrl, 640).then(function (b) {
+          if (!b) return null;
+          var path = uid + '/' + mealId + '.jpg';
+          return sb.storage.from('meal-photos').upload(path, b, { contentType: 'image/jpeg', upsert: true }).then(function () {
+            return sb.storage.from('meal-photos').getPublicUrl(path).data.publicUrl;
+          }, function () { return null; });
+        });
+      });
+    },
+
     // Tous les scans (mesures) de l'utilisateur, du plus ancien au plus récent
     listScans: function () {
       return sb.auth.getUser().then(function (u) {

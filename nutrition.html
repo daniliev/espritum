@@ -283,7 +283,8 @@ function render() {
   }
 
   $('meals').innerHTML = S.log.map(function (x, i) {
-    return '<div class="mealrow"><div class="thumb">' + CAM_ICON + '</div>'
+    var img = x.photoUrl || x.photo;
+    return '<div class="mealrow"><div class="thumb"' + (img ? ' style="background-image:url(\'' + img + '\');background-size:cover;background-position:center;background-repeat:no-repeat"' : '') + '>' + (img ? '' : CAM_ICON) + '</div>'
       + '<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;padding:0 11px">'
       + '<span class="mono">' + x.time + '</span>'
       + '<span style="font:500 12.5px/1.2 \'IBM Plex Sans\';color:#F2EFE9;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">' + x.n + '</span></div>'
@@ -346,7 +347,7 @@ function toB64(src, cb) {
 
 function analyze() {
   S.ai = null; S.analyzing = true; S.portion = 1;
-  if (S.photo) $('shotbox').style.backgroundImage = 'url(' + S.photo + ')';
+  if (S.photo) $('shotbox').style.backgroundImage = "url('" + S.photo + "')";
   show('res'); renderSheet();
   toB64(S.photo, function (b64) {
     if (!b64) { S.analyzing = false; S.ai = []; renderSheet(); return; }
@@ -365,7 +366,11 @@ function analyze() {
 
 // ---- Handlers scan ----
 $('open').onclick = function () { S.portion = 1; S.photo = null; $('desc').value = ''; show('cam'); startCam(); };
-$('shoot').onclick = function () { if (live) { S.photo = capture(); analyze(); } else file.click(); };
+$('shoot').onclick = function () {
+  var shot = live ? capture() : null;   // capture() peut renvoyer null si la vidéo n'est pas prête
+  if (shot) { S.photo = shot; analyze(); }
+  else { file.click(); }                // repli fiable : appareil photo / galerie natifs
+};
 if (file) file.addEventListener('change', function () {
   var f = file.files && file.files[0]; if (!f) return;
   var r = new FileReader(); r.onload = function () { S.photo = r.result; analyze(); }; r.readAsDataURL(f);
@@ -382,7 +387,7 @@ $('add').onclick = function () {
   var aiNames = aiItems().map(function (x) { return x.n; }).filter(Boolean).slice(0, 3).join(', ');
   var name = desc || aiNames;
   if (!name && !t.k) return;
-  var entry = { n: name || d.scanBtn, k: Math.round(t.k * S.portion), p: Math.round(t.p * S.portion), c: Math.round(t.c * S.portion), f: Math.round(t.f * S.portion), time: hm() };
+  var entry = { n: name || d.scanBtn, k: Math.round(t.k * S.portion), p: Math.round(t.p * S.portion), c: Math.round(t.c * S.portion), f: Math.round(t.f * S.portion), time: hm(), photo: S.photo || null };
   S.log.push(entry);
   show(null); render();
   saveMeal(entry);
@@ -390,14 +395,31 @@ $('add').onclick = function () {
 
 // ---- Supabase : cibles, avatar, streak, journal du jour ----
 function today() { var x = new Date(); return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0'); }
+function uuid() {
+  try { if (window.crypto && crypto.randomUUID) return crypto.randomUUID(); } catch (e) {}
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8); return v.toString(16);
+  });
+}
 function saveMeal(entry) {
   if (!window.espSB || !window.EspAuth) return;
   window.EspAuth.getSession().then(function (s) {
     if (!s) return;
-    window.espSB.from('meals').insert({
-      user_id: s.user.id, nom: entry.n, type_repas: 'repas',
-      calories: entry.k, proteines: entry.p, glucides: entry.c, lipides: entry.f, quantite: S.portion
-    }).select('id').single().then(function (r) { if (r && r.data) entry.id = r.data.id; }, function () {});
+    var mealId = uuid();
+    entry.id = mealId;
+    // 1) On téléverse d'abord la photo (si présente) pour l'inclure dans l'insert (pas besoin de droit UPDATE)
+    var up = (entry.photo && window.EspAuth.uploadMealPhoto)
+      ? window.EspAuth.uploadMealPhoto(entry.photo, mealId).catch(function () { return null; })
+      : Promise.resolve(null);
+    up.then(function (url) {
+      if (url) { entry.photoUrl = url; render(); }
+      var row = {
+        id: mealId, user_id: s.user.id, nom: entry.n, type_repas: 'repas',
+        calories: entry.k, proteines: entry.p, glucides: entry.c, lipides: entry.f, quantite: S.portion
+      };
+      if (url) row.photo_url = url;
+      window.espSB.from('meals').insert(row).then(function () {}, function () {});
+    });
   }).catch(function () {});
 }
 function deleteMeal(id) {
@@ -426,11 +448,11 @@ if (window.EspAuth) {
   // Repas déjà scannés aujourd'hui
   if (window.espSB) window.EspAuth.getSession().then(function (s) {
     if (!s) return;
-    window.espSB.from('meals').select('id,nom,calories,proteines,glucides,lipides,created_at')
+    window.espSB.from('meals').select('id,nom,calories,proteines,glucides,lipides,photo_url,created_at')
       .eq('user_id', s.user.id).eq('date', today()).order('created_at', { ascending: true })
       .then(function (r) {
         (r.data || []).forEach(function (m) {
-          S.log.push({ id: m.id, n: m.nom, k: m.calories || 0, p: Number(m.proteines) || 0, c: Number(m.glucides) || 0, f: Number(m.lipides) || 0, time: hm(new Date(m.created_at)) });
+          S.log.push({ id: m.id, n: m.nom, k: m.calories || 0, p: Number(m.proteines) || 0, c: Number(m.glucides) || 0, f: Number(m.lipides) || 0, photoUrl: m.photo_url || null, time: hm(new Date(m.created_at)) });
         });
         render();
       }, function () {});
