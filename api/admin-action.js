@@ -13,37 +13,36 @@
 //   ADMIN_API_KEY              → optionnel : clé alternative (header x-admin-key)
 
 const FALLBACK_URL = 'https://lbxlvrtujzwlcnloheyh.supabase.co';
-const FALLBACK_ADMIN_EMAIL = 'd.ilievprojet@gmail.com';
 
-async function isAdmin(req, url, serviceKey) {
-  const adminKey = process.env.ADMIN_API_KEY;
-  if (adminKey && req.headers['x-admin-key'] === adminKey) return true;
-  const auth = req.headers['authorization'] || '';
-  const token = auth.replace(/^Bearer\s+/i, '') || req.headers['x-user-token'] || '';
-  if (!token) return false;
-  try {
-    const r = await fetch(url + '/auth/v1/user', { headers: { apikey: serviceKey, Authorization: 'Bearer ' + token } });
-    if (!r.ok) return false;
-    const u = await r.json();
-    const admin = (process.env.ADMIN_EMAIL || FALLBACK_ADMIN_EMAIL).toLowerCase();
-    return !!(u && u.email && u.email.toLowerCase() === admin);
-  } catch (e) { return false; }
+// Vérifie l'identifiant + les 3 mots de passe admin (en-tête x-admin-auth).
+// Valeurs par défaut = celles du code ; surchargeables par variables d'env Vercel.
+function isAdmin(req) {
+  const raw = req.headers['x-admin-auth'];
+  if (!raw) return false;
+  let c;
+  try { c = JSON.parse(Buffer.from(raw, 'base64').toString('utf8')); } catch (e) { return false; }
+  const ID = process.env.ADMIN_ID  || 'espritum-admin';
+  const P1 = process.env.ADMIN_PW1 || 'Esprit2026';
+  const P2 = process.env.ADMIN_PW2 || 'NotJustFlesh';
+  const P3 = process.env.ADMIN_PW3 || 'ButSpirit';
+  return !!(c && String(c.id || '').trim().toLowerCase() === ID.toLowerCase()
+    && c.p1 === P1 && c.p2 === P2 && c.p3 === P3);
 }
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-user-token, x-admin-key');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-auth');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Accès réservé à l\'administrateur' });
 
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!key) return res.status(503).json({ error: 'SUPABASE_SERVICE_ROLE_KEY non configurée sur le serveur' });
   const url = process.env.SUPABASE_URL || FALLBACK_URL;
   const stripeKey = process.env.STRIPE_SECRET_KEY;
-
-  if (!(await isAdmin(req, url, key))) return res.status(401).json({ error: 'Accès réservé à l\'administrateur' });
 
   const sbHeaders = { apikey: key, Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' };
 

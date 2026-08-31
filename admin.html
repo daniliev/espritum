@@ -68,8 +68,11 @@ select{background:#0F0F11;border:1px solid rgba(242,239,233,.1);color:#F2EFE9;bo
 .sheet{position:absolute;left:0;right:0;bottom:0;z-index:61;max-height:calc(100% - 62px);overflow-y:auto;background:#0E0E10;border-top:1px solid rgba(242,239,233,.09);border-radius:22px 22px 0 0;display:flex;flex-direction:column;padding:16px 20px 26px;gap:14px;animation:aFade .28s ease both}
 .hidden{display:none!important}
 #gate{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;background:#0B0B0C;background-image:linear-gradient(rgba(242,239,233,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(242,239,233,.045) 1px,transparent 1px),radial-gradient(90% 70% at 50% 45%,rgba(196,30,38,.09),transparent 70%);background-size:44px 44px,44px 44px,100% 100%;background-position:center center}
-#gateCard{width:100%;max-width:380px;display:flex;flex-direction:column;align-items:center;gap:18px;padding:36px 28px;border-radius:22px;background:#111113;border:1px solid rgba(242,239,233,.08);box-shadow:0 40px 90px -40px rgba(0,0,0,.9);animation:aFade .35s ease both;text-align:center}
-#gateCard img{width:52px;height:auto;display:block}
+#gateCard{width:100%;max-width:380px;display:flex;flex-direction:column;align-items:center;gap:20px;padding:32px 28px;border-radius:22px;background:#111113;border:1px solid rgba(242,239,233,.08);box-shadow:0 40px 90px -40px rgba(0,0,0,.9);animation:aFade .35s ease both;text-align:center}
+#gate input{width:100%;height:46px;padding:0 15px;border-radius:12px;background:#0B0B0C;border:1px solid rgba(242,239,233,.12);color:#F2EFE9;font:500 13px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-align:center}
+#gateId{font:500 14px 'IBM Plex Sans'!important;letter-spacing:0!important}
+#gateErr{font:500 9.5px 'IBM Plex Mono',monospace;letter-spacing:.06em;color:#E23B44;min-height:13px;text-align:center}
+#gateLogo{cursor:default;-webkit-tap-highlight-color:transparent;user-select:none}
 .spin{width:24px;height:24px;border-radius:50%;border:2.5px solid rgba(242,239,233,.15);border-top-color:#C41E26;animation:spin .8s linear infinite}
 .langs{display:flex;justify-content:center;gap:7px}
 .langs div{padding:7px 14px;border-radius:9px;cursor:pointer;border:1px solid rgba(242,239,233,.1);font:600 9.5px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:rgba(242,239,233,.4);transition:.18s}
@@ -88,25 +91,25 @@ select{background:#0F0F11;border:1px solid rgba(242,239,233,.1);color:#F2EFE9;bo
   #gateCard{width:100%;max-width:none;min-height:100vh;border-radius:0;border:none;justify-content:center;box-shadow:none}
 }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="esp-supabase.js"></script>
 </head>
 <body>
 
 <div id="gate">
 <div id="gateCard">
-<img src="logo-blanc.png" alt="Espritum">
+<div style="display:flex;flex-direction:column;align-items:center;gap:13px">
+<img id="gateLogo" src="logo-blanc.png" alt="Espritum" style="width:52px;height:auto;display:block">
 <div style="display:flex;flex-direction:column;align-items:center;gap:5px">
 <span id="gKick" style="font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.2em;color:rgba(242,239,233,.34)"></span>
 <span id="gTitle" style="font:700 24px/1 Oswald,sans-serif;text-transform:uppercase;letter-spacing:.02em"></span>
 </div>
-<div id="gSpin" class="spin"></div>
-<div id="gSub" style="font:400 12px/1.6 'IBM Plex Sans';color:rgba(242,239,233,.5);max-width:300px"></div>
-<div id="gForm" class="hidden" style="width:100%;display:flex;flex-direction:column;gap:9px">
-<input id="gEmail" type="email" autocomplete="username" style="width:100%;height:46px;padding:0 15px;border-radius:12px;background:#0B0B0C;border:1px solid rgba(242,239,233,.12);color:#F2EFE9;font:500 13px 'IBM Plex Sans'">
-<input id="gPass" type="password" autocomplete="current-password" style="width:100%;height:46px;padding:0 15px;border-radius:12px;background:#0B0B0C;border:1px solid rgba(242,239,233,.12);color:#F2EFE9;font:500 13px 'IBM Plex Sans'">
-<span id="gErr" style="font:500 9.5px 'IBM Plex Mono',monospace;letter-spacing:.04em;color:#E23B44;min-height:12px;text-align:center"></span>
-<div class="btn red" id="gEnter" style="height:46px;border-radius:23px"></div>
+</div>
+<div style="width:100%;display:flex;flex-direction:column;gap:8px">
+<input id="gateId" type="text" autocomplete="off">
+<input id="gateP1" type="password" autocomplete="off">
+<input id="gateP2" type="password" autocomplete="off">
+<input id="gateP3" type="password" autocomplete="off">
+<span id="gateErr"></span>
+<div class="btn red" id="gateFake" style="height:48px;border-radius:24px"></div>
 </div>
 <div class="langs" id="gateLangs"></div>
 </div>
@@ -216,14 +219,23 @@ select{background:#0F0F11;border:1px solid rgba(242,239,233,.1);color:#F2EFE9;bo
 </div>
 
 <script>
+// Identifiants de l'écran d'accès (couche visuelle). La vraie vérification est aussi côté serveur
+// (variables Vercel ADMIN_ID / ADMIN_PW1..3, avec ces valeurs par défaut).
+const ADMIN_ID = "espritum-admin";
+const ADMINS = [
+  { pwd: "Esprit2026" },
+  { pwd: "NotJustFlesh" },
+  { pwd: "ButSpirit" }
+];
+
 const PRICE = 11.99;
 const DUR_API = ["1 mois", "3 mois", "12 mois", "À vie"]; // envoyé à l'API (le backend attend le libellé FR)
 
 const T_ALL = {
   fr: { kicker:"ESPRITUM · BACK-OFFICE",
     verifying:"Vérification…", loadingT:"Chargement…", denied:"Accès refusé", deniedSub:"Cette page est réservée à l'administrateur.",
-    needLogin:"Connexion admin", needLoginSub:"Connecte-toi avec ton compte administrateur.", loginBtn:"Se connecter", backendErr:"Back-office indisponible.",
-    enter:"Entrer", loginErr:"Identifiant ou mot de passe incorrect.", emailPh:"E-mail admin", passPh:"Mot de passe",
+    login:"Connexion admin", phId:"Identifiant", phP:["Mot de passe 1","Mot de passe 2","Mot de passe 3"],
+    err:"IDENTIFIANT OU MOTS DE PASSE INCORRECTS", enter:"Entrer", backendErr:"Back-office indisponible.",
     subs:"Abonnés", promo:"Codes promo", tabSubs:"ABONNÉS", tabPromo:"PROMOS",
     onePlan:"PLAN UNIQUE", perMonth:"/MOIS", promoSub:"Remise appliquée sur l'abonnement à 11,99 € / mois (coupons Stripe).",
     kpi:["ABONNÉS ACTIFS","MRR","NOUVEAUX CE MOIS","EN ESSAI","REVENU TOTAL"],
@@ -251,8 +263,8 @@ const T_ALL = {
 
   en: { kicker:"ESPRITUM · BACK-OFFICE",
     verifying:"Checking…", loadingT:"Loading…", denied:"Access denied", deniedSub:"This page is admin-only.",
-    needLogin:"Admin login", needLoginSub:"Sign in with your admin account.", loginBtn:"Sign in", backendErr:"Back-office unavailable.",
-    enter:"Enter", loginErr:"Wrong email or password.", emailPh:"Admin email", passPh:"Password",
+    login:"Admin login", phId:"Username", phP:["Password 1","Password 2","Password 3"],
+    err:"WRONG USERNAME OR PASSWORDS", enter:"Enter", backendErr:"Back-office unavailable.",
     subs:"Subscribers", promo:"Promo codes", tabSubs:"MEMBERS", tabPromo:"PROMOS",
     onePlan:"SINGLE PLAN", perMonth:"/MONTH", promoSub:"Discount applied to the €11.99 / month subscription (Stripe coupons).",
     kpi:["ACTIVE SUBSCRIBERS","MRR","NEW THIS MONTH","ON TRIAL","TOTAL REVENUE"],
@@ -280,8 +292,8 @@ const T_ALL = {
 
   bg: { kicker:"ESPRITUM · БЕК-ОФИС",
     verifying:"Проверка…", loadingT:"Зареждане…", denied:"Отказан достъп", deniedSub:"Тази страница е само за администратор.",
-    needLogin:"Админ вход", needLoginSub:"Влез с администраторския си профил.", loginBtn:"Вход", backendErr:"Бек-офисът е недостъпен.",
-    enter:"Влез", loginErr:"Грешен имейл или парола.", emailPh:"Админ имейл", passPh:"Парола",
+    login:"Админ вход", phId:"Потребител", phP:["Парола 1","Парола 2","Парола 3"],
+    err:"ГРЕШЕН ПОТРЕБИТЕЛ ИЛИ ПАРОЛИ", enter:"Влез", backendErr:"Бек-офисът е недостъпен.",
     subs:"Абонати", promo:"Промо кодове", tabSubs:"АБОНАТИ", tabPromo:"ПРОМО",
     onePlan:"ЕДИНЕН ПЛАН", perMonth:"/МЕСЕЦ", promoSub:"Отстъпка върху абонамента от 11,99 € / месец (Stripe купони).",
     kpi:["АКТИВНИ АБОНАТИ","MRR","НОВИ ТОЗИ МЕСЕЦ","В ПРОБЕН ПЕРИОД","ОБЩ ПРИХОД"],
@@ -315,7 +327,7 @@ const PKEYS = ["mensuel","essai","offert"];
 
 const S = {
   lang:"fr", tab:"subs", q:"", filter:"tous", selId:null, draftPlan:null, promoForm:false, busy:false,
-  gate:"verifying", totalAccounts:0, users:[], promos:[],
+  gate:"locked", taps:0, errOn:false, creds:null, totalAccounts:0, users:[], promos:[],
   pCode:"", pOff:"25", pDur:"1", pMax:"100"
 };
 try { var _l = localStorage.getItem("espritum.lang"); if (T_ALL[_l]) S.lang = _l; } catch (e) {}
@@ -448,41 +460,28 @@ function promoFormHtml(big) {
     + '<div class="btn red pAdd" style="height:' + (big?48:44) + 'px;border-radius:' + (big?24:12) + 'px">' + (S.busy?"…":t.create) + '</div>';
 }
 
-// ── Gate d'accès ──
+// ── Écran d'accès ──
 function renderGate() {
   const t = T();
   document.documentElement.lang = S.lang;
   $("gKick").textContent = t.kicker;
+  $("gTitle").textContent = t.login;
+  $("gateId").placeholder = t.phId;
+  $("gateP1").placeholder = t.phP[0];
+  $("gateP2").placeholder = t.phP[1];
+  $("gateP3").placeholder = t.phP[2];
+  $("gateFake").textContent = t.enter;
+  $("gateErr").textContent = S.errOn ? t.err : (S.gate === "error" ? t.backendErr : "");
   $("gateLangs").innerHTML = ["fr","en","bg"].map(k => '<div data-lang="' + k + '" class="' + (S.lang===k?"on":"") + '">' + k.toUpperCase() + '</div>').join("");
-  $("gateLangs").querySelectorAll("[data-lang]").forEach(el => el.onclick = () => { S.lang = el.dataset.lang; try{localStorage.setItem("espritum.lang",S.lang);}catch(e){} renderGate(); if(S.gate==="ok") render(); });
-
-  const g = S.gate;
-  $("gate").classList.toggle("hidden", g === "ok");
-  $("logoutWrap").classList.toggle("hidden", g !== "ok");
-  $("gSpin").classList.toggle("hidden", !(g==="verifying" || g==="loading"));
-  const showForm = (g==="needlogin" || g==="denied");
-  $("gForm").classList.toggle("hidden", !showForm);
-  $("gEmail").placeholder = t.emailPh;
-  $("gPass").placeholder = t.passPh;
-  $("gEnter").textContent = t.enter;
-  if (g === "denied") { $("gErr").textContent = t.deniedSub; }
-  else if (g !== "needlogin") { $("gErr").textContent = ""; }
-  const map = {
-    verifying: [t.verifying, ""],
-    loading:   [t.loadingT, ""],
-    needlogin: [t.needLogin, t.needLoginSub],
-    denied:    [t.denied, ""],
-    error:     [t.backendErr, ""]
-  };
-  const m = map[g] || ["", ""];
-  $("gTitle").textContent = m[0];
-  $("gSub").textContent = m[1];
+  $("gateLangs").querySelectorAll("[data-lang]").forEach(el => el.onclick = () => { S.lang = el.dataset.lang; S.taps = 0; try{localStorage.setItem("espritum.lang",S.lang);}catch(e){} renderGate(); if(S.gate==="ok") render(); });
+  $("gate").classList.toggle("hidden", S.gate === "ok");
+  $("logoutWrap").classList.toggle("hidden", S.gate !== "ok");
 }
 
 // ── Appels API réels ──
-async function authHeaders(){
-  const s = await window.EspAuth.getSession();
-  return s ? { Authorization: "Bearer " + s.access_token } : null;
+function authHeaders(){
+  if(!S.creds) return null;
+  try { return { "x-admin-auth": btoa(JSON.stringify(S.creds)) }; } catch(e){ return null; }
 }
 async function act(payload){
   if(S.busy) return false;
@@ -497,21 +496,20 @@ async function act(payload){
     return true;
   } catch(e){ S.busy=false; alert(e.message); render(); return false; }
 }
-async function loadData(first){
-  S.gate = first ? "verifying" : S.gate; renderGate();
-  const h = await authHeaders();
-  if(!h){ S.gate = "needlogin"; renderGate(); return; }
-  if(first){ S.gate = "loading"; renderGate(); }
+async function loadData(){
+  const h = authHeaders();
+  if(!h) return;
   try {
     const r = await fetch("/api/admin-data", { headers:h });
-    if(r.status===401){ S.gate = "denied"; renderGate(); return; }
-    if(r.status===503){ S.gate = "error"; renderGate(); return; }
-    if(!r.ok){ S.gate = "error"; renderGate(); return; }
+    if(r.status===401){ S.creds = null; S.errOn = true; S.gate = "locked"; renderGate(); return; }
+    if(r.status===503 || !r.ok){ S.gate = "error"; renderGate(); return; }
     const data = await r.json();
     S.totalAccounts = (data.users||[]).length;
     S.users = mapUsers(data);
     S.promos = (data.promos||[]).map(p => ({ id:p.id, code:p.code, off:p.off, dur:p.dur, used:p.used||0, max:p.max||0 }));
-    S.gate = "ok"; renderGate(); render();
+    S.errOn = false; S.gate = "ok";
+    ["gateId","gateP1","gateP2","gateP3"].forEach(id => $(id).value = "");
+    renderGate(); render();
   } catch(e){ S.gate = "error"; renderGate(); }
 }
 
@@ -683,31 +681,31 @@ $("dq").oninput = e => { S.q = e.target.value; render(); $("dq").focus(); };
 $("mq").oninput = e => { S.q = e.target.value; render(); $("mq").focus(); };
 $("mVeil").onclick = closeAll;
 $("mNewPromo").onclick = () => { S.promoForm = true; render(); };
-async function doLogin() {
-  const email = $("gEmail").value.trim(), pass = $("gPass").value;
-  if (!email || !pass) return;
-  $("gErr").textContent = ""; $("gEnter").textContent = "…";
-  try {
-    await window.EspAuth.login({ email: email, password: pass });
-    const s = await window.EspAuth.getSession();
-    $("gEnter").textContent = T().enter;
-    if (!s) { $("gErr").textContent = T().loginErr; return; }
-    $("gPass").value = "";
-    await loadData(true);   // l'accès admin est vérifié côté serveur
-  } catch (e) { $("gEnter").textContent = T().enter; $("gErr").textContent = T().loginErr; }
-}
-$("gEnter").onclick = doLogin;
-$("gEmail").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
-$("gPass").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
-$("logout").onclick = () => {
-  const done = () => { S.gate = "needlogin"; closeAll(); $("gEmail").value = ""; $("gPass").value = ""; renderGate(); };
-  if (window.EspAuth && window.EspAuth.logout) window.EspAuth.logout().then(done, done); else done();
+// Le bouton "Entrer" est un leurre volontaire — il ne fait rien.
+$("gateFake").onclick = () => {};
+// Toute modification d'un champ remet le compteur de taps à zéro.
+["gateId","gateP1","gateP2","gateP3"].forEach(id => $(id).oninput = () => {
+  S.taps = 0; if (S.errOn) { S.errOn = false; $("gateErr").textContent = ""; }
+});
+// Vrai déclencheur : trois taps sur le logo, une fois les quatre champs remplis correctement.
+$("gateLogo").onclick = () => {
+  const ok = $("gateId").value.trim().toLowerCase() === ADMIN_ID
+    && [$("gateP1"),$("gateP2"),$("gateP3")].every((el,i) => el.value.trim() === ADMINS[i].pwd);
+  S.taps += 1;
+  if (S.taps < 3) { S.errOn = false; renderGate(); return; }
+  S.taps = 0;
+  if (ok) {
+    S.creds = { id: $("gateId").value.trim(), p1: $("gateP1").value.trim(), p2: $("gateP2").value.trim(), p3: $("gateP3").value.trim() };
+    S.errOn = false; renderGate();
+    loadData();   // le serveur re-vérifie les mots de passe et renvoie les vraies données
+  } else { S.errOn = true; renderGate(); }
 };
+$("logout").onclick = () => { S.creds = null; S.gate = "locked"; S.taps = 0; S.errOn = false; closeAll(); renderGate(); };
 window.addEventListener("resize", function(){ if(S.gate==="ok") render(); });
 
+S.gate = "locked";
 renderGate();
 render();
-if (window.EspAuth) { S.gate = "needlogin"; renderGate(); } else { S.gate = "error"; renderGate(); }
 </script>
 </body>
 </html>
