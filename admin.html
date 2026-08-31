@@ -233,7 +233,7 @@ const T_ALL = {
     head:["ABONNÉ","STATUT","DEPUIS","PROCHAIN","TOTAL"],
     none:"Aucun abonné", noneSub:"Les abonnés apparaîtront ici dès le premier paiement.",
     noSel:"Aucun abonné sélectionné", noSelSub:"Clique une ligne pour voir la fiche et agir sur l'abonnement.",
-    facts:["STATUT","PLAN","ABONNÉ DEPUIS","PROCHAIN PRÉLÈVEMENT","TOTAL VERSÉ"],
+    facts:["STATUT","PLAN","ABONNÉ DEPUIS","PROCHAIN PRÉLÈVEMENT","TOTAL VERSÉ","E-MAIL"],
     planWord:"PLAN", plans:{mensuel:"Mensuel — 11,99 €",essai:"Essai gratuit",offert:"Offert — 0 €",aucun:"Aucun abonnement"},
     planOpts:["Mensuel — 11,99 €","Essai gratuit — 14 jours","Offert — 0 €","Aucun abonnement"],
     save:"Valider le changement de plan", noSave:"Aucun changement à valider",
@@ -262,7 +262,7 @@ const T_ALL = {
     head:["SUBSCRIBER","STATUS","SINCE","NEXT","TOTAL"],
     none:"No subscriber", noneSub:"Subscribers appear here after the first payment.",
     noSel:"No subscriber selected", noSelSub:"Click a row to open the record and act on the subscription.",
-    facts:["STATUS","PLAN","MEMBER SINCE","NEXT CHARGE","TOTAL PAID"],
+    facts:["STATUS","PLAN","MEMBER SINCE","NEXT CHARGE","TOTAL PAID","E-MAIL"],
     planWord:"PLAN", plans:{mensuel:"Monthly — €11.99",essai:"Free trial",offert:"Free — €0",aucun:"No subscription"},
     planOpts:["Monthly — €11.99","Free trial — 14 days","Free — €0","No subscription"],
     save:"Confirm plan change", noSave:"No change to confirm",
@@ -291,7 +291,7 @@ const T_ALL = {
     head:["АБОНАТ","СТАТУС","ОТ","СЛЕДВАЩО","ОБЩО"],
     none:"Няма абонати", noneSub:"Абонатите се появяват тук след първото плащане.",
     noSel:"Няма избран абонат", noSelSub:"Натисни ред, за да отвориш профила и да действаш.",
-    facts:["СТАТУС","ПЛАН","АБОНАТ ОТ","СЛЕДВАЩО ПЛАЩАНЕ","ОБЩО ПЛАТЕНО"],
+    facts:["СТАТУС","ПЛАН","АБОНАТ ОТ","СЛЕДВАЩО ПЛАЩАНЕ","ОБЩО ПЛАТЕНО","Е-ПОЩА"],
     planWord:"ПЛАН", plans:{mensuel:"Месечен — 11,99 €",essai:"Безплатен пробен",offert:"Подарък — 0 €",aucun:"Без абонамент"},
     planOpts:["Месечен — 11,99 €","Безплатен пробен — 14 дни","Подарък — 0 €","Без абонамент"],
     save:"Потвърди смяната на план", noSave:"Няма промяна за потвърждаване",
@@ -311,7 +311,7 @@ const T_ALL = {
 const DOT = { actif:"#5FA88A", essai:"#D8A24A", suspendu:"rgba(242,239,233,.45)", annule:"#E23B44", gratuit:"rgba(242,239,233,.5)" };
 const BG = { actif:"rgba(95,168,138,.12)", essai:"rgba(216,162,74,.12)", suspendu:"rgba(242,239,233,.07)", annule:"rgba(196,30,38,.12)", gratuit:"rgba(242,239,233,.06)" };
 const FKEYS = ["tous","actif","essai","gratuit","suspendu","annule"];
-const PKEYS = ["mensuel","essai","offert","aucun"];
+const PKEYS = ["mensuel","essai","offert"];
 
 const S = {
   lang:"fr", tab:"subs", q:"", filter:"tous", selId:null, draftPlan:null, promoForm:false, busy:false,
@@ -386,6 +386,7 @@ const sel = () => S.users.find(u => u.id === S.selId) || null;
 function facts(u) {
   const t = T(), dim = "rgba(242,239,233,.75)";
   return [
+    [t.facts[5], u.email, dim],
     [t.facts[0], t.status[u.status], DOT[u.status]],
     [t.facts[1], t.plans[u.plan]||u.plan, dim],
     [t.facts[2], u.since, dim],
@@ -399,8 +400,12 @@ function factsHtml(u, bg) {
 }
 function planSelect(u, big) {
   const t = T(), cur = S.draftPlan || u.plan;
-  return '<select class="planSel" style="height:' + (big?42:38) + 'px;padding:0 12px;border-radius:' + (big?12:11) + 'px;background:' + (big?"#131315":"#0F0F11") + ';font:500 ' + (big?12.5:12) + 'px \'IBM Plex Sans\'">'
-    + PKEYS.map((k,i) => '<option value="' + k + '"' + (k===cur?" selected":"") + '>' + t.planOpts[i] + '</option>').join("") + '</select>';
+  return '<div style="display:flex;gap:6px;margin-bottom:12px">' + PKEYS.map((k,i) => {
+    const p = String(t.planOpts[i]).split("—"), on = k === cur;
+    return '<div class="planBtn" data-plan="' + k + '" style="flex:1;min-width:0;height:' + (big?52:48) + 'px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:12px;cursor:pointer;transition:.16s;background:' + (on?"rgba(226,59,68,.14)":(big?"#131315":"#0F0F11")) + ';border:1px solid ' + (on?"#E23B44":"rgba(242,239,233,.1)") + '">'
+      + '<span style="font:600 ' + (big?10.5:10) + 'px \'IBM Plex Sans\';line-height:1.15;text-align:center;color:' + (on?"#F2EFE9":"rgba(242,239,233,.62)") + '">' + p[0].trim() + '</span>'
+      + '<span style="font:500 9px \'IBM Plex Mono\',monospace;color:' + (on?"#E23B44":"rgba(242,239,233,.3)") + '">' + (p[1]||"").trim() + '</span></div>';
+  }).join("") + '</div>';
 }
 function saveBtn(u, big) {
   const t = T(), dirty = S.draftPlan && S.draftPlan !== u.plan;
@@ -632,7 +637,7 @@ function render() {
 function closeAll() { S.selId = null; S.draftPlan = null; S.promoForm = false; render(); }
 
 function wire() {
-  document.querySelectorAll(".planSel").forEach(el => el.onchange = e => { S.draftPlan = e.target.value; render(); });
+  document.querySelectorAll(".planBtn").forEach(el => el.onclick = () => { S.draftPlan = el.dataset.plan; render(); });
   document.querySelectorAll(".saveBtn").forEach(el => el.onclick = async () => {
     const u = sel(), plan = S.draftPlan;
     if (!u || !plan || plan === u.plan) return;
