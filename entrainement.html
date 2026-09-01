@@ -55,19 +55,14 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 .card .v b{font:700 25px/1 Oswald,sans-serif;color:#C41E26}
 .card .v em{font:500 9.5px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.4);font-style:normal}
 .note{font:500 8.5px/1.4 'IBM Plex Mono',monospace;color:rgba(242,239,233,.28);text-align:right;max-width:118px}
-.graph{position:relative;height:70px;margin-top:9px}
-.graph svg{width:100%;height:100%;display:block;overflow:visible}
-.graph .end{position:absolute;left:97.3%;width:7.5px;height:7.5px;border-radius:50%;background:#C41E26;transform:translate(-50%,-50%);transition:top .5s ease}
-.days{display:flex;justify-content:space-between;margin-top:6px}
-.days span{font:500 8.5px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.26)}
 
 /* --- timer de repos --- */
 .rest{flex:none;position:relative;height:62px;border-radius:14px;background:#131315;border:1px solid rgba(242,239,233,.08);cursor:pointer}
 .rest .rsvg{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
-.rest .rin{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 15px}
+.rest .rin{position:absolute;inset:0;display:flex;align-items:stretch;justify-content:space-between;gap:12px;padding:0 15px 0 0}
 .rest .rnum{font:700 24px/1 Oswald,sans-serif;font-variant-numeric:tabular-nums}
 .rest .rs{font:400 10px 'IBM Plex Sans';color:rgba(242,239,233,.45)}
-.presets{display:flex;gap:6px}
+.presets{display:flex;align-items:center;gap:6px}
 .preset{padding:4px 0;width:40px;border-radius:999px;background:transparent;border:1px solid rgba(242,239,233,.12);font:500 8.5px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.4);cursor:pointer;transition:.18s;text-align:center}
 .preset.on{background:rgba(196,30,38,.16);border-color:#C41E26;color:#E23B44}
 
@@ -96,6 +91,7 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 
 /* --- pop-up choix muscles + temps --- */
 .veil{position:absolute;inset:0;z-index:60;background:rgba(6,6,8,.9);backdrop-filter:blur(10px);display:flex;flex-direction:column;padding:46px 18px 82px;gap:11px;animation:eFade .25s ease both}
+.hidden{display:none!important}
 .veil.hidden{display:none}
 .grab{flex:none;width:44px;height:4px;border-radius:3px;background:rgba(242,239,233,.22);align-self:center}
 .vtitle{flex:none;display:flex;flex-direction:column;align-items:center;gap:5px}
@@ -140,10 +136,64 @@ body.scandue .scanbtn i{border-color:#E23B44}
 .langbar button{background:none;border:1px solid rgba(242,239,233,.12);color:rgba(242,239,233,.35);font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.12em;padding:5px 9px;border-radius:7px;cursor:pointer}
 .langbar button[aria-pressed="true"]{color:#E23B44;border-color:rgba(196,30,38,.5);background:rgba(196,30,38,.12)}
 
+/* --- bouton lecture/pause du chrono (bloc rouge pleine hauteur, à gauche) --- */
+.playbtn{width:64px;flex:none;align-self:stretch;border-radius:13px 0 0 13px;background:#C41E26;display:flex;align-items:center;justify-content:center;color:#F6F2EE}
+
+/* --- graphique hebdo en barres --- */
+.wbars{height:88px;display:flex;align-items:flex-end;gap:7px;margin-top:12px}
+.wbar{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.wbar .v{font:500 8px 'IBM Plex Mono',monospace}
+.wbar .b{width:100%;border-radius:5px;transition:height .5s cubic-bezier(.2,.8,.2,1)}
+.wbar .d{font:600 8.5px 'IBM Plex Mono',monospace}
+
+/* --- retirer / ajouter un exercice --- */
+.rmbtn{margin-top:8px;height:36px;display:flex;align-items:center;justify-content:center;gap:7px;border-radius:10px;background:rgba(196,30,38,.14);border:1px solid rgba(226,59,68,.42);color:#E23B44;cursor:pointer;transition:.2s}
+.rmbtn:hover{background:rgba(196,30,38,.26)}
+.rmbtn span{font:600 10.5px 'IBM Plex Sans'}
+.addbtn{flex:none;margin-bottom:30px;height:46px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:14px;background:transparent;border:1px dashed rgba(242,239,233,.22);color:rgba(242,239,233,.5);cursor:pointer;transition:.2s}
+.addbtn:hover{border-color:rgba(196,30,38,.6);color:#E23B44}
+.addbtn span{font:600 11px 'IBM Plex Sans'}
+
+/* --- popup « choisir un exercice » --- */
+.sheetveil{position:absolute;inset:0;z-index:60;background:rgba(6,6,8,.72);backdrop-filter:blur(6px);animation:eFade .2s ease both}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:calc(100% - 76px);z-index:61;background:#0E0E10;border-top:1px solid rgba(242,239,233,.09);border-radius:22px 22px 0 0;display:flex;flex-direction:column;padding:16px 18px 22px;gap:12px;animation:eFade .28s ease both}
+.close{width:30px;height:30px;border-radius:50%;border:1px solid rgba(242,239,233,.14);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(242,239,233,.5);transition:.2s;background:none}
+.close:hover{border-color:rgba(196,30,38,.6);color:#E23B44}
+.filts{flex:none;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.filts::-webkit-scrollbar{display:none}
+.filt{flex:none;width:46px;display:flex;flex-direction:column;align-items:center;padding:7px 3px;border-radius:12px;background:#141416;border:1px solid rgba(242,239,233,.1);cursor:pointer;transition:.18s}
+.filt.on{background:rgba(196,30,38,.18);border-color:#E23B44}
+.filt .fi{width:100%;height:26px;background-size:auto 100%;background-position:center;background-repeat:no-repeat;display:flex;align-items:center;justify-content:center;color:rgba(242,239,233,.5)}
+.filt.on .fi{color:#E23B44}
+.addlist{flex:0 1 auto;min-height:0;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;gap:8px}
+.addlist::-webkit-scrollbar{display:none}
+.addrow{flex:none;display:flex;align-items:center;border-radius:14px;background:#141416;border:1px solid rgba(242,239,233,.08);overflow:hidden;cursor:pointer;transition:.2s}
+.addrow:hover{border-color:rgba(196,30,38,.5)}
+.addrow .ai{width:58px;height:58px;flex:none;background-size:cover;background-position:center;background-color:#EFEBE4}
+.addrow .am{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;padding:0 12px}
+.addrow .am .n{font:500 12.5px/1.2 'IBM Plex Sans';color:#F2EFE9}
+.addrow .am .s{font:500 9px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.32)}
+.addrow.in .am .n{color:rgba(242,239,233,.35)}
+.addrow .mark{width:24px;height:24px;flex:none;margin-right:12px;border-radius:50%;border:1px solid rgba(226,59,68,.5);display:flex;align-items:center;justify-content:center;color:#E23B44}
+.addrow.in .mark{border-color:rgba(63,191,99,.4);color:rgba(63,191,99,.7)}
+
+/* --- félicitations de fin de séance --- */
+.celebveil{position:absolute;inset:0;z-index:70;background:rgba(6,6,8,.8);backdrop-filter:blur(8px);animation:eFade .25s ease both}
+.celebwrap{position:absolute;inset:0;z-index:71;display:flex;align-items:center;justify-content:center;padding:0 18px;pointer-events:none}
+.celebcard{width:100%;background:#0E0E10;border:1px solid rgba(242,239,233,.1);border-radius:20px;display:flex;flex-direction:column;align-items:center;padding:30px 24px 22px;animation:eFade .35s cubic-bezier(.2,.8,.2,1) both;pointer-events:auto}
+.celebcard .ic{width:52px;height:52px;flex:none;border-radius:50%;background:rgba(196,30,38,.14);border:1px solid rgba(226,59,68,.45);display:flex;align-items:center;justify-content:center;color:#E23B44}
+.celebcard b{margin-top:16px;font:700 26px/1 Oswald,sans-serif;text-transform:uppercase;letter-spacing:.02em;color:#F6F2EE}
+.celebcard i{margin-top:9px;font:400 12px/1.55 'IBM Plex Sans';color:rgba(242,239,233,.5);text-align:center;text-wrap:pretty;font-style:normal}
+.celebcard .go{margin-top:24px;width:100%;padding:15px;border-radius:14px;background:#C41E26;text-align:center;font:600 13px 'IBM Plex Sans';color:#F6F2EE;cursor:pointer;transition:.2s}
+.celebcard .go:hover{background:#E23B44}
+
 @media (max-width:420px){
   .screen{position:static;inset:auto;min-height:100svh;overflow:visible;padding-bottom:96px}
   .tabs{position:fixed}
   .veil{position:fixed}
+  .sheetveil{position:fixed}
+  .sheet{position:fixed;max-height:calc(100svh - 76px)}
+  .celebveil,.celebwrap{position:fixed}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -159,6 +209,7 @@ if (window.EspAuth) window.EspAuth.requireAuth();</script>
 <div class="head">
 <div class="h1" data-k="sessionTitle">Séance du jour</div>
 <div class="hr">
+<span class="count" id="progress">0/5</span>
 <div class="streak"><img src="logo-mark.png" alt=""><span id="streak">12</span></div>
 <div class="avatar" id="goProfile" role="button" tabindex="0" aria-label="Profil">
 <svg viewBox="0 0 300 300"><path d="M206.83,251.56h-113.66c-36.54-5.22-29.21-46.81-11.85-68.49,11.27-14.07,28.55-22.7,46.56-23.86,12.85-.83,30.22-.84,43.09-.14,18.31.99,35.99,9.51,47.51,23.77,17.5,21.65,25.03,63.46-11.65,68.72Z"></path><path d="M193.1,111.23c-11.64,31.09-52.28,39.66-75.78,16.16-22.59-22.59-15.68-61.54,13.38-74.67,37.72-17.04,76.91,19.74,62.4,58.51Z"></path></svg>
@@ -194,14 +245,7 @@ if (window.EspAuth) window.EspAuth.requireAuth();</script>
 </div>
 <span class="note" data-k="burnedNote">Calculé sur les séries cochées</span>
 </div>
-<div class="graph">
-<svg viewBox="0 0 300 76" preserveAspectRatio="none">
-<polyline id="burnArea" fill="rgba(196,30,38,0.14)" stroke="none"></polyline>
-<polyline id="burnLine" fill="none" stroke="#C41E26" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>
-</svg>
-<div class="end" id="burnDot"></div>
-</div>
-<div class="days" id="days"></div>
+<div class="wbars" id="wbars"></div>
 </div>
 
 <div class="rest" id="rest">
@@ -209,22 +253,50 @@ if (window.EspAuth) window.EspAuth.requireAuth();</script>
 <rect id="restRect" fill="none" stroke="#C41E26" stroke-width="3" stroke-linecap="round" style="transition:stroke-dashoffset 1s linear"></rect>
 </svg>
 <div class="rin">
-<div style="display:flex;align-items:baseline;gap:6px">
+<div style="display:flex;align-items:stretch;gap:12px;height:100%">
+<div class="playbtn" id="playBtn"></div>
+<div style="display:flex;align-items:center;gap:5px">
 <span class="rnum" id="restNum">90</span><span class="rs">s</span>
+</div>
 </div>
 <div class="presets" id="restPresets"></div>
 </div>
 </div>
 
 <div class="list" id="exoList"></div>
+<div class="addbtn" id="openAdd">
+<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+<span data-k="addExercise">Ajouter un exercice</span>
+</div>
 
+</div>
+
+<div class="celebveil hidden" id="celebVeil"></div>
+<div class="celebwrap hidden" id="celebWrap">
+<div class="celebcard">
+<div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5L10 17.5L19 7"></path></svg></div>
+<b data-k="celebTitle">Bien joué.</b>
+<i data-k="celebText">Tu es allé au bout de ta séance. Ton corps suit, ton esprit aussi.</i>
+<div class="go" id="celebCta" data-k="celebCta">Continuer</div>
+</div>
+</div>
+
+<div class="sheetveil hidden" id="addVeil"></div>
+<div class="sheet hidden" id="addSheet">
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between">
+<span style="font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.2em;color:#E23B44" data-k="chooseExercise">CHOISIR UN EXERCICE</span>
+<div class="close" id="closeAdd"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></div>
+</div>
+<div class="filts" id="addFilters"></div>
+<div class="addlist" id="addList"></div>
+<div class="cta" id="addDone" data-k="validateWord">Valider</div>
 </div>
 
 <div class="veil hidden" id="picker">
 <div class="grab"></div>
 <div class="vtitle">
 <b data-k="pickTitle">Travailler quoi aujourd'hui ?</b>
-<i data-k="twoMax">DEUX MUSCLES MAXIMUM</i>
+<i data-k="anyGroups">AUTANT DE GROUPES QUE TU VEUX</i>
 </div>
 <div class="grid" id="tiles"></div>
 <div class="timebox" id="timebox">
@@ -248,15 +320,18 @@ if (window.EspAuth) window.EspAuth.requireAuth();</script>
 <script>
 var T = {
   fr: { sessionTitle:"Séance du jour", changeWord:"CHANGER ▾", burnedTitle:"CALORIES DÉPENSÉES", burnedNote:"Calculé sur les séries cochées",
-    pickTitle:"Travailler quoi aujourd'hui ?", twoMax:"DEUX MUSCLES MAXIMUM", timeLabel:"TEMPS À LA SALLE", validateWord:"Valider",
+    pickTitle:"Travailler quoi aujourd'hui ?", anyGroups:"AUTANT DE GROUPES QUE TU VEUX", addExercise:"Ajouter un exercice", chooseExercise:"CHOISIR UN EXERCICE",
+    removeExercise:"Retirer cet exercice", celebTitle:"Bien joué.", celebText:"Tu es allé au bout de ta séance. Ton corps suit, ton esprit aussi.", celebCta:"Continuer", timeLabel:"TEMPS À LA SALLE", validateWord:"Valider",
     setLabel:"Série", repsWord:"reps", setWord:"séries", bodyweight:"POIDS CORPS",
     week:["L","M","M","J","V","S","D"], tabs:["Accueil","Séance","Scan","Nutrition","Classement"] },
   en: { sessionTitle:"Today's session", changeWord:"CHANGE ▾", burnedTitle:"CALORIES BURNED", burnedNote:"Computed from checked sets",
-    pickTitle:"What are you training today?", twoMax:"TWO MUSCLES MAX", timeLabel:"TIME AT THE GYM", validateWord:"Confirm",
+    pickTitle:"What are you training today?", anyGroups:"AS MANY GROUPS AS YOU WANT", addExercise:"Add an exercise", chooseExercise:"CHOOSE AN EXERCISE",
+    removeExercise:"Remove this exercise", celebTitle:"Well done.", celebText:"You went all the way through your session. Your body follows, and so does your spirit.", celebCta:"Continue", timeLabel:"TIME AT THE GYM", validateWord:"Confirm",
     setLabel:"Set", repsWord:"reps", setWord:"sets", bodyweight:"BODYWEIGHT",
     week:["M","T","W","T","F","S","S"], tabs:["Home","Session","Scan","Nutrition","Ranking"] },
   bg: { sessionTitle:"Днешна тренировка", changeWord:"СМЕНИ ▾", burnedTitle:"ИЗГОРЕНИ КАЛОРИИ", burnedNote:"По отметнатите серии",
-    pickTitle:"Какво тренираш днес?", twoMax:"МАКСИМУМ ДВА МУСКУЛА", timeLabel:"ВРЕМЕ ВЪВ ФИТНЕСА", validateWord:"Потвърди",
+    pickTitle:"Какво тренираш днес?", anyGroups:"КОЛКОТО ГРУПИ ИСКАШ", addExercise:"Добави упражнение", chooseExercise:"ИЗБЕРИ УПРАЖНЕНИЕ",
+    removeExercise:"Премахни упражнението", celebTitle:"Браво.", celebText:"Стигна до края на тренировката. Тялото ти следва, духът ти също.", celebCta:"Продължи", timeLabel:"ВРЕМЕ ВЪВ ФИТНЕСА", validateWord:"Потвърди",
     setLabel:"Серия", repsWord:"повт.", setWord:"серии", bodyweight:"СОБСТВЕНО",
     week:["П","В","С","Ч","П","С","Н"], tabs:["Начало","Тренировка","Скан","Хранене","Класиране"] }
 };
@@ -340,7 +415,6 @@ var ICONS = {
 };
 
 var EX_KCAL = [95, 80, 70, 65, 60, 55, 50, 48, 45, 40];
-var BURNED_HIST = [520, 610, 470, 700, 590, 355];
 var restLen = 300;
 // Dimensionne le contour du timer en pixels réels (1:1, sans étirement) et mesure son vrai périmètre.
 // Évite le bug iOS où preserveAspectRatio="none" + non-scaling-stroke calcule les pointillés dans l'espace étiré.
@@ -356,7 +430,17 @@ function layoutRest() {
   rect.setAttribute('stroke-dasharray', String(restLen));
 }
 
-var S = { lang:'fr', picked:["pectoraux"], minutes:60, sets:{}, weights:{}, openEx:null, restSec:90, restLeft:90, restRun:false, streak:12 };
+var S = { lang:'fr', picked:["pectoraux"], minutes:60, sets:{}, weights:{}, openEx:null, restSec:90, restLeft:90, restRun:false, streak:12,
+  removed:[], added:[], addFilter:'all', celebrated:false };
+
+// Catalogue à plat, pour la popup « ajouter un exercice »
+var ALL_EX = [];
+Object.keys(MUS_EX).forEach(function (k) {
+  MUS_EX[k].forEach(function (e, i) { ALL_EX.push({ e: e, ek: k + ':' + i, mus: k }); });
+});
+
+// Calories dépensées les jours précédents, lues depuis la table workouts
+var WEEK = { past: {} };
 var restIv = null;
 
 function repsOf(str) { var m = /[×x]\s*(\d+)/.exec(str || ''); return m ? m[1] : '10'; }
@@ -372,7 +456,20 @@ function exList() {
   var lists = S.picked.map(function (k) { return (MUS_EX[k] || []).map(function (e, i) { return { e: e, ek: k + ':' + i }; }); });
   var out = [], longest = lists.reduce(function (a, l) { return Math.max(a, l.length); }, 0);
   for (var r = 0; r < longest; r++) for (var c = 0; c < lists.length; c++) if (lists[c][r]) out.push(lists[c][r]);
-  return out.slice(0, Math.min(wantedCount(), out.length));
+  var base = out.filter(function (x) { return S.removed.indexOf(x.ek) === -1; }).slice(0, Math.min(wantedCount(), out.length));
+  return base.concat(S.added.filter(function (ek) {
+    return !base.some(function (x) { return x.ek === ek; });
+  }).map(function (ek) {
+    return ALL_EX.filter(function (x) { return x.ek === ek; })[0];
+  }).filter(Boolean));
+}
+
+// La carte séance ne montre que deux silhouettes, même si plus de groupes sont choisis
+function twoOf(keys) {
+  if (keys.length <= 2) return keys;
+  var seed = keys.join('|').length, a = keys[seed % keys.length];
+  var rest = keys.filter(function (k) { return k !== a; });
+  return [a, rest[(seed * 7) % rest.length]];
 }
 function setsCount(sig) { return setsOf(sig) + setsBonus(); }
 function setsArr(ek, sig) {
@@ -380,19 +477,23 @@ function setsArr(ek, sig) {
   for (var k = 0; k < n; k++) out.push(!!cur[k]);
   return out;
 }
-function poly(vals, max, h, w) {
-  return vals.map(function (v, i) {
-    return (8 + i * ((w - 16) / (vals.length - 1))).toFixed(1) + ',' + (h - 6 - (Math.min(v, max) / max) * (h - 18)).toFixed(1);
-  }).join(' ');
-}
-
 // Mise à jour légère de la seule pilule de repos (appelée chaque seconde) — n'reconstruit pas la liste d'exercices
 function renderRest() {
   document.getElementById('restNum').textContent = String(S.restLeft);
   document.getElementById('restRect').setAttribute('stroke-dashoffset', String(restLen * (1 - S.restLeft / S.restSec)));
+  document.getElementById('playBtn').innerHTML = S.restRun
+    ? '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.4z"></path></svg>'
+    : '<svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M8 5.5v13l11-6.5z"></path></svg>';
   document.getElementById('restPresets').innerHTML = [30, 60, 90, 120].map(function (v) {
     return '<div class="preset' + (S.restSec === v ? ' on' : '') + '" data-sec="' + v + '">' + v + 's</div>';
   }).join('');
+}
+
+function mondayIndex() { return (new Date().getDay() || 7) - 1; }   // lundi = 0
+function dayKey(i) {
+  var x = new Date();
+  x.setDate(x.getDate() - mondayIndex() + i);
+  return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
 }
 
 function render(l) {
@@ -408,24 +509,41 @@ function render(l) {
   var setTotal = list.reduce(function (a, x) { return a + setsArr(x.ek, x.e.s).length; }, 0) || 1;
   var exDone = list.filter(function (x) { return setsArr(x.ek, x.e.s).every(Boolean); }).length;
 
+  document.getElementById('progress').textContent = exDone + '/' + list.length;
+  // Une seule fois par séance : décocher puis tout recocher la redéclenche
+  if (list.length && exDone === list.length && !S.celebrated) { S.celebrated = true; showCeleb(true); }
+  if (exDone < list.length) S.celebrated = false;
+
   var pct = Math.round(doneTotal / setTotal * 100);
   document.getElementById('musPct').textContent = pct + '%';
   document.getElementById('musRing').setAttribute('stroke-dashoffset', String(289 - 289 * pct / 100));
 
-  document.getElementById('silhouettes').innerHTML = S.picked.map(function (k, i) {
-    var m = MUSCLES.filter(function (x) { return x.key === k; })[0], multi = S.picked.length > 1;
+  var shown = twoOf(S.picked);
+  document.getElementById('silhouettes').innerHTML = shown.map(function (k, i) {
+    var m = MUSCLES.filter(function (x) { return x.key === k; })[0], multi = shown.length > 1;
     return '<div class="silh" style="width:' + (multi ? 78 : 88) + 'px;margin-left:' + (multi && i ? -46 : 0) + 'px;z-index:' + (multi && i ? 1 : 2) + ';opacity:' + (multi && i ? .72 : 1) + ';background-image:url(' + m.img + ')"></div>';
   }).join('');
-  document.getElementById('muscleName').textContent = S.picked.map(function (k) { return (MUSCLES.filter(function (x) { return x.key === k; })[0])[S.lang]; }).join(' + ');
+  document.getElementById('muscleName').textContent =
+    shown.map(function (k) { return (MUSCLES.filter(function (x) { return x.key === k; })[0])[S.lang]; }).join(' + ')
+    + (S.picked.length > 2 ? ' +' + (S.picked.length - 2) : '');
 
   var burnedToday = list.reduce(function (a, x, i) { return a + setsArr(x.ek, x.e.s).filter(Boolean).length * Math.round(EX_KCAL[i % EX_KCAL.length] / 4); }, 0);
   document.getElementById('burned').textContent = String(burnedToday);
-  var hist = BURNED_HIST.concat([burnedToday]), max = Math.max.apply(null, hist) * 1.15 || 1;
-  var lineStr = poly(hist, max, 76, 300);
-  document.getElementById('burnLine').setAttribute('points', lineStr);
-  document.getElementById('burnArea').setAttribute('points', '8,76 ' + lineStr + ' 292,76');
-  document.getElementById('burnDot').style.top = ((76 - 6 - (burnedToday / max) * 58) / 76 * 100) + '%';
-  document.getElementById('days').innerHTML = d.week.map(function (x) { return '<span>' + x + '</span>'; }).join('');
+  // Barres de la semaine : jours écoulés depuis workouts, jour courant en direct
+  var di = mondayIndex();
+  var vals = d.week.map(function (_, i) {
+    if (i < di) return WEEK.past[dayKey(i)] || 0;
+    return i === di ? burnedToday : 0;
+  });
+  var wmax = Math.max.apply(null, [700].concat(vals));
+  document.getElementById('wbars').innerHTML = d.week.map(function (label, i) {
+    var v = vals[i], cur = i === di, future = i > di;
+    var bg = future ? 'rgba(242,239,233,.07)' : (cur ? '#C41E26' : 'rgba(196,30,38,.42)');
+    return '<div class="wbar">'
+      + '<span class="v" style="color:' + (cur ? '#E23B44' : 'rgba(242,239,233,.26)') + '">' + (v || '—') + '</span>'
+      + '<div class="b" style="height:' + Math.max(4, Math.round(v / wmax * 62)) + 'px;background:' + bg + '"></div>'
+      + '<span class="d" style="color:' + (cur ? '#E23B44' : 'rgba(242,239,233,.3)') + '">' + label + '</span></div>';
+  }).join('');
 
   layoutRest();
   renderRest();
@@ -448,7 +566,9 @@ function render(l) {
       + '<span class="load">' + load + '</span>'
       + '<div class="step" data-w="' + x.ek + '" data-d="2.5"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></div>'
       + '</div></div>'
-      + (S.openEx === i ? '<div class="sets">' + rows + '</div>' : '')
+      + (S.openEx === i ? '<div class="sets">' + rows
+        + '<div class="rmbtn" data-rm="' + x.ek + '"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9.5 7V5h5v2M6.5 7l1 12.5h9L17.5 7"></path></svg>'
+        + '<span>' + d.removeExercise + '</span></div></div>' : '')
       + '</div>';
   }).join('');
 
@@ -490,8 +610,8 @@ document.getElementById('tiles').addEventListener('click', function (e) {
   var t = e.target.closest('[data-m]'); if (!t) return;
   var k = t.dataset.m, i = S.picked.indexOf(k);
   if (i >= 0) { if (S.picked.length > 1) S.picked.splice(i, 1); }
-  else S.picked = S.picked.length >= 2 ? [S.picked[1], k] : S.picked.concat([k]);
-  S.openEx = null; render();
+  else S.picked = S.picked.concat([k]);   // autant de groupes que voulu, minimum un
+  S.removed = []; S.added = []; S.openEx = null; render();
 });
 
 function setMinutes(ev) {
@@ -520,9 +640,73 @@ document.getElementById('exoList').addEventListener('click', function (e) {
     var arr = (S.sets[rek] || []).slice(); arr[rk] = !arr[rk]; S.sets[rek] = arr;
     emit('espritum:set-toggle'); render(); return;
   }
+  var rm = e.target.closest('[data-rm]');
+  if (rm) {
+    S.removed = S.removed.concat([rm.dataset.rm]);
+    S.added = S.added.filter(function (k) { return k !== rm.dataset.rm; });
+    S.openEx = null; emit('espritum:session-change'); render(); return;
+  }
   var open = e.target.closest('[data-open]');
   if (open) { var oi = +open.dataset.open; S.openEx = S.openEx === oi ? null : oi; render(); }
 });
+
+/* --- popup « ajouter un exercice » --- */
+// Sous « tous », on ne liste que ce qui manque a la seance ; sous un groupe, tout le groupe.
+function renderAdd() {
+  var d = T[S.lang], inList = exList();
+  document.getElementById('addFilters').innerHTML =
+    '<div class="filt' + (S.addFilter === 'all' ? ' on' : '') + '" data-f="all"><div class="fi"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></div></div>'
+    + MUSCLES.map(function (m) {
+      return '<div class="filt' + (S.addFilter === m.key ? ' on' : '') + '" data-f="' + m.key + '"><div class="fi" style="background-image:url(' + m.img + ')"></div></div>';
+    }).join('');
+
+  document.getElementById('addList').innerHTML = ALL_EX.filter(function (x) {
+    return S.addFilter === 'all' ? !inList.some(function (y) { return y.ek === x.ek; }) : x.mus === S.addFilter;
+  }).map(function (x) {
+    var already = inList.some(function (y) { return y.ek === x.ek; });
+    var mus = (MUSCLES.filter(function (m) { return m.key === x.mus; })[0] || {})[S.lang] || '';
+    return '<div class="addrow' + (already ? ' in' : '') + '" data-add="' + x.ek + '">'
+      + '<div class="ai" style="background-image:url(' + x.e.img + ')"></div>'
+      + '<div class="am"><span class="n">' + x.e[S.lang] + '</span>'
+      + '<span class="s">' + mus + ' \u00b7 ' + x.e.s + '</span></div>'
+      + '<div class="mark"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="'
+      + (already ? 'M5 12.5L10 17.5L19 7' : 'M12 5v14M5 12h14') + '"></path></svg></div></div>';
+  }).join('');
+}
+function toggleAdd(open) {
+  document.getElementById('addVeil').classList.toggle('hidden', !open);
+  document.getElementById('addSheet').classList.toggle('hidden', !open);
+  if (open) renderAdd();
+}
+document.getElementById('openAdd').addEventListener('click', function () { toggleAdd(true); });
+document.getElementById('closeAdd').addEventListener('click', function () { toggleAdd(false); });
+document.getElementById('addDone').addEventListener('click', function () { toggleAdd(false); });
+document.getElementById('addVeil').addEventListener('click', function () { toggleAdd(false); });
+document.getElementById('addFilters').addEventListener('click', function (e) {
+  var f = e.target.closest('[data-f]'); if (!f) return;
+  S.addFilter = f.dataset.f; renderAdd();
+});
+// La popup reste ouverte : un tap ajoute, un second retire
+document.getElementById('addList').addEventListener('click', function (e) {
+  var r = e.target.closest('[data-add]'); if (!r) return;
+  var ek = r.dataset.add, inList = exList();
+  if (inList.some(function (x) { return x.ek === ek; })) {
+    S.removed = S.removed.concat([ek]);
+    S.added = S.added.filter(function (k) { return k !== ek; });
+  } else {
+    S.removed = S.removed.filter(function (k) { return k !== ek; });
+    S.added = S.added.concat([ek]);
+  }
+  S.openEx = null; emit('espritum:session-change'); render(); renderAdd();
+});
+
+/* --- felicitations de fin de seance --- */
+function showCeleb(on) {
+  document.getElementById('celebVeil').classList.toggle('hidden', !on);
+  document.getElementById('celebWrap').classList.toggle('hidden', !on);
+}
+document.getElementById('celebCta').addEventListener('click', function () { showCeleb(false); });
+document.getElementById('celebVeil').addEventListener('click', function () { showCeleb(false); });
 
 /* --- timer de repos --- */
 document.getElementById('rest').addEventListener('click', function (e) {
@@ -599,12 +783,14 @@ if (window.EspAuth) {
       if (saved.weights) S.weights = saved.weights;
       if (saved.minutes) S.minutes = saved.minutes;
       if (saved.picked && saved.picked.length && saved.picked.every(function (k) { return MUS_EX[k]; })) S.picked = saved.picked;
+      if (Array.isArray(saved.removed)) S.removed = saved.removed;
+      if (Array.isArray(saved.added)) S.added = saved.added;
       render();
     }
   } catch (e) {}
 
   function persist() {
-    try { localStorage.setItem(LS, JSON.stringify({ sets: S.sets, weights: S.weights, minutes: S.minutes, picked: S.picked })); } catch (e) {}
+    try { localStorage.setItem(LS, JSON.stringify({ sets: S.sets, weights: S.weights, minutes: S.minutes, picked: S.picked, removed: S.removed, added: S.added })); } catch (e) {}
   }
   function loadLogged() { try { return JSON.parse(localStorage.getItem(LOGKEY) || '{}'); } catch (e) { return {}; } }
   function saveLogged(o) { try { localStorage.setItem(LOGKEY, JSON.stringify(o)); } catch (e) {} }
@@ -631,7 +817,29 @@ if (window.EspAuth) {
     });
   }
 
-  if (window.EspAuth) window.EspAuth.getSession().then(function (s) { if (s) { uid = s.user.id; logDone(); } });
+  if (window.EspAuth) window.EspAuth.getSession().then(function (s) {
+    if (!s) return;
+    uid = s.user.id; logDone(); loadWeek(uid);
+  });
+
+  // Calories des jours écoulés, reconstituées depuis les exercices terminés de la semaine.
+  // KCAL_PAR_SERIE est la moyenne du barème EX_KCAL utilisé pour le jour courant, afin que
+  // les barres passées soient à la même échelle que celle d'aujourd'hui.
+  var KCAL_PAR_SERIE = Math.round(EX_KCAL.reduce(function (a, v) { return a + v; }, 0) / EX_KCAL.length / 4);
+  function loadWeek(userId) {
+    if (!window.espSB) return;
+    window.espSB.from('workouts').select('series,created_at')
+      .eq('user_id', userId).eq('termine', true).gte('created_at', dayKey(0) + 'T00:00:00')
+      .then(function (r) {
+        var acc = {};
+        (r.data || []).forEach(function (w) {
+          var k = String(w.created_at).slice(0, 10);
+          acc[k] = (acc[k] || 0) + (w.series || 0) * KCAL_PAR_SERIE;
+        });
+        WEEK.past = acc;
+        render();
+      }, function () {});
+  }
 
   document.addEventListener('espritum:set-toggle', function () { persist(); logDone(); });
   document.addEventListener('espritum:weight-change', persist);
