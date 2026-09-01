@@ -19,6 +19,7 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 @media (max-width:420px){.phone{width:100%;height:auto;min-height:100svh;overflow:visible}body{padding:0;display:block}}
 @keyframes eF{from{opacity:0}to{opacity:1}}
 @keyframes eFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes eSpin{to{transform:rotate(360deg)}}
 
 .screen{position:absolute;inset:0;padding:60px 22px 100px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;animation:eFade .4s ease both}
 .screen::-webkit-scrollbar{display:none}
@@ -154,38 +155,64 @@ textarea::placeholder{color:rgba(242,239,233,.3)}
 </div>
 </div>
 
+<!-- Étape 2 — Description (la photo prise, puis un champ libre facultatif) -->
 <div class="sheet hidden" id="res">
 <div style="flex:none;display:flex;align-items:center;justify-content:space-between">
-<span style="font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.2em;color:#E23B44" data-k="resKicker">DÉTECTÉ PAR L'IA</span>
+<span style="font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.2em;color:#E23B44" data-k="camKicker">SCAN REPAS</span>
 <div class="close" data-close><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></div>
 </div>
 
-<div id="shotbox" style="flex:none;aspect-ratio:1/1;width:100%;border-radius:16px;overflow:hidden;position:relative;background:repeating-linear-gradient(135deg,#1F1F23 0 6px,#191A1D 6px 12px);background-size:cover;background-position:center">
-<div style="position:absolute;left:0;right:0;bottom:0;padding:22px 14px 11px;display:flex;align-items:baseline;justify-content:space-between;background:linear-gradient(180deg,transparent,rgba(8,8,10,.88))">
-<span style="font:700 19px/1 Oswald,sans-serif;text-transform:uppercase" data-k="resTitle">C'est bien ça ?</span>
-<span class="bebas" style="font-size:24px;color:#E23B44" id="total">…</span>
+<div id="shotbox" style="flex:none;aspect-ratio:1/1;width:100%;border-radius:16px;overflow:hidden;position:relative;background:repeating-linear-gradient(135deg,#1F1F23 0 6px,#191A1D 6px 12px);background-size:cover;background-position:center"></div>
+
+<textarea id="desc" data-kph="descPlaceholder" placeholder="Une description précise permet une analyse plus détaillée de ton repas."></textarea>
+
+<span id="errline" class="hidden" style="flex:none;font:400 10.5px/1.5 'IBM Plex Sans';color:#E23B44" data-k="analyzeFail">L'analyse a échoué. Réessaie.</span>
+
+<div class="scanbtn" id="analyse" style="border-radius:14px;height:52px">
+<span style="font:600 13px 'IBM Plex Sans';color:#F6F2EE" data-k="analyseBtn">Analyser mon repas</span>
 </div>
 </div>
 
-<div style="flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px">
-<span class="kicker" style="letter-spacing:.18em" data-k="portion">PORTION</span>
-<div style="display:flex;align-items:center;gap:10px">
-<div class="close" id="minus" style="width:28px;height:28px"><span style="font:600 14px 'IBM Plex Sans'">−</span></div>
-<span style="font:600 13px 'IBM Plex Mono',monospace;min-width:34px;text-align:center" id="portion">1×</span>
-<div class="close" id="plus" style="width:28px;height:28px"><span style="font:600 14px 'IBM Plex Sans'">+</span></div>
+<!-- Étape 3 — Chargement (anneau identique au scan corporel, suit la vraie requête) -->
+<div class="sheet hidden" id="load" style="top:50%;max-height:none;align-items:center;justify-content:center;padding:26px">
+<div style="position:relative;width:184px;height:184px;flex:none">
+<div style="position:absolute;inset:0;border-radius:50%;border:1px solid rgba(242,239,233,.08)"></div>
+<div style="position:absolute;inset:-12px;border-radius:50%;border:1px dashed rgba(196,30,38,.2);animation:eSpin 18s linear infinite"></div>
+<svg viewBox="0 0 200 200" style="position:absolute;inset:0;transform:rotate(-90deg)"><circle cx="100" cy="100" r="94" fill="none" stroke="rgba(242,239,233,0.07)" stroke-width="4"></circle><circle id="lring" cx="100" cy="100" r="94" fill="none" stroke="#C41E26" stroke-width="4" stroke-linecap="round" stroke-dasharray="590" stroke-dashoffset="590" style="transition:stroke-dashoffset .3s linear"></circle></svg>
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+<span style="font:700 42px/1 Oswald,sans-serif;color:#F2EFE9" id="lpct">0</span>
+<span style="font:500 9px 'IBM Plex Mono',monospace;letter-spacing:.2em;color:rgba(242,239,233,.35);margin-top:3px">%</span>
+</div>
 </div>
 </div>
 
-<div style="flex:none;display:flex;flex-direction:column;gap:8px">
-<span class="kicker" style="letter-spacing:.18em" data-k="descLabel">DESCRIPTION</span>
-<textarea id="desc" data-kph="descPlaceholder" placeholder="Poulet grillé, riz basmati, brocoli vapeur…"></textarea>
-<span style="font:400 10px/1.5 'IBM Plex Sans';color:rgba(242,239,233,.35)" data-k="descNote">Une description précise permet une analyse plus détaillée de ton repas.</span>
+<!-- Étape 4 — Résultat -->
+<div class="sheet hidden" id="mac" style="gap:13px">
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between">
+<span style="font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.2em;color:#E23B44" data-k="macKicker">ANALYSE TERMINÉE</span>
+<div class="close" data-close><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></div>
 </div>
+
+<div style="flex:none;display:flex;align-items:stretch;border-radius:16px;overflow:hidden;background:#131315;border:1px solid rgba(242,239,233,.08)">
+<div id="macthumb" style="width:82px;flex:none;background:repeating-linear-gradient(135deg,#1F1F23 0 6px,#191A1D 6px 12px);background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;color:rgba(242,239,233,.22)">
+<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V5a1 1 0 0 1 1-1h3M21 8V5a1 1 0 0 0-1-1h-3M3 16v3a1 1 0 0 0 1 1h3M21 16v3a1 1 0 0 1-1 1h-3M12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6z"></path></svg>
+</div>
+<div style="flex:1;min-width:0;display:flex;align-items:center;justify-content:flex-end;padding:18px 16px">
+<div style="display:flex;align-items:baseline;gap:4px">
+<span style="font:400 32px/0.85 'Bebas Neue',Oswald,sans-serif;color:#E23B44;letter-spacing:.02em" id="mkcal">0</span>
+<span style="font:500 8.5px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.4)" data-k="kcal">KCAL</span>
+</div>
+</div>
+</div>
+<span style="flex:none;font:700 15px/1.2 Oswald,sans-serif;color:#F6F2EE;text-wrap:pretty;padding:0 2px" id="mname"></span>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:11px;padding:15px 17px;border-radius:16px;background:#131315;border:1px solid rgba(242,239,233,.08)" id="mbars"></div>
+
+<span style="flex:none;font:400 10px/1.5 'IBM Plex Sans';color:rgba(242,239,233,.32)" data-k="estimateNote">Estimation basée sur la photo et ta description.</span>
 
 <div class="scanbtn" id="add" style="border-radius:14px;height:52px">
 <span style="font:600 13px 'IBM Plex Sans';color:#F6F2EE" data-k="addBtn">Ajouter à mon journal</span>
 </div>
-<div id="back" data-k="retake" style="flex:none;text-align:center;font:400 11px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.3);cursor:pointer">← Reprendre la photo</div>
 </div>
 
 </div>
@@ -197,26 +224,26 @@ var T = {
     macros:['PROTÉINES','GLUCIDES','LIPIDES'], scanBtn:'Scanner un repas',
     emptyTitle:'Rien de scanné', emptyText:"Tout ce que tu scannes dans la journée s'affiche ici.",
     camKicker:'SCAN REPAS', camTitle:'Cadre ton assiette', camSub:'Une seule photo, vue du dessus.', shoot:'Prendre la photo',
-    resKicker:"DÉTECTÉ PAR L'IA", resTitle:"C'est bien ça ?", portion:'PORTION',
-    descLabel:'DESCRIPTION', descPlaceholder:'Poulet grillé, riz basmati, brocoli vapeur…',
-    descNote:'Une description précise permet une analyse plus détaillée de ton repas.',
-    addBtn:'Ajouter à mon journal', retake:'← Reprendre la photo', analyzing:'Analyse…', meal:'Repas' },
+    descPlaceholder:'Une description précise permet une analyse plus détaillée de ton repas.',
+    analyseBtn:'Analyser mon repas', analyzeFail:"L'analyse a échoué. Réessaie.",
+    macKicker:'ANALYSE TERMINÉE', estimateNote:'Estimation basée sur la photo et ta description.',
+    addBtn:'Ajouter à mon journal', meal:'Repas' },
   en: { title:'Nutrition', avail:'CALORIES AVAILABLE', kcal:'KCAL', onWord:'OF', consumed:'EATEN',
     macros:['PROTEIN','CARBS','FAT'], scanBtn:'Scan a meal',
     emptyTitle:'Nothing scanned', emptyText:'Everything you scan during the day shows up here.',
     camKicker:'MEAL SCAN', camTitle:'Frame your plate', camSub:'One photo, top view.', shoot:'Take the photo',
-    resKicker:'DETECTED BY AI', resTitle:'Is this right?', portion:'PORTION',
-    descLabel:'DESCRIPTION', descPlaceholder:'Grilled chicken, basmati rice, steamed broccoli…',
-    descNote:'A precise description enables a more detailed analysis of your meal.',
-    addBtn:'Add to my journal', retake:'← Retake the photo', analyzing:'Analyzing…', meal:'Meal' },
+    descPlaceholder:'A precise description enables a more detailed analysis of your meal.',
+    analyseBtn:'Analyze my meal', analyzeFail:'Analysis failed. Try again.',
+    macKicker:'ANALYSIS COMPLETE', estimateNote:'Estimate based on the photo and your description.',
+    addBtn:'Add to my journal', meal:'Meal' },
   bg: { title:'Хранене', avail:'НАЛИЧНИ КАЛОРИИ', kcal:'ККАЛ', onWord:'ОТ', consumed:'ПРИЕТИ',
     macros:['ПРОТЕИНИ','ВЪГЛЕХИДРАТИ','МАЗНИНИ'], scanBtn:'Сканирай хранене',
     emptyTitle:'Нищо сканирано', emptyText:'Всичко, което сканираш през деня, се показва тук.',
     camKicker:'СКАН ХРАНЕНЕ', camTitle:'Кадрирай чинията', camSub:'Една снимка, отгоре.', shoot:'Направи снимка',
-    resKicker:'ОТКРИТО ОТ ИИ', resTitle:'Така ли е?', portion:'ПОРЦИЯ',
-    descLabel:'ОПИСАНИЕ', descPlaceholder:'Пилешко на скара, ориз басмати, броколи на пара…',
-    descNote:'Точното описание позволява по-подробен анализ на храненето ти.',
-    addBtn:'Добави в дневника', retake:'← Повтори снимката', analyzing:'Анализ…', meal:'Ястие' }
+    descPlaceholder:'Точното описание позволява по-подробен анализ на храненето ти.',
+    analyseBtn:'Анализирай храненето', analyzeFail:'Анализът не успя. Опитай отново.',
+    macKicker:'АНАЛИЗЪТ ЗАВЪРШИ', estimateNote:'Оценка въз основа на снимката и твоето описание.',
+    addBtn:'Добави в дневника', meal:'Ястие' }
 };
 var lang = (function () { try { var v = localStorage.getItem('espritum.lang'); return T[v] ? v : 'fr'; } catch (e) { return 'fr'; } })();
 var d = T[lang];
@@ -250,8 +277,8 @@ document.getElementById('goProfile').addEventListener('click', function () { win
 
 // ---- État : le JOURNAL (repas scannés) est la source de vérité ----
 var TARGET = { kcal: 2340, p: 190, c: 260, f: 70 };
-var MACRO_KEYS = [{ e: '🥩', key: 'p' }, { e: '🍚', key: 'c' }, { e: '🥑', key: 'f' }];
-var S = { log: [], portion: 1, ai: null, analyzing: false, photo: null };
+var MACRO_KEYS = [{ e: '🥩', key: 'p' }, { e: '🍞', key: 'c' }, { e: '🥑', key: 'f' }];
+var S = { log: [], ai: null, est: null, analyzing: false, photo: null };
 var $ = function (id) { return document.getElementById(id); };
 var hm = function (dt) { var x = dt || new Date(); return String(x.getHours()).padStart(2, '0') + ':' + String(x.getMinutes()).padStart(2, '0'); };
 var CAM_ICON = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="rgba(242,239,233,.28)" stroke-width="1.7" stroke-linecap="round"><path d="M3 8V5a1 1 0 0 1 1-1h3M21 8V5a1 1 0 0 0-1-1h-3M3 16v3a1 1 0 0 0 1 1h3M21 16v3a1 1 0 0 1-1 1h-3M12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6z"></path></svg>';
@@ -305,24 +332,48 @@ function aiItems() { return S.ai || []; }
 function aiTotal() {
   return aiItems().reduce(function (t, x) { t.k += (x.k || 0); t.p += (x.p || 0); t.c += (x.c || 0); t.f += (x.f || 0); return t; }, { k: 0, p: 0, c: 0, f: 0 });
 }
-function renderSheet() {
-  $('portion').textContent = S.portion.toFixed(1).replace('.0', '') + '×';
-  var addBtn = $('add'), addSpan = addBtn ? addBtn.querySelector('span') : null;
-  if (S.analyzing) {
-    $('total').textContent = d.analyzing;
-    if (addBtn) { addBtn.style.opacity = '.55'; addBtn.style.pointerEvents = 'none'; }
-    if (addSpan) addSpan.textContent = d.analyzing;
-    return;
+// Le total affiché est la somme des macros converties en calories (4/4/9) : les trois
+// pourcentages tombent ainsi toujours à 100 %, et le journal porte le même chiffre.
+function macroKcal(t) { return Math.round((t.p || 0) * 4 + (t.c || 0) * 4 + (t.f || 0) * 9); }
+
+function renderMac() {
+  var t = aiTotal();
+  var desc = $('desc').value.trim();
+  var aiNames = aiItems().map(function (x) { return x.n; }).filter(Boolean).slice(0, 3).join(', ');
+  S.est = {
+    n: desc || aiNames || d.meal,          // toujours un nom, même si l'IA n'a rien détecté
+    p: Math.round(t.p), c: Math.round(t.c), f: Math.round(t.f)
+  };
+  S.est.k = macroKcal(S.est);
+
+  $('mkcal').textContent = S.est.k;
+  $('mname').textContent = S.est.n;
+  var th = $('macthumb');
+  if (S.photo) {
+    th.style.backgroundImage = "url('" + S.photo + "')";
+    var ic = th.querySelector('svg'); if (ic) ic.style.display = 'none';
   }
-  $('total').textContent = Math.round(aiTotal().k * S.portion);
-  if (addBtn) { addBtn.style.opacity = ''; addBtn.style.pointerEvents = ''; }
-  if (addSpan) addSpan.textContent = d.addBtn;
+
+  var rows = [
+    { e: MACRO_KEYS[0].e, l: d.macros[0], g: S.est.p, k: S.est.p * 4 },
+    { e: MACRO_KEYS[1].e, l: d.macros[1], g: S.est.c, k: S.est.c * 4 },
+    { e: MACRO_KEYS[2].e, l: d.macros[2], g: S.est.f, k: S.est.f * 9 }
+  ];
+  $('mbars').innerHTML = rows.map(function (m) {
+    var p = S.est.k ? Math.round(m.k / S.est.k * 100) : 0;
+    return '<div style="display:flex;flex-direction:column;gap:6px">'
+      + '<div style="display:flex;align-items:baseline;justify-content:space-between">'
+      + '<div style="display:flex;align-items:center;gap:7px"><span style="font-size:13px;line-height:1">' + m.e + '</span>'
+      + '<span style="font:600 8.5px \'IBM Plex Mono\',monospace;letter-spacing:.16em;color:rgba(242,239,233,.5)">' + m.l + '</span></div>'
+      + '<div style="display:flex;align-items:baseline;gap:7px"><span style="font:500 10px \'IBM Plex Mono\',monospace;color:rgba(242,239,233,.4)">' + m.g + ' G</span>'
+      + '<span style="font:700 14px/1 Oswald,sans-serif;color:#E23B44">' + p + '%</span></div></div>'
+      + '<div style="height:5px;border-radius:3px;background:#1E1E22;overflow:hidden"><div style="height:100%;width:' + p + '%;border-radius:3px;background:#E23B44"></div></div></div>';
+  }).join('');
 }
 
 function show(which) {
   $('veil').classList.toggle('hidden', !which);
-  $('cam').classList.toggle('hidden', which !== 'cam');
-  $('res').classList.toggle('hidden', which !== 'res');
+  ['cam', 'res', 'load', 'mac'].forEach(function (id) { $(id).classList.toggle('hidden', which !== id); });
   if (which !== 'cam') stopCam();
 }
 
@@ -353,53 +404,86 @@ function toB64(src, cb) {
   img.src = src;
 }
 
+// ---- Étape 3 : chargement piloté par la vraie requête ----
+var prog = { iv: null, val: 0, ctrl: null, to: null };
+function setProg(p) {
+  prog.val = p;
+  $('lpct').textContent = String(Math.round(p));
+  $('lring').setAttribute('stroke-dashoffset', String(590 - 590 * (p / 100)));
+}
+function stopProg() { if (prog.iv) { clearInterval(prog.iv); prog.iv = null; } }
+function abortAnalysis() {
+  stopProg();
+  if (prog.to) { clearTimeout(prog.to); prog.to = null; }
+  if (prog.ctrl) { try { prog.ctrl.abort(); } catch (e) {} prog.ctrl = null; }
+  S.analyzing = false;
+}
+
 function analyze() {
-  S.ai = null; S.analyzing = true; S.portion = 1;
-  if (S.photo) $('shotbox').style.backgroundImage = "url('" + S.photo + "')";
-  show('res'); renderSheet();
+  var desc = $('desc').value.trim();
+  $('errline').classList.add('hidden');
+  S.ai = null; S.est = null; S.analyzing = true;
+  show('load');
+  setProg(0);
+  stopProg();
+  // Montée jusqu'à 90 % pendant l'attente ; les 100 % ne tombent qu'à la réponse.
+  prog.iv = setInterval(function () { if (prog.val < 90) setProg(Math.min(90, prog.val + 1.5)); }, 130);
+
+  function fail() {
+    abortAnalysis();
+    $('errline').classList.remove('hidden');
+    show('res');
+  }
+
   toB64(S.photo, function (b64) {
-    if (!b64) { S.analyzing = false; S.ai = []; renderSheet(); return; }
-    var ctrl = null, to = null;
-    try { ctrl = new AbortController(); to = setTimeout(function () { try { ctrl.abort(); } catch (e) {} }, 20000); } catch (e) {}
-    var opts = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image: b64, lang: lang }) };
-    if (ctrl) opts.signal = ctrl.signal;
+    if (!b64) { fail(); return; }
+    try { prog.ctrl = new AbortController(); prog.to = setTimeout(function () { try { prog.ctrl.abort(); } catch (e) {} }, 30000); } catch (e) {}
+    var opts = {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: b64, lang: lang, desc: desc })   // la description affine l'estimation
+    };
+    if (prog.ctrl) opts.signal = prog.ctrl.signal;
     fetch('/api/meal', opts)
-      .then(function (r) { return r.json(); })
+      .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
       .then(function (data) {
-        if (to) clearTimeout(to);
+        if (prog.to) { clearTimeout(prog.to); prog.to = null; }
+        if (!data || data.error) throw new Error('ia');
+        stopProg();
         S.analyzing = false;
-        S.ai = (data && Array.isArray(data.items) ? data.items : []).map(function (x) {
+        S.ai = (Array.isArray(data.items) ? data.items : []).map(function (x) {
           return { n: x.name, k: Math.round(x.kcal) || 0, p: Math.round(x.protein) || 0, c: Math.round(x.carbs) || 0, f: Math.round(x.fat) || 0 };
         });
-        renderSheet();
+        setProg(100);
+        setTimeout(function () { renderMac(); show('mac'); }, 350);
       })
-      .catch(function () { if (to) clearTimeout(to); S.analyzing = false; S.ai = []; renderSheet(); });
+      .catch(function () { fail(); });
   });
 }
 
 // ---- Handlers scan ----
-$('open').onclick = function () { S.portion = 1; S.photo = null; $('desc').value = ''; show('cam'); startCam(); };
+// Étape 2 : la photo est prise, on passe au champ de description
+function showDesc() {
+  if (S.photo) $('shotbox').style.backgroundImage = "url('" + S.photo + "')";
+  $('errline').classList.add('hidden');
+  show('res');
+}
+
+$('open').onclick = function () { S.photo = null; S.est = null; $('desc').value = ''; $('errline').classList.add('hidden'); show('cam'); startCam(); };
 $('shoot').onclick = function () {
   var shot = live ? capture() : null;   // capture() peut renvoyer null si la vidéo n'est pas prête
-  if (shot) { S.photo = shot; analyze(); }
+  if (shot) { S.photo = shot; showDesc(); }
   else { file.click(); }                // repli fiable : appareil photo / galerie natifs
 };
 if (file) file.addEventListener('change', function () {
   var f = file.files && file.files[0]; if (!f) return;
-  var r = new FileReader(); r.onload = function () { S.photo = r.result; analyze(); }; r.readAsDataURL(f);
+  var r = new FileReader(); r.onload = function () { S.photo = r.result; showDesc(); }; r.readAsDataURL(f);
 });
-$('back').onclick = function () { show('cam'); startCam(); };
-$('minus').onclick = function () { S.portion = Math.max(0.5, S.portion - 0.5); renderSheet(); };
-$('plus').onclick = function () { S.portion = Math.min(4, S.portion + 0.5); renderSheet(); };
-document.querySelectorAll('[data-close]').forEach(function (el) { el.onclick = function () { show(null); }; });
-$('veil').onclick = function () { show(null); };
+$('analyse').onclick = function () { if (!S.analyzing) analyze(); };
+document.querySelectorAll('[data-close]').forEach(function (el) { el.onclick = function () { abortAnalysis(); show(null); }; });
+$('veil').onclick = function () { abortAnalysis(); show(null); };
 $('add').onclick = function () {
-  if (S.analyzing) return;   // le bouton est déjà grisé pendant l'analyse
-  var t = aiTotal();
-  var desc = $('desc').value.trim();
-  var aiNames = aiItems().map(function (x) { return x.n; }).filter(Boolean).slice(0, 3).join(', ');
-  var name = desc || aiNames || d.meal;   // toujours un nom, même si l'IA n'a rien détecté
-  var entry = { n: name, k: Math.round(t.k * S.portion), p: Math.round(t.p * S.portion), c: Math.round(t.c * S.portion), f: Math.round(t.f * S.portion), time: hm(), photo: S.photo || null };
+  if (!S.est) return;
+  var entry = { n: S.est.n, k: S.est.k, p: S.est.p, c: S.est.c, f: S.est.f, time: hm(), photo: S.photo || null };
   S.log.push(entry);
   show(null); render();
   saveMeal(entry);
@@ -427,7 +511,7 @@ function saveMeal(entry) {
       if (url) { entry.photoUrl = url; render(); }
       var row = {
         id: mealId, user_id: s.user.id, nom: entry.n, type_repas: 'repas',
-        calories: entry.k, proteines: entry.p, glucides: entry.c, lipides: entry.f, quantite: S.portion
+        calories: entry.k, proteines: entry.p, glucides: entry.c, lipides: entry.f, quantite: 1
       };
       if (url) row.photo_url = url;
       window.espSB.from('meals').insert(row).then(function () {}, function () {});
