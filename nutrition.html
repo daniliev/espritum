@@ -117,6 +117,17 @@ textarea::placeholder{color:rgba(242,239,233,.3)}
 
 <div style="flex:none;display:flex;gap:9px" id="macros"></div>
 
+<div class="card" style="padding:15px 17px 13px;display:flex;flex-direction:column;gap:13px">
+<div style="display:flex;align-items:baseline;justify-content:space-between">
+<span class="kicker" data-k="weekTitle">CETTE SEMAINE</span>
+<div style="display:flex;align-items:baseline;gap:5px">
+<span style="font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:rgba(242,239,233,.3)" data-k="weekAvg">MOYENNE</span>
+<span style="font:700 15px/1 Oswald,sans-serif;color:#F2EFE9" id="wavg">0</span>
+</div>
+</div>
+<div style="height:88px;display:flex;align-items:flex-end;gap:7px" id="wbars"></div>
+</div>
+
 <div class="scanbtn" id="open">
 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#F6F2EE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V5a1 1 0 0 1 1-1h3M21 8V5a1 1 0 0 0-1-1h-3M3 16v3a1 1 0 0 0 1 1h3M21 16v3a1 1 0 0 1-1 1h-3M12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6z"></path></svg>
 <span style="font:600 13px 'IBM Plex Sans';letter-spacing:.02em;color:#F6F2EE" data-k="scanBtn">Scanner un repas</span>
@@ -223,6 +234,7 @@ var T = {
   fr: { title:'Nutrition', avail:'CALORIES DISPONIBLES', kcal:'KCAL', onWord:'SUR', consumed:'CONSOMMÉ',
     macros:['PROTÉINES','GLUCIDES','LIPIDES'], scanBtn:'Scanner un repas',
     emptyTitle:'Rien de scanné', emptyText:"Tout ce que tu scannes dans la journée s'affiche ici.",
+    weekTitle:'CETTE SEMAINE', weekAvg:'MOYENNE', weekDays:['L','M','M','J','V','S','D'],
     camKicker:'SCAN REPAS', camTitle:'Cadre ton assiette', camSub:'Une seule photo, vue du dessus.', shoot:'Prendre la photo',
     descPlaceholder:'Une description précise permet une analyse plus détaillée de ton repas.',
     analyseBtn:'Analyser mon repas', analyzeFail:"L'analyse a échoué. Réessaie.",
@@ -231,6 +243,7 @@ var T = {
   en: { title:'Nutrition', avail:'CALORIES AVAILABLE', kcal:'KCAL', onWord:'OF', consumed:'EATEN',
     macros:['PROTEIN','CARBS','FAT'], scanBtn:'Scan a meal',
     emptyTitle:'Nothing scanned', emptyText:'Everything you scan during the day shows up here.',
+    weekTitle:'THIS WEEK', weekAvg:'AVERAGE', weekDays:['M','T','W','T','F','S','S'],
     camKicker:'MEAL SCAN', camTitle:'Frame your plate', camSub:'One photo, top view.', shoot:'Take the photo',
     descPlaceholder:'A precise description enables a more detailed analysis of your meal.',
     analyseBtn:'Analyze my meal', analyzeFail:'Analysis failed. Try again.',
@@ -239,6 +252,7 @@ var T = {
   bg: { title:'Хранене', avail:'НАЛИЧНИ КАЛОРИИ', kcal:'ККАЛ', onWord:'ОТ', consumed:'ПРИЕТИ',
     macros:['ПРОТЕИНИ','ВЪГЛЕХИДРАТИ','МАЗНИНИ'], scanBtn:'Сканирай хранене',
     emptyTitle:'Нищо сканирано', emptyText:'Всичко, което сканираш през деня, се показва тук.',
+    weekTitle:'ТАЗИ СЕДМИЦА', weekAvg:'СРЕДНО', weekDays:['П','В','С','Ч','П','С','Н'],
     camKicker:'СКАН ХРАНЕНЕ', camTitle:'Кадрирай чинията', camSub:'Една снимка, отгоре.', shoot:'Направи снимка',
     descPlaceholder:'Точното описание позволява по-подробен анализ на храненето ти.',
     analyseBtn:'Анализирай храненето', analyzeFail:'Анализът не успя. Опитай отново.',
@@ -279,9 +293,40 @@ document.getElementById('goProfile').addEventListener('click', function () { win
 var TARGET = { kcal: 2340, p: 190, c: 260, f: 70 };
 var MACRO_KEYS = [{ e: '🥩', key: 'p' }, { e: '🍞', key: 'c' }, { e: '🥑', key: 'f' }];
 var S = { log: [], ai: null, est: null, analyzing: false, photo: null };
+var WEEK = { past: {} };   // 'AAAA-MM-JJ' -> kcal des jours déjà écoulés de la semaine
 var $ = function (id) { return document.getElementById(id); };
 var hm = function (dt) { var x = dt || new Date(); return String(x.getHours()).padStart(2, '0') + ':' + String(x.getMinutes()).padStart(2, '0'); };
 var CAM_ICON = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="rgba(242,239,233,.28)" stroke-width="1.7" stroke-linecap="round"><path d="M3 8V5a1 1 0 0 1 1-1h3M21 8V5a1 1 0 0 0-1-1h-3M3 16v3a1 1 0 0 0 1 1h3M21 16v3a1 1 0 0 1-1 1h-3M12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6z"></path></svg>';
+
+// ---- Carte « cette semaine » ----
+// Les jours écoulés viennent de Supabase, le jour courant du journal en cours
+// (il bouge à chaque ajout ou suppression), les jours à venir restent vides.
+function mondayIndex() { return (new Date().getDay() || 7) - 1; }   // lundi = 0
+function dayKey(i) {
+  var x = new Date();
+  x.setDate(x.getDate() - mondayIndex() + i);
+  return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
+}
+
+function renderWeek(eaten) {
+  var di = mondayIndex();
+  var vals = d.weekDays.map(function (_, i) {
+    if (i < di) return WEEK.past[dayKey(i)] || 0;
+    return i === di ? eaten : 0;
+  });
+  var wmax = Math.max.apply(null, [TARGET.kcal * 1.15].concat(vals));
+  var done = vals.slice(0, di + 1);
+  $('wavg').textContent = String(Math.round(done.reduce(function (a, v) { return a + v; }, 0) / done.length));
+  $('wbars').innerHTML = d.weekDays.map(function (label, i) {
+    var v = vals[i], cur = i === di, future = i > di;
+    var bg = future ? 'rgba(242,239,233,.07)' : (cur ? '#F2EFE9' : 'rgba(242,239,233,.32)');
+    var col = cur ? '#F2EFE9' : 'rgba(242,239,233,.3)';
+    return '<div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end">'
+      + '<span style="font:500 8px \'IBM Plex Mono\',monospace;color:' + (cur ? '#F2EFE9' : 'rgba(242,239,233,.26)') + '">' + (v || '—') + '</span>'
+      + '<div style="width:100%;height:' + Math.max(4, Math.round(v / wmax * 62)) + 'px;border-radius:5px;background:' + bg + ';transition:height .5s cubic-bezier(.2,.8,.2,1)"></div>'
+      + '<span style="font:600 8.5px \'IBM Plex Mono\',monospace;color:' + col + '">' + label + '</span></div>';
+  }).join('');
+}
 
 function render() {
   var eaten = S.log.reduce(function (a, x) { return a + (x.k || 0); }, 0);
@@ -300,6 +345,8 @@ function render() {
       + '<span style="font:600 12px \'IBM Plex Sans\'">' + val + ' / ' + tg + ' g</span>'
       + '<div style="height:3px;border-radius:2px;background:#1F1F23;overflow:hidden"><div style="height:100%;border-radius:2px;background:#C41E26;transition:width .5s ease;width:' + p + '%"></div></div></div>';
   }).join('');
+
+  renderWeek(eaten);
 
   if (!S.log.length) {
     $('meals').innerHTML = '<div class="empty">'
@@ -544,6 +591,17 @@ if (window.EspAuth) {
   // Repas déjà scannés aujourd'hui
   if (window.espSB) window.EspAuth.getSession().then(function (s) {
     if (!s) return;
+
+    // Jours déjà écoulés de la semaine, pour la carte « cette semaine »
+    window.espSB.from('meals').select('calories,date')
+      .eq('user_id', s.user.id).gte('date', dayKey(0)).lt('date', today())
+      .then(function (r) {
+        var acc = {};
+        (r.data || []).forEach(function (m) { acc[m.date] = (acc[m.date] || 0) + (m.calories || 0); });
+        WEEK.past = acc;
+        render();
+      }, function () {});
+
     window.espSB.from('meals').select('id,nom,calories,proteines,glucides,lipides,photo_url,created_at')
       .eq('user_id', s.user.id).eq('date', today()).order('created_at', { ascending: true })
       .then(function (r) {
