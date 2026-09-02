@@ -54,7 +54,8 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 .card .v{display:flex;align-items:baseline;gap:5px;margin-top:3px}
 .card .v b{font:700 25px/1 Oswald,sans-serif;color:#C41E26}
 .card .v em{font:500 9.5px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.4);font-style:normal}
-.note{font:500 8.5px/1.4 'IBM Plex Mono',monospace;color:rgba(242,239,233,.28);text-align:right;max-width:118px}
+.avg{display:flex;align-items:baseline;gap:5px}
+.avg b{font:700 15px/1 Oswald,sans-serif;color:#F2EFE9}
 
 /* --- timer de repos --- */
 .rest{flex:none;position:relative;height:62px;border-radius:14px;background:#131315;border:1px solid rgba(242,239,233,.08);cursor:pointer}
@@ -75,6 +76,18 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 .exomid{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;padding:0 11px}
 .exomid .n{font:500 12.5px/1.2 'IBM Plex Sans';display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .exo.done .exomid .n{color:rgba(242,239,233,.42)}
+.exo.done{background:#0C0C0E;border-color:rgba(242,239,233,.05)}
+.exo.done .thumb img{opacity:.35}
+.distbox{display:flex;flex-direction:column;gap:5px;padding:9px 2px 4px}
+.distbox .dh{display:flex;align-items:baseline;justify-content:space-between}
+.distbox .dv{font:400 19px/1 'Bebas Neue',Oswald,sans-serif;letter-spacing:.04em;color:#E23B44}
+.distbox .ds{display:flex;justify-content:space-between}
+.distbox .ds span{font:500 8px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.24)}
+input[type=range].dist{-webkit-appearance:none;appearance:none;width:100%;height:18px;background:transparent;cursor:pointer;margin:0}
+input[type=range].dist::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:rgba(242,239,233,.14)}
+input[type=range].dist::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;margin-top:-6px;border-radius:50%;background:#C41E26;border:2px solid #0F0F11;box-shadow:0 0 0 1px rgba(226,59,68,.5)}
+input[type=range].dist::-moz-range-track{height:4px;border-radius:2px;background:rgba(242,239,233,.14)}
+input[type=range].dist::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#C41E26;border:2px solid #0F0F11}
 .exomid .s{font:500 9px 'IBM Plex Mono',monospace;letter-spacing:.04em;color:rgba(242,239,233,.32)}
 .stepw{flex:none;display:flex;align-items:center;gap:5px;padding-right:10px}
 .step{width:21px;height:21px;flex:none;border-radius:50%;background:transparent;border:1px solid rgba(242,239,233,.14);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;color:rgba(242,239,233,.42)}
@@ -209,7 +222,6 @@ if (window.EspAuth) window.EspAuth.requireAuth();</script>
 <div class="head">
 <div class="h1" data-k="sessionTitle">Séance du jour</div>
 <div class="hr">
-<span class="count" id="progress">0/5</span>
 <div class="streak"><img src="logo-mark.png" alt=""><span id="streak">12</span></div>
 <div class="avatar" id="goProfile" role="button" tabindex="0" aria-label="Profil">
 <svg viewBox="0 0 300 300"><path d="M206.83,251.56h-113.66c-36.54-5.22-29.21-46.81-11.85-68.49,11.27-14.07,28.55-22.7,46.56-23.86,12.85-.83,30.22-.84,43.09-.14,18.31.99,35.99,9.51,47.51,23.77,17.5,21.65,25.03,63.46-11.65,68.72Z"></path><path d="M193.1,111.23c-11.64,31.09-52.28,39.66-75.78,16.16-22.59-22.59-15.68-61.54,13.38-74.67,37.72-17.04,76.91,19.74,62.4,58.51Z"></path></svg>
@@ -243,7 +255,7 @@ if (window.EspAuth) window.EspAuth.requireAuth();</script>
 <div class="kick" data-k="burnedTitle">CALORIES DÉPENSÉES</div>
 <div class="v"><b id="burned">0</b><em>KCAL</em></div>
 </div>
-<span class="note" data-k="burnedNote">Calculé sur les séries cochées</span>
+<div class="avg"><span class="kick" data-k="weekAvg">MOYENNE</span><b id="wavg">0</b></div>
 </div>
 <div class="wbars" id="wbars"></div>
 </div>
@@ -319,20 +331,20 @@ if (window.EspAuth) window.EspAuth.requireAuth();</script>
 
 <script>
 var T = {
-  fr: { sessionTitle:"Séance du jour", changeWord:"CHANGER ▾", burnedTitle:"CALORIES DÉPENSÉES", burnedNote:"Calculé sur les séries cochées",
+  fr: { sessionTitle:"Séance du jour", changeWord:"CHANGER ▾", burnedTitle:"CALORIES DÉPENSÉES", weekAvg:"MOYENNE",
     pickTitle:"Travailler quoi aujourd'hui ?", anyGroups:"AUTANT DE GROUPES QUE TU VEUX", addExercise:"Ajouter un exercice", chooseExercise:"CHOISIR UN EXERCICE",
     removeExercise:"Retirer cet exercice", celebTitle:"Bien joué.", celebText:"Tu es allé au bout de ta séance. Ton corps suit, ton esprit aussi.", celebCta:"Continuer", timeLabel:"TEMPS À LA SALLE", validateWord:"Valider",
-    setLabel:"Série", repsWord:"reps", setWord:"séries", bodyweight:"POIDS CORPS",
+    setLabel:"Série", repsWord:"reps", setWord:"séries", setWordOne:"série", distance:"DISTANCE", bodyweight:"POIDS CORPS",
     week:["L","M","M","J","V","S","D"], tabs:["Accueil","Séance","Scan","Nutrition","Classement"] },
-  en: { sessionTitle:"Today's session", changeWord:"CHANGE ▾", burnedTitle:"CALORIES BURNED", burnedNote:"Computed from checked sets",
+  en: { sessionTitle:"Today's session", changeWord:"CHANGE ▾", burnedTitle:"CALORIES BURNED", weekAvg:"AVERAGE",
     pickTitle:"What are you training today?", anyGroups:"AS MANY GROUPS AS YOU WANT", addExercise:"Add an exercise", chooseExercise:"CHOOSE AN EXERCISE",
     removeExercise:"Remove this exercise", celebTitle:"Well done.", celebText:"You went all the way through your session. Your body follows, and so does your spirit.", celebCta:"Continue", timeLabel:"TIME AT THE GYM", validateWord:"Confirm",
-    setLabel:"Set", repsWord:"reps", setWord:"sets", bodyweight:"BODYWEIGHT",
+    setLabel:"Set", repsWord:"reps", setWord:"sets", setWordOne:"set", distance:"DISTANCE", bodyweight:"BODYWEIGHT",
     week:["M","T","W","T","F","S","S"], tabs:["Home","Session","Scan","Nutrition","Ranking"] },
-  bg: { sessionTitle:"Днешна тренировка", changeWord:"СМЕНИ ▾", burnedTitle:"ИЗГОРЕНИ КАЛОРИИ", burnedNote:"По отметнатите серии",
+  bg: { sessionTitle:"Днешна тренировка", changeWord:"СМЕНИ ▾", burnedTitle:"ИЗГОРЕНИ КАЛОРИИ", weekAvg:"СРЕДНО",
     pickTitle:"Какво тренираш днес?", anyGroups:"КОЛКОТО ГРУПИ ИСКАШ", addExercise:"Добави упражнение", chooseExercise:"ИЗБЕРИ УПРАЖНЕНИЕ",
     removeExercise:"Премахни упражнението", celebTitle:"Браво.", celebText:"Стигна до края на тренировката. Тялото ти следва, духът ти също.", celebCta:"Продължи", timeLabel:"ВРЕМЕ ВЪВ ФИТНЕСА", validateWord:"Потвърди",
-    setLabel:"Серия", repsWord:"повт.", setWord:"серии", bodyweight:"СОБСТВЕНО",
+    setLabel:"Серия", repsWord:"повт.", setWord:"серии", setWordOne:"серия", distance:"РАЗСТОЯНИЕ", bodyweight:"СОБСТВЕНО",
     week:["П","В","С","Ч","П","С","Н"], tabs:["Начало","Тренировка","Скан","Хранене","Класиране"] }
 };
 
@@ -399,11 +411,9 @@ var MUS_EX = {
     { img:X("souleve-de-terre.webp"), s:"3 × 5 · 110 kg", fr:"Soulevé de terre", en:"Deadlift", bg:"Мъртва тяга" }
   ],
   cardio: [
-    { img:X("course-a-pied.webp"), s:"8 × 400 m", fr:"Course fractionnée", en:"Interval run", bg:"Интервално бягане" },
-    { img:X("corde-a-sauter.webp"), s:"5 × 2 min", fr:"Corde à sauter", en:"Jump rope", bg:"Въже" },
-    { img:X("burpees.webp"), s:"4 × 15", fr:"Burpees", en:"Burpees", bg:"Бърпи" },
-    { img:X("course-a-pied.webp"), s:"12 min · 10 %", fr:"Marche inclinée", en:"Incline walk", bg:"Наклонено ходене" },
-    { img:X("corde-a-sauter.webp"), s:"3 × 90 s", fr:"Double unders", en:"Double unders", bg:"Двойни скокове" }
+    { img:X("course-a-pied.webp"), s:"1 × 1 km", fr:"Course", en:"Run", bg:"Бягане" },
+    { img:X("corde-a-sauter.webp"), s:"3 × 3 min", fr:"Corde à sauter", en:"Jump rope", bg:"Въже" },
+    { img:X("burpees.webp"), s:"4 × 15", fr:"Burpees", en:"Burpees", bg:"Бърпи" }
   ]
 };
 
@@ -444,14 +454,28 @@ var WEEK = { past: {} };
 var restIv = null;
 
 function repsOf(str) { var m = /[×x]\s*(\d+)/.exec(str || ''); return m ? m[1] : '10'; }
-function setsOf(str) { var m = /^\s*(\d+)\s*[×x]/.exec(str || ''); return m ? parseInt(m[1], 10) : 4; }
-function weightOf(str) { var m = /([\d.,]+)\s*(kg|кг)/i.exec(str || ''); return m ? parseFloat(m[1].replace(',', '.')) : null; }
+// L'unite de reglage se lit dans la signature de l'exercice : le pas des boutons
+// -/+ en decoule (kg 2,5 / km 0,5 / min 1 / s 15). Sans unite : poids du corps.
+function unitOf(str) {
+  var t = str || '', m;
+  m = /([\d.,]+)\s*(kg|кг)/i.exec(t);
+  if (m) return { kind: 'kg', value: parseFloat(m[1].replace(',', '.')), step: 2.5, suffix: 'KG', word: 'kg' };
+  m = /([\d.,]+)\s*km/i.exec(t);
+  if (m) return { kind: 'km', value: parseFloat(m[1].replace(',', '.')), step: 0.5, suffix: 'KM', word: 'km' };
+  m = /([\d.,]+)\s*min/i.exec(t);
+  if (m) return { kind: 'min', value: parseFloat(m[1].replace(',', '.')), step: 1, suffix: 'MIN', word: 'min' };
+  m = /([\d.,]+)\s*s(?![a-z\u0430-\u044f])/i.exec(t);
+  if (m) return { kind: 's', value: parseFloat(m[1].replace(',', '.')), step: 15, suffix: 'S', word: 's' };
+  return null;
+}
+// Trois series partout, sauf la course (une seule). Le temps a la salle ne
+// pilote plus que le NOMBRE d'exercices.
+function setsOf(str) { var u = unitOf(str); return (u && u.kind === 'km') ? 1 : 3; }
+// Virgule decimale en francais et en bulgare, point en anglais
+function fmtNum(v) { var t = String(v); return S.lang === 'en' ? t : t.replace('.', ','); }
 
 function wantedCount() { return Math.max(3, Math.min(10, Math.round(S.minutes / 12))); }
-function setsBonus() {
-  var pool = S.picked.reduce(function (a, k) { return a + (MUS_EX[k] || []).length; }, 0) || 1;
-  return Math.max(0, Math.min(2, Math.ceil((wantedCount() - pool) / pool)));
-}
+function setsBonus() { return 0; }
 function exList() {
   var lists = S.picked.map(function (k) { return (MUS_EX[k] || []).map(function (e, i) { return { e: e, ek: k + ':' + i }; }); });
   var out = [], longest = lists.reduce(function (a, l) { return Math.max(a, l.length); }, 0);
@@ -509,7 +533,6 @@ function render(l) {
   var setTotal = list.reduce(function (a, x) { return a + setsArr(x.ek, x.e.s).length; }, 0) || 1;
   var exDone = list.filter(function (x) { return setsArr(x.ek, x.e.s).every(Boolean); }).length;
 
-  document.getElementById('progress').textContent = exDone + '/' + list.length;
   // Une seule fois par séance : décocher puis tout recocher la redéclenche
   if (list.length && exDone === list.length && !S.celebrated) { S.celebrated = true; showCeleb(true); }
   if (exDone < list.length) S.celebrated = false;
@@ -536,6 +559,8 @@ function render(l) {
     return i === di ? burnedToday : 0;
   });
   var wmax = Math.max.apply(null, [700].concat(vals));
+  var faits = vals.slice(0, di + 1);
+  document.getElementById('wavg').textContent = String(Math.round(faits.reduce(function (a, v) { return a + v; }, 0) / faits.length));
   document.getElementById('wbars').innerHTML = d.week.map(function (label, i) {
     var v = vals[i], cur = i === di, future = i > di;
     var bg = future ? 'rgba(242,239,233,.07)' : (cur ? '#C41E26' : 'rgba(196,30,38,.42)');
@@ -549,24 +574,30 @@ function render(l) {
   renderRest();
 
   document.getElementById('exoList').innerHTML = list.map(function (x, i) {
-    var sets = setsArr(x.ek, x.e.s), base = weightOf(x.e.s);
-    var w = S.weights[x.ek] != null ? S.weights[x.ek] : base;
-    var load = w == null ? d.bodyweight : (w + ' kg');
+    var sets = setsArr(x.ek, x.e.s), u = unitOf(x.e.s);
+    var w = S.weights[x.ek] != null ? S.weights[x.ek] : (u ? u.value : null);
+    var load = u == null ? d.bodyweight : (fmtNum(w) + ' ' + u.suffix);
+    // En kilos ou au poids du corps on annonce des repetitions ; sinon la mesure elle-meme
+    var target = (!u || u.kind === 'kg') ? (repsOf(x.e.s) + ' ' + d.repsWord) : (fmtNum(w) + ' ' + u.word);
+    var slider = (u && u.kind === 'km') ? '<div class="distbox">'
+      + '<div class="dh"><span class="kick">' + d.distance + '</span><span class="dv">' + load + '</span></div>'
+      + '<input class="dist" type="range" min="0.5" max="10" step="0.5" value="' + w + '" data-dist="' + x.ek + '">'
+      + '<div class="ds"><span>' + fmtNum(0.5) + ' km</span><span>' + fmtNum(10) + ' km</span></div></div>' : '';
     var rows = sets.map(function (on, k) {
       return '<div class="setrow' + (on ? ' on' : '') + '" data-ek="' + x.ek + '" data-k="' + k + '">'
-        + '<span>' + d.setLabel + ' ' + (k + 1) + ' — ' + repsOf(x.e.s) + ' ' + d.repsWord + '</span>'
+        + '<span>' + d.setLabel + ' ' + (k + 1) + ' — ' + target + '</span>'
         + '<div class="tick"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5L10 17.5L19 7"></path></svg></div></div>';
     }).join('');
     return '<div class="exo' + (sets.every(Boolean) ? ' done' : '') + '"><div class="exorow" data-open="' + i + '">'
       + '<div class="thumb"><img src="' + x.e.img + '" alt=""></div>'
       + '<div class="exomid"><span class="n">' + x.e[S.lang] + '</span>'
-      + '<span class="s">' + sets.filter(Boolean).length + '/' + sets.length + ' ' + d.setWord + '</span></div>'
+      + '<span class="s">' + sets.filter(Boolean).length + '/' + sets.length + ' ' + (sets.length === 1 ? d.setWordOne : d.setWord) + '</span></div>'
       + '<div class="stepw">'
       + '<div class="step" data-w="' + x.ek + '" data-d="-2.5"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"></path></svg></div>'
       + '<span class="load">' + load + '</span>'
       + '<div class="step" data-w="' + x.ek + '" data-d="2.5"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></div>'
       + '</div></div>'
-      + (S.openEx === i ? '<div class="sets">' + rows
+      + (S.openEx === i ? '<div class="sets">' + slider + rows
         + '<div class="rmbtn" data-rm="' + x.ek + '"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9.5 7V5h5v2M6.5 7l1 12.5h9L17.5 7"></path></svg>'
         + '<span>' + d.removeExercise + '</span></div></div>' : '')
       + '</div>';
@@ -624,14 +655,19 @@ track.addEventListener('pointerdown', function (ev) { ev.preventDefault(); setMi
 track.addEventListener('pointermove', function (ev) { if (ev.buttons === 1) setMinutes(ev); });
 
 /* --- liste d'exercices : poids ±, cocher série, ouvrir --- */
+document.getElementById('exoList').addEventListener('input', function (e) {
+  var sl = e.target.closest('[data-dist]'); if (!sl) return;
+  S.weights[sl.dataset.dist] = parseFloat(sl.value);
+  emit('espritum:weight-change'); render();
+});
 document.getElementById('exoList').addEventListener('click', function (e) {
   var w = e.target.closest('[data-w]');
   if (w) {
-    var ek = w.dataset.w, dd = parseFloat(w.dataset.d);
+    var ek = w.dataset.w, dir = parseFloat(w.dataset.d) > 0 ? 1 : -1;
     var item = exList().filter(function (x) { return x.ek === ek; })[0]; if (!item) return;
-    var base = weightOf(item.e.s); if (base == null) return;
-    var cur = S.weights[ek] != null ? S.weights[ek] : base;
-    S.weights[ek] = Math.max(0, Math.round((cur + dd) * 2) / 2);
+    var u = unitOf(item.e.s); if (!u) return;   // poids du corps : rien a regler
+    var cur = S.weights[ek] != null ? S.weights[ek] : u.value;
+    S.weights[ek] = Math.max(u.step, Math.round((cur + dir * u.step) * 2) / 2);
     emit('espritum:weight-change'); render(); return;
   }
   var row = e.target.closest('[data-ek]');
@@ -804,8 +840,8 @@ if (window.EspAuth) {
       if (!sets.length || !sets.every(Boolean)) return;
       var key = x.ek + '|' + x.e.fr;
       if (logged[key]) return;
-      var base = weightOf(x.e.s);
-      var w = S.weights[x.ek]; if (w === undefined || w === null) w = base;
+      var u = unitOf(x.e.s);
+      var w = S.weights[x.ek]; if (w === undefined || w === null) w = (u ? u.value : null);
       var rec = {
         user_id: uid, nom: x.e.fr, muscle_cible: x.ek.split(':')[0],
         series: sets.length, reps: parseInt(repsOf(x.e.s), 10) || null,
