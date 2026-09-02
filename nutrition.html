@@ -491,7 +491,7 @@ function analyze() {
 
   toB64(S.photo, function (b64) {
     if (!b64) { fail(); return; }
-    try { prog.ctrl = new AbortController(); prog.to = setTimeout(function () { try { prog.ctrl.abort(); } catch (e) {} }, 50000); } catch (e) {}
+    try { prog.ctrl = new AbortController(); prog.to = setTimeout(function () { try { prog.ctrl.abort(); } catch (e) {} }, 45000); } catch (e) {}
     var opts = {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ image: b64, lang: lang, desc: desc })   // la description affine l'estimation
