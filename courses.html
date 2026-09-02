@@ -193,7 +193,7 @@ function match(table, label, fallback) {
 function foodEmoji(l) { return match(FOOD_EMOJI, l, "🛒"); }
 function refPrice(l) { return match(REF_PRICE, l, 3); }
 
-var state = { lang:'fr', country:'fr', city:'', checked:{}, budget:null };
+var state = { lang:'en', country:'fr', city:'', checked:{}, budget:null };
 
 function d() { return T[state.lang]; }
 function region() { return REGIONS.filter(function (r) { return r.key === state.country; })[0] || REGIONS[0]; }
@@ -261,7 +261,7 @@ function render(l) {
     b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang));
   });
   document.documentElement.lang = state.lang;
-  try { localStorage.setItem('espritum.lang', state.lang); } catch (e) {}
+  try { localStorage.setItem('espritum.lang', state.lang); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(state.lang); } catch (e) {}
 }
 
 document.getElementById('groups').addEventListener('click', function (ev) {
@@ -317,7 +317,7 @@ window.EspritumCourses = {
   getEstimate: estimate
 };
 
-var saved = 'fr';
+var saved = 'en';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
 render(saved);
 </script>

@@ -284,7 +284,7 @@ var T = {
   }
 };
 
-var lang = 'fr';
+var lang = 'en';
 var num = document.getElementById('num');
 var exp = document.getElementById('exp');
 var cvc = document.getElementById('cvc');
@@ -313,7 +313,7 @@ function render(l) {
     b.setAttribute('aria-pressed', String(b.dataset.lang === l));
   });
   document.documentElement.lang = l;
-  try { localStorage.setItem('espritum.lang', l); } catch (e) {}
+  try { localStorage.setItem('espritum.lang', l); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(l); } catch (e) {}
 }
 
 num.addEventListener('input', function () {
@@ -360,7 +360,7 @@ window.EspritumPay = {
   }
 };
 
-var saved = 'fr';
+var saved = 'en';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
 render(saved);
 </script>

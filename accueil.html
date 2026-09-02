@@ -299,7 +299,7 @@ var EATEN_HIST = [2210, 2380, 2050, 2290, 2170, 2410];
 var BURNED_HIST = [520, 610, 470, 700, 590, 355];
 
 var state = {
-  lang: 'fr',
+  lang: 'en',
   name: '',
   scanDue: false,
   streak: 12,
@@ -392,7 +392,7 @@ function render(l) {
     b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang));
   });
   document.documentElement.lang = state.lang;
-  try { localStorage.setItem('espritum.lang', state.lang); } catch (e) {}
+  try { localStorage.setItem('espritum.lang', state.lang); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(state.lang); } catch (e) {}
 }
 
 function emit(name, detail) { document.dispatchEvent(new CustomEvent(name, { detail: detail || {} })); }
@@ -433,7 +433,7 @@ window.EspritumHome = {
   getState: function () { return JSON.parse(JSON.stringify(state)); }
 };
 
-var saved = 'fr';
+var saved = 'en';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
 render(saved);
 </script>

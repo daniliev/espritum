@@ -279,6 +279,47 @@
     }
   };
 
+  // ── Langue ──
+  // L'app est en anglais par défaut : c'est ce que voit quelqu'un qui atterrit
+  // sur une page interne sans être passé par l'écran de choix de langue.
+  // Un membre déjà inscrit, lui, retrouve la langue de son profil — y compris
+  // sur un appareil où rien n'est encore stocké localement.
+  var LANGS = { fr: 1, en: 1, bg: 1 };
+  function readLang() { try { return localStorage.getItem('espritum.lang'); } catch (e) { return null; } }
+
+  // Appelée par les pages à chaque changement de langue : sans ça le choix
+  // resterait local et serait écrasé au chargement suivant par le profil.
+  window.EspAuth.saveLang = function (lang) {
+    if (!LANGS[lang]) return Promise.resolve(false);
+    return sb.auth.getUser().then(function (u) {
+      if (!u.data.user) return false;
+      return sb.from('users').update({ langue: lang }).eq('id', u.data.user.id)
+        .then(function () { return true; }, function () { return false; });
+    }).catch(function () { return false; });
+  };
+
+  // Au chargement, on aligne le stockage local sur le profil.
+  // Appareil vierge : la page est déjà rendue en anglais, on la relance une fois
+  // pour la repasser dans la langue du membre. Sinon on se contente d'écrire,
+  // et la langue s'applique à la navigation suivante — pas de rechargement surprise.
+  sb.auth.getSession().then(function (r) {
+    var sess = r && r.data && r.data.session;
+    if (!sess) return;
+    return sb.from('users').select('langue').eq('id', sess.user.id).single().then(function (rr) {
+      var pref = rr && rr.data && rr.data.langue;
+      if (!pref || !LANGS[pref]) return;
+      var local = readLang();
+      if (pref === local) return;
+      try { localStorage.setItem('espritum.lang', pref); } catch (e) { return; }
+      if (local) return;                        // déjà une langue ici : pas de relance
+      try {                                     // garde-fou anti-boucle
+        if (sessionStorage.getItem('espritum.langsync')) return;
+        sessionStorage.setItem('espritum.langsync', pref);
+      } catch (e) { return; }
+      window.location.reload();
+    }, function () {});
+  }).catch(function () {});
+
   // data-URL → Blob JPEG redimensionné (max px sur le plus grand côté)
   function dataUrlToScaledBlob(dataUrl, max) {
     return new Promise(function (resolve) {

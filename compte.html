@@ -199,7 +199,7 @@ var T = {
   }
 };
 
-var lang = 'fr', mode = 'signup', terms = false;
+var lang = 'en', mode = 'signup', terms = false;
 var elName = document.getElementById('fName');
 var elEmail = document.getElementById('fEmail');
 var elPass = document.getElementById('fPass');
@@ -251,7 +251,7 @@ function render(l) {
     b.setAttribute('aria-pressed', String(b.dataset.lang === l));
   });
   document.documentElement.lang = l;
-  try { localStorage.setItem('espritum.lang', l); } catch (e) {}
+  try { localStorage.setItem('espritum.lang', l); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(l); } catch (e) {}
   refresh();
 }
 
@@ -312,7 +312,7 @@ window.EspritumAuth = {
   }
 };
 
-var saved = 'fr';
+var saved = 'en';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
 setMode('signup');
 render(saved);
@@ -332,7 +332,7 @@ function espShowError(msg) {
   if (window.EspritumAuth && window.EspritumAuth.setError) window.EspritumAuth.setError(msg);
   else alert(msg);
 }
-function espLang() { try { return localStorage.getItem('espritum.lang') || 'fr'; } catch (e) { return 'fr'; } }
+function espLang() { try { return localStorage.getItem('espritum.lang') || 'en'; } catch (e) { return 'en'; } }
 
 document.addEventListener('espritum:signup', function (e) {
   var d = e.detail || {};

@@ -225,7 +225,7 @@ var T = {
 
 var TL = [1.5, 3, 4.5, 6, 7.5, 9, 10.5, 12];
 var TICK = '<svg viewBox="0 0 24 24"><path d="M4 12.5L9 17.5L20 6.5"></path></svg>';
-var lang = 'fr', youM = 6, aiM = 4.5;
+var lang = 'en', youM = 6, aiM = 4.5;
 
 var dotsEl = document.getElementById('dots');
 var numsEl = document.getElementById('nums');
@@ -267,7 +267,7 @@ function render(l) {
     b.setAttribute('aria-pressed', String(b.dataset.lang === l));
   });
   document.documentElement.lang = l;
-  try { localStorage.setItem('espritum.lang', l); } catch (e) {}
+  try { localStorage.setItem('espritum.lang', l); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(l); } catch (e) {}
 }
 
 document.getElementById('gatecta').addEventListener('click', function () {
@@ -289,7 +289,7 @@ window.EspritumResult = {
   setLang: render
 };
 
-var saved = 'fr';
+var saved = 'en';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
 try { var m = parseFloat(localStorage.getItem('espritum.months')); if (m) youM = m; } catch (e) {}
 render(saved);
@@ -331,7 +331,7 @@ render(saved);
         ['fr', 'en', 'bg'].forEach(function (l) {
           if (T[l]) { T[l].advice = mapped; if (an.verdict) T[l].verdictBody = an.verdict; }
         });
-        R.setLang(localStorage.getItem('espritum.lang') || 'fr'); // re-render depuis les données IA
+        R.setLang(localStorage.getItem('espritum.lang') || 'en'); // re-render depuis les données IA
       } else if (an.verdict) {
         R.setVerdict(an.verdict);
       }

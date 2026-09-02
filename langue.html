@@ -89,15 +89,20 @@ var opts = document.querySelectorAll('.opt');
 var label = document.getElementById('pickLabel');
 var haveEl = document.getElementById('haveAccount');
 var loginEl = document.getElementById('loginLink');
-var current = 'fr';
-function select(lang) {
+var current = 'en';
+// persist = false : on se contente d'afficher. Indispensable au chargement,
+// sinon un membre qui repasse par cet écran verrait sa langue de profil
+// écrasée par le défaut, sans avoir rien choisi.
+function select(lang, persist) {
   opts.forEach(function (o) { o.setAttribute('aria-selected', String(o.dataset.lang === lang)); });
   label.textContent = LABEL[lang];
   haveEl.textContent = HAVE[lang];
   loginEl.textContent = LOGIN[lang];
   current = lang;
   document.documentElement.lang = lang;
+  if (persist === false) return;
   try { localStorage.setItem('espritum.lang', lang); } catch (e) {}
+  if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(lang);
 }
 opts.forEach(function (o) {
   o.addEventListener('click', function () {
@@ -110,7 +115,10 @@ loginEl.addEventListener('click', function (e) {
   document.dispatchEvent(new CustomEvent('espritum:login', { detail: { lang: current } }));
 });
 window.EspritumLang = { getLang: function () { return current; }, setLang: select };
-try { var saved = localStorage.getItem('espritum.lang'); if (saved && LABEL[saved]) select(saved); } catch (e) {}
+// Anglais par défaut ; la langue déjà choisie reprend la main si elle existe.
+var saved = null;
+try { saved = localStorage.getItem('espritum.lang'); } catch (e) {}
+select(saved && LABEL[saved] ? saved : 'en', false);
 </script>
 <script>
 /* Espritum — liens (branchés par l'intégration). Design intact. */

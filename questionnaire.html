@@ -194,7 +194,7 @@ var T = {
   }
 };
 
-var lang = 'fr';
+var lang = 'en';
 var idx = 0;
 var answers = {};
 
@@ -293,7 +293,7 @@ document.getElementById('back').addEventListener('click', function () {
   render();
 });
 document.querySelectorAll('.langbar button').forEach(function (b) {
-  b.addEventListener('click', function () { lang = b.dataset.lang; render(); try { localStorage.setItem('espritum.lang', lang); } catch (e) {} });
+  b.addEventListener('click', function () { lang = b.dataset.lang; render(); try { localStorage.setItem('espritum.lang', lang); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(lang); } catch (e) {} });
 });
 
 window.EspritumQuiz = {

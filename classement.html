@@ -252,7 +252,7 @@ var TAB_KEYS = ['progress', 'force', 'endurance', 'friends'];
 var GLOBAL_OFFSET = { progress:0, force:0, endurance:0, friends:0 }; // positions réelles (#1, #2, …)
 
 var state = {
-  lang:'fr', tab:'progress', streak:12, name:'',
+  lang:'en', tab:'progress', streak:12, name:'',
   rank:5, esprit:860, force:'—', endurance:'—'
 };
 
@@ -330,7 +330,7 @@ function render(l) {
     b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang));
   });
   document.documentElement.lang = state.lang;
-  try { localStorage.setItem('espritum.lang', state.lang); } catch (e) {}
+  try { localStorage.setItem('espritum.lang', state.lang); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(state.lang); } catch (e) {}
 }
 
 document.getElementById('segs').addEventListener('click', function (ev) {
@@ -362,7 +362,7 @@ window.EspritumRanking = {
   getState: function () { return JSON.parse(JSON.stringify(state)); }
 };
 
-var saved = 'fr';
+var saved = 'en';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
 render(saved);
 </script>
@@ -378,7 +378,7 @@ render(saved);
   function initiales(n) { n = (n || '').trim(); if (!n) return 'ES'; var p = n.split(/\s+/); return (p.length > 1 ? (p[0][0] + p[1][0]) : n.slice(0, 2)).toUpperCase(); }
   function tierOf(score) { var TH = [0, 200, 400, 700, 1000, 1400, 2000], r = 1; for (var i = 0; i < TH.length; i++) if (score >= TH[i]) r = i + 1; return r; }
 
-  var espLang = 'fr'; try { espLang = localStorage.getItem('espritum.lang') || 'fr'; } catch (e) {}
+  var espLang = 'en'; try { espLang = localStorage.getItem('espritum.lang') || 'en'; } catch (e) {}
   function fp(n) { return espLang === 'en' ? String(n) : String(n).replace('.', ','); }
 
   if (window.espSB) {

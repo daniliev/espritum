@@ -440,7 +440,7 @@ function layoutRest() {
   rect.setAttribute('stroke-dasharray', String(restLen));
 }
 
-var S = { lang:'fr', picked:["pectoraux"], minutes:60, sets:{}, weights:{}, openEx:null, restSec:90, restLeft:90, restRun:false, streak:12,
+var S = { lang:'en', picked:["pectoraux"], minutes:60, sets:{}, weights:{}, openEx:null, restSec:90, restLeft:90, restRun:false, streak:12,
   removed:[], added:[], addFilter:'all', celebrated:false };
 
 // Catalogue à plat, pour la popup « ajouter un exercice »
@@ -525,7 +525,7 @@ function render(l) {
   var d = T[S.lang];
   document.querySelectorAll('[data-k]').forEach(function (el) { el.textContent = d[el.dataset.k]; });
   document.documentElement.lang = S.lang;
-  try { localStorage.setItem('espritum.lang', S.lang); } catch (e) {}
+  try { localStorage.setItem('espritum.lang', S.lang); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(S.lang); } catch (e) {}
   document.querySelectorAll('.langbar button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lang === S.lang)); });
 
   var list = exList();
@@ -774,7 +774,7 @@ window.EspritumTraining = {
   getState: function () { return JSON.parse(JSON.stringify(S)); }
 };
 
-var savedLang = 'fr';
+var savedLang = 'en';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) savedLang = v; } catch (e) {}
 render(savedLang);
 window.addEventListener('resize', function () { render(); });

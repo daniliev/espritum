@@ -152,7 +152,7 @@ var T = {
   }
 };
 
-var lang = 'fr';
+var lang = 'en';
 var picked = null;
 var elOpts = document.getElementById('opts');
 var elCta = document.getElementById('cta');
@@ -217,7 +217,7 @@ document.getElementById('back').addEventListener('click', function () {
 document.querySelectorAll('.langbar button').forEach(function (b) {
   b.addEventListener('click', function () {
     lang = b.dataset.lang;
-    try { localStorage.setItem('espritum.lang', lang); } catch (e) {}
+    try { localStorage.setItem('espritum.lang', lang); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(lang); } catch (e) {}
     render();
   });
 });

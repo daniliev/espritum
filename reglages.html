@@ -326,7 +326,7 @@ var LEGAL = {
 };
 
 var state = {
-  lang:'fr', name:'', email:'', country:'fr', city:'', pass:'', avatar:null,
+  lang:'en', name:'', email:'', country:'fr', city:'', pass:'', avatar:null,
   trialDays:11, toggles:{}, open:null, docKind:'terms',
   draft:'', pass1:'', pass2:'', passShown:false
 };
@@ -482,7 +482,7 @@ function render(l) {
     b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang));
   });
   document.documentElement.lang = state.lang;
-  try { localStorage.setItem('espritum.lang', state.lang); } catch (e) {}
+  try { localStorage.setItem('espritum.lang', state.lang); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(state.lang); } catch (e) {}
 }
 
 document.getElementById('list').addEventListener('click', function (ev) {
@@ -567,7 +567,7 @@ window.EspritumSettings = {
   getState: function () { return JSON.parse(JSON.stringify(state)); }
 };
 
-var saved = 'fr';
+var saved = 'en';
 try { var v = localStorage.getItem('espritum.lang'); if (v && UI[v]) saved = v; } catch (e) {}
 render(saved);
 </script>

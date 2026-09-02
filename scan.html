@@ -134,14 +134,14 @@ function render(lang) {
     b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
   });
   document.documentElement.lang = lang;
-  try { localStorage.setItem('espritum.lang', lang); } catch (e) {}
+  try { localStorage.setItem('espritum.lang', lang); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(lang); } catch (e) {}
 }
 
 document.querySelectorAll('.langbar button').forEach(function (b) {
   b.addEventListener('click', function () { render(b.dataset.lang); });
 });
 
-var saved = 'fr';
+var saved = 'en';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
 render(saved);
 </script>

@@ -124,7 +124,7 @@ var CHANGE_ICONS = [
   "M13 4.5a1.5 1.5 0 1 0 0-.1M11 8l2.5 1.5L15 13M13.5 9.5 11 13l1 4M11 13l-3 3M15 13l2 2"
 ];
 
-var state = { lang:'fr', bfBefore:'19,4%', bfAfter:'18,6%', rows:null, changes:null };
+var state = { lang:'en', bfBefore:'19,4%', bfAfter:'18,6%', rows:null, changes:null };
 
 function render(l) {
   if (l) { state.lang = l; }
@@ -145,7 +145,7 @@ function render(l) {
   }).join('');
 
   document.documentElement.lang = state.lang;
-  try { localStorage.setItem('espritum.lang', state.lang); } catch (e) {}
+  try { localStorage.setItem('espritum.lang', state.lang); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(state.lang); } catch (e) {}
 }
 
 document.getElementById('apply').addEventListener('click', function () {
@@ -166,7 +166,7 @@ window.EspritumAdjust = {
   getState: function () { return JSON.parse(JSON.stringify(state)); }
 };
 
-var saved = 'fr';
+var saved = 'en';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
 render(saved);
 </script>
@@ -174,7 +174,7 @@ render(saved);
 <script src="esp-supabase.js"></script>
 <script>/* ESP-NAV — intégration */
 (function () {
-  var lang = 'fr'; try { lang = localStorage.getItem('espritum.lang') || 'fr'; } catch (e) {}
+  var lang = 'en'; try { lang = localStorage.getItem('espritum.lang') || 'en'; } catch (e) {}
   var dec = (lang === 'en') ? '.' : ',';
   var gram = (lang === 'bg') ? ' г' : ' g';
   function grp(x) { return String(Math.abs(Math.round(x))).replace(/\B(?=(\d{3})+(?!\d))/g, (lang === 'en' ? ',' : ' ')); }

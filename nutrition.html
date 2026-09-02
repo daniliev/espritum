@@ -259,7 +259,7 @@ var T = {
     macKicker:'АНАЛИЗЪТ ЗАВЪРШИ', estimateNote:'Оценка въз основа на снимката и твоето описание.',
     addBtn:'Добави в дневника', meal:'Ястие' }
 };
-var lang = (function () { try { var v = localStorage.getItem('espritum.lang'); return T[v] ? v : 'fr'; } catch (e) { return 'fr'; } })();
+var lang = (function () { try { var v = localStorage.getItem('espritum.lang'); return T[v] ? v : 'en'; } catch (e) { return 'en'; } })();
 var d = T[lang];
 document.documentElement.lang = lang;
 function applyLang() {

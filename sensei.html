@@ -136,7 +136,7 @@ var T = {
               "Едно по едно: днес — калориите. Останалото следва."] }
 };
 
-var state = { lang:'fr', thread:null, typing:false, replyIdx:0, draft:'' };
+var state = { lang:'en', thread:null, typing:false, replyIdx:0, draft:'' };
 var responder = null;
 
 function d() { return T[state.lang]; }
@@ -211,7 +211,7 @@ function render(l) {
     b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang));
   });
   document.documentElement.lang = state.lang;
-  try { localStorage.setItem('espritum.lang', state.lang); } catch (e) {}
+  try { localStorage.setItem('espritum.lang', state.lang); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(state.lang); } catch (e) {}
 }
 
 document.getElementById('send').addEventListener('click', function () { send(document.getElementById('draft').value); });
@@ -237,7 +237,7 @@ window.EspritumSensei = {
   getThread: function () { return thread().slice(); }
 };
 
-var saved = 'fr';
+var saved = 'en';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
 render(saved);
 </script>
@@ -263,7 +263,7 @@ document.addEventListener('espritum:navigate', function (ev) {
       .map(function (m) { return { role: m.from === 'bot' ? 'model' : 'user', text: m.text }; });
     return fetch('/api/sensei', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: messages, lang: (ctx && ctx.lang) || 'fr', profile: profile })
+      body: JSON.stringify({ messages: messages, lang: (ctx && ctx.lang) || 'en', profile: profile })
     }).then(function (r) { return r.json(); })
       .then(function (d) { if (d && d.reply) return d.reply; throw new Error('no reply'); });
   });

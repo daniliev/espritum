@@ -204,7 +204,7 @@ function render(lang) {
     b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
   });
   document.documentElement.lang = lang;
-  try { localStorage.setItem('espritum.lang', lang); } catch (e) {}
+  try { localStorage.setItem('espritum.lang', lang); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(lang); } catch (e) {}
 }
 
 async function startCamera() {
@@ -298,7 +298,7 @@ window.EspritumScan = {
   stop: stopCamera
 };
 
-var saved = 'fr';
+var saved = 'en';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
 render(saved);
 startCamera();

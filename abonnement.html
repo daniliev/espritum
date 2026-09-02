@@ -157,7 +157,7 @@ var T = {
   }
 };
 
-var lang = 'fr';
+var lang = 'en';
 
 function perkRows(list) {
   return list.map(function (p) { return '<div class="perk"><i></i><span>' + p + '</span></div>'; }).join('');
@@ -181,7 +181,7 @@ function render(l) {
     b.setAttribute('aria-pressed', String(b.dataset.lang === l));
   });
   document.documentElement.lang = l;
-  try { localStorage.setItem('espritum.lang', l); } catch (e) {}
+  try { localStorage.setItem('espritum.lang', l); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(l); } catch (e) {}
 }
 
 document.getElementById('planFree').addEventListener('click', function () {
@@ -202,7 +202,7 @@ window.EspritumPricing = {
   setPrice: function (v) { document.querySelector('#planPaid .price b').textContent = v; }
 };
 
-var saved = 'fr';
+var saved = 'en';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
 render(saved);
 </script>

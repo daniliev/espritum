@@ -136,7 +136,7 @@ var CHECK = '<svg viewBox="0 0 24 24"><path d="M5 12.5L10 17.5L19 7"></path></sv
 var arc = document.getElementById('arc');
 var pctEl = document.getElementById('pct');
 var stepsEl = document.getElementById('steps');
-var pct = 0, lang = 'fr', timer = null, fired = false;
+var pct = 0, lang = 'en', timer = null, fired = false;
 
 function renderSteps() {
   var labels = T[lang].steps;
@@ -179,7 +179,7 @@ function render(l) {
     b.setAttribute('aria-pressed', String(b.dataset.lang === l));
   });
   document.documentElement.lang = l;
-  try { localStorage.setItem('espritum.lang', l); } catch (e) {}
+  try { localStorage.setItem('espritum.lang', l); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(l); } catch (e) {}
 }
 
 document.querySelectorAll('.langbar button').forEach(function (b) {
@@ -188,7 +188,7 @@ document.querySelectorAll('.langbar button').forEach(function (b) {
 
 window.EspritumAnalyze = { setProgress: setProgress, simulate: simulate, stop: stop, setLang: render, getProgress: function () { return pct; } };
 
-var saved = 'fr';
+var saved = 'en';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
 render(saved);
 setProgress(0);
@@ -227,7 +227,7 @@ document.addEventListener('espritum:analyze-done', function () {
 
   // Scan hebdomadaire : nouvelle photo + profil → /api/recalibrate → localStorage 'espritum.recalibrage'
   function runWeekly(cur) {
-    var lang = readLS('espritum.lang') || 'fr';
+    var lang = readLS('espritum.lang') || 'en';
     var profP = (window.EspAuth && window.EspAuth.getProfile) ? window.EspAuth.getProfile() : Promise.resolve(null);
     profP.then(function (p) {
       var profile = {};
@@ -259,10 +259,10 @@ document.addEventListener('espritum:analyze-done', function () {
     if (!cur) { finish(); return; } // pas de photo (accès direct) → on laisse passer
     if (ESP_WEEKLY) { runWeekly(cur); return; }
 
-    var quiz = null, months = null, lang = 'fr';
+    var quiz = null, months = null, lang = 'en';
     try { quiz = JSON.parse(readLS('espritum.quiz') || 'null'); } catch (e) {}
     try { var dl = JSON.parse(readLS('espritum.deadline') || 'null'); months = dl && dl.months; } catch (e) {}
-    lang = readLS('espritum.lang') || 'fr';
+    lang = readLS('espritum.lang') || 'en';
 
     downscale(cur, 768, function (curS) {
       downscale(goal, 768, function (goalS) {
@@ -289,7 +289,7 @@ document.addEventListener('espritum:analyze-done', function () {
 
   // Écran d'erreur : photo non exploitable → bouton pour reprendre la bonne photo
   function showAnalyzeError(data) {
-    var lang = readLS('espritum.lang') || 'fr';
+    var lang = readLS('espritum.lang') || 'en';
     var L = {
       fr: { t: 'Photo non exploitable', d: 'Cette photo ne montre pas un corps analysable. Reprends une vraie photo de toi.', dg: 'La photo objectif doit montrer un physique humain. Choisis-en une autre.', b: 'Reprendre la photo' },
       en: { t: 'Unusable photo', d: 'This photo doesn\'t show an analysable body. Retake a real photo of yourself.', dg: 'The goal photo must show a human physique. Pick another one.', b: 'Retake photo' },

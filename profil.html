@@ -169,7 +169,7 @@ var T = {
 };
 
 var state = {
-  lang:'fr', name:'', since:null, weeks:12, streak:12, points:860,
+  lang:'en', name:'', since:null, weeks:12, streak:12, points:860,
   rank:5, record:5, bfRange:"19,4 % → 14 %",
   axes:[{ v:"8 240", pos:"#42", w:"72%" }, { v:"4,1 ×", pos:"#118", w:"58%" }, { v:"31 km", pos:"#77", w:"64%" }],
   timeline:[
@@ -219,7 +219,7 @@ function render(l) {
     b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang));
   });
   document.documentElement.lang = state.lang;
-  try { localStorage.setItem('espritum.lang', state.lang); } catch (e) {}
+  try { localStorage.setItem('espritum.lang', state.lang); if (window.EspAuth && EspAuth.saveLang) EspAuth.saveLang(state.lang); } catch (e) {}
 }
 
 document.getElementById('back').addEventListener('click', function () { emit('espritum:navigate', { to: 'home' }); });
@@ -246,7 +246,7 @@ window.EspritumProfile = {
   getState: function () { return JSON.parse(JSON.stringify(state)); }
 };
 
-var saved = 'fr';
+var saved = 'en';
 try { var v = localStorage.getItem('espritum.lang'); if (v && T[v]) saved = v; } catch (e) {}
 render(saved);
 </script>
@@ -266,7 +266,7 @@ document.addEventListener('espritum:navigate', function (ev) {
 
 // Données réelles : profil (prénom, série, membre depuis) + timeline des photos de scan
 if (window.EspAuth) {
-  var espLang = 'fr'; try { espLang = localStorage.getItem('espritum.lang') || 'fr'; } catch (e) {}
+  var espLang = 'en'; try { espLang = localStorage.getItem('espritum.lang') || 'en'; } catch (e) {}
   var espLocale = { fr: 'fr-FR', en: 'en-US', bg: 'bg-BG' }[espLang] || 'fr-FR';
   var pctFmt = function (n) { return Number(n).toFixed(1).replace('.', espLang === 'en' ? '.' : ',') + ' %'; };
 
