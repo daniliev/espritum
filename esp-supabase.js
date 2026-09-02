@@ -290,6 +290,10 @@
   // pour que les jours passés soient à la même échelle. À remplacer par le vrai
   // calcul (poids de l'utilisateur, durée, type d'effort).
   var KCAL_PAR_SERIE = 15;
+  // Une seule formule pour tout le monde : la page Entraînement l'utilise pour le
+  // chiffre du jour, weekTotals pour reconstituer les jours passés. Deux formules
+  // différentes donnaient deux chiffres différents pour la même journée.
+  window.EspAuth.kcalForSets = function (n) { return Math.round((n || 0) * KCAL_PAR_SERIE); };
 
   function ymd(x) {
     return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
@@ -300,6 +304,22 @@
     var x = new Date();
     x.setDate(x.getDate() - window.EspAuth.mondayIndex() + i);
     return ymd(x);
+  };
+
+  // Séries cochées aujourd'hui, lues dans l'état local de la séance du jour.
+  // Une séance ne part en base qu'une fois l'exercice ENTIÈREMENT terminé : sans
+  // cette lecture, le dashboard ignorait toute progression en cours.
+  window.EspAuth.setsDoneToday = function () {
+    try {
+      var k = 'espritum.train.' + window.EspAuth.weekDayKey(window.EspAuth.mondayIndex());
+      var d = JSON.parse(localStorage.getItem(k) || 'null');
+      if (!d || !d.sets) return 0;
+      var n = 0;
+      Object.keys(d.sets).forEach(function (ek) {
+        (d.sets[ek] || []).forEach(function (on) { if (on) n++; });
+      });
+      return n;
+    } catch (e) { return 0; }
   };
 
   // { eaten: {'AAAA-MM-JJ': kcal}, burned: {...} } sur la semaine en cours.
@@ -331,7 +351,14 @@
           return acc;
         }, function () { return {}; });
 
-      return Promise.all([repas, seances]).then(function (x) { return { eaten: x[0], burned: x[1] }; });
+      return Promise.all([repas, seances]).then(function (x) {
+        // La séance en cours prime sur ce qui est déjà en base : elle contient
+        // aussi les exercices terminés, donc elle est toujours plus complète.
+        var today = window.EspAuth.weekDayKey(window.EspAuth.mondayIndex());
+        var live = window.EspAuth.kcalForSets(window.EspAuth.setsDoneToday());
+        if (live > 0) x[1][today] = live;
+        return { eaten: x[0], burned: x[1] };
+      });
     }).catch(function () { return vide; });
   };
 

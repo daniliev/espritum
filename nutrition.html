@@ -600,10 +600,7 @@ if (window.EspAuth) {
     if (!s) return;
 
     // Jours déjà écoulés : source commune aux trois graphiques hebdo
-    if (window.EspAuth.weekTotals) window.EspAuth.weekTotals().then(function (w) {
-      WEEK.past = w.eaten;   // le jour courant reste piloté par le journal en cours
-      render();
-    });
+    refreshWeek();
 
     window.espSB.from('meals').select('id,nom,calories,proteines,glucides,lipides,photo_url,created_at')
       .eq('user_id', s.user.id).eq('date', today()).order('created_at', { ascending: true })
@@ -615,6 +612,19 @@ if (window.EspAuth) {
       }, function () {});
   });
 }
+
+// ---- Semaine : relecture au retour sur la page ----
+function refreshWeek() {
+  if (!window.EspAuth || !window.EspAuth.weekTotals) return;
+  window.EspAuth.weekTotals().then(function (w) {
+    WEEK.past = w.eaten;   // le jour courant reste piloté par le journal en cours
+    render();
+  });
+}
+  // Retour sur la page (onglet réactivé, navigation arrière, sortie de veille) :
+  // on relit, sinon la carte resterait figée sur les chiffres du chargement.
+  window.addEventListener('pageshow', refreshWeek);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) refreshWeek(); });
 
 // ---- Gate premium sur le scan ----
 if (window.EspAuth) window.EspAuth.isPremium().then(function (prem) {

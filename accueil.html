@@ -465,12 +465,21 @@ render(saved);
       }
     }).catch(function () {});
 
-    // Semaine reelle : repas et seances, meme source que les deux autres cartes
-    if (window.EspAuth.weekTotals) window.EspAuth.weekTotals().then(function (w) {
-      WEEK = w;
-      var today = window.EspAuth.weekDayKey(window.EspAuth.mondayIndex());
-      window.EspritumHome.setNutrition({ eaten: w.eaten[today] || 0, burnedToday: w.burned[today] || 0 });
-    });
+    // Semaine réelle : repas et séances, même source que les deux autres cartes
+    function refreshWeek() {
+      if (!window.EspAuth.weekTotals) return;
+      window.EspAuth.weekTotals().then(function (w) {
+        WEEK = w;
+        var today = window.EspAuth.weekDayKey(window.EspAuth.mondayIndex());
+        window.EspritumHome.setNutrition({ eaten: w.eaten[today] || 0, burnedToday: w.burned[today] || 0 });
+      });
+    }
+    refreshWeek();
+
+  // Retour sur la page (onglet réactivé, navigation arrière, sortie de veille) :
+  // on relit, sinon la carte resterait figée sur les chiffres du chargement.
+  window.addEventListener('pageshow', refreshWeek);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) refreshWeek(); });
 
     // Scan dû ? (bouton rouge) — vrai si le dernier scan date de 7 jours ou plus
     window.EspAuth.lastScan().then(function (m) {
