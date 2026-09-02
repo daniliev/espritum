@@ -241,8 +241,15 @@ document.addEventListener('espritum:analyze-done', function () {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ current: raw(curS), profile: profile, lang: lang })
         })
-          .then(function (r) { return r.json(); })
-          .then(function (data) {
+          .then(function (r) { return r.json().then(function (data) { return { status: r.status, data: data }; }); })
+          .then(function (res) {
+            // 422 : la photo n'est pas un corps — on refuse, sinon le plan serait
+            // recalibré sur une estimation inventée
+            if (res.status === 422 && res.data && res.data.rejected) {
+              showAnalyzeError({ currentUsable: false, issue: res.data.reason });
+              return;
+            }
+            var data = res.data;
             if (data && data.bodyFatCurrent != null && !data.error) {
               try { localStorage.setItem('espritum.recalibrage', JSON.stringify(data)); } catch (e) {}
             }
@@ -300,7 +307,11 @@ document.addEventListener('espritum:analyze-done', function () {
     document.getElementById('errMsg').textContent = data.issue || (goalOnly ? L.dg : L.d);
     var btn = document.getElementById('errRetake');
     btn.textContent = L.b;
-    btn.onclick = function () { window.location.href = goalOnly ? 'corps-de-reve.html' : 'photo-actuelle.html'; };
+    // en scan hebdo on renvoie sur la prise de vue hebdo, pas sur celle de l'onboarding
+    btn.onclick = function () {
+      window.location.href = goalOnly ? 'corps-de-reve.html'
+        : (ESP_WEEKLY ? 'photo-actuelle.html?mode=weekly' : 'photo-actuelle.html');
+    };
     try { window.EspritumAnalyze.stop(); } catch (e) {}
     document.body.classList.add('error');
   }

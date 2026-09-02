@@ -2,6 +2,8 @@
 // Reçoit une photo d'assiette, appelle Gemini Vision, renvoie les aliments détectés
 // avec grammes estimés + calories + macros. Clé GEMINI_API_KEY côté serveur uniquement.
 
+import { guardPrompt, GUARD_FIELDS, GUARD_REQUIRED, checkImage } from '../lib/image-guard.js';
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -30,6 +32,7 @@ export default async function handler(req, res) {
       : '';
 
     const prompt =
+      guardPrompt('meal', langName) +
       'Tu es le moteur nutritionnel de l\'app Espritum. On te donne la photo d\'un repas (une assiette). ' +
       'Identifie chaque aliment visible et estime, pour la portion réellement présente sur la photo : ' +
       'la quantité (grams), les calories (kcal), les protéines (protein), glucides (carbs) et lipides (fat) en grammes. ' +
@@ -47,6 +50,7 @@ export default async function handler(req, res) {
         responseSchema: {
           type: 'object',
           properties: {
+            ...GUARD_FIELDS,
             items: {
               type: 'array',
               items: {
@@ -64,7 +68,7 @@ export default async function handler(req, res) {
               }
             }
           },
-          required: ['items']
+          required: GUARD_REQUIRED.concat(['items'])
         }
       }
     };
@@ -84,6 +88,11 @@ export default async function handler(req, res) {
 
     let parsed;
     try { parsed = JSON.parse(txt); } catch (e) { return res.status(502).json({ error: 'JSON invalide', raw: txt }); }
+
+    // Photo qui n'est pas un repas → on refuse, plutôt que d'enregistrer 0 kcal
+    const rejected = checkImage('meal', parsed, lang);
+    if (rejected) return res.status(422).json(rejected);
+
     return res.status(200).json(parsed);
   } catch (e) {
     return res.status(500).json({ error: e.message });

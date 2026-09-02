@@ -2,6 +2,8 @@
 // Reçoit la nouvelle photo de scan + le profil (analyse précédente),
 // renvoie la nouvelle estimation + le plan réécrit + les changements.
 
+import { guardPrompt, GUARD_FIELDS, GUARD_REQUIRED, checkImage } from '../lib/image-guard.js';
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -29,6 +31,7 @@ export default async function handler(req, res) {
     ].filter(Boolean).join(' · ');
 
     const prompt =
+      guardPrompt('body', langName) +
       'Tu es Sensei, coach sportif chrétien exigeant de l\'app Espritum. ' +
       'On te donne la photo du SCAN HEBDOMADAIRE de l\'utilisateur (son corps aujourd\'hui). ' +
       'Contexte : ' + ctx + '. ' +
@@ -47,13 +50,14 @@ export default async function handler(req, res) {
         responseSchema: {
           type: 'object',
           properties: {
+            ...GUARD_FIELDS,
             bodyFatCurrent: { type: 'number' },
             caloriesTarget: { type: 'number' },
             proteinTarget: { type: 'number' },
             sessionsPerWeek: { type: 'number' },
             changes: { type: 'array', items: { type: 'string' } }
           },
-          required: ['bodyFatCurrent', 'caloriesTarget', 'proteinTarget', 'sessionsPerWeek', 'changes']
+          required: GUARD_REQUIRED.concat(['bodyFatCurrent', 'caloriesTarget', 'proteinTarget', 'sessionsPerWeek', 'changes'])
         }
       }
     };
@@ -73,6 +77,12 @@ export default async function handler(req, res) {
 
     let parsed;
     try { parsed = JSON.parse(txt); } catch (e) { return res.status(502).json({ error: 'JSON invalide', raw: txt }); }
+
+    // Photo qui n'est pas un corps → on refuse. Sans ça le modèle rendait une
+    // masse grasse crédible sur n'importe quelle image, et le plan était réécrit.
+    const rejected = checkImage('body', parsed, lang);
+    if (rejected) return res.status(422).json(rejected);
+
     return res.status(200).json(parsed);
   } catch (e) {
     return res.status(500).json({ error: e.message });
