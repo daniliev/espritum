@@ -3,6 +3,9 @@
 // renvoie la nouvelle estimation + le plan réécrit + les changements.
 
 import { guardPrompt, GUARD_FIELDS, GUARD_REQUIRED, checkImage } from '../lib/image-guard.js';
+import { callGemini, parseGemini } from '../lib/gemini.js';
+
+export const config = { maxDuration: 60 };
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -62,21 +65,16 @@ export default async function handler(req, res) {
       }
     };
 
-    const upstream = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=' + key,
-      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }
-    );
-    const data = await upstream.json();
-    if (!upstream.ok) return res.status(upstream.status).json({ error: 'Gemini error', detail: data });
+    const call = await callGemini(key, payload);
+    if (!call.ok) {
+      // Surcharge passagère du modèle : on le dit, au lieu de laisser croire
+      // que la photo est en cause.
+      if (call.busy) return res.status(503).json({ error: 'busy' });
+      return res.status(call.status || 502).json({ error: 'Gemini error', detail: call.data });
+    }
 
-    const txt =
-      data && data.candidates && data.candidates[0] && data.candidates[0].content &&
-      data.candidates[0].content.parts && data.candidates[0].content.parts[0] &&
-      data.candidates[0].content.parts[0].text;
-    if (!txt) return res.status(502).json({ error: 'Réponse IA vide', detail: data });
-
-    let parsed;
-    try { parsed = JSON.parse(txt); } catch (e) { return res.status(502).json({ error: 'JSON invalide', raw: txt }); }
+    const parsed = parseGemini(call.data);
+    if (!parsed) return res.status(502).json({ error: 'Réponse IA inexploitable' });
 
     // Photo qui n'est pas un corps → on refuse. Sans ça le modèle rendait une
     // masse grasse crédible sur n'importe quelle image, et le plan était réécrit.

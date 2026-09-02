@@ -278,8 +278,13 @@ document.addEventListener('espritum:analyze-done', function () {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ current: raw(curS), goal: raw(goalS), quiz: quiz, months: months, lang: lang })
         })
-          .then(function (r) { return r.json(); })
-          .then(function (data) {
+          .then(function (r) { return r.json().then(function (data) { return { status: r.status, data: data }; }); })
+          .then(function (res) {
+            // 422 : le garde-fou a refusé la photo (objet, animal, paysage…)
+            if (res.status === 422 && res.data && res.data.rejected) {
+              showAnalyzeError({ currentUsable: false, issue: res.data.reason }); return;
+            }
+            var data = res.data;
             // Photos non exploitables (pas un corps) → on refuse l'analyse
             if (data && !data.error && (data.currentUsable === false || data.goalUsable === false)) {
               showAnalyzeError(data); return;

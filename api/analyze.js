@@ -3,6 +3,11 @@
 // appelle Gemini, et renvoie un résultat structuré.
 // La clé GEMINI_API_KEY reste ICI (variable d'env Vercel), jamais côté navigateur.
 
+import { guardPrompt, GUARD_FIELDS, GUARD_REQUIRED, checkImage } from '../lib/image-guard.js';
+import { callGemini, parseGemini } from '../lib/gemini.js';
+
+export const config = { maxDuration: 60 };
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -34,6 +39,7 @@ export default async function handler(req, res) {
     ].join(' · ');
 
     const prompt =
+      guardPrompt('body', langName) +
       'Tu es Sensei, le coach sportif chrétien de l\'application Espritum : exigeant, direct, ' +
       'motivant, jamais complaisant mais toujours respectueux. ' +
       'On te donne deux photos : la PREMIÈRE est le corps ACTUEL de l\'utilisateur, ' +
@@ -65,6 +71,7 @@ export default async function handler(req, res) {
         responseSchema: {
           type: 'object',
           properties: {
+            ...GUARD_FIELDS,
             currentUsable: { type: 'boolean' },
             goalUsable: { type: 'boolean' },
             issue: { type: 'string' },
@@ -83,35 +90,24 @@ export default async function handler(req, res) {
               }
             }
           },
-          required: ['currentUsable', 'goalUsable', 'bodyFatCurrent', 'aiMonths', 'verdict', 'advice']
+          required: GUARD_REQUIRED.concat(['currentUsable', 'goalUsable', 'bodyFatCurrent', 'aiMonths', 'verdict', 'advice'])
         }
       }
     };
 
-    const upstream = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=' + key,
-      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }
-    );
-    const data = await upstream.json();
-    if (!upstream.ok) return res.status(upstream.status).json({ error: 'Gemini error', detail: data });
-
-    const txt =
-      data &&
-      data.candidates &&
-      data.candidates[0] &&
-      data.candidates[0].content &&
-      data.candidates[0].content.parts &&
-      data.candidates[0].content.parts[0] &&
-      data.candidates[0].content.parts[0].text;
-
-    if (!txt) return res.status(502).json({ error: 'Réponse IA vide', detail: data });
-
-    let parsed;
-    try {
-      parsed = JSON.parse(txt);
-    } catch (e) {
-      return res.status(502).json({ error: 'JSON invalide de l\'IA', raw: txt });
+    const call = await callGemini(key, payload);
+    if (!call.ok) {
+      if (call.busy) return res.status(503).json({ error: 'busy' });
+      return res.status(call.status || 502).json({ error: 'Gemini error', detail: call.data });
     }
+
+    const parsed = parseGemini(call.data);
+    if (!parsed) return res.status(502).json({ error: 'Réponse IA inexploitable' });
+
+    // Photo qui n'est pas un corps → on refuse. Le champ currentUsable existait
+    // déjà mais sa consigne était noyée dans le prompt : une montre passait.
+    const rejected = checkImage('body', parsed, lang);
+    if (rejected) return res.status(422).json(rejected);
 
     return res.status(200).json(parsed);
   } catch (e) {

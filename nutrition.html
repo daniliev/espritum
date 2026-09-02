@@ -239,6 +239,7 @@ var T = {
     descPlaceholder:'Une description précise permet une analyse plus détaillée de ton repas.',
     analyseBtn:'Analyser mon repas', analyzeFail:"L'analyse a échoué. Réessaie.",
     notFood:"Cette photo ne montre pas de repas. Cadre ton assiette et reprends la photo.",
+    aiBusy:"Le service est très demandé en ce moment. Réessaie dans quelques secondes.",
     macKicker:'ANALYSE TERMINÉE', estimateNote:'Estimation basée sur la photo et ta description.',
     addBtn:'Ajouter à mon journal', meal:'Repas' },
   en: { title:'Nutrition', avail:'CALORIES AVAILABLE', kcal:'KCAL', onWord:'OF', consumed:'EATEN',
@@ -249,6 +250,7 @@ var T = {
     descPlaceholder:'A precise description enables a more detailed analysis of your meal.',
     analyseBtn:'Analyze my meal', analyzeFail:'Analysis failed. Try again.',
     notFood:"This photo doesn't show a meal. Frame your plate and take the photo again.",
+    aiBusy:"The service is very busy right now. Try again in a few seconds.",
     macKicker:'ANALYSIS COMPLETE', estimateNote:'Estimate based on the photo and your description.',
     addBtn:'Add to my journal', meal:'Meal' },
   bg: { title:'Хранене', avail:'НАЛИЧНИ КАЛОРИИ', kcal:'ККАЛ', onWord:'ОТ', consumed:'ПРИЕТИ',
@@ -259,6 +261,7 @@ var T = {
     descPlaceholder:'Точното описание позволява по-подробен анализ на храненето ти.',
     analyseBtn:'Анализирай храненето', analyzeFail:'Анализът не успя. Опитай отново.',
     notFood:'Тази снимка не показва хранене. Кадрирай чинията и снимай отново.',
+    aiBusy:'Услугата е много натоварена в момента. Опитай отново след няколко секунди.',
     macKicker:'АНАЛИЗЪТ ЗАВЪРШИ', estimateNote:'Оценка въз основа на снимката и твоето описание.',
     addBtn:'Добави в дневника', meal:'Ястие' }
 };
@@ -488,7 +491,7 @@ function analyze() {
 
   toB64(S.photo, function (b64) {
     if (!b64) { fail(); return; }
-    try { prog.ctrl = new AbortController(); prog.to = setTimeout(function () { try { prog.ctrl.abort(); } catch (e) {} }, 30000); } catch (e) {}
+    try { prog.ctrl = new AbortController(); prog.to = setTimeout(function () { try { prog.ctrl.abort(); } catch (e) {} }, 50000); } catch (e) {}
     var opts = {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ image: b64, lang: lang, desc: desc })   // la description affine l'estimation
@@ -500,6 +503,8 @@ function analyze() {
         if (prog.to) { clearTimeout(prog.to); prog.to = null; }
         // 422 : la photo ne montre pas de repas — on l'annonce au lieu d'enregistrer 0 kcal
         if (res.status === 422 && res.data && res.data.rejected) { fail(res.data.reason || d.notFood); return; }
+        // Modèle surchargé : la photo n'y est pour rien, on le dit clairement
+        if (res.status === 503 && res.data && res.data.error === 'busy') { fail(d.aiBusy); return; }
         var data = res.data;
         if (!res.ok || !data || data.error) throw new Error('ia');
         stopProg();
