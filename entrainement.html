@@ -855,26 +855,17 @@ if (window.EspAuth) {
 
   if (window.EspAuth) window.EspAuth.getSession().then(function (s) {
     if (!s) return;
-    uid = s.user.id; logDone(); loadWeek(uid);
+    uid = s.user.id; logDone(); loadWeek();
   });
 
-  // Calories des jours écoulés, reconstituées depuis les exercices terminés de la semaine.
-  // KCAL_PAR_SERIE est la moyenne du barème EX_KCAL utilisé pour le jour courant, afin que
-  // les barres passées soient à la même échelle que celle d'aujourd'hui.
-  var KCAL_PAR_SERIE = Math.round(EX_KCAL.reduce(function (a, v) { return a + v; }, 0) / EX_KCAL.length / 4);
-  function loadWeek(userId) {
-    if (!window.espSB) return;
-    window.espSB.from('workouts').select('series,created_at')
-      .eq('user_id', userId).eq('termine', true).gte('created_at', dayKey(0) + 'T00:00:00')
-      .then(function (r) {
-        var acc = {};
-        (r.data || []).forEach(function (w) {
-          var k = String(w.created_at).slice(0, 10);
-          acc[k] = (acc[k] || 0) + (w.series || 0) * KCAL_PAR_SERIE;
-        });
-        WEEK.past = acc;
-        render();
-      }, function () {});
+  // Calories des jours écoulés : source commune aux trois graphiques hebdo
+  // (esp-supabase.js), pour que l'accueil et cette page ne se contredisent pas.
+  function loadWeek() {
+    if (!window.EspAuth || !window.EspAuth.weekTotals) return;
+    window.EspAuth.weekTotals().then(function (w) {
+      WEEK.past = w.burned;   // le jour courant reste piloté par les séries cochées
+      render();
+    });
   }
 
   document.addEventListener('espritum:set-toggle', function () { persist(); logDone(); });

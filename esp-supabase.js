@@ -279,6 +279,62 @@
     }
   };
 
+  // ── Totaux de la semaine en cours ──
+  // Source unique des trois graphiques hebdo (accueil, nutrition, entraînement).
+  // Sans ça chaque page recalculait sa semaine dans son coin et les cartes
+  // finissaient par se contredire.
+  //
+  // KCAL_PAR_SERIE est provisoire : la table workouts ne stocke pas de calories,
+  // on reconstitue donc la dépense à partir des séries terminées. La valeur est
+  // la moyenne du barème utilisé par la page Entraînement pour le jour courant,
+  // pour que les jours passés soient à la même échelle. À remplacer par le vrai
+  // calcul (poids de l'utilisateur, durée, type d'effort).
+  var KCAL_PAR_SERIE = 15;
+
+  function ymd(x) {
+    return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
+  }
+  // Lundi = 0
+  window.EspAuth.mondayIndex = function () { return (new Date().getDay() || 7) - 1; };
+  window.EspAuth.weekDayKey = function (i) {
+    var x = new Date();
+    x.setDate(x.getDate() - window.EspAuth.mondayIndex() + i);
+    return ymd(x);
+  };
+
+  // { eaten: {'AAAA-MM-JJ': kcal}, burned: {...} } sur la semaine en cours.
+  // Ne rejette jamais : une carte vide vaut mieux qu'une page cassée.
+  window.EspAuth.weekTotals = function () {
+    var vide = { eaten: {}, burned: {} };
+    if (!window.espSB) return Promise.resolve(vide);
+    return sb.auth.getSession().then(function (r) {
+      var sess = r && r.data && r.data.session;
+      if (!sess) return vide;
+      var uid = sess.user.id, from = window.EspAuth.weekDayKey(0), to = window.EspAuth.weekDayKey(6);
+
+      var repas = sb.from('meals').select('calories,date')
+        .eq('user_id', uid).gte('date', from).lte('date', to)
+        .then(function (rr) {
+          var acc = {};
+          (rr.data || []).forEach(function (m) { acc[m.date] = (acc[m.date] || 0) + (m.calories || 0); });
+          return acc;
+        }, function () { return {}; });
+
+      var seances = sb.from('workouts').select('series,created_at')
+        .eq('user_id', uid).eq('termine', true).gte('created_at', from + 'T00:00:00')
+        .then(function (rr) {
+          var acc = {};
+          (rr.data || []).forEach(function (w) {
+            var k = String(w.created_at).slice(0, 10);
+            acc[k] = (acc[k] || 0) + (w.series || 0) * KCAL_PAR_SERIE;
+          });
+          return acc;
+        }, function () { return {}; });
+
+      return Promise.all([repas, seances]).then(function (x) { return { eaten: x[0], burned: x[1] }; });
+    }).catch(function () { return vide; });
+  };
+
   // ── Langue ──
   // L'app est en anglais par défaut : c'est ce que voit quelqu'un qui atterrit
   // sur une page interne sans être passé par l'écran de choix de langue.

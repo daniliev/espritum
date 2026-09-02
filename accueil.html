@@ -285,8 +285,16 @@ var ICONS = {
   rank:["M246.54,80.02c-.33-2.4-2.34-4.45-4.74-4.8h-34.45c-.07-6.35-.03-12.67.27-18.89-.17-3.2-2.87-5.53-6.02-5.59l-104.41.12c-2.47.42-4.58,2.58-4.87,5.07.3,6.35.34,12.8.25,19.29h-34.45c-2.03,0-4.64,2.7-4.73,4.8.42,18.21-2.47,38.63,7.09,55.03,3.91,6.71,10.01,11.99,16.93,15.67h0c.11.07.23.13.36.19,1.12.58,2.26,1.13,3.41,1.63.4.18.81.37,1.25.57,6.78,3.06,13.56,5.49,20.28,7.41,6.82,10.98,16.52,20.22,27.76,26.03,1.88.98,5.22,2.49,8.7,3.83.35,2.43.49,5.04.3,7.81-.06.91-.16,1.8-.28,2.65-1.82,15.93-13.16,29.51-28.62,33.79-1.58.44-8.05,1.41-8.61,1.96-.79.77-.81,11.84,0,12.66h96c.81-.82.79-11.89,0-12.66-.57-.55-7.01-1.51-8.61-1.96-15.44-4.34-26.8-17.84-28.62-33.79-.15-1.35-.25-2.78-.26-4.3-.02-2.2.15-4.27.43-6.2,15.17-5.51,28.27-16.61,36.72-30.46,10.21-2.75,16.61-5.39,17.59-5.81,0,0,0,0,0,0,2.43-.99,5.34-2.38,7.25-3.34h0c.85-.43,1.51-.77,1.83-.96,25.87-15.17,22.19-43.66,22.23-69.75ZM77.45,138.82c-11.24-8.17-13.58-21.19-14.16-34.35-.28-6.26.24-12.61.02-18.88h29.07c-.37,14.58-.93,29.23-.06,43.34.36,5.75,1.54,11.44,3.42,16.92-7.31-2.36-13.45-4.86-18.28-7.03ZM222.49,138.82c-4.75,2.14-10.9,4.65-18.25,7.02,1.85-5.45,3.02-11.12,3.38-16.91.88-14.12.3-28.77-.06-43.34h29.07c-.37,18.3,2.59,41.08-14.14,53.24Z"]
 };
 
-var EATEN_HIST = [2210, 2380, 2050, 2290, 2170, 2410];
-var BURNED_HIST = [520, 610, 470, 700, 590, 355];
+// Semaine en cours, remplie par EspAuth.weekTotals() — meme source que les
+// cartes hebdo de Nutrition et d'Entrainement.
+var WEEK = { eaten: {}, burned: {} };
+function mondayIndex() { return window.EspAuth ? window.EspAuth.mondayIndex() : (new Date().getDay() || 7) - 1; }
+function dayKey(i) {
+  if (window.EspAuth) return window.EspAuth.weekDayKey(i);
+  var x = new Date();
+  x.setDate(x.getDate() - mondayIndex() + i);
+  return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
+}
 
 var state = {
   lang: 'en',
@@ -296,7 +304,7 @@ var state = {
   months: 6,
   week: 1,
   kcalTarget: 2340,
-  eaten: 1570,
+  eaten: 0,
   burnedToday: 0,
   rankNum: 5,
   spirit: 310
@@ -304,30 +312,38 @@ var state = {
 
 
 function renderChart() {
-  var eatSeries = EATEN_HIST.concat([state.eaten]);
-  var burnSeries = BURNED_HIST.concat([state.burnedToday]);
-  // Deux barres par jour : consomme a gauche, depense a droite ; le jour courant ressort.
+  // Semaine calee sur lundi : la colonne du jour est a sa vraie place. Avant,
+  // le graphique etait une fenetre glissante a qui on collait des libelles
+  // lundi->dimanche fixes, donc le jour courant tombait toujours sur « D ».
+  var di = mondayIndex();
   var wd = T[state.lang].week;
+  var eatSeries = wd.map(function (_, i) { return i <= di ? (WEEK.eaten[dayKey(i)] || 0) : 0; });
+  var burnSeries = wd.map(function (_, i) { return i <= di ? (WEEK.burned[dayKey(i)] || 0) : 0; });
   var max = Math.max.apply(null, eatSeries.concat(burnSeries).concat([1])) * 1.35;
   document.getElementById('balBars').innerHTML = wd.map(function (label, i) {
-    var cur = i === 6;
+    var cur = i === di, future = i > di;
     var inH = Math.max(4, Math.round(eatSeries[i] / max * 62));
     var outH = Math.max(4, Math.round(burnSeries[i] / max * 62));
+    var inBg = future ? 'rgba(242,239,233,.07)' : (cur ? '#F2EFE9' : 'rgba(242,239,233,.32)');
+    var outBg = future ? 'rgba(242,239,233,.07)' : (cur ? '#C41E26' : 'rgba(196,30,38,.42)');
     return '<div><div class="nums">'
-      + '<span style="color:' + (cur ? '#F2EFE9' : 'rgba(242,239,233,.26)') + '">' + (eatSeries[i] || '—') + '</span>'
-      + '<span style="color:' + (cur ? '#E23B44' : 'rgba(226,59,68,.4)') + '">' + (burnSeries[i] || '—') + '</span></div>'
+      + '<span style="color:' + (cur ? '#F2EFE9' : 'rgba(242,239,233,.26)') + '">' + (eatSeries[i] || '\u2014') + '</span>'
+      + '<span style="color:' + (cur ? '#E23B44' : 'rgba(226,59,68,.4)') + '">' + (burnSeries[i] || '\u2014') + '</span></div>'
       + '<div class="pair">'
-      + '<i style="height:' + inH + 'px;background:' + (cur ? '#F2EFE9' : 'rgba(242,239,233,.32)') + '"></i>'
-      + '<i style="height:' + outH + 'px;background:' + (cur ? '#C41E26' : 'rgba(196,30,38,.42)') + '"></i>'
+      + '<i style="height:' + inH + 'px;background:' + inBg + '"></i>'
+      + '<i style="height:' + outH + 'px;background:' + outBg + '"></i>'
       + '</div><span class="lb" style="color:' + (cur ? '#F2EFE9' : 'rgba(242,239,233,.26)') + '">' + label + '</span></div>';
   }).join('');
 
-  var avgIn = eatSeries.reduce(function (a, b) { return a + b; }, 0) / 7;
-  var avgOut = burnSeries.reduce(function (a, b) { return a + b; }, 0) / 7;
+  // Moyenne sur les jours ecoules seulement : diviser par 7 en debut de semaine
+  // ecrasait la balance avec des jours qui n'ont pas encore eu lieu.
+  var faits = di + 1;
+  var avgIn = eatSeries.slice(0, faits).reduce(function (a, b) { return a + b; }, 0) / faits;
+  var avgOut = burnSeries.slice(0, faits).reduce(function (a, b) { return a + b; }, 0) / faits;
   var balance = Math.round((state.kcalTarget + avgOut) - avgIn);
   var d = T[state.lang];
   var v = document.getElementById('balValue');
-  v.textContent = (balance > 0 ? '−' : '+') + Math.abs(balance);
+  v.textContent = (balance > 0 ? '\u2212' : '+') + Math.abs(balance);
   v.style.color = balance > 0 ? '#F2EFE9' : '#E23B44';
   document.getElementById('balLabel').textContent = balance > 0 ? d.deficitLabel : d.surplusLabel;
 }
@@ -448,6 +464,13 @@ render(saved);
         if (av) { av.style.backgroundImage = 'url(' + p.avatar_url + ')'; av.style.backgroundSize = 'cover'; av.style.backgroundPosition = 'center'; var svg = av.querySelector('svg'); if (svg) svg.style.display = 'none'; }
       }
     }).catch(function () {});
+
+    // Semaine reelle : repas et seances, meme source que les deux autres cartes
+    if (window.EspAuth.weekTotals) window.EspAuth.weekTotals().then(function (w) {
+      WEEK = w;
+      var today = window.EspAuth.weekDayKey(window.EspAuth.mondayIndex());
+      window.EspritumHome.setNutrition({ eaten: w.eaten[today] || 0, burnedToday: w.burned[today] || 0 });
+    });
 
     // Scan dû ? (bouton rouge) — vrai si le dernier scan date de 7 jours ou plus
     window.EspAuth.lastScan().then(function (m) {

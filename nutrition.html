@@ -599,15 +599,11 @@ if (window.EspAuth) {
   if (window.espSB) window.EspAuth.getSession().then(function (s) {
     if (!s) return;
 
-    // Jours déjà écoulés de la semaine, pour la carte « cette semaine »
-    window.espSB.from('meals').select('calories,date')
-      .eq('user_id', s.user.id).gte('date', dayKey(0)).lt('date', today())
-      .then(function (r) {
-        var acc = {};
-        (r.data || []).forEach(function (m) { acc[m.date] = (acc[m.date] || 0) + (m.calories || 0); });
-        WEEK.past = acc;
-        render();
-      }, function () {});
+    // Jours déjà écoulés : source commune aux trois graphiques hebdo
+    if (window.EspAuth.weekTotals) window.EspAuth.weekTotals().then(function (w) {
+      WEEK.past = w.eaten;   // le jour courant reste piloté par le journal en cours
+      render();
+    });
 
     window.espSB.from('meals').select('id,nom,calories,proteines,glucides,lipides,photo_url,created_at')
       .eq('user_id', s.user.id).eq('date', today()).order('created_at', { ascending: true })
