@@ -68,21 +68,21 @@ body{margin:0;min-height:100%;background:#08080A;color:#F2EFE9;font-family:'IBM 
 
 /* --- balance calorique --- */
 .bal{flex:none;height:186px;display:flex;flex-direction:column;padding:15px 17px 12px;border-radius:18px;background:#131315;border:1px solid rgba(242,239,233,.08);overflow:hidden}
-.bal .h{flex:none;display:flex;justify-content:space-between;align-items:flex-start}
+.bal .h{flex:none;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.balbars{flex:1;min-height:0;display:flex;align-items:flex-end;gap:7px;margin-top:12px}
+.balbars>div{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end}
+.balbars .nums{display:flex;flex-direction:column;align-items:center;gap:1px}
+.balbars .nums span{font:500 7.5px 'IBM Plex Mono',monospace}
+.balbars .pair{width:100%;display:flex;align-items:flex-end;justify-content:center;gap:3px}
+.balbars .pair i{flex:1;border-radius:4px;display:block;transition:height .5s cubic-bezier(.2,.8,.2,1)}
+.balbars .lb{font:600 8.5px 'IBM Plex Mono',monospace}
 .bal .h .l{display:flex;flex-direction:column;gap:3px}
 .bal .h .k{font:600 8.5px 'IBM Plex Mono',monospace;letter-spacing:.16em;color:rgba(242,239,233,.35)}
 .bal .h .v{display:flex;align-items:baseline;gap:6px}
 .bal .h .v b{font:700 26px/1 Oswald,sans-serif}
 .bal .h .v em{font:500 9.5px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.4);font-style:normal}
-.legend{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
-.legend div{display:flex;align-items:center;gap:6px}
-.legend i{width:14px;height:2px;border-radius:2px;display:block}
-.legend span{font:500 8.5px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.45)}
-.graph{position:relative;flex:1;min-height:0;margin-top:10px}
-.graph svg{width:100%;height:100%;display:block;overflow:hidden}
-.graph .end{position:absolute;left:97.3%;width:7px;height:7px;border-radius:50%;transform:translate(-50%,-50%);transition:top .5s ease}
-.days{flex:none;display:flex;justify-content:space-between;margin-top:7px}
-.days span{font:500 8.5px 'IBM Plex Mono',monospace;color:rgba(242,239,233,.26)}
+.legend{display:flex;align-items:center;gap:10px}
+.legend span{font:500 8.5px 'IBM Plex Mono',monospace;letter-spacing:.12em}
 
 /* --- rang --- */
 .rank{flex:none;padding:14px 17px;border-radius:16px;background:linear-gradient(150deg,rgba(196,30,38,.18),#131315);border:1px solid rgba(196,30,38,.32);cursor:pointer;transition:.2s;display:flex;align-items:center;gap:13px}
@@ -129,7 +129,10 @@ body.scandue .scanbtn:after{content:"";position:absolute;inset:-7px;border-radiu
 .langbar button{background:none;border:1px solid rgba(242,239,233,.12);color:rgba(242,239,233,.35);font:600 9px 'IBM Plex Mono',monospace;letter-spacing:.12em;padding:5px 9px;border-radius:7px;cursor:pointer}
 .langbar button[aria-pressed="true"]{color:#E23B44;border-color:rgba(196,30,38,.5);background:rgba(196,30,38,.12)}
 
-#due{display:none}
+/* Rappel de scan : la carte remplace le bloc verset + plan quand un scan est attendu.
+   Sans ces règles la carte restait masquée en toutes circonstances. */
+body.scandue #calm{display:none}
+body:not(.scandue) #due{display:none}
 
 /* Mobile : scroll de page classique (nav fixe) — placé en fin pour l'emporter sur les règles de base */
 @media (max-width:420px){
@@ -190,26 +193,13 @@ if (window.EspAuth) window.EspAuth.requireAuth();</script>
 
 <div class="bal">
 <div class="h">
-<div class="l">
-<span class="k" data-k="balanceTitle">BALANCE CALORIQUE · 7 JOURS</span>
 <div class="v"><b id="balValue">−438</b><em id="balLabel">DÉFICIT / JOUR</em></div>
-</div>
 <div class="legend">
-<div><i style="background:#F2EFE9"></i><span data-k="legendIn">CONSOMMÉ</span></div>
-<div><i style="background:#C41E26"></i><span data-k="legendOut">DÉPENSÉ</span></div>
+<span data-k="legendIn" style="color:#F2EFE9">CONSOMMÉ</span>
+<span data-k="legendOut" style="color:#E23B44">DÉPENSÉ</span>
 </div>
 </div>
-<div class="graph">
-<svg viewBox="0 0 300 104" preserveAspectRatio="none">
-<polyline id="inArea" fill="rgba(242,239,233,0.07)" stroke="none"></polyline>
-<polyline id="outArea" fill="rgba(196,30,38,0.13)" stroke="none"></polyline>
-<polyline id="inLine" fill="none" stroke="#F2EFE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>
-<polyline id="outLine" fill="none" stroke="#C41E26" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>
-</svg>
-<div class="end" id="inDot" style="background:#F2EFE9"></div>
-<div class="end" id="outDot" style="background:#C41E26"></div>
-</div>
-<div class="days" id="days"></div>
+<div class="balbars" id="balBars"></div>
 </div>
 
 <div class="rank" id="goRank" role="button" tabindex="0">
@@ -312,27 +302,25 @@ var state = {
   spirit: 310
 };
 
-function poly(vals, max, h, w) {
-  return vals.map(function (v, i) {
-    var x = 8 + i * ((w - 16) / (vals.length - 1));
-    var y = h - 8 - (Math.min(v, max) / max) * (h - 18);
-    return [x, y];
-  });
-}
-function line(p) { return p.map(function (q) { return q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' '); }
-function area(p, h) { return '8,' + h + ' ' + line(p) + ' ' + p[p.length - 1][0].toFixed(1) + ',' + h; }
 
 function renderChart() {
   var eatSeries = EATEN_HIST.concat([state.eaten]);
   var burnSeries = BURNED_HIST.concat([state.burnedToday]);
-  var inPts = poly(eatSeries, 2800, 104, 300);
-  var outPts = poly(burnSeries, 2800, 104, 300);
-  document.getElementById('inLine').setAttribute('points', line(inPts));
-  document.getElementById('outLine').setAttribute('points', line(outPts));
-  document.getElementById('inArea').setAttribute('points', area(inPts, 104));
-  document.getElementById('outArea').setAttribute('points', area(outPts, 104));
-  document.getElementById('inDot').style.top = (inPts[6][1] / 104 * 100).toFixed(2) + '%';
-  document.getElementById('outDot').style.top = (outPts[6][1] / 104 * 100).toFixed(2) + '%';
+  // Deux barres par jour : consomme a gauche, depense a droite ; le jour courant ressort.
+  var wd = T[state.lang].week;
+  var max = Math.max.apply(null, eatSeries.concat(burnSeries).concat([1])) * 1.35;
+  document.getElementById('balBars').innerHTML = wd.map(function (label, i) {
+    var cur = i === 6;
+    var inH = Math.max(4, Math.round(eatSeries[i] / max * 62));
+    var outH = Math.max(4, Math.round(burnSeries[i] / max * 62));
+    return '<div><div class="nums">'
+      + '<span style="color:' + (cur ? '#F2EFE9' : 'rgba(242,239,233,.26)') + '">' + (eatSeries[i] || '—') + '</span>'
+      + '<span style="color:' + (cur ? '#E23B44' : 'rgba(226,59,68,.4)') + '">' + (burnSeries[i] || '—') + '</span></div>'
+      + '<div class="pair">'
+      + '<i style="height:' + inH + 'px;background:' + (cur ? '#F2EFE9' : 'rgba(242,239,233,.32)') + '"></i>'
+      + '<i style="height:' + outH + 'px;background:' + (cur ? '#C41E26' : 'rgba(196,30,38,.42)') + '"></i>'
+      + '</div><span class="lb" style="color:' + (cur ? '#F2EFE9' : 'rgba(242,239,233,.26)') + '">' + label + '</span></div>';
+  }).join('');
 
   var avgIn = eatSeries.reduce(function (a, b) { return a + b; }, 0) / 7;
   var avgOut = burnSeries.reduce(function (a, b) { return a + b; }, 0) / 7;
@@ -383,7 +371,6 @@ function render(l) {
   document.getElementById('rankName').textContent = d.rankNames[state.rankNum - 1];
   document.getElementById('spiritPts').textContent = '+' + state.spirit;
   document.getElementById('kcalLeft').textContent = String(state.kcalTarget - state.eaten);
-  document.getElementById('days').innerHTML = d.week.map(function (x) { return '<span>' + x + '</span>'; }).join('');
   document.body.classList.toggle('scandue', state.scanDue);
   renderPlan();
   renderChart();
