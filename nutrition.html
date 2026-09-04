@@ -240,6 +240,7 @@ var T = {
     analyseBtn:'Analyser mon repas', analyzeFail:"L'analyse a échoué. Réessaie.",
     notFood:"Cette photo ne montre pas de repas. Cadre ton assiette et reprends la photo.",
     aiBusy:"Le service est très demandé en ce moment. Réessaie dans quelques secondes.",
+    aiQuota:"Limite d'analyses atteinte. Réessaie dans {s} secondes.",
     macKicker:'ANALYSE TERMINÉE', estimateNote:'Estimation basée sur la photo et ta description.',
     addBtn:'Ajouter à mon journal', meal:'Repas' },
   en: { title:'Nutrition', avail:'CALORIES AVAILABLE', kcal:'KCAL', onWord:'OF', consumed:'EATEN',
@@ -251,6 +252,7 @@ var T = {
     analyseBtn:'Analyze my meal', analyzeFail:'Analysis failed. Try again.',
     notFood:"This photo doesn't show a meal. Frame your plate and take the photo again.",
     aiBusy:"The service is very busy right now. Try again in a few seconds.",
+    aiQuota:"Analysis limit reached. Try again in {s} seconds.",
     macKicker:'ANALYSIS COMPLETE', estimateNote:'Estimate based on the photo and your description.',
     addBtn:'Add to my journal', meal:'Meal' },
   bg: { title:'Хранене', avail:'НАЛИЧНИ КАЛОРИИ', kcal:'ККАЛ', onWord:'ОТ', consumed:'ПРИЕТИ',
@@ -262,6 +264,7 @@ var T = {
     analyseBtn:'Анализирай храненето', analyzeFail:'Анализът не успя. Опитай отново.',
     notFood:'Тази снимка не показва хранене. Кадрирай чинията и снимай отново.',
     aiBusy:'Услугата е много натоварена в момента. Опитай отново след няколко секунди.',
+    aiQuota:'Достигнат е лимитът на анализи. Опитай отново след {s} секунди.',
     macKicker:'АНАЛИЗЪТ ЗАВЪРШИ', estimateNote:'Оценка въз основа на снимката и твоето описание.',
     addBtn:'Добави в дневника', meal:'Ястие' }
 };
@@ -503,6 +506,10 @@ function analyze() {
         if (prog.to) { clearTimeout(prog.to); prog.to = null; }
         // 422 : la photo ne montre pas de repas — on l'annonce au lieu d'enregistrer 0 kcal
         if (res.status === 422 && res.data && res.data.rejected) { fail(res.data.reason || d.notFood); return; }
+        // Quota atteint : on annonce l'attente exacte que Google indique
+        if (res.status === 429 && res.data && res.data.error === 'quota') {
+          fail(d.aiQuota.replace('{s}', String(res.data.retryAfter || 30))); return;
+        }
         // Modèle surchargé : la photo n'y est pour rien, on le dit clairement
         if (res.status === 503 && res.data && res.data.error === 'busy') { fail(d.aiBusy); return; }
         var data = res.data;

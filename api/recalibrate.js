@@ -69,6 +69,8 @@ export default async function handler(req, res) {
     if (!call.ok) {
       // Surcharge passagère du modèle : on le dit, au lieu de laisser croire
       // que la photo est en cause.
+      // Quota Gemini atteint : distinct d'une panne, et l'attente est connue
+      if (call.quota) return res.status(429).json({ error: 'quota', retryAfter: call.retryAfter });
       if (call.busy) return res.status(503).json({ error: 'busy', reason: call.reason });
       return res.status(call.status || 502).json({ error: 'Gemini error', detail: call.data });
     }
