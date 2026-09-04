@@ -81,7 +81,7 @@ export default async function handler(req, res) {
     if (!call.ok) {
       // Surcharge passagère du modèle : on le dit, au lieu de laisser croire
       // que la photo est en cause.
-      if (call.busy) return res.status(503).json({ error: 'busy' });
+      if (call.busy) return res.status(503).json({ error: 'busy', reason: call.reason });
       return res.status(call.status || 502).json({ error: 'Gemini error', detail: call.data });
     }
 
