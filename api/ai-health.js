@@ -39,13 +39,28 @@ export default async function handler(req, res) {
   const parts = withImage
     ? [{ text: 'Que vois-tu ?' }, { inlineData: { mimeType: 'image/png', data: PIXEL } }]
     : [{ text: 'ping' }];
+  // ?schema=1 : sortie structurée, comme les vrais appels — c'est la seule
+  // différence restante entre le test qui passe et le scan qui échoue.
+  const withSchema = !!(req.query && req.query.schema);
+  out.withSchema = withSchema;
+  const gen = withSchema
+    ? {
+        maxOutputTokens: 200,
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: 'object',
+          properties: { imageOk: { type: 'boolean' }, note: { type: 'string' } },
+          required: ['imageOk']
+        }
+      }
+    : { maxOutputTokens: 5 };
   try {
     const r = await fetch(
       'https://generativelanguage.googleapis.com/v1beta/models/' + target + ':generateContent?key=' + key,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: parts }], generationConfig: { maxOutputTokens: 5 } })
+        body: JSON.stringify({ contents: [{ parts: parts }], generationConfig: gen })
       }
     );
     const d = await r.json();
