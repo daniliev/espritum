@@ -29,14 +29,23 @@ export default async function handler(req, res) {
     out.listError = { status: 0, message: e.message };
   }
 
-  // 2) Un appel texte minimal sur le modèle configuré, message d'erreur brut inclus
+  // 2) Appel de test sur le modèle demandé (?model=), avec image si ?image=1 :
+  //    c'est la vision qui échoue, pas le texte.
+  const target = (req.query && req.query.model) || configured;
+  const withImage = !!(req.query && req.query.image);
+  out.tested = target;
+  out.withImage = withImage;
+  const PIXEL = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+  const parts = withImage
+    ? [{ text: 'Que vois-tu ?' }, { inlineData: { mimeType: 'image/png', data: PIXEL } }]
+    : [{ text: 'ping' }];
   try {
     const r = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + configured + ':generateContent?key=' + key,
+      'https://generativelanguage.googleapis.com/v1beta/models/' + target + ':generateContent?key=' + key,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: 'ping' }] }], generationConfig: { maxOutputTokens: 5 } })
+        body: JSON.stringify({ contents: [{ parts: parts }], generationConfig: { maxOutputTokens: 5 } })
       }
     );
     const d = await r.json();
